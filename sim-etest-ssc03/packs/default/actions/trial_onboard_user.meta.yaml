@@ -1,0 +1,10 @@
+pack: etest_core
+enabled: true
+runner_type: orquesta
+name: trial_onboard_user
+entry_point: workflows/trial_onboard_user.yaml
+description: onboard a new user
+parameters:
+  data:
+    type: object
+    description: input json payload

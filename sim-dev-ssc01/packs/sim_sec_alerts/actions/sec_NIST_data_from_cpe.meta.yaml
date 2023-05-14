@@ -1,0 +1,9 @@
+pack: sim_sec_alerts
+enabled: true
+runner_type: orquesta
+name: sec_NIST_data_from_cpe
+entry_point: workflows/sec_NIST_data_from_cpe.yaml
+description: collect data from cpe query
+parameters:
+  asset:
+    type: object

@@ -1,0 +1,39 @@
+version: 1.0
+tasks:
+  # [547, 106]
+  initialise:
+    action: core.noop
+    next:
+      - do:
+          - get_users
+  # [572, 246]
+  get_users:
+    action: sim_itsm2.get
+    input:
+      log_level: DEBUG
+      table: sys_user
+      query:
+        last_name: Guest Contact
+    next:
+      - do:
+          - get_cmdbcustomer
+        publish:
+          - snow_users: <% result().result %>
+  # [591, 415]
+  get_cmdbcustomer:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: select * From cmdbcustomers
+      connection: billing
+    next:
+      - do:
+          - end
+        publish:
+          - custdata: <% result().result %>
+  # [633, 556]
+  end:
+    action: core.noop
+output:
+  - snowdate: <%ctx().snow_users%>
+  - custdata: <%ctx().custdata%>

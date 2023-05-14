@@ -1,0 +1,30 @@
+version: 1.0
+tasks:
+  # [283, 73]
+  Get_user_licenses:
+    action: core.http
+    input:
+      url: "https://graph.microsoft.com/v1.0/users/<% ctx().user_email %>/licenseDetails"
+      headers:
+        Authorization: Bearer <% ctx().graph_auth_token %>
+        Content-Type: application/json
+      method: GET
+    next:
+      # #629e47
+      - do:
+          - end
+        publish:
+          - licenses_list: <% result().body.value.select($.skuId) %>
+          - licenses_names: <% result().body.value.select($.skuPartNumber) %>
+        when: <% succeeded() %>
+  # [283, 192]
+  end:
+    action: core.echo
+    input:
+      message: <% len(ctx().licenses_list) %> number of licenses found
+input:
+  - graph_auth_token
+  - user_email
+output:
+  - licenses_list: <% ctx().licenses_list %>
+  - licenses_names: <% ctx().licenses_names %>

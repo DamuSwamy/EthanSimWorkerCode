@@ -1,0 +1,108 @@
+ssl_verify: false
+vsphere:
+  VB4-VC41:
+    host: 10.120.107.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  AKL-VC0:
+    host: 10.130.3.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  VB4-DR-VC4-02:
+    host: 10.120.116.2
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  VB3-DR-VC3:
+    host: 10.120.83.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  CHC-VC0:
+    host: 10.130.35.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  VB3-VC34:
+    host: 10.120.77.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  VB5-VC5:
+    host: 10.120.131.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  VB5-DR-VC5:
+    host: 10.120.148.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  VB1-VC1:
+    host: 10.120.3.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  VB1-VC11:
+    host: 10.120.11.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  VB6-VC6:
+    host: 10.120.162.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  VB3-VC33:
+    host: 10.120.76.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  VB4-VC43:
+    host: 10.120.109.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  VB4-VC44:
+    host: 10.120.110.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  VB3-VC31:
+    host: 10.120.74.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  VB4-VC4:
+    host: 10.120.99.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  VB3-VC3:
+    host: 10.120.68.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  JCUN-TSV-SIM01:
+    host: 10.251.129.3
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  FS1-VC1:
+    host: 10.121.74.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  FS2-VC2:
+    host: 10.121.106.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+  JCUN-TSV-VC01:
+    host: 10.251.129.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere
+

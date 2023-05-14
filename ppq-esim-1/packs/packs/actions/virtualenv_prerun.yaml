@@ -1,0 +1,16 @@
+---
+  name: "virtualenv_prerun"
+  runner_type: "python-script"
+  description: "Transformation step to conver packs_status to list of packs."
+  enabled: true
+  entry_point: "pack_mgmt/virtualenv_setup_prerun.py"
+  parameters:
+    packs_status:
+      type: "object"
+    packs_list:
+      type: array
+      items:
+        type: string
+      required: false
+      default: null
+      description: Names of the pack in Exchange, a git repo URL or local file system.

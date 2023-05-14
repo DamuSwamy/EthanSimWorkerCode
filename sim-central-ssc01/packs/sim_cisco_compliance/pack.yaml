@@ -1,0 +1,20 @@
+---
+ref: sim_cisco_compliance
+name: SiM Workflow for Cisco IOS Benchmark
+description: This is a scratch pad area for testing workflows and trying things
+keywords:
+    - sim
+    - cisco
+    - benchmark
+version: 1.0.0
+python_versions:
+  - "2"
+  - "3"
+dependencies:
+  - core
+# Name of the pack author.
+author: Ethan Group
+# Email of the pack author.
+email: paul.hooper@ethan.com.au
+contributors:
+  - "Paul <paul.hooper@ethan.com.au>"

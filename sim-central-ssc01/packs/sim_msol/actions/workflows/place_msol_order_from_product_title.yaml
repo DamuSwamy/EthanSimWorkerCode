@@ -1,0 +1,223 @@
+version: 1.0
+input:
+  - tenant_id
+  - line_items_raw
+  - password_id
+output:
+  - order_details: <% ctx().order_details %>
+  - only_certain_product_len: 
+tasks:
+  # [10, 192]
+  Get_Access_Token_from_Microsoft_Online_API:
+    action: core.http
+    input:
+      url: "https://login.microsoftonline.com/<% ctx().tenant_id %> /oauth2/token"
+      body: client_id=<% ctx().client_id %>&resource=https%3A%2F%2Fgraph.windows.net&client_secret=<% ctx().client_secret %>&grant_type=client_credentials
+      method: GET
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+    next:
+      # #629e47
+      - do:
+          - Get_all_Products_by_country
+        when: <% succeeded() %>
+        publish:
+          - auth_token: <% result().body. access_token %>
+          - customer_tenant_id: "<% ctx().line_items_raw.split(':')[ctx().it].split(',')[0] %>"
+          - country_id: "AU"
+  # [523, 301]
+  end_success:
+    action: core.echo
+    input:
+      message: access token <% ctx().auth_token %> fetched
+  # [0, 287]
+  Get_all_Products_by_country:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers/<% ctx().customer_tenant_id %>/products?country=<% ctx().country_id %>&targetView=OnlineServices"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+      timeout: 300
+    next:
+      # #629e47
+      - do:
+          - Extract_Data
+        when: <% succeeded() %>
+        publish:
+          - full_product_list: <% result().body.items %>
+          - it: 0
+          - len_products_selected: "<% len(ctx().line_items_raw.split(\":\")) %>"
+          - line_item: {}
+          - line_items_cart: []
+  # [291, 300]
+  nce_or_not:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - Get_Sku_id_from_product_id
+        when: <% ctx().only_certain_product_len = 1%>
+        publish:
+          - only_certain_product_id: <% ctx().full_product_list.where($.title = ctx().product_name).select($.id) %>
+      - do:
+          - select_nce
+        when: <% ctx().only_certain_product_len > 1%>
+        publish:
+          - only_certain_product_id: <% ctx().full_product_list.where($.title = ctx().product_name and $.productType.displayName = 'OnlineServicesNCE').select($.id) %>
+  # [282, 434]
+  Get_Sku_id_from_product_id:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/products/<% ctx().only_certain_product_id[0] %>/skus?country=<% ctx().country_id %>"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+    next:
+      # #629e47
+      - do:
+          - Get_Sku_Availability
+        when: <% succeeded() %>
+        publish:
+          - sku_id: <% result().body.items[0].id %>
+  # [280, 555]
+  Get_Sku_Availability:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/products/<% ctx().only_certain_product_id[0] %>/skus/<% ctx().sku_id %>/availabilities?country=<% ctx().country_id %>&targetSegment=Commercial"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+    next:
+      # #629e47
+      - do:
+          - edit_line_items
+        when: <% succeeded() %>
+        publish:
+          - catalog_item_id: <% result().body.items[0]. catalogItemId %>
+  # [600, 0]
+  Create_Cart:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers/<% ctx().customer_tenant_id %>/carts"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+      body: "{\n  \"lineItems\": <% ctx().line_items_cart %>\n}"
+      method: POST
+      timeout: 120
+    next:
+      # #629e47
+      - do:
+          - Checkout_Cart
+        when: <% succeeded() %>
+        publish:
+          - cart_id: <% result().body.id %>
+  # [623, 146]
+  Checkout_Cart:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers/<% ctx().customer_tenant_id %>/carts/<% ctx().cart_id %>/checkout"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+      method: POST
+      timeout: 120
+    next:
+      # #629e47
+      - do:
+          - end_success
+        when: <% str(result().body).indexOf('orderErrors') = -1 %>
+        publish:
+          - order_id: <% result().body.orders[0].id %>
+          - order_details: <% result().body %>
+      - do:
+          - end_error
+        when: <% str(result().body).indexOf('orderErrors') != -1 %>
+        publish:
+          - order_error: <% result().body. orderErrors[0].description %>
+          - order_details: <% result().body %>
+  # [0, 441]
+  select_nce:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - Get_Sku_id_from_product_id
+        when: <% succeeded() %>
+  # [756, 298]
+  end_error:
+    action: core.noop
+  # [283, 168]
+  process_line_items:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - nce_or_not
+        when: <% succeeded() %>
+        publish:
+          - only_certain_product_len: <% len(ctx().full_product_list.where($.title = ctx().product_name)) %>
+  # [293, 30]
+  Extract_Data:
+    action: core.noop
+    next:
+      - do:
+          - process_line_items
+        when: <% ctx().it < ctx().len_products_selected %>
+        publish:
+          - offer_id: "<% ctx().line_items_raw.split(':')[ctx().it].split(',')[2] %>"
+          - quantity: "<% ctx().line_items_raw.split(':')[ctx().it].split(',')[3] %>"
+          - billing_cycle: "<% ctx().line_items_raw.split(':')[ctx().it].split(',')[4] %>"
+          - term_duration: "<% ctx().line_items_raw.split(':')[ctx().it].split(',')[5] %>"
+          - product_name: "<% ctx().line_items_raw.split(':')[ctx().it].split(',')[1] %>"
+          - customer_tenant_id: "<% ctx().line_items_raw.split(':')[ctx().it].split(',')[0] %>"
+      # #629e47
+      - do:
+          - Create_Cart
+        when: <% ctx().it >= ctx().len_products_selected %>
+  # [264, 659]
+  edit_line_items:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - push_to_line_items_cart
+        when: <% succeeded() %>
+        publish:
+          - line_item: <% dict(id=> ctx().it, catalogItemId=>ctx().catalog_item_id, quantity=>ctx().quantity, billingCycle=>"monthly",termDuration=>"P1Y") %>
+  # [262, 779]
+  push_to_line_items_cart:
+    action: core.noop
+    next:
+      - do:
+          - Extract_Data
+        when: <% succeeded() %>
+        publish:
+          - line_items_cart: <% ctx().get('line_items_cart' , []) + [ ctx(line_item)] %>
+          - it: <% ctx().it + 1%>
+  # [96, 94]
+  Get_client_secret:
+    action: sim_passwordstate.retrieve_password_from_password_id
+    input:
+      password_id: <% ctx().password_id %>
+      url: "https://pwd.etest.systems"
+    next:
+      # #629e47
+      - do:
+          - Get_Access_Token_from_Microsoft_Online_API
+        when: <% succeeded() %>
+        publish:
+          - client_id: <% result().output. retrieved_username %>
+          - client_secret: <% result().output. retrieved_password %>
+          - it: 0
+  # [0, 0]
+  get_passwords_from_passwordsafe:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - Get_Access_Token_from_Microsoft_Online_API
+        publish:
+          - client_id: 4bacc579-560f-4260-9d24-7eb27cb2dc36
+          - client_secret: pTMMkfOxQ6fjAIaJ7SruCBaPt7VcbTHx3B2TsCLwxkk=
+          - it: 0
+      - do:
+          - Get_client_secret
+        when: <% failed() %>
+  

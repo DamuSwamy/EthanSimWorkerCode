@@ -1,0 +1,60 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: process_msteams_request2
+entry_point: workflows/process_msteams_request2.yaml
+description: This automation will process MS Teams Request
+parameters:
+  ticketid:
+    type: string
+    description: SN Ticket ID
+    required: true
+    default: CS0076847
+  tenant_id:
+    type: string
+    description: "tenant_id of customer "
+    required: true
+    default: b02e50ac-20e5-4c60-bcd4-8454b3201fd1
+  teams_password_id:
+    type: string
+    description: teams_password_id
+    required: true
+    default: 1049
+  user_id:
+    type: string
+    description: user_id
+    required: true
+    default: damodaran.swamy@etest.systems
+  phone_no:
+    type: string
+    description: phone_no
+    required: true
+    default: NONE
+  voice_routing_policy:
+    type: string
+    description: voice_routing_policy
+    required: true
+  calling_line_identity:
+    type: string
+    description: calling_line_identity
+    required: true
+  calling_policy:
+    type: string
+    description: calling_policy
+    required: true
+  callpark_policy:
+    type: string
+    description: callpark_policy
+    required: true
+  tenant_dial_plan:
+    type: string
+    default: tenant_dial_plan
+    required: true
+  graph_password_id:
+    type: string
+    description: graph_password_id
+    default: 1045
+  sku_ids:
+    type: string
+    description: sku_ids
+    default: 06ebc4ee-1bb5-47dd-8120-11324bc54e06,a403ebcc-fae0-4ca2-8c8c-7a907fd6c235

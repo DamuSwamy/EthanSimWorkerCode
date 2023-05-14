@@ -1,0 +1,62 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - cloud_db_connection
+  - workflow_name
+  - ignore_zvm_sites
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - ZCM_Get_Sites
+
+  ZCM_Get_Sites:
+    action: sim_cloud_billing.ethan_dr_zerto_zcm_get_sites
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - sites: <% switch(isList(result().output.data) => result().output.data, true => []) %>
+          - valid_sites: <% ctx(sites).where(not $.zvmSiteName in ctx().ignore_zvm_sites).select($) %>
+          - sites: "{{ ctx().valid_sites | list }}"
+        do:
+          - Trigger_Dynamic_Workflow
+      - when: <% succeeded() and ctx().workflow_name = 'ethan_dr_zerto_draas_live' %>
+        do:
+          - Delete_From_Draas_Live
+      - when: <% failed() %>
+        do: fail
+
+  Delete_From_Draas_Live:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "DELETE FROM Draas_Live"
+    next:
+      - when: <% succeeded() %>
+        do: noop
+      - when: <% failed() %>
+        do: fail
+
+  Trigger_Dynamic_Workflow:
+    action: "sim_cloud_billing.<% ctx().workflow_name %>"
+    input:
+      billing_db_connection: <% ctx().billing_db_connection %>
+      cloud_db_connection: <% ctx().cloud_db_connection %>
+      site_name: <% item(zvmSiteName) %>
+      site_address: <% item(zvmHostName) %>
+    with:
+      items: <% ctx(sites) %>
+      concurrency: 3
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  End: 
+    action: core.noop

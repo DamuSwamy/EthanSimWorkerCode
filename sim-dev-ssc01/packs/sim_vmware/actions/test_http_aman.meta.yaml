@@ -1,0 +1,12 @@
+pack: sim_vmware
+enabled: true
+runner_type: orquesta
+name: test_http_aman
+entry_point: workflows/test_http_aman.yaml
+description: Testing HTTP
+parameters:
+  vCenter_URL:
+    type: string
+    description: vCenter URL address
+    required: true
+    default: vb3-vc3.iaas.ethoria.services

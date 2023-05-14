@@ -1,0 +1,15 @@
+pack: sim_meraki_pact
+enabled: true
+runner_type: orquesta
+name: Isolate Meraki Site
+entry_point: workflows/Isolate Meraki Site.yaml
+description: Isolate a PACT Group Meraki Site
+parameters:
+  action:
+    type: string
+    description: Action to be performed
+    required: true
+  sitename:
+    type: string
+    description: "Sitename "
+    required: true

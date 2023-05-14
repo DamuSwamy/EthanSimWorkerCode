@@ -1,0 +1,36 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_cloud_billing_dr_zerto_zvm_wrapper
+entry_point: workflows/ethan_cloud_billing_dr_zerto_zvm_wrapper.yaml
+description: Ethan DR - Zerto ZVM Wrapper
+parameters:
+  billing_db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: dev_billing
+    position: 0
+  cloud_db_connection:
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: false
+    default: dev_cloudmanagement
+    position: 1
+  workflow_name:
+    type: string
+    description: Workflow name to trigger
+    required: true
+    position: 2
+    enum:
+      - ethan_dr_zerto_zvm_resources
+      - ethan_dr_zerto_draas_live
+  ignore_zvm_sites:
+    type: array
+    description: List of zvm sites to be ignored
+    required: false
+    position: 3
+    default:
+      - AKL-VC0
+      - CHC-MICD
+      - CCL-CHC

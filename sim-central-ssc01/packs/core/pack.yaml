@@ -1,0 +1,9 @@
+---
+name : core
+description : Basic core actions.
+version: 3.7.0
+python_versions:
+  - "2"
+  - "3"
+author : StackStorm, Inc.
+email : info@stackstorm.com

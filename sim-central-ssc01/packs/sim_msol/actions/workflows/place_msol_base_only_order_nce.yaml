@@ -1,0 +1,176 @@
+version: 1.0
+input:
+  - tenant_id
+  - password_id
+  - param_line_items_raw_json
+  - customer_tenant_id
+  - auth_token
+output:
+  - result_summary: <%ctx().result_summary %>
+#   - line_items_cart: <%ctx().line_items_cart %>
+#   - order_details: <% ctx().order_details %>
+#   - order_line_items: <% ctx().order_line_items %>
+#   - order_id: <% ctx().order_id %>
+#   - order_output: <% ctx().order_output %>
+tasks:
+  # [317, 428]
+  end_success:
+    action: core.echo
+    input:
+      message: access token <% ctx().auth_token %> fetched
+  # [431, 73]
+  Create_Cart:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers/<% ctx().customer_tenant_id %>/carts"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+      body: "{\n  \"lineItems\": <% ctx().line_items_cart %>\n}"
+      method: POST
+    next:
+      # #629e47
+      - do:
+          - Checkout_Cart
+        when: <% succeeded() and str(result().body.lineItems).indexOf('error') = -1 %>
+        publish:
+          - cart_id: <% result().body.id %>
+      - do:
+          - format_failure
+        when: <% str(result().body.lineItems).indexOf('error') != -1 %>
+        publish:
+          - order_line_items: <% result().body.lineItems.select($.error) %>
+  # [430, 178]
+  Checkout_Cart:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers/<% ctx().customer_tenant_id %>/carts/<% ctx().cart_id %>/checkout"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+      method: POST
+      timeout: 120
+    next:
+      # #629e47
+      - do:
+          - format_successful_output
+        when: <% str(result().body).indexOf('orderErrors') = -1 %>
+        publish:
+          - order_id: <% result().body.orders[0].id %>
+          - order_details: <% result().body %>
+          - billing_cycle: <% result().body.orders[0].billingCycle %>
+          - currency_code: <% result().body.orders[0].currencyCode %>
+          - order_line_items: <% ctx().order_details.orders.lineItems.select([$. friendlyName, $. quantity,"success"]) %>
+          - order_output: <% ctx().order_details.orders.lineItems.select([$. friendlyName, $. quantity,"success"]) %>
+      - do:
+          - format_failure
+        when: <% failed() or str(result().body).indexOf('orderErrors') != -1 %>
+        publish:
+          - order_error: <% result().body. orderErrors[0].description %>
+          - order_details: <% result().body %>
+          - order_line_items: <% result().body. orderErrors[0].description %>
+          - order_id: <% result().body. orderErrors[0].description %>
+          - order_output: <% result().body. orderErrors[0].description %>
+  # [652, 360]
+  format_failure:
+    action: core.noop
+    next:
+      - do:
+          - end_failed
+        when: <% succeeded() %>
+        publish:
+          - result_summary: <% concat("New Base - ","Failed - ",str(ctx().order_line_items)) %>
+  # [42, 178]
+  initialize_variables:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - Extract_Data
+        when: <% succeeded() and ctx(param_line_items_raw_json).new_line_items_raw_json != "" %>
+        publish:
+          - it: 0
+          - len_base_products_selected: <% len(ctx(param_line_items_raw_json).new_line_items_raw_json.where($.ProductType= 'Base')) %>
+          - line_item: {}
+          - line_items_cart: []
+          - country_id: AU
+          - base_products_only: <% ctx(param_line_items_raw_json).new_line_items_raw_json.where($.ProductType= 'Base') %>
+          - len_offers_selected: 0
+          - result_summary: ""
+      - do:
+          - end_success
+        when: <% ctx(param_line_items_raw_json).new_line_items_raw_json = "" %>
+        publish:
+          - result_summary: ""
+  # [40, 544]
+  process_line_items:
+    action: core.noop
+    next:
+      - do:
+          - Next_Step
+        when: <% succeeded() %>
+  # [41, 322]
+  Extract_Data:
+    action: core.noop
+    next:
+      - do:
+          - get_catalog_id
+        when: <% ctx().it < ctx().len_base_products_selected and ctx().len_base_products_selected > 0 %>
+        publish:
+          - offer_id: <% ctx().base_products_only[ctx().it].OfferID %>
+          - quantity: <% ctx().base_products_only[ctx().it].Qty %>
+          - billing_cycle: <% ctx().base_products_only[ctx().it].BillingPlan %>
+          - term_duration: <% ctx().base_products_only[ctx().it].HidTerm %>
+          - product_name: <% ctx().base_products_only[ctx().it].BaseProduct %>
+          - product_identity: "<% ctx().base_products_only[ctx().it].OfferID.split(':')[0] %>"
+          - sku_identity: "<% ctx().base_products_only[ctx().it].OfferID.split(':')[1] %>"
+      # #629e47
+      - do:
+          - Create_Cart
+        when: <% ctx().it >= ctx().len_base_products_selected and ctx().len_base_products_selected > 0 %>
+      - do:
+          - end_success
+        when: <% ctx().len_base_products_selected = 0 %>
+  # [39, 759]
+  push_to_line_items_cart:
+    action: core.noop
+    next:
+      - do:
+          - Extract_Data
+        when: <% succeeded() %>
+        publish:
+          - line_items_cart: <% ctx().get('line_items_cart' , []) + [ ctx(line_item)] %>
+          - it: <% ctx().it + 1%>
+  # [392, 274]
+  format_successful_output:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - end_success
+        when: <% succeeded() %>
+        publish:
+          - order_output: "Order ID - <% ctx().order_id %>\nBilling Cycle - <% ctx().billing_cycle %>\nCurrency Code - <% ctx().currency_code %>\n\nOrdered List -\n<% ctx().order_line_items %>"
+          - result_summary: <% concat("New Base - ",str(ctx().order_line_items)," - Success") %>
+  # [39, 651]
+  Next_Step:
+    action: core.noop
+    next:
+      - do:
+          - push_to_line_items_cart
+        when: <% succeeded() %>
+        publish:
+          - line_item: <% dict(id=> ctx().it, catalogItemId=>ctx().fetched_cat_id, quantity=>ctx().quantity, billingCycle=> ctx().billing_cycle, termDuration=> ctx().term_duration) %>
+  # [646, 461]
+  end_failed:
+    action: core.noop
+  # [39, 439]
+  get_catalog_id:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/products/<% ctx().product_identity %>/skus/<% ctx().sku_identity %>/availabilities?country=AU&targetSegment=Commercial"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+    next:
+      - do:
+          - process_line_items
+        publish:
+          - fetched_cat_id: <% result().body.items[0].catalogItemId %>

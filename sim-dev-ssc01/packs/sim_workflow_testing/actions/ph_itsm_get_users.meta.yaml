@@ -1,0 +1,6 @@
+pack: sim_workflow_testing
+enabled: true
+runner_type: orquesta
+name: ph_itsm_get_users
+entry_point: workflows/ph_itsm_get_users.yaml
+description: testing users

@@ -1,0 +1,13 @@
+---
+  name: "lsof"
+  runner_type: "remote-shell-cmd"
+  description: "Run lsof"
+  enabled: true
+  entry_point: ""
+  parameters:
+    cmd:
+      immutable: true
+      default: "lsof {{args}}"
+    args:
+      description: "Command line arguments"
+      default: " "

@@ -1,0 +1,18 @@
+pack: sim_msol_billing
+enabled: true
+runner_type: orquesta
+name: update_partner_customer_subscriptions
+entry_point: workflows/update_partner_customer_subscriptions.yaml
+description: Update Partner Customer Subscription details into DB
+parameters:
+  db_connection:
+    type: string
+    description: DB to insert or update the customer subscribed skus
+    default: billing 
+    required: true
+    position: 0
+  subscription_list:
+    type: array
+    description: Subs to update the customer subscrptions table
+    required: true
+    position: 1

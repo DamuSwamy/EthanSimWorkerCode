@@ -1,0 +1,44 @@
+version: 1.0
+tasks:
+  # [280, 318]
+  Success:
+    action: core.noop
+  # [281, 142]
+  Resolve_Ticket:
+    action: core.http
+    input:
+      url: "https://<% ctx().instance %>/v4_6_release/apis/3.0/service/tickets/<% ctx().ticket_id %>"
+      headers:
+        Authorization: Basic <% ctx().auth_token %>
+        clientId: <% ctx().client_id %>
+        Content-Type: application/json; charset=utf-8
+      method: PATCH
+      body: "[\n  {\n    \"op\": \"replace\",\n    \"path\": \"status\",\n    \"value\": {\n      'name': '<% ctx().status %>'\n    }\n  },\n  {\n    \"op\": \"replace\",\n    \"path\": \"customFields\",\n    \"value\": [\n       {\n      \"id\": 219,\n      \"caption\": \"Closure Code\",\n      \"type\": \"Text\",\n      \"entryMethod\": \"List\",\n      \"numberOfDecimals\": 0,\n      \"value\": \"<% ctx().closure_code %>\"\n    },\n    ]\n  }\n]"
+    next:
+      # #629e47
+      - do:
+          - Success
+        when: <% succeeded() %>
+        publish:
+          - ticket_id: <% result().body.id %>
+input:
+  - auth_token
+  - ticket_id
+  - client_id
+  - instance
+  - status
+  - closure_code
+  - board_name
+  - company_id
+  - source_id
+  - ticket_summary
+  - ticket_initialDescription
+  - ticket_contactName
+  - team_name
+  - owner
+  - item
+  - subtype
+  - agreement
+  - type
+output:
+  - ticket_id: <% ctx().ticket_id %>

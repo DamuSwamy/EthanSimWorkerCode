@@ -1,0 +1,70 @@
+version: 1.0
+tasks:
+  # [191, 0]
+  begin:
+    action: core.noop
+    next:
+      - do:
+          - start
+        publish:
+          - i: 0
+          - value1: <% ctx().Service_Offering %>
+          - value2: <% ctx().Assignment_Group %>
+  # [191, 294]
+  change_property:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().first_ticket %>
+      payload:
+        service_offering: <%ctx().value1%>
+      table: sn_customerservice_general_case
+    next:
+      - do:
+          - change_assignment_group
+        when: <% ctx().i > -1 %>
+  # [191, 408]
+  output:
+    action: core.echo
+    input:
+      message: "\" <% ctx().first_ticket %> is updated \""
+    next:
+      - do:
+          - start
+        when: <% ctx().i < ctx().Ticket_IDs.len() %>
+  # [191, 97]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - next_ID
+        publish:
+          - first_ticket: <% ctx().Ticket_IDs[ctx().i] %>
+        when: <
+  # [191, 195]
+  next_ID:
+    action: core.noop
+    next:
+      - do:
+          - change_property
+        publish:
+          - i: <% ctx().i+1 %>
+  # [476, 349]
+  change_assignment_group:
+    action: sim_itsm2.update
+    next:
+      - do:
+          - output
+        when: <% ctx().i > -1 %>
+    input:
+      log_level: DEBUG
+      number: <% ctx().first_ticket %>
+      payload:
+        assignment_group: <%ctx().value2%>
+      table: sn_customerservice_general_case
+input:
+  - Ticket_IDs
+  - Assignment_Group
+  - Service_Offering
+output:
+  - ticket: <% ctx().first_ticket %> is updated

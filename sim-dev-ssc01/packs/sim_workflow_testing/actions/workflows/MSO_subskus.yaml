@@ -1,0 +1,16 @@
+version: 1.0
+tasks:
+  # [439, 68]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - task1
+  # [437, 220]
+  task1:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers/22a6ea0d-0462-4dc1-8c25-04941f8d766f/subscribedskus"
+      headers:
+        Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyIsImtpZCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyJ9.eyJhdWQiOiJodHRwczovL2dyYXBoLndpbmRvd3MubmV0IiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvZDBhYWFmYzAtNGY1Ni00NzhhLWI5ODYtZmQ5ZWI3MDA0NmQ2LyIsImlhdCI6MTY3NDA5NzkzNiwibmJmIjoxNjc0MDk3OTM2LCJleHAiOjE2NzQxMDE4MzYsImFpbyI6IkUyWmdZSWl5L0prcDFpa3hRZmhoczQ3VjBVOWNBQT09IiwiYXBwaWQiOiIzYTNiMWU3Mi0zNTk5LTQzOTQtYTlmOC1kMzAwNTNjNGFjYzQiLCJhcHBpZGFjciI6IjEiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kMGFhYWZjMC00ZjU2LTQ3OGEtYjk4Ni1mZDllYjcwMDQ2ZDYvIiwib2lkIjoiYTlmMzc1YTItYjUyNy00MjU4LTkxMTctYjVmNTViZTI0MzNkIiwicmgiOiIwLkFXY0F3Sy1xMEZaUGlrZTVodjJldHdCRzFnSUFBQUFBQUFBQXdBQUFBQUFBQUFCbkFBQS4iLCJyb2xlcyI6WyJEaXJlY3RvcnkuUmVhZC5BbGwiXSwic3ViIjoiYTlmMzc1YTItYjUyNy00MjU4LTkxMTctYjVmNTViZTI0MzNkIiwidGVuYW50X3JlZ2lvbl9zY29wZSI6Ik9DIiwidGlkIjoiZDBhYWFmYzAtNGY1Ni00NzhhLWI5ODYtZmQ5ZWI3MDA0NmQ2IiwidXRpIjoiSkp5azU1V1pSMC0yUWlWNDAxbzJBQSIsInZlciI6IjEuMCJ9.HPhDfWod3OLk5YytRBMvQL9E-jOWmKZokEONSviqnSn-NPINZ2SyDCSNW1UCc5HOXTfbEi0hTqCEAsJy-wf5u1ZAbECnf5ofmlaRJpsoH_w5piiC5w9a5eNMAquC_gRTI720llmEQz2BuB5B7BgQIBfvhv2IEDmGja66P3XjMY5d4BadfJkAcJLOhhLJZjjaSuHRuPa1H7vjw502VjMbZHKuHLRTiTW2LFCLdL9mgPH1x_a9zWReUfX038PSJZ4XpODbzNZLYoXAoBdCzDI9loGF38UEGFNh0cZzXIeiLPXwR0MC4kojbAo5OiV1K6_9hpo8QnML6_NsDaLxJuherw
+      method: GET

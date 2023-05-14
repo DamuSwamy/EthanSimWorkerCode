@@ -1,0 +1,10 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: Tables
+entry_point: workflows/Tables.yaml
+parameters:
+  number:
+    type: number
+    description: Number to print table of
+    required: true

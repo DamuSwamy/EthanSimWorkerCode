@@ -1,0 +1,11 @@
+pack: sim_cisco_compliance
+enabled: true
+runner_type: "python-script"
+name: format_conversion
+entry_point: "format_conversion.py"
+description: Convert Json to required format
+parameters:
+  input_json:
+    type: object
+    description: Input Json
+    required: true

@@ -1,0 +1,132 @@
+---
+version: 1.0
+
+description: Automated case closure for backup success events
+
+vars:
+  - notifications: []
+  - process_name: "Backup Success Case Resolution"
+  - cases_to_close: {}
+
+input:
+  - dpa_report
+
+output:
+  - notifications: <% ctx().notifications %>
+  - cases_closed: <% ctx().cases_to_close %>
+
+tasks:
+  # [192, 51]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notification: "(<% ctx().process_name%>) process started\n"
+          - clients: <% switch(isList(ctx().dpa_report) => ctx().dpa_report, true => []) %>
+        do:
+          - notify
+          - retrieve_all_valid_cases
+
+  # [167, 222]
+  retrieve_all_valid_cases:
+    action: sim_itsm2.get
+    input:
+      log_level: DEBUG
+      table: sn_customerservice_general_case
+      query:
+        active: true^state!=6^short_descriptionLIKEBackup^short_descriptionLIKEFailure
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - related_cases: <% result().result %>
+          - related_case_count: <% len(ctx().related_cases) %>
+          - notification: |
+              <% ctx().related_case_count %> cases available for the given criteria.
+        do:
+          - notify
+          - get_valid_cases
+      - when: <% failed() %>
+        publish:
+          - related_cases: []
+          - related_case_count: 0
+          - notification: |
+              No case(s) found for the given criteria!
+        do:
+          - notify
+
+  # [842, 301]
+  get_valid_cases:
+    action: sim_braas.get_valid_cases
+    input:
+      client_list: <% ctx().dpa_report %>
+      case_list: <% ctx().related_cases %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - validCaseList: <% result().result %>
+          - notification: |
+              <% len(ctx().validCaseList) %> valid cases will be closed.
+        do:
+          - validate_if_valid_cases_found
+          - notify
+      - when: <% failed() %>
+        do:
+          - fail
+
+  # [1042, 451]
+  validate_if_valid_cases_found:
+    action: core.noop
+    next:
+      - when: <% len(validCaseList) > 0 %>
+        publish:
+          - cases_to_close: <% dict(ctx(validCaseList).select([$.number, $.short_description])) %>
+        do:
+          - close_successful_backup_cases
+      - when:  <% len(validCaseList) <= 0 %>
+        publish:
+          - cases_to_close: {}
+          - notification: |
+              No valid cases found for closure.
+        do:
+          - noop
+  
+  # [100, 427]
+  close_successful_backup_cases:
+    action: sim_braas.close_successful_backup_cases
+    input:
+      case_number: <% item(case).number %>
+    with:
+      items: case in <% ctx().validCaseList %>
+    next:
+      - when: <% succeeded() and len(ctx().validCaseList) > 0 %>
+        publish:
+          - notification: |
+              The case(s) successfully closed!
+        do:
+          - notify
+      - when: <% succeeded() and len(ctx().validCaseList) <= 0 %>
+        publish:
+          - notification: |
+              No case found for the closure!
+        do:
+          - notify
+      - when: <% failed() %>
+        publish:
+          - notification: |
+              The one or more case(s) failed to close!
+        do:
+          - notify
+          - fail
+  
+  # [574, 375]
+  notify:
+    action: core.echo
+    input:
+      message: |
+        <% ctx().notification %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notifications: <% ctx().notifications.append(ctx().notification) %>
+

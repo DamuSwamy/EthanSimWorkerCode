@@ -1,0 +1,112 @@
+version: 1.0
+tasks:
+  # [112, 0]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - count_no_of_records
+        publish:
+          - i: 0
+          - x: " "
+          - attention: " "
+  # [112, 115]
+  count_no_of_records:
+    action: sql.query
+    next:
+      - do:
+          - count
+        publish:
+          - count: <% result().result[0].records %>
+    input:
+      log_level: DEBUG
+      timeout: 60
+      query: select count(*) as records from <% ctx().List_of_table_names[ctx().i] %>
+      connection: productionCloudExtension
+  # [865, 453]
+  send_attention_mail:
+    action: core.sendmail
+    input:
+      timeout: 30
+      to: supriya.kadam@ethan.com.au
+      subject: Needs attention
+      body: <% ctx().x %>
+    next:
+      - do:
+          - stop
+  # [113, 411]
+  next:
+    action: core.noop
+    next:
+      - do:
+          - Output
+        publish:
+          - attention: yes
+        when: <% ctx().count = 0 %>
+      - do:
+          - Records_found
+        when: <% ctx().count != 0 %>
+  # [1163, 456]
+  send_update_mail:
+    action: core.sendmail
+    input:
+      timeout: 30
+      to: supriya.kadam@ethan.com.au
+      subject: "INFORMATION : User List tables checked, no issues found"
+      body: <% ctx().x %>
+    next:
+      - do:
+          - stop
+  # [112, 230]
+  count:
+    action: core.noop
+    next:
+      - do:
+          - next
+        publish:
+          - x: <% concat(ctx().x,ctx().List_of_table_names[ctx().i]," - ",str(ctx().count),"\n") %>
+  # [207, 662]
+  Output:
+    action: core.echo
+    next:
+      - do:
+          - pass
+        publish:
+          - i: <% ctx().i + 1 %>
+    input:
+      message: "\"  <% ctx().count %> \""
+  # [538, 337]
+  pass:
+    action: core.noop
+    next:
+      - do:
+          - count_no_of_records
+        when: <%ctx().i<len(ctx().List_of_table_names)%>
+      - do:
+          - end_loop
+        when: <% ctx().i >= len(ctx().List_of_table_names) %>
+  # [847, 322]
+  end_loop:
+    action: core.echo
+    input:
+      message: "\" Input tables completed \""
+    next:
+      - do:
+          - send_update_mail
+        when: <% ctx().attention != "yes" %>
+      - do:
+          - send_attention_mail
+        when: <% ctx().attention = "yes" %>
+  # [1038, 600]
+  stop:
+    action: core.noop
+  # [327, 533]
+  Records_found:
+    action: core.noop
+    next:
+      - do:
+          - Output
+input:
+  - List_of_table_names
+output:
+  - count: <% ctx().x.trim() %>

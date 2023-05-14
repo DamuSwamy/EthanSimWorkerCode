@@ -1,0 +1,105 @@
+version: 1.0
+tasks:
+  # [177, 13]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - count_records
+        publish:
+          - i: 0
+          - x: " "
+          - attention: " "
+  # [181, 110]
+  count_records:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: select count(*) as records from <% ctx().list[ctx().i] %>
+      connection: productionCloudExtension
+    next:
+      - do:
+          - count
+        publish:
+          - count: <% result().result[0].records %>
+  # [97, 225]
+  count:
+    action: core.noop
+    next:
+      - do:
+          - noop
+        publish:
+          - x: <% concat(ctx().x,ctx().list[ctx().i],"-",str(ctx().count),"\n") %>
+  # [339, 410]
+  attention_key:
+    action: core.noop
+    next:
+      - do:
+          - task1
+  # [70, 353]
+  noop:
+    action: core.noop
+    next:
+      - do:
+          - attention_key
+        when: <% ctx().count != 0 %>
+        publish:
+          - attention: true
+      - do:
+          - task1
+        when: <% ctx().count = 0 %>
+  # [337, 533]
+  task1:
+    action: core.echo
+    input:
+      message: "\" <% ctx().count %> \""
+    next:
+      - do:
+          - skip
+        publish:
+          - i: <% ctx().i+1 %>
+  # [468, 287]
+  skip:
+    action: core.noop
+    next:
+      - do:
+          - count_records
+        when: <% ctx().i < len(ctx().list) %>
+      - do:
+          - task2
+        when: <% ctx().i >= len(ctx().list) %>
+  # [756, 269]
+  task2:
+    action: core.noop
+    next:
+      - do:
+          - raise_ticket
+        when: <% ctx().attention = "yes" %>
+      - do:
+          - update
+        when: <% ctx().attention != "yes" %>
+  # [926, 401]
+  update:
+    action: core.sendmail
+    input:
+      to: supriya.kadam@ethan.com.au
+      subject: update
+      body: "<% ctx().x %> "
+    next:
+      - do:
+          - task3
+  # [644, 402]
+  raise_ticket:
+    action: core.sendmail
+    input:
+      to: supriya.kadam@ethan.com.au
+      subject: attention
+      body: Some record is null
+    next:
+      - do:
+          - task3
+  # [767, 525]
+  task3:
+    action: core.noop
+input:
+  - list

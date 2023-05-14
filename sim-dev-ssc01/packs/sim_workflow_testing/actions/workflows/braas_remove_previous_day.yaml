@@ -1,0 +1,17 @@
+version: 1.0
+tasks:
+  # [560, 40]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - delete_records
+        publish:
+          - dbyesturday: <% (now(offset=>localtz()) - timespan(days => 1)).format("%Y-%m-%d") %>
+  # [562, 241]
+  delete_records:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: "DELETE FROM braas_dpa_error_report WHERE startTime > '<% ctx().dbyesturday %> 12:00:00'"
+      connection: cloudmanagement

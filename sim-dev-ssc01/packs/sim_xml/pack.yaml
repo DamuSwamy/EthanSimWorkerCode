@@ -1,0 +1,14 @@
+---
+ref: sim_xml
+name : sim_xml
+description : st2 content pack containing XML integrations modified for SIM
+keywords:
+  - xml
+  - serialization
+  - deserialization
+  - text processing
+version: 1.0.0
+python_versions:
+  - "3"
+author : Ethan Group
+email : ITT@essist.com.au

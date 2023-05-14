@@ -1,0 +1,46 @@
+version: 1.0
+tasks:
+  # [847, 320]
+  query_DB:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: Select * from Braas_DPA_error_report
+      database: CloudManagement
+      drivername: mssql
+      host: 192.168.66.8
+      connection: null
+      password: 3ssistB1lling
+      port: 1433
+      username: svc_billingint
+      timeout: 120
+  # [846, 151]
+  insert_db:
+    action: sql.insert_bulk
+    input:
+      log_level: DEBUG
+      table: Braas_DPA_error_report
+      database: null
+      drivername: null
+      host: null
+      port: 1433
+      password: null
+      username: null
+      timeout: 300
+      data:
+        - Duration: 274
+          backupServer: vet.braas.ethoria.services
+          clientName: t2bndprddb1.talent2bond.local
+          domainName: /ALEG
+          finishTime: "2022-03-26 15:04:55"
+          group: ALEG-AG-WIN-FILE-SEN-7D-0200-30D12M7Y
+          id: t2bndprddb1.talent2bond.local|1648306821
+          mediaServer: sen.braas.ethoria.services
+          schedule: PLAT-7D-0200-0700
+          startTime: "2022-03-26 15:00:21"
+          status: success
+          statusCodeSummary: Activity completed with exceptions.
+      connection: cloudmanagement
+    next:
+      - do:
+          - query_DB

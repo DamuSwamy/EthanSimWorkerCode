@@ -1,0 +1,137 @@
+version: 1.0
+input:
+  - tenant_id
+  - offer_id
+  - customer_tenant_id
+  - quantity
+  - line_items_raw
+  - password_id
+output:
+  - order_details: <% ctx().order_details %>
+tasks:
+  # [25, 104]
+  Get_Access_Token_from_Microsoft_Online_API:
+    action: core.http
+    input:
+      url: "https://login.microsoftonline.com/<% ctx().tenant_id %> /oauth2/token"
+      body: client_id=<% ctx().client_id %>&resource=https%3A%2F%2Fgraph.windows.net&client_secret=<% ctx().client_secret %>&grant_type=client_credentials
+      method: GET
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+    next:
+      # #629e47
+      - do:
+          - initialize_variables
+        when: <% succeeded() %>
+        publish:
+          - auth_token: <% result().body. access_token %>
+  # [326, 447]
+  end_success:
+    action: core.echo
+    input:
+      message: access token <% ctx().auth_token %> fetched
+  # [430, 74]
+  Create_Cart:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers/<% ctx().customer_tenant_id %>/carts"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+      body: "{\n  \"lineItems\": <% ctx().line_items_cart %>\n}"
+      method: POST
+    next:
+      # #629e47
+      - do:
+          - Checkout_Cart
+        when: <% succeeded() %>
+        publish:
+          - cart_id: <% result().body.id %>
+  # [430, 178]
+  Checkout_Cart:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers/<% ctx().customer_tenant_id %>/carts/<% ctx().cart_id %>/checkout"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+      method: POST
+    next:
+      # #629e47
+      - do:
+          - end_success
+        when: <% str(result().body).indexOf('orderErrors') = -1 %>
+        publish:
+          - order_id: <% result().body.orders[0].id %>
+          - order_details: <% result().body %>
+      - do:
+          - end_error
+        when: <% str(result().body).indexOf('orderErrors') != -1 %>
+        publish:
+          - order_error: <% result().body. orderErrors[0].description %>
+          - order_details: <% result().body %>
+  # [558, 448]
+  end_error:
+    action: core.noop
+  # [25, 7]
+  Get_client_secret:
+    action: sim_passwordstate.retrieve_password_from_password_id
+    input:
+      password_id: <% ctx().password_id %>
+      url: "https://pwd.etest.systems"
+    next:
+      # #629e47
+      - do:
+          - Get_Access_Token_from_Microsoft_Online_API
+        when: <% succeeded() %>
+        publish:
+          - client_id: <% result().output. retrieved_username %>
+          - client_secret: <% result().output. retrieved_password %>
+  # [26, 200]
+  initialize_variables:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - Extract_Data
+        when: <% succeeded() %>
+        publish:
+          - it: 0
+          - len_offers_selected: "<% len(ctx().line_items_raw.split(\":\")) %>"
+          - line_item: {}
+          - line_items_cart: []
+  # [27, 410]
+  process_line_items:
+    action: core.noop
+    next:
+      # #fd9d32
+      - do:
+          - push_to_line_items_cart
+        when: <% succeeded() %>
+        publish:
+          - line_item: <% dict(id=> ctx().it, catalogItemId=>ctx().offer_id, quantity=>ctx().quantity, billingCycle=> ctx().billing_cycle, termDuration=> ctx().term_duration) %>
+  # [27, 309]
+  Extract_Data:
+    action: core.noop
+    next:
+      - do:
+          - process_line_items
+        when: <% ctx().it < ctx().len_offers_selected %>
+        publish:
+          - offer_id: "<% ctx().line_items_raw.split(':')[ctx().it].split(',')[0] %>"
+          - quantity: "<% ctx().line_items_raw.split(':')[ctx().it].split(',')[1] %>"
+          - billing_cycle: monthly
+          - term_duration: P1Y
+      # #629e47
+      - do:
+          - Create_Cart
+        when: <% ctx().it >= ctx().len_offers_selected %>
+  # [27, 507]
+  push_to_line_items_cart:
+    action: core.noop
+    next:
+      - do:
+          - Extract_Data
+        when: <% succeeded() %>
+        publish:
+          - line_items_cart: <% ctx().get('line_items_cart' , []) + [ ctx(line_item)] %>
+          - it: <% ctx().it + 1%>
+

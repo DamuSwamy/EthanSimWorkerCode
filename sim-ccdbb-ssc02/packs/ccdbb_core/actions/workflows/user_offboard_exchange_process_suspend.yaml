@@ -1,0 +1,83 @@
+version: 1.0
+tasks:
+  # [126, 6]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - delegate_mailbox
+  # [123, 628]
+  print_execution_log:
+    action: core.echo
+    input:
+      message: "\"<% ctx().execution_log %>\""
+  # [122, 518]
+  build_execution_log:
+    action: core.noop
+    next:
+      - do:
+          - print_execution_log
+        publish:
+          - execution_log: <% ctx().get('execution_log' , []) + [ ctx(delegate_mailbox), ctx(delegate_onedrive)] %>
+  # [121, 416]
+  one_drive_delegation:
+    action: sim_o365.one_drive_delegation
+    input:
+      delegate_email: <% ctx().delegate_email %>
+      host: <% ctx().ad_host %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+      user_email: <% ctx().user_email %>
+      admin_url: <% ctx().admin_url %>
+    next:
+      - do:
+          - build_execution_log
+        publish:
+          - delegate_onedrive: <% dict(task_name=>"delegate_onedrive", expected_returncode=>0, actual_returncode=>result().output.task_std_ret_code) %>
+  # [250, 261]
+  con_del_for_success:
+    action: core.noop
+    next:
+      - do:
+          - one_drive_delegation
+  # [0, 257]
+  con_del_for_failed:
+    action: core.noop
+    next:
+      - do:
+          - one_drive_delegation
+  # [125, 114]
+  delegate_mailbox:
+    action: sim_exchange.delegate_mailbox
+    input:
+      app_id: <% ctx().app_id %>
+      certificate_file_path: <% ctx().certificate_file_path %>
+      delegate_email: <% ctx().delegate_email %>
+      host: <% ctx().ad_host %>
+      organisation: <% ctx().organisation %>
+      user_email: <% ctx().user_email %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+    next:
+      - do:
+          - con_del_for_success
+        when: <% succeeded() %>
+        publish:
+          - delegate_mailbox: <% dict(task_name=>"delegate_mailbox",expected_returncode=>"True", actual_returncode=>result().output.task_std_output.delegate_ret) %>
+      - do:
+          - con_del_for_failed
+        when: <% failed() %>
+        publish:
+          - delegate_mailbox: <% dict(task_name=>"delegate_mailbox", expected_returncode=>"True", actual_returncode=>"False") %>
+input:
+  - user_email
+  - delegate_email
+  - ad_host
+  - username
+  - password
+  - organisation
+  - app_id
+  - certificate_file_path
+  - admin_url
+output:
+  - execution_log: <% ctx().execution_log %>

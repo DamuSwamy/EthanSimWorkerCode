@@ -1,0 +1,213 @@
+version: 1.0
+input:
+  - tenant_id
+  - password_id
+  - param_line_items_raw_json
+  - customer_tenant_id
+  - auth_token
+output:
+  # - len_base_products_selected: <% ctx().len_base_products_selected %>
+  # - base_products_only: <%ctx().base_products_only %>
+  # - line_items_cart: <%ctx().line_items_cart %>
+  #   - order_details: <% ctx().order_details %>
+  #   - order_line_items: <% ctx().order_line_items %>
+  #   - order_id: <% ctx().order_id %>
+  #   - order_output: <% ctx().order_output %>
+  - result_summary: <%ctx().result_summary %>
+  # - new_quantity: <%ctx().new_quantity %>
+  # - existing_subscription: <% ctx().existing_subscription %>
+  # - new_subscription: <% ctx().new_subscription %>
+tasks:
+  # [36, 838]
+  Get_subscription_details:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers/<% ctx().customer_tenant_id %>/subscriptions/<% ctx().subscription_id %>"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+      body: null
+      method: GET
+    next:
+      # #629e47
+      - do:
+          - Update_New_Quantity
+        when: <% succeeded() %>
+        publish:
+          - existing_subscription: <% result().body %>
+          - new_subscription: <% result().body %>
+  # [26, 200]
+  initialize_variables:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - Extract_Data
+        when: <% succeeded() %>
+        publish:
+          - it: 0
+          - len_subscriptions_selected: <% len(ctx(param_line_items_raw_json).modify_line_items_raw_json) %>
+          - line_item: "{}"
+          - line_items_cart: "[]"
+          - country_id: AU
+          - subscriptions_only: <% ctx(param_line_items_raw_json).modify_line_items_raw_json %>
+          - result_summary: ""
+          - param_line_items_raw_json: "[object Object]"
+  # [30, 539]
+  process_line_items:
+    action: core.noop
+    next:
+      - do:
+          - Next_Step
+        when: <% int(ctx().new_quantity) > 0 and int(ctx().new_quantity) !=  int(ctx().old_quantity) %>
+      - do:
+          - format_successful_output
+        when: <% ctx().new_quantity = '' %>
+      - do:
+          - suspend_subscription
+        when: <% int(ctx().new_quantity) = 0 %>
+  # [27, 309]
+  Extract_Data:
+    action: core.noop
+    next:
+      - do:
+          - is_newqty_present
+        when: <% ctx().it < ctx().len_subscriptions_selected %>
+        publish:
+          - subscription_id: <% ctx().subscriptions_only[ctx().it].SubscriptionID %>
+          - new_quantity: <% ctx().subscriptions_only[ctx().it].get(NewQty, false) %>
+          - old_quantity: <% ctx().subscriptions_only[ctx().it].QTY %>
+          - subscription_name: <% ctx().subscriptions_only[ctx().it].Name %>
+          - new_autorenew: <% ctx().subscriptions_only[ctx().it].get(autoRenewEnabled, true) %>
+      # #629e47
+      - do:
+          - success
+        when: <% ctx().it >= ctx().len_subscriptions_selected %>
+  # [27, 742]
+  push_to_line_items_cart:
+    action: core.noop
+    next:
+      - do:
+          - Get_subscription_details
+        when: <% succeeded() %>
+  # [41, 1380]
+  format_successful_output:
+    action: core.noop
+    next:
+      - do:
+          - Extract_Data
+        when: <% succeeded() %>
+        publish:
+          - it: <% ctx().it + 1%>
+  # [26, 643]
+  Next_Step:
+    action: core.noop
+    next:
+      - when: <% failed() %>
+      - do:
+          - push_to_line_items_cart
+        when: <% succeeded() %>
+  # [393, 491]
+  success:
+    action: core.noop
+  # [34, 939]
+  Update_New_Quantity:
+    action: core.noop
+    next:
+      - do:
+          - update_auto_renew
+        when: <% succeeded() %>
+        publish:
+          - new_subscription: <% ctx().existing_subscription.set(quantity,ctx().new_quantity) %>
+  # [37, 1250]
+  update_subscription:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers/<% ctx().customer_tenant_id %>/subscriptions/<% ctx().subscription_id %>"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+      method: PATCH
+      body: "{{ ctx().new_subscription | to_json_string }}"
+      timeout: 120
+    next:
+      - do:
+          - format_successful_output
+        when: <% result().status_code = 200 or result().status_code = 202  %>
+        publish:
+          - result_summary: <% concat(ctx().result_summary,"Modify - ",ctx().subscription_name, " - Success\n") %>
+          - just_http_result: <% result() %>
+      # #d1583b
+      - do:
+          - failed
+        when: <% result().status_code != 200 and  result().status_code != 202 %>
+        publish:
+          - result_summary: <% concat(ctx().result_summary,"Modify - ",ctx().subscription_name, " - Failed - ", result().body.description ,"\n") %>
+          - just_http_result: <% result() %>
+  # [30, 410]
+  is_newqty_present:
+    action: core.noop
+    next:
+      - do:
+          - process_line_items
+        when: <% ctx().new_quantity != false %>
+      - do:
+          - format_successful_output
+        when: <% ctx().new_quantity = false %>
+  # [375, 1090]
+  suspend_subscription:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers/<% ctx().customer_tenant_id %>/subscriptions/<% ctx().subscription_id %>"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+      body: "{\n    \"Id\": \"<% ctx().subscription_id %>\",\n    \"Status\": \"suspended\",\n    \"AutoRenewEnabled\": false,\n}"
+      method: PATCH
+    next:
+      - do:
+          - format_successful_output
+        publish:
+          - result_summary: <% concat(ctx().result_summary,"Modify - ",ctx().subscription_name, " - Success\n") %>
+        when: <% result().status_code = 200 or result().status_code = 202  %>
+      # #d1583b
+      - do:
+          - failed
+        when: <% result().status_code != 200 and result().status_code != 202  %>
+        publish:
+          - result_summary: <% concat(ctx().result_summary,"Modify - ",ctx().subscription_name, " - Failed - ", result().body.description ,"\n") %>
+      - do:
+          - error
+        when: <% result().get('status_code', 999) = 999 %>
+        publish:
+          - result_summary: <% concat(ctx().result_summary,"Modify - ",ctx().subscription_name, " - Failed - ", task().get('result', 'No error description found')  ,"\n") %>
+    retry:
+      when: <% result().get('status_code', 999) != 200  and result().get('status_code', 999) != 202 %>
+      count: 2
+      delay: 10
+    delay: 10
+  # [333, 1368]
+  failed:
+    action: core.noop
+    next:
+      - do:
+          - format_successful_output
+  # [602, 1364]
+  error:
+    action: core.noop
+    next:
+      - do:
+          - format_successful_output
+  # [35, 1037]
+  update_auto_renew:
+    action: core.noop
+    next:
+      - do:
+          - print_log
+        publish:
+          - new_subscription: <% ctx().new_subscription.set(autoRenewEnabled,ctx().new_autorenew) %>
+  # [38, 1133]
+  print_log:
+    action: core.echo
+    input:
+      message: "<% ctx().new_quantity %>\n<% ctx().new_autorenew %>\n<% ctx().new_subscription %>"
+    next:
+      - do:
+          - update_subscription

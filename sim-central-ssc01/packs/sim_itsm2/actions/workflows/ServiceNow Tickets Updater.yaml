@@ -1,0 +1,67 @@
+version: 1.0
+tasks:
+  # [191, 0]
+  begin:
+    action: core.noop
+    next:
+      - do:
+          - start
+        publish:
+          - i: 0
+          - x: " "
+  # [191, 294]
+  change_property:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().msg %>
+      payload: "{{ ctx().Property }}"
+      table: sn_customerservice_general_case
+    next:
+      - do:
+          - concat1
+  # [191, 433]
+  output:
+    action: core.echo
+    input:
+      message: <% ctx().x %>
+    next:
+      - do:
+          - start
+        when: <% ctx().i < ctx().Ticket_IDs.len() %>
+  # [191, 97]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - next_ID
+        publish:
+          - msg: <% ctx().Ticket_IDs[ctx().i] %>
+        when: <
+  # [191, 195]
+  next_ID:
+    action: core.noop
+    next:
+      - do:
+          - change_property
+  # [533, 292]
+  concat1:
+    action: core.noop
+    next:
+      - do:
+          - task1
+        publish:
+          - x: <% concat(ctx().x,ctx().Ticket_IDs[ctx().i]," is updated","\n") %>
+  # [533, 440]
+  task1:
+    action: core.noop
+    next:
+      - do:
+          - output
+        publish:
+          - i: <% ctx().i+1 %>
+input:
+  - Ticket_IDs
+  - Property
+output:
+  - message: <% ctx().x.trim() %>

@@ -1,0 +1,19 @@
+version: 1.0
+tasks:
+  # [538, 144]
+  REST_retrieve_NIST_feed:
+    action: core.http
+    input:
+      url: "https://services.nvd.nist.gov/rest/json/cves/1.0/"
+    next:
+      - do:
+          - clean_data
+        publish:
+          - output_status_msg: "{%- set records = [] %}\n{%- for item in result().body.result.CVE_Items -%}\n{%- set cve = [] %}\n{{ 'id'|tojson+\":\"+ item.cve.CVE_data_meta.ID |tojson }}\n{{ records.append(cve) or \"\" }}\n{%- endfor -%}\n{{ records | tojson }}"
+          - output_status: "{{result().status_code}}"
+  # [468, 294]
+  clean_data:
+    action: core.noop
+output:
+  - output_status: <%ctx().output_status%>
+  - output_status_msg: <%ctx().output_status_msg%>

@@ -1,0 +1,16 @@
+---
+name: create_csv_file
+pack: sim_core
+description: |
+    Create CSV file from JSON content
+runner_type: python-script
+entry_point: create_csv_file.py
+parameters:
+  json_data:
+    type: array
+    description: The json data to be added to the blob file
+    required: True
+  file_path:
+    type: string
+    description: The path of the csv file
+    required: True

@@ -1,0 +1,27 @@
+version: 1.0
+tasks:
+  # [553, 154]
+  query_db:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: Select rtrim(invVCServerID) as invVCServerID, rtrim(vcName) as vcName, rtrim(vcLocation) as vcLocation, rtrim(vcIPAddress) as vcIPAddress, vcActive, rtrim(vcVersion) as vcVersion, vcDedicated FROM iaasVCServer WHERE vcActive = '1' ORDER BY invVCServerID
+      connection: cmdb_Ethoria
+    next:
+      - do:
+          - transform
+        publish:
+          - data: null
+  # [575, 337]
+  transform:
+    action: core.noop
+    next:
+      - do:
+          - end
+        publish:
+          - transformresult: "{%- set backupClient = [] %}\n{%- for client in ctx().data.client -%}\n{{ backupClient.append(client) or \"\" }}\n{{ backupClient.append(\"test\",\"testing\")}}\n{%- endfor -%}\n{{ backupClient | list | tojson }}"
+  # [623, 506]
+  end:
+    action: core.noop
+output:
+  - output_transform: "<%ctx().transformresult%>"

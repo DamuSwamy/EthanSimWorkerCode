@@ -1,0 +1,169 @@
+version: 1.0
+tasks:
+  # [259, 129]
+  fetch_email_objectid:
+    action: sim_activedirectory.fetch_email_object_ad_user
+    input:
+      ad_host: <% ctx().ad_host %>
+      display_name: <% ctx().display_user %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+    next:
+      # #629e47
+      - do:
+          - change_password
+        publish:
+          - email: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
+          - objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
+        when: <% result().output.task_std_succeeded = true %>
+      - do:
+          - incorrect_credentials
+        when: <% result().output.task_std_succeeded = false %>
+        publish:
+          - fetch_email_exit_code: <% result().output.task_std_ret_code   %>
+  # [259, 267]
+  change_password:
+    action: sim_activedirectory.change_pwd_ad_user
+    next:
+      # #629e47
+      - do:
+          - disable_user
+        publish:
+          - change_password: <% dict(task_name=>"change_password", expected_returncode=>0, actual_returncode=>result().output.task_std_ret_code) %>
+    input:
+      ad_host: <% ctx().ad_host %>
+      objectid: <% ctx().objectid %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+      random_text: <% ctx().random_text  %>
+  # [261, 406]
+  disable_user:
+    action: sim_activedirectory.disable_ad_user
+    next:
+      # #629e47
+      - do:
+          - update_desc_ad_user
+        publish:
+          - disable_user: <% dict(task_name=>"disable_user", expected_returncode=>0, actual_returncode=>result().output.task_std_ret_code) %>
+    input:
+      ad_host: <% ctx().ad_host %>
+      objectid: <% ctx().objectid %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+  # [261, 531]
+  update_desc_ad_user:
+    action: sim_activedirectory.update_description_ad_user
+    next:
+      # #629e47
+      - do:
+          - remove_membs
+        publish:
+          - update_desc: <% dict(task_name=>"update_desc", expected_returncode=>0, actual_returncode=>result().output.task_std_ret_code) %>
+    input:
+      ad_host: <% ctx().ad_host %>
+      objectid: <% ctx().objectid %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+      new_description: User offboarded as part of Service Request <%  ctx().ticket_id %>
+  # [263, 664]
+  remove_membs:
+    action: sim_activedirectory.remove_memberships_ad_user
+    next:
+      # #629e47
+      - do:
+          - clear_manager
+        publish:
+          - remove_membs: <% dict(task_name=>"remove_membs", expected_returncode=>0, actual_returncode=>result().output.task_std_ret_code)  %>
+    input:
+      ad_host: <% ctx().ad_host %>
+      objectid: <% ctx().objectid %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+  # [263, 788]
+  clear_manager:
+    action: sim_activedirectory.clear_property_ad_user
+    next:
+      # #629e47
+      - do:
+          - move_ou
+        publish:
+          - clear_manager: <% dict(task_name=>"clear_manager", expected_returncode=>0, actual_returncode=>result().output.task_std_ret_code) %>
+    input:
+      ad_host: <% ctx().ad_host %>
+      objectid: <% ctx().objectid %>
+      properties_to_clear: Manager
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+  # [263, 916]
+  move_ou:
+    action: sim_activedirectory.move_ou_ad_user
+    next:
+      # #629e47
+      - do:
+          - hide_gal
+        publish:
+          - move_ou: <% dict(task_name=>"move_ou", expected_returncode=>0, actual_returncode=>result().output.task_std_ret_code) %>
+    input:
+      ad_host: <% ctx().ad_host %>
+      objectid: <% ctx().objectid %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+      new_ou: <% ctx().new_ou %>
+  # [264, 1143]
+  build_execution_log:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - print_execution_log
+        publish:
+          - execution_log: <%  [ ctx(change_password), ctx(disable_user),  ctx(update_desc), ctx(remove_membs), ctx(clear_manager), ctx(move_ou), ctx(hide_gal) ] %>
+  # [264, 1263]
+  print_execution_log:
+    action: core.echo
+    input:
+      message: "\"<% ctx().execution_log %>\""
+  # [259, 11]
+  random_text:
+    action: core.local
+    input:
+      cmd: openssl rand -base64 14
+    next:
+      # #629e47
+      - do:
+          - fetch_email_objectid
+        publish:
+          - random_text: <% result().stdout %>
+  # [603, 554]
+  incorrect_credentials:
+    action: core.noop
+    next:
+      - do:
+          - print_execution_log
+        publish:
+          - execution_log: [ { "task_name": "get_email_objectid",  "expected_returncode": 0, "actual_returncode": <% ctx().fetch_email_exit_code %> }]
+  # [264, 1028]
+  hide_gal:
+    action: sim_activedirectory.hide_address_gal
+    input:
+      ad_host: <% ctx().ad_host %>
+      objectid: <% ctx().objectid %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+    next:
+      # #629e47
+      - do:
+          - build_execution_log
+        publish:
+          - hide_gal: <% dict(task_name=>"hide_gal", expected_returncode=>0, actual_returncode=>result().output.task_std_ret_code) %>
+input:
+  - ad_host
+  - username
+  - password
+  - display_user
+  - ticket_id
+  - new_description
+  - new_ou
+  - properties_to_clear
+output:
+  - execution_log: <% ctx().execution_log %>

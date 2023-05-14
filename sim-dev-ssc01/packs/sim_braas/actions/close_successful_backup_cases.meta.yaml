@@ -1,0 +1,11 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: close_successful_backup_cases
+entry_point: workflows/close_successful_backup_cases.yaml
+description: close existing cases where backup success for client today
+parameters:
+  case_number:
+    type: string
+    description: servicenow case object 
+    required: true

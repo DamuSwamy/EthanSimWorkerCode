@@ -1,0 +1,47 @@
+version: 1.0
+
+input:
+  - db_connection
+  - subscription_list
+
+vars:
+  - update_index: 0
+  - subscriptions: []
+
+output:
+  - update_list: <% ctx().subscriptions %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Update_PartnerCustomer_Subscription
+
+  Update_PartnerCustomer_Subscription:
+    action: sql.update
+    input:
+      connection: <% ctx().db_connection %>
+      table: "PartnerCustomerSubscription"
+      where:
+        CustomerId: <% ctx().subscription_list[ctx().update_index].CustomerId %>
+        id: <% ctx().subscription_list[ctx().update_index].id %>
+      update:
+        Status: <% ctx().subscription_list[ctx().update_index].Status %>
+        Quantity: <% ctx().subscription_list[ctx().update_index].Quantity %>
+    next:
+      - when: <% ctx().update_index < (len(ctx().subscription_list) - 1) %>
+        publish:
+          - subscriptions: <% ctx().subscriptions.append(ctx().subscription_list[ctx().update_index].id) %>
+          - update_index: <% ctx().update_index + 1 %>
+        do:
+          - Update_PartnerCustomer_Subscription
+      - when: <% ctx().update_index >= (len(ctx().subscription_list) - 1) %>
+        publish:
+          - subscriptions: <% ctx().subscriptions.append(ctx().subscription_list[ctx().update_index].id) %>
+        do:
+          - End
+
+  End:
+    action: core.noop

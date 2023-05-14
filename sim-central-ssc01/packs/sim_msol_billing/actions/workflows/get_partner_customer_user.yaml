@@ -1,0 +1,159 @@
+version: 1.0
+
+input:
+  - tenant_id
+  - password_id
+  - db_connection
+  - batch_size
+
+vars:
+  - startIndex: 0
+  - counter: 1
+  - total_failures: []
+ 
+output:
+  - status: <% ctx().total_failures %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - current_date: <% now(offset=>localtz()).format("%d") %>
+        do:
+          - Get_AuthToken
+  # [329, 104]
+  Get_AuthToken:
+    action: sim_msol_billing.get_auth_token_v2
+    input:
+      password_id: <% ctx().password_id %>
+      tenant_id: <% ctx().tenant_id %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - auth_token: <% result().output.token %>
+          - current_date: <% now(offset=>localtz()).format("%d") %>
+        do:
+          - Delete_From_PartnerCustomerUsers_Temp
+      - when: <% ctx().current_date = "01" %>
+        do:
+          - Archive_Process
+      - when: <% failed() %>
+        do: fail
+
+  Get_PartnerCustomer:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers"
+      method: GET
+      headers:
+        Content-Type: application/json
+        Authorization: "Bearer <% ctx().auth_token %>"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - customer_list: <% result().body.items %>
+          - total_customers: <% result().body.totalCount %>
+        do:
+          - To_CustomerList_Expected_Format
+      - when: <% failed() %>
+        do: fail
+
+  To_CustomerList_Expected_Format:
+    action: sim_msol_billing.convert_result_to_list
+    input:
+      customers: <% ctx().customer_list %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - formatted_result: <% result().result %>
+        do:
+          - Get_PartnerCustomer_Users
+
+  # [914, 217]
+  Delete_From_PartnerCustomerUsers_Temp:
+    action: sql.delete
+    input:
+      table: PartnerCustomerUser_Temp
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Get_PartnerCustomer
+
+  Get_PartnerCustomer_Users:
+    action: sim_msol_billing.return_customer_users
+    input:
+      customers: <% ctx().formatted_result %>
+      auth_token: <% ctx().auth_token %>
+      start: <% ctx().startIndex %>
+      end: <% ctx().batch_size %>
+      db_connection: <% ctx().db_connection %>
+      timeout: 900
+    next:
+      - when: <% succeeded() and ctx().startIndex < len(ctx().formatted_result) %>
+        publish:
+          - output: <% switch(isList(result().result) => result().result, true => []) %>
+          - startIndex: <% ctx().batch_size %>
+          - batch_size: <% ctx().batch_size + (ctx().startIndex / ctx().counter) %>
+          - counter: <% ctx().counter + 1 %>
+          - total_failures: <% ctx().output + ctx().total_failures %>
+        do:
+          - Get_PartnerCustomer_Users
+      - when: <% succeeded() and ctx().startIndex >= len(ctx().formatted_result) %>
+        do:
+          - Update_PartnerCustomer_Users
+          - Purge_Executions_Core_Local
+          - Purge_Executions_SQL
+      - when: <% failed() %>
+        do: fail
+
+  Purge_Executions_Core_Local:
+    delay: 10
+    action: core.local
+    input:
+      cmd: /opt/stackstorm/st2/bin/st2-purge-executions --config-file /etc/st2/st2.conf --timestamp="<% (now(offset=>localtz())).format("%Y-%m-%dT%H:%M:%S.%fZ") %>" --action-ref="core.local"
+
+  Purge_Executions_SQL:
+    delay: 30
+    action: core.local
+    input:
+      cmd: /opt/stackstorm/st2/bin/st2-purge-executions --config-file /etc/st2/st2.conf --timestamp="<% (now(offset=>localtz())).format("%Y-%m-%dT%H:%M:%S.%fZ") %>" --action-ref="sql.insert_bulk"
+
+  Update_PartnerCustomer_Users:
+    action: sql.query
+    input:
+      connection: <% ctx().db_connection %>
+      query: "UPDATE PartnerCustomerUser SET inup=0, LogDate=GETDATE() FROM PartnerCustomerUser a INNER JOIN PartnerCustomerUser_Temp b ON a.CustomerID = b.CustomerID AND a.UserId = b.UserId"
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Insert_PartnerCustomers_Users
+      - when: <% failed() %>
+        do: fail
+
+  Insert_PartnerCustomers_Users:
+    action: sql.query
+    input:
+      timeout: 900
+      connection: <% ctx().db_connection %>
+      query: "INSERT INTO PartnerCustomerUser ([CustomerID], [DisplayName], [FirstName], [ImmutableId], [LastName], [LastDirectorySyncTime], [PhoneNumber], [SoftDeletionTime], [State], [UsageLocation], [UserDomainType], [UserId], [UserPrincipalName], [InUp], [LogDate]) SELECT a.[CustomerID], a.[DisplayName], a.[FirstName], a.[ImmutableId], a.[LastName], a.[LastDirectorySyncTime], a.[PhoneNumber], a.[SoftDeletionTime], a.[State], a.[UsageLocation], a.[UserDomainType], a.[UserId], a.[UserPrincipalName], 1, GETDATE() FROM PartnerCustomerUser_temp a LEFT JOIN PartnerCustomerUser b ON a.CustomerId = b.CustomerId AND a.UserId = b.UserId WHERE b.CustomerId is null"
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  Archive_Process:
+    action: sql.query
+    input:
+      connection: <% ctx().db_connection %>
+      query: "INSERT INTO PartnerCustomerUser_Archived SELECT [CustomerID], [DisplayName], [FirstName], [ImmutableId], [LastName], [LastDirectorySyncTime], [PhoneNumber], [SoftDeletionTime], [State], [UsageLocation], [UserDomainType], [UserId], [UserPrincipalName], inup, logDate, (SELECT Billing_Period From Bill_Cycle_Status Where Cycle_State = 'In Progress') FROM PartnerCustomerUser"
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  End:
+    action: core.noop

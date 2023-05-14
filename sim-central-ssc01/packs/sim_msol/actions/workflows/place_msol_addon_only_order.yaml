@@ -1,0 +1,121 @@
+version: 1.0
+input:
+  - tenant_id
+  - password_id
+  - param_line_items_raw_json
+  - customer_tenant_id
+  - auth_token
+output:
+  # - len_base_products_selected: <% ctx().len_base_products_selected %>
+  # - base_products_only: <%ctx().base_products_only %>
+  # - line_items_cart: <%ctx().line_items_cart %>
+  #   - order_details: <% ctx().order_details %>
+  #   - order_line_items: <% ctx().order_line_items %>
+  #   - order_id: <% ctx().order_id %>
+  #   - order_output: <% ctx().order_output %>
+  - result_summary: <%ctx().result_summary %>
+tasks:
+  # [28, 716]
+  Purchase_Addon:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers/<% ctx().customer_tenant_id %>/orders/<% ctx().base_order_id[0] %>"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+      body: "{\n \"ReferenceCustomerId\": \"<% ctx().customer_tenant_id %>\",\n  \"LineItems\": <% ctx().line_items_cart %>,\n   \"Attributes\": {\n        \"ObjectType\": \"Order\"\n    }\n}"
+      method: PATCH
+    next:
+      # #629e47
+      - do:
+          - format_successful_output
+        when: <% result().status_code = 200 %>
+        publish:
+          - result_summary: <% concat(ctx().result_summary,"New Addon - ",ctx().product_name, " - Success\n") %>
+      - do:
+          - format_failed_output
+        when: <% result().status_code != 200 %>
+        publish:
+          - result_summary: <% concat(ctx().result_summary,"New Addon - ",ctx().product_name, " - Failed - ", result().body.description, "\n") %>
+  # [26, 200]
+  initialize_variables:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - Extract_Data
+        when: <% succeeded() and ctx(param_line_items_raw_json).new_line_items_raw_json != "" %>
+        publish:
+          - it: 0
+          - len_addon_products_selected: <% len(ctx(param_line_items_raw_json).new_line_items_raw_json.where($.ProductType= 'Add-on')) %>
+          - line_item: {}
+          - line_items_cart: []
+          - country_id: AU
+          - addon_products_only: <% ctx(param_line_items_raw_json).new_line_items_raw_json.where($.ProductType= 'Add-on') %>
+          - len_offers_selected: 0
+          - result_summary: ""
+      - do:
+          - success
+        when: <% ctx(param_line_items_raw_json).new_line_items_raw_json = "" %>
+        publish:
+          - result_summary: ""
+  # [26, 414]
+  process_line_items:
+    action: core.noop
+    next:
+      - do:
+          - Next_Step
+        when: <% succeeded() %>
+        publish:
+          - base_subscription_id: <% ctx().addon_products_only[ctx().it].BaseList.where($.OfferID = ctx().base_offer_id).select($.SubscriptionID) %>
+          - base_order_id: <% ctx().addon_products_only[ctx().it].BaseList.where($.OfferID = ctx().base_offer_id).select($.OrderID) %>
+  # [27, 309]
+  Extract_Data:
+    action: core.noop
+    next:
+      - do:
+          - process_line_items
+        when: <% ctx().it < ctx().len_addon_products_selected %>
+        publish:
+          - addon_offer_id: <% ctx().addon_products_only[ctx().it].AddOnOfferID %>
+          - quantity: <% ctx().addon_products_only[ctx().it].Qty %>
+          - billing_cycle: monthly
+          - term_duration: P1Y
+          - product_name: <% ctx().addon_products_only[ctx().it].AddOn %>
+          - base_offer_id: <% ctx().addon_products_only[ctx().it].OfferID %>
+      # #629e47
+      - do:
+          - success
+        when: <% ctx().it >= ctx().len_addon_products_selected %>
+  # [27, 619]
+  push_to_line_items_cart:
+    action: core.noop
+    next:
+      - do:
+          - Purchase_Addon
+        when: <% succeeded() %>
+        publish:
+          - line_items_cart: <% ctx().get('line_items_cart' , []) + [ ctx(line_item)] %>
+          - it: <% ctx().it + 1%>
+  # [27, 813]
+  format_successful_output:
+    action: core.noop
+    next:
+      - do:
+          - Extract_Data
+        when: <% succeeded() %>
+  # [26, 512]
+  Next_Step:
+    action: core.noop
+    next:
+      - when: <% failed() %>
+      - do:
+          - push_to_line_items_cart
+        when: <% succeeded() %>
+        publish:
+          - line_item: <% dict(LineItemNumber=> ctx().it, OfferId=>ctx().addon_offer_id, ParentSubscriptionId=>ctx().base_subscription_id[0],quantity=>ctx().quantity) %>
+  # [343, 421]
+  success:
+    action: core.noop
+  # [283, 820]
+  format_failed_output:
+    action: core.noop

@@ -1,0 +1,13 @@
+---
+ref: sim_networks
+name : sim_networks
+description : st2 content pack containing Network integrations modified for SIM
+keywords:
+  - network
+  - compliance
+version: 1.0.0
+python_versions:
+  - "3"
+author : Ethan Group
+email : ITT@essist.com.au
+

@@ -1,0 +1,23 @@
+---
+ssl_verify:
+  description: "Verify SSL certificate used with DPA Server."
+  type: boolean
+  default: True
+
+dpa:
+  type: "object"
+  properties:
+    host:
+      description: "Hostname or IP address of DPA Server."
+      type: "string"
+      required: true
+    username:
+      description: "Authentication user-id for the DPA Server."
+      type: "string"
+      required: true
+    password:
+      description: "The password of the specified user."
+      type: "string"
+      secret: true
+      required: true
+  additionalProperties: false

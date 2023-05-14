@@ -1,0 +1,23 @@
+pack: sim_msol_billing
+enabled: true
+runner_type: "python-script"
+name: return_customer_subscribed_skus
+entry_point: "return_customer_subscribed_skus.py"
+description: Convert the given array objects to expected format for db insert
+parameters:
+  customers:
+    type: array
+    description: List of customer retrieved from partner connect customers api
+    required: true
+  auth_token:
+    type: string
+    description: Auth token for the partner connect 
+    required: true
+  start:
+    type: integer
+    description: start index
+    required: true
+  end:
+    type: integer
+    description: end index
+    required: true

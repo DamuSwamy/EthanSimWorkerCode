@@ -1,0 +1,14 @@
+pack: sim_meraki_pact
+enabled: true
+runner_type: orquesta
+name: isolate_meraki_pact_asia
+entry_point: workflows/isolate_meraki_pact_asia.yaml
+description: Isolate a PACT Asia Meraki Site
+parameters:
+  action:
+    type: string
+    description: Action to be Performed
+    required: true
+  sitename:
+    type: string
+    description: Sitename to Isolate/Restore

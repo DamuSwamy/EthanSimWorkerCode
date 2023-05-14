@@ -1,0 +1,13 @@
+version: 1.0
+tasks:
+  # [487, 92]
+  date:
+    action: core.local
+    input:
+      cmd: date
+    next:
+      - do:
+          - end
+  # [494, 310]
+  end:
+    action: core.noop

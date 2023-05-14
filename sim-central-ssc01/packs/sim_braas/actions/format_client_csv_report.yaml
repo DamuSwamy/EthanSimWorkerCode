@@ -1,0 +1,15 @@
+pack: sim_braas
+enabled: true
+runner_type: "python-script"
+name: format_client_csv_report
+entry_point: "format_client_csv_report.py"
+description: contruct client list from the dpa report
+parameters:
+  dpa_report:
+    type: string
+    description: name of the backup client
+    required: true
+  report_name:
+    type: string
+    description: name of DPA report
+    required: true

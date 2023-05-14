@@ -1,0 +1,53 @@
+---
+default:
+  description: "Default database connection to use"
+  type: "string"
+  required: false
+  secret: false
+  
+connections:
+  description: "Database connection parameters"
+  type: "object"
+  required: false
+  items:
+    type: "object"
+    required: true
+    properties:
+      server:
+        description: "Database hostname"
+        type: "string"
+        secret: false
+        required: true
+      database:
+        description: "Database name - connection name used if not set"
+        type: "string"
+        secret: false
+        required: false
+      user:
+        description: "Database user."
+        type: "string"
+        secret: false
+        required: true
+      password:
+        description: "Password for MS-SQL."
+        type: "string"
+        secret: true
+        required: true
+output_csv:
+  description: "Output file parameters"
+  type: "object"
+  required: false
+  additionalProperties: false
+  properties:
+    file_prefix:
+      description: "Filename prefix to use - default mssql-query"
+      type: "string"
+      default: "mssql-query"
+    file_suffix:
+      description: "File suffix to use - default .csv"
+      type: "string"
+      default: ".csv"
+    directory:
+      description: "Directory to use. Will use tempfile if `null`"
+      type: "string"
+      default: null

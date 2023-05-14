@@ -1,0 +1,6 @@
+pack: sim_o365
+enabled: true
+runner_type: orquesta
+name: get_NCE_price_list
+entry_point: workflows/get_NCE_price_list.yaml
+description: Get NCE price list from partner portal

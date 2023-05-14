@@ -1,0 +1,125 @@
+version: 1.0
+tasks:
+  # [220, 15]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - check_inputs
+        publish:
+          - i: 0
+          - x: " "
+          - count: <% len(ctx().input) %>
+          - y: " "
+          - z: " "
+          - w: " "
+  # [221, 135]
+  check_inputs:
+    action: core.noop
+    next:
+      - do:
+          - next
+  # [220, 241]
+  next:
+    action: core.noop
+    next:
+      - do:
+          - check
+  # [684, 992]
+  email_supriya:
+    action: core.sendmail
+    input:
+      to: supriya.kadam@ethan.com.au
+      subject: Count
+      body: count is less than two
+  # [171, 979]
+  email_aman:
+    action: core.sendmail
+    input:
+      to: aman.mujawar@ethan.com.au
+      subject: Count
+      body: Count is greater than two
+  # [266, 871]
+  add_surname:
+    action: core.noop
+    next:
+      - do:
+          - email_aman
+  # [570, 869]
+  do_full_name:
+    action: core.noop
+    next:
+      - do:
+          - email_supriya
+  # [232, 361]
+  check:
+    action: core.noop
+    next:
+      - do:
+          - aman
+        when: <% ctx().input[ctx().i] = "aman" %>
+        publish:
+          - x: <% concat(ctx().x,ctx().input[ctx().i],"mujawar") %>
+      - do:
+          - supriya
+        when: <% ctx().input[ctx().i] = "supriya" %>
+        publish:
+          - x: <% concat(ctx().x,ctx().input[ctx().i],"kadam") %>
+      - do:
+          - damu
+        when: <% ctx().input[ctx().i] = "damu" %>
+        publish:
+          - x: <% concat(ctx().x,ctx().input[ctx().i],"swamy") %>
+      - do:
+          - other
+        when: <% ctx().input[ctx().i] != "damu" or "supriya" or "aman" %>
+        publish:
+          - x: <% concat(ctx().x,ctx().input[ctx().i],"unknown") %>
+  # [694, 522]
+  other:
+    action: core.noop
+    next:
+      - do:
+          - skip
+  # [0, 485]
+  aman:
+    action: core.noop
+    next:
+      - do:
+          - skip
+  # [188, 523]
+  supriya:
+    action: core.noop
+    next:
+      - do:
+          - skip
+  # [431, 535]
+  damu:
+    action: core.noop
+    next:
+      - do:
+          - skip
+  # [350, 657]
+  skip:
+    action: core.noop
+    next:
+      - do:
+          - output
+      - do:
+          - check_inputs
+        publish:
+          - i: <% ctx().i+1 %>
+  # [367, 769]
+  output:
+    action: core.echo
+    next:
+      - do:
+          - add_surname
+        when: <% ctx().count > 2 %>
+      - do:
+          - do_full_name
+        when: <% ctx().count <= 2 %>
+    input:
+      message: "\" <% ctx().input %> \""
+input:
+  - input

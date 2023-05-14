@@ -1,0 +1,59 @@
+pack: ethan_core
+enabled: true
+runner_type: orquesta
+name: user_offboard_exchange_process
+entry_point: workflows/user_offboard_exchange_process.yaml
+description: CCDBB User Offboarding Exchange Procedure
+parameters:
+  user_email:
+    type: string
+    description: User Email
+    default: sim.testuser01@etest.systems
+    required: true
+  delegate_email:
+    type: string
+    description: Delegate email address
+    default: Teams.Test1@etest.systems
+  forward_email:
+    type: string
+    description: Forward email address
+    default: Teams.Test1@etest.systems
+  delegation_required:
+    type: boolean
+    description: Delegation Required
+    default: true
+    required: true
+  ad_host:
+    type: string
+    description: AD host to connect to
+    required: true
+  username:
+    type: string
+    description: username
+    required: true
+  password:
+    type: string
+    description: Password
+    required: true
+    secret: true
+  organisation:
+    type: string
+    description: Organisation
+    required: true
+  app_id:
+    type: string
+    description: app_id for exchange online module integration
+    required: true
+  type:
+    type: string
+    description: Type of Mailbox
+    required: true
+  certificate_file_path:
+    description: certificate_file_path
+    type: string
+    default: "C:/Certs/Sim-Offboard-eCorp.pfx"
+    required: true
+  admin_url:
+    type: string
+    description: Admin sharepoint URL for one drive delegation
+    default: "https://etestsystems-admin.sharepoint.com"

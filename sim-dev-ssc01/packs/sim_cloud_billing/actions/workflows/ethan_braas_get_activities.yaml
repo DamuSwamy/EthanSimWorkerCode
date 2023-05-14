@@ -1,0 +1,149 @@
+version: 1.0
+
+input:
+  - cloud_db_connection
+  - billing_db_connection
+  - braas_server
+
+vars:
+  - result: []
+
+output:
+  - result: "Inserted <% len(ctx().result) %> records"
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Get_AccessToken
+      - when: <% failed() %>
+        do:
+          - SQL_Select_Cloud_BraaS_Latest_Activities
+
+  Get_AccessToken:
+    action: sim_braas_core.get_access_token
+    input:
+      braas: <% ctx().braas_server %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - access_token: <% result().result %>
+          - start_date: <% (now(offset=>localtz()) - timespan(days => 1)).format("%Y-%m-%d") %>
+          - start_time: "05:00:00"
+          - latest_scan_date: "<% ctx().start_date %> <% ctx().start_time %>"
+        do:
+          - Get_Live_Activities
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Cloud_BraaS_Latest_Activities:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "SELECT TOP 1 * FROM Braas_Activities ORDER BY id DESC"
+    next:
+      - when: <% succeeded() and len(result().result) > 0 %>
+        publish:
+          - cloud_braas_latest_activity_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+          - latest_scan_date: <% ctx().cloud_braas_latest_activity_db_data[0].scheduleDate %>
+        do:
+          - Get_AccessToken
+      - when: <% succeeded() and len(result().result) = 0 %>
+        publish:
+          - start_date: <% (now(offset=>localtz()) - timespan(days => 1)).format("%Y-%m-%d") %>
+          - start_time: "05:00:00"
+          - latest_scan_date: "<% ctx().start_date %> <% ctx().start_time %>"
+        do:
+          - Get_AccessToken
+      - when: <% failed() %>
+        do: fail
+
+  Get_Live_Activities:
+    action: sim_braas_core.get_activities
+    input:
+      braas: <% ctx().braas_server %>
+      access_token: <% ctx().access_token %>
+      size: 1000
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - output: <% switch(isList(result().result) => result().result, true => []) %>
+          - activities: <% ctx().output %>
+        do:
+          - Check_For_Live_Records
+      - when: <% failed() %>
+        do: fail
+
+  Check_For_Live_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().activities) > 0 %>
+        do:
+          - SQL_Select_Cloud_Braas_Activities
+      - when: <% len(ctx().activities) = 0 %>
+        publish:
+          - scan_log: <% dict(system_id=>0, system_type=>'BRaaS', system_name=>ctx().braas_server, num_of_records=>len(ctx().activities), additional_info=>'Activities') %>
+        do:
+          - Insert_Scanned_Data
+          - End
+
+  SQL_Select_Cloud_Braas_Activities:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "SELECT id FROM Braas_Activities WHERE scheduleDate > '<% ctx().latest_scan_date %>'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - braas_activity_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+          - activity_str: "{%- set accumulator = namespace(found='no') -%}{%- set resourceArr = [] -%}{%- for activity in ctx().activities -%}{%- set accumulator.found = 'no' -%}{%- for db_activity in ctx().braas_activity_db_data if activity['id']|string == db_activity['id']|string -%}{%- set accumulator.found = 'yes' -%}{%- endfor -%}{%- if accumulator.found == 'no' -%}{{ resourceArr.append(activity) or '' }}{%- endif -%}{%- endfor -%}{{resourceArr | tojson}}"
+          - result: "{{ ctx().activity_str | from_json_string  }}"
+        do:
+          - Check_For_Records
+      - when: <% failed() %>
+        do: fail
+
+  Check_For_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().result) > 0 %>
+        publish:
+          - last_event_date: <% (now(offset=>localtz())).format("%Y-%m-%d %H:%M:%S") %>
+          - scan_log: <% dict(system_id=>0, system_type=>'BRaaS', system_name=>ctx().braas_server, num_of_records=>len(ctx().result), last_event_at=>ctx().last_event_date, additional_info=>'Activities') %>
+        do:
+          - Insert_Into_Braas_Activities
+          - Insert_Scanned_Data
+      - when: <% len(ctx().result) = 0 %>
+        publish:
+          - scan_log: <% dict(system_id=>0, system_type=>'BRaaS', system_name=>ctx().braas_server, num_of_records=>len(ctx().result), additional_info=>'Activities') %>
+        do:
+          - Insert_Scanned_Data
+          - End
+
+  Insert_Into_Braas_Activities:
+    action: sql.insert_bulk
+    input:
+      table: "Braas_Activities"
+      data: <% ctx().result %>
+      connection: <% ctx().cloud_db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  Insert_Scanned_Data:
+    action: sql.insert_bulk
+    input:
+      table: "IaaSScanLog"
+      data: <% list(ctx().scan_log) %>
+      connection: <% ctx().billing_db_connection %>
+    next:
+      - when: <% failed() %>
+        do: noop
+
+  End:
+    action: core.noop

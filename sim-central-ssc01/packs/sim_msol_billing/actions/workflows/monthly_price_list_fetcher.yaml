@@ -1,0 +1,205 @@
+version: 1.0
+vars:
+  - Market: "AU"
+  - PricesheetView: "updatedlicensebased"
+output:
+  - process_status: "successfully completed"
+tasks:
+  # [364, 160]
+  Get_Access_Token_from_Microsoft_Online_API:
+    action: core.http
+    input:
+      url: "https://login.microsoftonline.com/<% ctx().tenant_id %>/oauth2/token"
+      body: "client_id=<% ctx().client_id %>&client_secret=<% ctx().client_secret %>&grant_type=refresh_token&resource=https://api.partner.microsoft.com&refresh_token=<% ctx().refresh_token %>"
+      method: GET
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - auth_token: <% result().body. access_token %>
+          - refresh_token: <% result().body.refresh_token %>
+        do:
+          - Set_Refresh_Token
+  # [364, 30]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - Get_Access_Token_from_Microsoft_Online_API
+        publish:
+          - client_id: 4bacc579-560f-4260-9d24-7eb27cb2dc36
+          - client_secret: e058Q~zTRlKzT26RDkYyNmGAVIigaCVQMQaNcbvI
+          - refresh_token: <% st2kv('system.msol_sandbox_refresh_token', decrypt=>true) %>
+          - tenant_id: 04470183-206f-4e50-a7da-f18dd8066ef9
+  # [544, 552]
+  get_offer_matrix:
+    action: core.http
+    input:
+      url: "https://api.partner.microsoft.com/v1.0/sales/offermatrix(Month='<% (now(offset=>localtz())).format(\"%Y%m\") %>')/$value"
+      headers:
+        Content-Type: text/csv
+        Content-Disposition: attachment ; filename=price_list.csv.zip
+        Authorization: Bearer <%ctx().auth_token%>
+        Accept-Encoding: deflate
+        Accept: application/json
+      method: GET
+    next:
+      - do:
+          - current_price_list
+        publish:
+          - offer_matrix_output: <% result().body %>
+  # [544, 406]
+  get_price_list:
+    action: core.http
+    input:
+      url: "https://api.partner.microsoft.com/v1.0/sales/pricesheets(Market='AU',PricesheetView='updatedlicensebased')/$value?timeline=current"
+      headers:
+        Content-Type: text/csv
+        Content-Disposition: attachment ; filename=price_list.csv.zip
+        Authorization: Bearer <%ctx().auth_token%>
+        Accept-Encoding: deflate
+        Accept: application/json
+      method: GET
+    next:
+      - do:
+          - get_offer_matrix
+        publish:
+          - price_list_output: <% result().body %>
+  # [365, 290]
+  Set_Refresh_Token:
+    action: sim_msol_billing.get_config_key
+    input:
+      value: <%  ctx().refresh_token %>
+      log_level: DEBUG
+      key: msol_sandbox_refresh_token
+    next:
+      - do:
+          - get_price_list
+        when: <% 1 != 1%>
+      - do:
+          - current_price_list
+        when: <% 1 = 1%>
+  # [28, 887]
+  end:
+    action: core.noop
+  # [364, 658]
+  current_price_list:
+    action: sim_msol_billing.get_price_list
+    input:
+      auth_token: <%ctx().auth_token%>
+    next:
+      - do:
+          - current_offer_matrix
+  # [364, 774]
+  current_offer_matrix:
+    action: sim_msol_billing.get_offer_matrix
+    input:
+      log_level: DEBUG
+      auth_token: <%ctx().auth_token%>
+      month: <% (now(offset=>localtz())).format("%Y%m") %>
+    next:
+      - do:
+          - replace_column
+  # [707, 789]
+  get_price_list_json:
+    action: sim_core.csv_reader
+    input:
+      log_level: DEBUG
+      csv_path: /home/amujawar/sheets.csv
+    next:
+      - do:
+          - get_offer_matrix_json
+        publish:
+          - price_list_object: <% result().result %>
+  # [1019, 472]
+  get_offer_matrix_json:
+    action: sim_core.csv_reader
+    input:
+      log_level: DEBUG
+      csv_path: /home/skadam/sheets.csv
+    next:
+      - do:
+          - remove_junk
+        publish:
+          - offer_matrix_object: <% result().result %>
+  # [626, 998]
+  insert_into_price_list:
+    action: sql.insert_bulk
+    input:
+      log_level: DEBUG
+      data: <% ctx().price_list_object %>
+      table: MSOL_NCE_PriceList
+      connection: billing
+    next:
+      - do:
+          - insert_into_offer_matrix
+  # [338, 887]
+  insert_into_offer_matrix:
+    action: sql.insert_bulk
+    input:
+      log_level: DEBUG
+      table: MSOL_NCE_Offer_Matrix
+      data: <%ctx().offer_matrix_object%>
+      connection: billing
+    next:
+      - do:
+          - end
+  # [708, 662]
+  replace_column:
+    action: core.local
+    input:
+      cmd: sed -i 's/ERP Price/ERP_Price/g' /home/amujawar/sheets.csv
+    next:
+      - do:
+          - get_price_list_json
+  # [1025, 574]
+  remove_junk:
+    action: core.noop
+    next:
+      - do:
+          - archive1
+  # [1026, 674]
+  archive1:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: INSERT INTO MSOL_NCE_PriceList_Backup (ProductTitle,ProductId,SkuId,SkuTitle,Publisher,SkuDescription,UnitOfMeasure,TermDuration,BillingPlan,Market,Currency,UnitPrice,PricingTierRangeMin,PricingTierRangeMax,EffectiveStartDate,EffectiveEndDate,Tags,ERP_Price,Segment) SELECT ProductTitle,ProductId,SkuId,SkuTitle,Publisher,SkuDescription,UnitOfMeasure,TermDuration,BillingPlan,Market,Currency,UnitPrice,PricingTierRangeMin,PricingTierRangeMax,EffectiveStartDate,EffectiveEndDate,Tags,ERP_Price,Segment FROM MSOL_NCE_PriceList
+      connection: billing
+    next:
+      - do:
+          - archive2
+        when: <% succeeded() %>
+  # [1027, 783]
+  archive2:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: INSERT INTO MSOL_NCE_Offer_Matrix_Backup (ProductTitle,ProductId,SkuId,SkuTitle,ProvisioningId,ProvisioningString,MinLicenses,MaxLicenses,AssetOwnershipLimit,AssetOwnershipLimitType,ProductSkuPreRequisites,ProductSkuConversion,Description,AllowedCountries) SELECT ProductTitle,ProductId,SkuId,SkuTitle,ProvisioningId,ProvisioningString,MinLicenses,MaxLicenses,AssetOwnershipLimit,AssetOwnershipLimitType,ProductSkuPreRequisites,ProductSkuConversion,Description,AllowedCountries FROM MSOL_NCE_Offer_Matrix
+      connection: billing
+    next:
+      - do:
+          - delete1
+        when: <% succeeded() %>
+  # [1027, 888]
+  delete1:
+    action: sql.delete
+    input:
+      log_level: DEBUG
+      table: MSOL_NCE_PriceList
+      connection: billing
+    next:
+      - do:
+          - delete2
+        when: <% succeeded() %>
+  # [1026, 995]
+  delete2:
+    action: sql.delete
+    input:
+      log_level: DEBUG
+      table: MSOL_NCE_Offer_Matrix
+      connection: billing
+    next:
+      - do:
+          - insert_into_price_list
+        when: <% succeeded() %>

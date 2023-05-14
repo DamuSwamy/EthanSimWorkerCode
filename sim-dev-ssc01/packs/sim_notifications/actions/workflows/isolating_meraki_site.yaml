@@ -1,0 +1,11 @@
+version: 1.0
+tasks:
+  # [332, 47]
+  activate_python_env:
+    action: core.local
+    input:
+      cmd: "source /home/ssadmin/pact_isolate_meraki/venv/bin/activate && python3 /home/ssadmin/pact_isolate_meraki/meraki-isolation/vpn-action.py --action \"<% ctx().action %>\"  --sitename \"<% ctx().sitename %>\""
+      cwd: null
+input:
+  - action
+  - sitename

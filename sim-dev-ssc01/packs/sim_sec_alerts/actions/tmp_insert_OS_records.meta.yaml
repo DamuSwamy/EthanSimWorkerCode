@@ -1,0 +1,6 @@
+pack: sim_sec_alerts
+enabled: true
+runner_type: orquesta
+name: tmp_insert_OS_records
+entry_point: workflows/tmp_insert_OS_records.yaml
+description: temp script to insert OS records

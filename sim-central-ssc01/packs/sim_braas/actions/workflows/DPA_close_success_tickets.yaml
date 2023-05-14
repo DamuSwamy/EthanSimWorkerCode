@@ -1,0 +1,32 @@
+version: 1.0
+tasks:
+  # [834, 95]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - get_dpa_success_report
+        publish:
+          - datenow: "<%(now(offset=>localtz())).format(\"%Y-%m-%d %H:%M:%S\") %>"
+          - start_date: <% (now(offset=>localtz()) - timespan(days => 1)).format("%Y-%m-%d") %>
+          - end_date: <%(now(offset=>localtz())).format("%Y-%m-%d") %>
+  # [834, 253]
+  get_dpa_success_report:
+    action: sim_braas.DPA_get_report_data_custom
+    input:
+      formatType: CSV
+      input_finish_date: <% ctx().end_date %>
+      input_start_date: <% ctx().start_date %>
+      input_finish_time: "23:59:59.000"
+      input_start_time: "12:00:00.000"
+      report_name: Backup Successful Jobs
+    next:
+      - do:
+          - close_success_tickets
+        publish:
+          - report: <% result().output.debug_report %>
+  # [834, 418]
+  close_success_tickets:
+    action: sim_braas.backup_ticket_closure
+    input:
+      dpa_report: <%ctx().report%>

@@ -1,0 +1,24 @@
+version: 1.0
+tasks:
+  # [259, 49]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - print_craig
+        when: <% ctx().name = 'craig' %>
+      - do:
+          - print_aman
+        when: <% ctx().name = 'aman' %>
+  # [101, 210]
+  print_craig:
+    action: core.echo
+    input:
+      message: "entered name is craig"
+  # [436, 209]
+  print_aman:
+    action: core.echo
+    input:
+      message: "entered name is aman"
+input:
+  - name

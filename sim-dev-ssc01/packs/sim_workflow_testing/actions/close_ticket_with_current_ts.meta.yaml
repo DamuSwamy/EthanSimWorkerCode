@@ -1,0 +1,13 @@
+---
+name: close_ticket_with_current_ts
+pack: sim_workflow_testing
+runner_type: orquesta
+description: Close servicenow cases with current timestamp
+enabled: true
+entry_point: workflows/close_ticket_with_current_ts.yaml
+parameters:
+  case_number:
+    type: string
+    description: current timestamp string
+    required: true
+    position: 1

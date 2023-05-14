@@ -1,0 +1,28 @@
+version: 1.0
+tasks:
+  # [301, 54]
+  get_graph_token:
+    action: sim_o365.get_graphapi_token
+    next:
+      - do:
+          - get_photo
+        publish:
+          - graph_api_token: <% result().output.graph_auth_token %>
+  # [302, 165]
+  get_photo:
+    action: core.http
+    input:
+      url: "https://graph.microsoft.com/v1.0/users/Teams.Test1@etest.systems/photo/$value"
+      headers:
+        Authorization: Bearer <% ctx().graph_api_token %>
+        Content-Type: application/json
+    next:
+      - do:
+          - success
+        publish:
+          - photo: <% result().body %>
+  # [294, 324]
+  success:
+    action: core.noop
+output:
+  - photo: <% ctx().photo %>

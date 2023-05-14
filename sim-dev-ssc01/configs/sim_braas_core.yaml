@@ -1,0 +1,58 @@
+ssl_verify: false
+braas:
+  ric.braas.ethoria.services:
+    host: ric.braas.ethoria.services
+    passwd: ckVW-sutB-cE8o-k49J
+    user: svc_csp_api
+  bot.braas.ethoria.services:
+    host: bot.braas.ethoria.services
+    user: svc_csp_api
+    passwd:  1Fnx-4V8Y-i5Su-6e8L
+  hak.braas.ethoria.services:
+    host: hak.braas.ethoria.services
+    passwd: uarR-cpSR-eZ88-65of
+    user: svc_csp_api
+  vet.braas.ethoria.services:
+    host: vet.braas.ethoria.services
+    passwd: FaHz-D3Tw-dP2E-zK76
+    user: svc_csp_api
+  rai.braas.ethoria.services: #DECOM
+    host: rai.braas.ethoria.services
+    passwd: di3U-Fh9x-hvwM-cr4X
+    user: svc_csp_api
+  lau.braas.ethoria.services:
+    host: lau.braas.ethoria.services
+    passwd: NTW3-d48d-iMJ6-iB4X
+    user: svc_csp_api
+  lec.braas.ethoria.services:
+    host: lec.braas.ethoria.services
+    passwd: 3P81-14Hi-Y9e9-ncuQ
+    user: svc_csp_api
+  cors-gbs-ave01.braas.ethoria.services:
+    host: cors-gbs-ave01.braas.ethoria.services
+    passwd: QAZ1qaz1
+    user: svc_csp_api
+  fmrl-elo-ave02.braas.ethoria.services: #DECOM
+    host: fmrl-elo-ave02.braas.ethoria.services
+    passwd: QAZ1qaz1
+    user: svc_csp_api
+  sims-vdc-ave01.braas.ethoria.services: #SOON to be DECOM
+    host: sims-vdc-ave01.braas.ethoria.services
+    user: svc_csp_api
+    passwd: QAZ1qaz1
+  grcl-gbs-ave01.braas.ethoria.services:
+    host: grcl-gbs-ave01.braas.ethoria.services
+    user: svc_csp_api
+    passwd: QAZ1qaz1
+  egrp-gbs-ave01.braas.ethoria.services:
+    host: egrp-gbs-ave01.braas.ethoria.services
+    user: svc_csp_api
+    passwd: 7QGZ-al4e-XY7c-S87S
+  ver.braas.ethoria.services:
+    host: ver.braas.ethoria.services
+    user: svc_csp_api
+    passwd: 7QGZ-al4e-XY7c-S87S
+  hul.braas.ethoria.services: #NW and Credentials needed
+    host: hul.braas.ethoria.services
+    user: svc_csp_api
+    passwd: dummy

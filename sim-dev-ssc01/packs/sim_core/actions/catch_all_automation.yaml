@@ -1,0 +1,19 @@
+---
+name: catch_all_automation
+pack: sim_core
+description: Ethan Core Automation pack
+runner_type: orquesta
+entry_point: workflows/catch_all_automation.yaml
+parameters:
+  robot_name:
+    type: string
+    description: target robot
+    required: true
+    default: ccdbb_core.offboard_user
+  robot_type:
+    type: string
+    description: type of robot
+    default: REQUEST
+  robot_data:
+    type: object
+    description: Object with key value pairs of input robot data

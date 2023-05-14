@@ -1,0 +1,6 @@
+pack: sim_o365
+enabled: true
+runner_type: orquesta
+name: Test_update_user_api
+entry_point: workflows/Test_update_user_api.yaml
+description: testing api update user

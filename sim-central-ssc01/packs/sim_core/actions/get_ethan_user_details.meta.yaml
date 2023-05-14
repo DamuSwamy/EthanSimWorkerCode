@@ -1,0 +1,42 @@
+pack: sim_core
+enabled: true
+runner_type: orquesta
+name: get_ethan_user_details
+entry_point: workflows/get_ethan_user_details.yaml
+description: Retrieve the user details for the given first and last name
+parameters:
+  first_name:
+    type: string
+    description: The given name of the user
+    required: true
+    position: 0
+  last_name:
+    type: string
+    description: The surname of the user
+    required: true
+    position: 1
+  ticket_id:
+    type: string
+    description: Service now ticket to attach the file
+    required: true 
+    position: 2
+  db_connection:
+    type: string
+    description: DB connection details
+    required: true
+    default: productionCloudExtension
+    position: 3
+    immutable: true
+  attach_to_ticket:
+    type: boolean
+    description: Attach the file to the ticket
+    required: false
+    default: true
+    position: 4
+  file_path:
+    type: string
+    description: The local path where temp csv file will be stored
+    required: true
+    default: /tmp/Ethan_Users_Cust_Onprem_Domains.csv
+    position: 5
+    immutable: true

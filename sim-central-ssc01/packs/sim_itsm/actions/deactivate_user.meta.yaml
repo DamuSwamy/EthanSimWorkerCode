@@ -1,0 +1,23 @@
+pack: sim_itsm
+enabled: true
+runner_type: orquesta
+name: deactivate_user
+entry_point: workflows/deactivate_user.yaml
+description: Deactivate User
+parameters:
+  user_email:
+    type: string
+    default: aaron.swayn@essist.com.au
+    description: Email of the user to be deactivated
+    required: true
+  auth_token:
+    type: string
+    description: auth_token
+    default: ZXNzaXN0ZGV2K3RuTWpvOWZ2WkhneHVKeU06SkZIYWx2VHVBZ2JpdFlQcg==
+    required: true
+    secret: true
+  client_id:
+    type: string
+    description: client_id
+    default: 13e3617a-b4d4-4c28-993c-80cd8cd2b88b
+    required: true

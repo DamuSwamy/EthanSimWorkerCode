@@ -1,0 +1,6 @@
+pack: sim_msol_billing
+enabled: true
+runner_type: orquesta
+name: monthly_price_list_fetcher
+entry_point: workflows/monthly_price_list_fetcher.yaml
+description: Monthly MSOL price list fetcher automation

@@ -1,0 +1,19 @@
+version: 1.0
+
+vars:
+  - clients: []
+
+input:
+  - dpa_report
+
+tasks:
+  # [260, 124]
+  start:
+    action: core.noop
+    next:
+      - when: <% succeeded() or failed() %>
+        publish:
+          - clients: "{%- set client = [] -%}\n{%- set output = ctx().dpa_report.split('\n') -%}\n{%- for line in output -%}\n{%- set each_line = line.split(',') -%}\n{%- if each_line[5] != 'Client' and not each_line[5] in client -%}\n{{ client.append(each_line[5]) or \"\" }}\n{%- endif -%}\n{%- endfor -%}\n{{ client }}"
+
+output:
+  - clientList: <% ctx().clients %>

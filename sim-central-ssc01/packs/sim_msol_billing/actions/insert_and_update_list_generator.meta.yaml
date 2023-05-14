@@ -1,0 +1,19 @@
+pack: sim_msol_billing
+enabled: true
+runner_type: "python-script"
+name: insert_and_update_list_generator
+entry_point: "insert_and_update_list_generator.py"
+description: Compare the current subscription which is avalilable in DB with partner connect data 
+parameters:
+  db_data:
+    type: array
+    description: List of customer retrieved from DB
+    required: true
+  partner_connect_data:
+    type: array
+    description: Partner connect data from MSOL
+    required: true
+  data_type:
+    type: string
+    description: Which type of action Subscriptions, SubscribedSkus
+    required: true

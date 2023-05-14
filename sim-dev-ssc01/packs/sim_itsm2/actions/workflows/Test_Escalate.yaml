@@ -1,0 +1,82 @@
+version: 1.0
+tasks:
+  # [70, 267]
+  format_output:
+    action: core.noop
+    next:
+      - do:
+          - print
+        publish:
+          - order_output: "Order ID - <% ctx().order_id %>\nBilling Cycle - <% ctx().billing_cycle %>\nCurrency Code - <% ctx().currency_code %>\n\nOrdered List -\n<% ctx().order_line_items %>"
+  # [63, 380]
+  print:
+    action: core.echo
+    input:
+      message: "Started <% ctx().started  %>\nStarted formated <% datetime(ctx().started).format(\"%Y-%m-%d %H:%M:%S\") %>\nTicket opened <% ctx().opened_at[0] %>"
+    next:
+      - do:
+          - update_ticket
+  # [64, 524]
+  update_ticket:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: CS0058271
+      payload:
+        short_description: MSOL MACD - New TS Microsoft Online Customer | ABC | 1234
+        description: "SiM Automation has successfully completed the MSOL Order\n<% ctx().order_output %>"
+        resolution_code: Completed
+        close_notes: "successful completion of order from SiM Automation "
+        state: 3
+        cause: Ethan Online Request for MSOL License purchase for SiM Automation
+        assigned_to: svc_sim_automation
+      table: sn_customerservice_general_case
+    next:
+      - do:
+          - print_difference
+  # [69, 152]
+  get_created_date:
+    action: sim_itsm2.get
+    input:
+      log_level: DEBUG
+      table: sn_customerservice_general_case
+      query:
+        number: CS0058271
+    next:
+      - do:
+          - format_output
+        publish:
+          - opened_at: <% result().result.opened_at %>
+          - started: <% task().start_timestamp %>
+          - date1: "<% datetime(ctx().started).format(\"%Y-%m-%d %H:%M:%S\") %>"
+          - date2: "<% datetime(ctx().opened_at[0]).format(\"%Y-%m-%d %H:%M:%S\") %>"
+          - time_10minsago: "<% (now() - timespan(minutes => 10)).format(\"%Y-%m-%d %H:%M:%S\") %>"
+          - billing_cycle: <% ctx().order_details.orders[0].billingCycle %>
+          - currency_code: <% ctx().order_details.orders[0].currencyCode %>
+          - order_line_items: <% ctx().order_details.orders[0].lineItems.select([$.friendlyName, $.quantity, $.termDuration]) %>
+  # [315, 501]
+  print_difference:
+    action: core.echo
+    input:
+      message: "\"<% datetime(ctx().date1) - datetime(ctx().date2)%>\""
+    next:
+      - do:
+          - newer
+        when: <% datetime(ctx().time_10minsago) <  datetime(ctx().date2) %> 
+      - do:
+          - older
+        when: <% datetime(ctx().time_10minsago) >=  datetime(ctx().date2) %>
+  # [318, 353]
+  newer:
+    action: core.echo
+    input:
+      message: "\"newer\""
+  # [590, 348]
+  older:
+    action: core.echo
+    input:
+      message: "\"older\""
+input:
+  - ticket_id
+  - order_details
+  - order_id

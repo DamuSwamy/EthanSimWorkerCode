@@ -1,0 +1,15 @@
+version: 1.0
+tasks:
+  # [233, 101]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - end
+        publish:
+          - expiry: <% (timespan(days => 365) + now()).format("%m/%d/%Y")  %>
+  # [235, 256]
+  end:
+    action: core.echo
+    input:
+      message: "\"<% ctx().expiry %>\""

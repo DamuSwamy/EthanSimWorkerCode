@@ -1,0 +1,62 @@
+---
+name: get_moid
+runner_type: python-script
+description: Returns the MOID of vSphere managed entity corresponding to the specified parameters. If the corresponding entities are not found then the action will fail.
+enabled: true
+entry_point: get_moid.py
+parameters:
+    object_names:
+        type: array
+        description: Object names to convert to MOID
+        required: true
+    object_type:
+        type: string
+        description: The type of object to get
+        required: true
+        enum:
+          - AuthorizationManager
+          - ClusterComputeResource
+          - ComputeResource
+          - CustomFieldsManager
+          - Datacenter
+          - Datastore
+          - DiagnosticManager
+          - DistributedVirtualSwitch
+          - DrsStatsManager/InjectorWorkload
+          - Extension
+          - ExtensionManager
+          - HbrManager
+          - HostSystem
+          - HttpNfcLease
+          - IpPoolManager
+          - LatencySensitivity
+          - LicenseAssignmentManager
+          - LicenseManager
+          - LocalizationManager
+          - ManagedEntity
+          - Network
+          - OpaqueNetwork
+          - OvfConsumer
+          - OvfManager
+          - PerformanceManager
+          - ResourcePlanningManager
+          - ResourcePool
+          - ServiceInstance
+          - ServiceManager
+          - SessionManager
+          - SharesInfo
+          - SimpleCommand
+          - StoragePod
+          - StorageResourceManager
+          - TaskFilterSpec
+          - TaskInfo
+          - UpdateVirtualMachineFilesResult
+          - VirtualApp
+          - VirtualDiskManager
+          - VirtualMachine
+    vsphere:
+        type: string
+        description: Pre-Configured vsphere connection details
+        required: false
+        position: 1
+        default: ~

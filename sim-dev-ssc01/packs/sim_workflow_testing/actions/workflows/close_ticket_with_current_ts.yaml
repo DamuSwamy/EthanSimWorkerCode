@@ -1,0 +1,33 @@
+---
+version: 1.0
+
+description: Close case in servicenow with timestamp from stackstorm
+
+input:
+  - case_number
+
+tasks:
+  start:
+    action: core.echo
+    input:
+      message: <% now().format("%Y-%m-%d %H:%M:%S") %>
+    next:
+      - when: <% succeeded() or failed() %>
+        do:
+          - close_ticket
+
+  close_ticket:
+    action: sim_itsm2.update
+    input:
+      number: <% ctx().case_number %>
+      payload:
+        closed_at: <% now().format("%Y-%m-%d %H:%M:%S") %>
+      table: sn_customerservice_general_case
+    next:
+      - when: <% succeeded() or failed() %>
+        publish:
+          - output: <% switch(isDict(result().result) => result().result, true => {}) %>
+
+output:
+  - result: <% ctx().output %>
+

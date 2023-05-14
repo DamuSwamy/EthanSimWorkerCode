@@ -1,0 +1,34 @@
+version: 1.0
+
+vars:
+  - result: []
+
+input:
+  - backup_server
+
+output:
+  - data: <% ctx().result %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Get_Activities
+
+  Get_Activities:
+    action: sim_braas_core.get_activities
+    input:
+      braas: <% ctx().backup_server %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - result: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  End:
+    action: core.noop

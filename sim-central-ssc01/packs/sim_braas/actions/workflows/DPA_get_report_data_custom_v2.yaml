@@ -1,0 +1,233 @@
+version: 1.0
+tasks:
+  # [528, 169]
+  dpa_get_all_nodes:
+    action: core.http
+    input:
+      url: "https://bernie.braas.ethoria.services:9002/apollo-api/nodes/?query=globalName=*CUSTID*"
+      method: GET
+      password: VLzZZ5N!%ZHm
+      username: service_ciac_cpo@ethoria.local
+      verify_ssl_cert: false
+    next:
+      - publish:
+          - customerList_body: <% result().body %>
+        # #629e47
+        do:
+          - xslt_convert_node_list
+  # [526, 372]
+  dpa_create_report:
+    action: core.http
+    input:
+      url: "https://bernie.braas.ethoria.services:9002/dpa-api/report"
+      body: "<runReportParameters>\n  <report>\n    <name>{{ctx().report_name }}</name>\n  </report>\n  <nodeLinks>\n	<nodeLink type=\"Group\">\n		<id>00000000-0000-0000-0000-000000000001</id>\n		<name>Root</name>\n		<child type=\"Group\">\n			<id>00000000-0000-0000-0000-000000000010</id>\n			<name>Groups</name>\n			<child type=\"Group\">\n				<name>Configuration</name>\n				<id>8ad04346-9abd-4466-8bd8-05306b63519d</id>\n				<child type=\"Group\">\n					<name>Servers</name>\n					<id>307c9831-e611-453d-bbb8-89ff3e0248b7</id>\n					<child type=\"Group\">\n						<name>Backup Servers</name>\n						<id>c5723b8f-c5b7-4237-af29-b689203fbc44</id>\n						<child type=\"Group\">\n							<name>EMC Avamar</name>\n							<id>a58abe61-ad35-4365-ab91-b53afa54e294</id>\n						</child>\n					</child>\n				</child>\n			</child>\n		</child>\n	</nodeLink>\n  </nodeLinks>\n  <timeConstraints type=\"absolute\">\n    <startTime date=\"{{ctx().input_start_date }}\" time=\"{{ctx().input_start_time }}\" tzid=\"Australia/Sydney\"></startTime>\n    <endTime date=\"{{ctx().input_finish_date}}\" time=\"{{ctx().input_finish_time }}\" tzid=\"Australia/Sydney\"></endTime>\n  </timeConstraints>\n  <formatParameters>\n    <formatType>{{ctx().formatType}}</formatType>\n	<fitContent>false</fitContent>\n  </formatParameters>\n  <user>\n    <logonName>administrator</logonName>\n  </user>\n  <runInDebug>false</runInDebug>\n</runReportParameters>"
+      method: POST
+      password: VLzZZ5N!%ZHm
+      username: service_ciac_cpo@ethoria.local
+      verify_ssl_cert: false
+      headers:
+        Content-Type: application/vnd.emc.apollo-v1+xml
+      allow_redirects: true
+    next:
+      - do:
+          - sleep_timer
+        publish:
+          - myheaders: <% result().headers %>
+          - report_link: <% result().headers.Location %>
+          - reportid: "{% set list1 = ctx().report_link.split('/') %}\n{{ list1|last }}"
+          - status_link: "{{ ctx().report_link | regex_replace(\"result\", \"status\") }}"
+  # [522, 898]
+  dpa_retrieve_report:
+    action: core.http
+    input:
+      url: <% ctx().report_link%>
+      method: GET
+      password: VLzZZ5N!%ZHm
+      username: service_ciac_cpo@ethoria.local
+      verify_ssl_cert: false
+    next:
+      # #629e47
+      - do:
+          - report_success
+        when: <% result().status_code = 200%>
+        publish:
+          - report_body: <% result().body %>
+      - do:
+          - sleep_timer
+        when: <% result().status_code != 200 %>
+  # [521, 483]
+  sleep_timer:
+    action: core.pause
+    input:
+      log_level: DEBUG
+      max_pause: "{{ ctx().sleep_time}}"
+    next:
+      - do:
+          - dpa_retrieve_status
+  # [517, 1012]
+  report_success:
+    action: core.noop
+    next:
+      - do:
+          - transform_xml
+        when: <% ctx().formatType = 'RawXML'%>
+      - do:
+          - create_csv_export
+        when: <% ctx().formatType = 'CSV'%>
+      - do:
+          - convert_other
+  # [872, 562]
+  to_json_report:
+    action: sim_xml.parse
+    input:
+      log_level: DEBUG
+      data: <%ctx().xslt_result%>
+    next:
+      - do:
+          - convert_xml
+        publish:
+          - report: <% result().result %>
+  # [872, 690]
+  convert_xml:
+    action: core.noop
+  # [871, 435]
+  transform_xml:
+    action: sim_xml.xml_transform
+    input:
+      log_level: DEBUG
+      xslt: "<xsl:stylesheet version=\"3.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" exclude-result-prefixes=\"xs\">\n	<xsl:output method=\"xml\" version=\"1.0\" encoding=\"UTF-8\" indent=\"no\"/>\n	<xsl:template match=\"/\" name=\"main\">\n		<dpaclients>\n			<xsl:for-each select=\"//MULTI\">\n				<client>\n					<id>\n						<xsl:value-of select=\"concat(INSTANCE[@name='Client']/ITEM,'|',INSTANCE[@name='Started']/ITEM,'|',INSTANCE[@name='Duration']/ITEM)\" disable-output-escaping=\"no\"/>\n					</id>\n					<backupServer>\n						<xsl:value-of select=\"INSTANCE[@name='Server']/ITEM\" disable-output-escaping=\"no\"/>\n					</backupServer>\n					<mediaServer>\n						<xsl:value-of select=\"INSTANCE[@name='Media Server']/ITEM\" disable-output-escaping=\"no\"/>\n					</mediaServer>\n					<backupGroup>\n						<xsl:value-of select=\"INSTANCE[@name='Group']/ITEM\" disable-output-escaping=\"no\"/>\n					</backupGroup>\n					<schedule>\n						<xsl:value-of select=\"INSTANCE[@name='Schedule']/ITEM\" disable-output-escaping=\"no\"/>\n					</schedule>\n					<clientName>\n						<xsl:value-of select=\"INSTANCE[@name='Client']/ITEM\" disable-output-escaping=\"no\"/>\n					</clientName>\n					<domainName>\n						<xsl:value-of select=\"INSTANCE[@name='Domain Name']/ITEM\" disable-output-escaping=\"no\"/>\n					</domainName>\n					<custid>\n					  <xsl:choose>\n                        <xsl:when test=\"INSTANCE[@name='Server']/ITEM = 'hak.braas.ethoria.services'\">\n                          <xsl:value-of select=\"tokenize(INSTANCE[@name='Group']/ITEM, '-')[1]\" disable-output-escaping=\"no\"/>\n                        </xsl:when>\n                        <xsl:otherwise>\n                          <xsl:value-of select=\"tokenize(INSTANCE[@name='Domain Name']/ITEM, '/')[last()]\" disable-output-escaping=\"no\"/>\n                        </xsl:otherwise>\n                      </xsl:choose>\n					</custid>\n					<status>\n						<xsl:value-of select=\"INSTANCE[@name='Status']/ITEM\" disable-output-escaping=\"no\"/>\n					</status>\n					<startTime>\n						<xsl:value-of select=\"format-dateTime(adjust-dateTime-to-timezone(xs:dateTime('1970-01-01T00:00:00Z') + xs:dayTimeDuration((concat('PT', INSTANCE[@name='Started']/ITEM, 'S')))), '[Y0001]-[M01]-[D01] [H01]:[m01]:[s01]')\" disable-output-escaping=\"no\"/>\n					</startTime>\n					<startTimeGMT>\n						<xsl:value-of select=\"format-dateTime(xs:dateTime('1970-01-01T00:00:00Z') + xs:dayTimeDuration((concat('PT', INSTANCE[@name='Started']/ITEM, 'S'))), '[Y0001]-[M01]-[D01] [H01]:[m01]:[s01]')\" disable-output-escaping=\"no\"/>\n					</startTimeGMT>\n					<finishTime>\n						<xsl:value-of select=\"format-dateTime(adjust-dateTime-to-timezone(xs:dateTime('1970-01-01T00:00:00Z') + xs:dayTimeDuration((concat('PT', INSTANCE[@name='Finished']/ITEM, 'S')))), '[Y0001]-[M01]-[D01] [H01]:[m01]:[s01]')\" disable-output-escaping=\"no\"/>\n					</finishTime>\n					<statusCodeSummary>\n						<xsl:value-of select=\"INSTANCE[@name='Status Code Summary']/ITEM\" disable-output-escaping=\"no\"/>\n					</statusCodeSummary>\n					<duration>\n						<xsl:value-of select=\"INSTANCE[@name='Duration']/ITEM\" disable-output-escaping=\"no\"/>\n					</duration>\n				</client>\n			</xsl:for-each>\n		</dpaclients>\n	</xsl:template>\n</xsl:stylesheet>"
+      xml: <%ctx().report_body%>
+    next:
+      - do:
+          - to_json_report
+        publish:
+          - xslt_result: <% result().result %>
+  # [525, 267]
+  xslt_convert_node_list:
+    action: sim_xml.xml_transform
+    next:
+      - do:
+          - dpa_create_report
+        publish:
+          - xslt_result_nodes: <% result().result %>
+    input:
+      log_level: DEBUG
+      xslt: "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">\n  <xsl:output indent=\"no\" method=\"xml\" omit-xml-declaration=\"yes\" />\n  <xsl:template match=\"/\" name=\"main\">\n    <xsl:variable name=\"CUSTID\" select=\"//node[name='CUSTID']/id\" />\n    <nodes>\n      <xsl:for-each select=\"//node[partOfId=$CUSTID]\">\n        <node>\n          <id>\n            <xsl:value-of select=\"id\" disable-output-escaping=\"no\" />\n          </id>\n        </node>\n      </xsl:for-each>\n    </nodes>\n  </xsl:template>\n</xsl:stylesheet>"
+      xml: <% ctx().customerList_body%>
+  # [526, 69]
+  initialise:
+    action: core.noop
+    next:
+      - do:
+          - dpa_get_all_nodes
+  # [1228, 781]
+  task1:
+    action: csv.parse
+    input:
+      log_level: DEBUG
+      data: <%ctx().report_body%>
+    next:
+      - do:
+          - convert_csv_end
+        publish:
+          - report: <%ctx().report_export%>
+  # [1273, 899]
+  convert_csv_end:
+    action: core.noop
+  # [908, 1035]
+  convert_other:
+    action: core.noop
+  # [1180, 431]
+  create_csv_export:
+    action: core.http
+    next:
+      - do:
+          - sleep_export_report
+        publish:
+          - exportheaders: <% result().headers %>
+          - export_link: <% result().headers.Location %>
+    input:
+      url: "https://bernie.braas.ethoria.services:9002/dpa-api/report-exports"
+      headers:
+        Content-Type: application/vnd.emc.apollo-v1+xml
+      username: service_ciac_cpo@ethoria.local
+      password: VLzZZ5N!%ZHm
+      body: "<exportReportParameters>\n            <publicationMethod>file</publicationMethod>\n            <fileName>null</fileName>\n            <reportRunIdentifier><%ctx().reportid%></reportRunIdentifier>\n            <formatParameters>\n              <formatType>CSV</formatType>\n              <pageOrientation>Portrait</pageOrientation>\n              <pageSize>A4</pageSize>\n              <fitContent>false</fitContent>\n            </formatParameters>\n          </exportReportParameters>"
+      verify_ssl_cert: false
+      method: POST
+  # [1188, 544]
+  sleep_export_report:
+    action: core.pause
+    input:
+      log_level: DEBUG
+      max_pause: 30
+    next:
+      - do:
+          - dpa_retrieve_export
+  # [1191, 655]
+  dpa_retrieve_export:
+    action: core.http
+    input:
+      url: <% ctx().export_link%>
+      username: service_ciac_cpo@ethoria.local
+      verify_ssl_cert: false
+      password: VLzZZ5N!%ZHm
+    next:
+      # #629e47
+      - do:
+          - task1
+        when: <% result().status_code = 200%>
+        publish:
+          - report_export: <% result().body %>
+      - do:
+          - sleep_export_report
+        when: <% result().status_code != 200 %>
+  # [523, 685]
+  report_status:
+    action: sim_xml.parse
+    input:
+      log_level: DEBUG
+      data: <%ctx().report_status_body%>
+    next:
+      - do:
+          - check_status
+        publish:
+          - report_status: <% result().result.report.status %>
+  # [523, 584]
+  dpa_retrieve_status:
+    action: core.http
+    next:
+      - do:
+          - report_status
+        publish:
+          - report_status_body: <% result().body %>
+    input:
+      url: <% ctx().status_link%>
+      method: GET
+      username: service_ciac_cpo@ethoria.local
+      password: VLzZZ5N!%ZHm
+      verify_ssl_cert: false
+  # [523, 786]
+  check_status:
+    action: core.noop
+    next:
+      - do:
+          - dpa_retrieve_report
+        when: <% ctx().report_status = 'READY'%>
+      - do:
+          - sleep_timer
+        when: <% ctx().report_status != 'READY'%>
+
+output:
+  - debug_nodes: <%ctx().xslt_result_nodes%>
+  - debug_report: <%ctx().report%>
+  - debug_id: <%ctx().reportid%>
+input:
+  - input_start_date
+  - input_finish_date
+  - report_name
+  - formatType
+  - input_finish_time
+  - input_start_time
+  - sleep_time
+#  - debug_headers: <%ctx().myheaders%>

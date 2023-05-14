@@ -1,0 +1,46 @@
+pack: ccdbb_core
+enabled: true
+runner_type: orquesta
+name: user_offboard_exchange_process_suspend
+entry_point: workflows/user_offboard_exchange_process_suspend.yaml
+description: CCDBB User Offboarding Exchange Procedure Suspend
+parameters:
+  user_email:
+    type: string
+    description: User Email
+    default: sim.testuser01@etest.systems
+    required: true
+  delegate_email:
+    type: string
+    description: Delegate email address
+    default: Teams.Test1@etest.systems
+  ad_host:
+    type: string
+    description: AD host to connect to
+    required: true
+  username:
+    type: string
+    description: username
+    required: true
+  password:
+    type: string
+    description: Password
+    required: true
+    secret: true
+  organisation:
+    type: string
+    description: Organisation
+    required: true
+  app_id:
+    type: string
+    description: app_id for exchange online module integration
+    required: true
+  certificate_file_path:
+    description: certificate_file_path
+    type: string
+    default: "C:\\Users\\Administrator\\Downloads\\cert\\EthanTest.pfx"
+    required: true
+  admin_url:
+    type: string
+    description: Admin sharepoint URL for one drive delegation
+    default: "https://etestsystems-admin.sharepoint.com"

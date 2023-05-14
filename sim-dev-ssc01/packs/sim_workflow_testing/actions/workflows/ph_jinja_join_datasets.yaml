@@ -1,0 +1,19 @@
+version: 1.0
+tasks:
+  # [528, 71]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - end
+        publish:
+          - join_dataset: "{\"output1\": {{ctx().json1 | tojson }},\"output2\":{{ctx().json2 | tojson }}}"
+          - get_cust: "{{ ctx().join_dataset.customers.cust[0] }}"
+  # [526, 263]
+  end:
+    action: core.noop
+input:
+  - json1
+  - json2
+output:
+    - debug_join: <%ctx().join_dataset%>

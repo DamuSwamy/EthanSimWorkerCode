@@ -1,0 +1,11 @@
+pack: sim_braas
+enabled: true
+runner_type: "python-script"
+name: transform_backup_data
+entry_point: "transform_backup_data.py"
+description: transform Json using python
+parameters:
+  backup_failure_array:
+    type: array
+    description: input data
+    required: true

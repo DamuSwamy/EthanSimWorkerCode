@@ -1,0 +1,19 @@
+pack: sim_braas_action
+enabled: true
+runner_type: "python-script"
+name: transform_backup_data
+entry_point: "transform_backup_data.py"
+description: transform Json using python
+parameters:
+  backup_array:
+    type: object
+    description: input data
+    required: true
+  ignore_list:
+    type: array
+    description: list of backup servers bacn be ignored from validating
+    required: false
+  ignore_list_from_validation:
+    type: array
+    description: list of backup servers which are not having any jobs running
+    required: false

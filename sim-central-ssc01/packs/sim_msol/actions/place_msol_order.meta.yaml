@@ -1,0 +1,32 @@
+pack: sim_msol
+enabled: true
+runner_type: orquesta
+name: place_msol_order
+entry_point: workflows/place_msol_order.yaml
+description: Place Order on Microsoft Online
+parameters:
+  tenant_id:
+    type: string
+    default: 04470183-206f-4e50-a7da-f18dd8066ef9
+    description: Tenant ID for Microsoft Online
+    required: true
+  offer_id:
+    type: string
+    default: 00aa5d40-9aad-4b73-bf62-623a0f17e207
+    required: true
+  customer_tenant_id:
+    type: string
+    default: d621d86a-79d2-433d-b5bd-523bc61fa5b6
+    required: true
+  quantity:
+    type: string
+    default: "\"1\""
+    required: true
+  line_items_raw:
+    type: string
+    default: "8bdbb60b-e526-43e9-92ef-ab760c8e0b72,100,monthly,P1Y:2c883339-ef9c-4cce-81b8-e5adea60794c,5,monthly,P1Y"
+    required: true
+  password_id:
+    type: string
+    default: "\"1046\""
+    required: true

@@ -1,0 +1,5 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: DPA_daily_backup_check
+entry_point: workflows/DPA_daily_backup_check.yaml

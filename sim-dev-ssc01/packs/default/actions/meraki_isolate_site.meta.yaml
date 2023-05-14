@@ -1,0 +1,11 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: meraki_isolate_site
+entry_point: workflows/meraki_isolate_site.yaml
+description: Isolate a PACT Group Meraki Site
+parameters:
+  sitename:
+    type: string
+    description: Site name to be killed
+    required: true

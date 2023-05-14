@@ -1,0 +1,19 @@
+pack: sim_core
+enabled: true
+runner_type: orquesta
+name: sim_core.catch_all_automation_demo
+entry_point: workflows/sim_core.catch_all_automation_demo.yaml
+description: Catch all automation Demo with SN integration
+parameters:
+  robot_name:
+    type: string
+    description: target robot
+    required: true
+    default: ccdbb_core.offboard_user
+  robot_type:
+    type: string
+    description: type of robot
+    default: REQUEST
+  robot_data:
+    type: object
+    description: Object with key value pairs of input robot data

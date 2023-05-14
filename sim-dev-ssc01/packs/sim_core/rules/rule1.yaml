@@ -1,0 +1,11 @@
+---
+name: on_hello_event1
+pack: sim_core
+description: Sample rule firing on hello_st2.event1.
+enabled: true
+trigger:
+    type: sim_core.event1
+action:
+    ref: sim_core.greet
+    parameters:
+        greeting: Yo

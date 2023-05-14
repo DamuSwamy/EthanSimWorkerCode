@@ -1,0 +1,12 @@
+---
+name: csv_reader
+pack: sim_core
+description: CSV file reader and return with array of objects
+runner_type: python-script
+entry_point: csv_reader.py
+parameters:
+  csv_path:
+    type: string
+    description: |
+        The path of the csv file to be read.
+    required: true

@@ -1,0 +1,105 @@
+version: 1.0
+
+input:
+  - cloud_db_connection
+  - cmdb_db_connection
+  - billing_db_connection
+  - payload
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - vcenter_payload: <% ctx(payload).where($.managedBy = 'vcenter').select($) %>
+          - vcloud_payload: <% ctx(payload).where($.managedBy = 'vcloud').select($) %>
+        do:
+          - Check_Payload
+
+  Check_Payload:
+    action: core.noop
+    next:
+      - when: <% len(ctx().vcenter_payload) > 0 %>
+        do:
+          - SQL_Select_CMDB_vCenters
+      - when: <% len(ctx().vcloud_payload) > 0 %>
+        do:
+          - vCloud_Handler
+      - when: <% len(ctx().vcenter_payload) = 0 and len(ctx().vcloud_payload) = 0 %>
+        do:
+          - End
+
+
+  SQL_Select_CMDB_vCenters:
+    action: sql.query
+    input:
+      connection: <% ctx().cmdb_db_connection %>
+      query: "Select rtrim(invVCServerID) as invVCServerID, rtrim(vcName) as vcName, rtrim(vcIPAddress) as vcIPAddress FROM iaasVCServer WHERE vcActive = '1' ORDER BY invVCServerID"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - cmdb_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_Managed_VM
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Managed_VM:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT managedid FROM v_PortalNableDevices WHERE managedid IS NOT NULL;"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - managed_vm_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Enhance_vCenter_Data
+      - when: <% failed() %>
+        do: fail
+
+  Enhance_vCenter_Data:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - groups: "{%- set resourceArr = [] -%}{%- for vm in ctx().vcenter_payload-%}{%- set vcName =  ctx().cmdb_data | selectattr('invVCServerID', 'defined') | selectattr('invVCServerID', 'equalto', vm['managedByID'])|map(attribute='vcName') | list -%}{%- set nableManagedID = ctx().managed_vm_data| selectattr('managedid', 'defined') | selectattr('managedid', 'equalto', vm['managedID'])|map(attribute='managedid') | list -%}{%- if vcName -%}  {{ vm.update({'vcName': vcName[0]}) or ''}}{%- endif -%}{%- if nableManagedID -%}{{ vm.update({'nableManagedID': nableManagedID[0]}) or ''}}{%- endif -%}{{ resourceArr.append(vm) or '' }}{%- endfor -%}{{ resourceArr | tojson }}"
+          - vcenter_payload: "{{ ctx().groups | from_json_string  }}"
+        do:
+          - vCenter_Handler
+
+  vCenter_Handler:
+    action: sim_cloud_billing.ethan_vcenter_mgmt_grp_handler
+    input:
+      cloud_db_connection: <% ctx().cloud_db_connection %>
+      payload: <% ctx().vcenter_payload %>
+      input_type: "vcenter"
+    next:
+      - when: <% succeeded() %>
+        do:
+          - vCenter_Handler_End
+      - when: <% failed() %>
+        do: fail
+
+  vCloud_Handler:
+    action: sim_cloud_billing.ethan_vcenter_mgmt_grp_handler
+    input:
+      cloud_db_connection: <% ctx().cloud_db_connection %>
+      payload: <% ctx().vcloud_payload %>
+      input_type: "vcloud"
+    next:
+      - when: <% succeeded() %>
+        do:
+          - vCloud_Handler_End
+      - when: <% failed() %>
+        do: fail
+
+  vCenter_Handler_End:
+    action: core.noop
+
+  vCloud_Handler_End:
+    action: core.noop
+
+  End:
+    action: core.noop

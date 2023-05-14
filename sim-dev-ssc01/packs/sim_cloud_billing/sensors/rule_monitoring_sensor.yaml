@@ -1,0 +1,20 @@
+---
+  class_name: "RuleMonitoringSensor"
+  enabled: false
+  entry_point: "rule_monitoring_sensor.py"
+  description: "Sensor which monitors stackstorm rules"
+  poll_interval: 300
+  trigger_types:
+    -
+      name: "rule_monitoring_sensor"
+      pack: "sim_cloud_billing"
+      description: "Monitoring the crontimer rules and send notification if rule has not triggered"
+      payload_schema:
+        type: "object"
+        properties:
+          rule:
+            type: "string"
+          message:
+            type: "string"
+          payload:
+            type: "object"

@@ -1,0 +1,24 @@
+---
+name: ondemand_backup
+runner_type: python-script
+description: Start the backup for the specific backup client of the Braas server. 
+enabled: true
+entry_point: ondemand_backup.py
+parameters:
+  braas:
+    type: "string"
+    description: Pre-Configured braas connection details
+    required: true
+  group_id:
+    type: "string"
+    description: Group id details to get the information fo the group
+    required: true
+  client_id:
+    type: "string"
+    description: client id to start the backup
+    required: true
+  access_token:
+    type: "string"
+    description: Access token if you have the token already else blank
+    required: false
+

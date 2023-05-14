@@ -1,0 +1,15 @@
+version: 1.0
+tasks:
+  # [291, 152]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - end
+        publish:
+          - month: <% (now(offset=>localtz())).format("%Y%m") %>
+  # [286, 346]
+  end:
+    action: core.noop
+output:
+  - month: <% ctx().month %>

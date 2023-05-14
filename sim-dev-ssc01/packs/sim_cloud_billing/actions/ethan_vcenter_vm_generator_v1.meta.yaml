@@ -1,0 +1,28 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: "python-script"
+name: ethan_vcenter_vm_generator_v1
+entry_point: "ethan_vcenter_vm_generator_v1.py"
+description: Compare the current subscription which is avalilable in DB with partner connect data 
+parameters:
+  db_data:
+    type: array
+    description: List of customer retrieved from DB
+    required: true
+  vc_data:
+    type: array
+    description: Vcenter raw data 
+    required: true
+  data_type:
+    type: string
+    description: Which type of action vm, disk, networks
+    required: true
+  events:
+    type: array
+    description: Vcenter events data
+    required: false
+    default: []
+  create_events:
+    type: array
+    description: Vcenter create events list
+    required: false

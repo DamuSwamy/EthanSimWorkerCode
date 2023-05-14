@@ -1,0 +1,14 @@
+---
+ref: xml
+name : xml
+description : st2 content pack containing XML integrations
+keywords:
+  - xml
+  - serialization
+  - deserialization
+  - text processing
+version: 1.0.0
+python_versions:
+  - "3"
+author : StackStorm, Inc.
+email : info@stackstorm.com

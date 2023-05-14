@@ -1,0 +1,47 @@
+version: 1.0
+
+input:
+  - tenant_id
+  - password_id
+
+output:
+  - token: <% ctx().auth_token %>
+  - refresh_token: <% ctx().refresh_token %>
+
+tasks:
+  # [329, 104]
+  Get_client_secret:
+    action: sim_passwordstate.retrieve_password_from_password_id_api
+    input:
+      password_id: <% str(ctx().password_id) %>
+      url: "https://pwd.ecorp.systems"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - client_id: <% result().output.retrieved_username %>
+          - client_secret: <% result().output.retrieved_password %>
+          - refresh_token: <% st2kv('system.msol_prod_refresh_token', decrypt=>true) %>
+        do:
+          - Get_Access_Token_from_Microsoft_Online_API
+
+  # [333, 322]
+  Get_Access_Token_from_Microsoft_Online_API:
+    action: core.http
+    input:
+      url: "https://login.microsoftonline.com/<% ctx().tenant_id %>/oauth2/v2.0/token"
+      body: client_id=<% ctx().client_id %>&client_secret=<% ctx().client_secret %>&grant_type=refresh_token&scope=https%3A%2F%2Fapi.partnercenter.microsoft.com%2fuser_impersonation&refresh_token=<% ctx().refresh_token %>
+      method: GET
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - auth_token: <% result().body. access_token %>
+          - refresh_token: <% result().body.refresh_token %>
+        do:
+          - Set_Refresh_Token
+
+  Set_Refresh_Token:
+    action: sim_msol_billing.get_config_key
+    input:
+      value: <%  ctx().refresh_token %>

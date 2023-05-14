@@ -1,0 +1,51 @@
+version: 1.0
+
+input:
+  - zcm_hosts
+
+vars:
+  - index: 0
+  - zcm_sites: []
+
+output:
+  - data: <% ctx().zcm_sites %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Data_To_Process
+
+  Data_To_Process:
+    action: core.noop
+    next:
+      - when: <% len(ctx().zcm_hosts) > 0 %>
+        do:
+          - Get_ZCM_Sites
+      - when: <% len(ctx().zcm_hosts) = 0 %>
+        do:
+          - End
+
+  Get_ZCM_Sites:
+    action: sim_zerto_core.zcm_get_sites
+    input:
+      zerto: <% ctx().zcm_hosts[ctx().index] %>
+    next:
+      - when: <% ctx().index < (len(ctx().zcm_hosts) - 1) %>
+        publish:
+          - sites: <% result().result %>
+          - index: <% ctx().index + 1 %>
+          - zcm_sites: <% ctx().zcm_sites + ctx().sites %>
+        do:
+          - Get_ZCM_Sites
+      - when: <% ctx().index >= (len(ctx().zcm_hosts) - 1) %>
+        publish:
+          - sites: <% result().result %>
+          - zcm_sites: <% ctx().zcm_sites + ctx().sites %>
+        do:
+          - End
+
+  End:
+    action: core.noop

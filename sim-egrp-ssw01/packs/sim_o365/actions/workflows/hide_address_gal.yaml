@@ -1,0 +1,31 @@
+version: 1.0
+tasks:
+  # [348, 136]
+  hide_address_from_GAL:
+    action: core.http
+    next:
+      # #629e47
+      - do:
+          - end
+        publish:
+          - task_output: <% result().body  %>
+          - task_return_code: <%  result().status_code %>
+    input:
+      url: "https://graph.microsoft.com/v1.0/users/<% ctx().user_email %>"
+      body: "{\"showInAddressList\": \"false\"}"
+      auth: null
+      headers:
+        Authorization: Bearer <% ctx().graph_auth_token %>
+        Content-Type: application/json
+      method: PATCH
+  # [348, 261]
+  end:
+    action: core.echo
+    input:
+      message: address hidden from GAL
+input:
+  - user_email
+  - graph_auth_token
+output:
+  - task_output: <% ctx().task_output %>
+  - task_return_code: <% ctx().task_return_code %>

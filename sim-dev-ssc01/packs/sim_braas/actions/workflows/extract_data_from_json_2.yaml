@@ -1,0 +1,18 @@
+version: 1.0
+tasks:
+  # [260, 124]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - get_output
+        publish:
+          - output_json: "{%- set clientObjArr = [] -%}\n{%- set clientIdObj= {} -%}\n{%- set finalObj = {} -%}\n{%- for client in ctx().input_json_1.dpaclients.client -%}\n    {%- if client is mapping and client is not string -%}\n        {{ clientObjArr.append(client) or \"\" }}\n        {{ clientIdObj.update({client['clientName']: clientObjArr}) or \"\" }}\n    {%- endif -%}\n{%- endfor -%}\n{%- for client, value in clientIdObj.items() -%}\n    {%- set tempObj = {} -%}\n    {%- set clientSpecificArr = [] -%}\n    {%- set exceptionsArr = [] -%}\n    {%- set failureArr = [] -%}\n    {%- set processed = False %}\n    {%- for client_info in value if client == client_info['clientName'] -%}\n        {%- for s_client in ctx().input_json_2.result if s_client['IaaSCode'] == client_info['custid'] and not processed -%}\n            {{ tempObj.update({\"account_sysid\": s_client['ServiceNowAccountID']}) or \"\" }}\n            {%- set processed = True -%}\n        {%- endfor %}\n        {%- if 'exceptions' in client_info['statusCodeSummary'] -%}\n            {{ exceptionsArr.append(client_info) or \"\" }}\n        {%- else -%}\n            {{ failureArr.append(client_info) or \"\" }}\n        {%- endif -%}\n    {%- endfor -%}\n    {%- if tempObj['account_sysid'] is not defined -%}\n        {{ tempObj.update({\"account_sysid\": \"be2657dd877e3010a7eac9570cbb35fb\"}) or \"\" }}\n    {%- endif -%}\n    {{ tempObj.update({\"failures\": failureArr }) or \"\" }}\n    {{ tempObj.update({\"exceptions\": exceptionsArr}) or \"\" }}\n    {{ finalObj.update({client: tempObj}) or \"\" }}\n{%- endfor -%}\n{%- set clientObj = {\n    \"clients\": finalObj\n} -%}\n{{clientObj | tojson}}"
+  # [261, 275]
+  get_output:
+    action: core.noop
+input:
+  - input_json_1
+  - input_json_2
+output:
+  - output_json: '{{ ctx().output_json | from_json_string  }}'

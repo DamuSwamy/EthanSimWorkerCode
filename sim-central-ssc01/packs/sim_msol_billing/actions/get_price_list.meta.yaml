@@ -1,0 +1,26 @@
+pack: sim_msol_billing
+enabled: true
+runner_type: "python-script"
+name: get_price_list
+entry_point: "get_price_list.py"
+description: Get price list information from Partner center
+parameters:
+  auth_token:
+    type: string
+    description: Auth token for the partner connect 
+    required: true
+  market:
+    type: string
+    description: Market to get the prices list for
+    required: false
+    default: AU
+  price_view:
+    type: string
+    description: View list of the price list
+    required: false
+    default: updatedlicensebased
+  file_path:
+    type: string
+    description: Path to store the response content
+    required: false
+    default: /home/amujawar/price_list.csv.zip  

@@ -1,0 +1,20 @@
+---
+ref: sim_notifications
+name: SiM Notifications
+description: SiM notifications for use in using chat systems
+keywords:
+    - sim
+    - chat
+    - notifications
+version: 1.0.0
+python_versions:
+  - "2"
+  - "3"
+dependencies:
+  - core
+# Name of the pack author.
+author: Ethan Group
+# Email of the pack author.
+email: paul.hooper@ethan.com.au
+contributors:
+  - "Paul <paul.hooper@ethan.com.au>"

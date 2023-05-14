@@ -1,0 +1,37 @@
+---
+name: azure_blob_merge_csv
+pack: sim_core
+description: |
+    Read the user lists available for clients in azure blob separated csv file and combine the data to new csv file and upload
+runner_type: python-script
+entry_point: azure_blob_merge_csv.py
+parameters:
+  storage_account_name:
+    type: string
+    description: The storage account name. refers xxxxxx in https://xxxxxxx.blob.core.windows.net
+    required: true
+    default: stsecprdaelrsv2
+  container_name:
+    type: string
+    description: The container name where the input/output to be stored
+    required: true
+    default: storeuserreports
+  sas_token:
+    type: string
+    description: |
+        shared access signature (SAS) token
+    required: false
+  sas_config:
+    type: string
+    description: Pre-configured sas token details
+    required: false
+    default: azure_blob_sas
+  input_folder_path:
+    type: string
+    description: Path where input files to be retreived from i.e. mon-year(Apr-2023)
+    required: false
+  output_folder_path:
+    type: string
+    description: Path where output files to be strored
+    required: true
+    default: Automation

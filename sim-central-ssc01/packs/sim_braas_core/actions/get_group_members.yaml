@@ -1,0 +1,20 @@
+---
+name: get_group_members
+runner_type: python-script
+description: Retrieves the specific group members from the Braas server. 
+enabled: true
+entry_point: get_group_members.py
+parameters:
+  braas:
+    type: "string"
+    description: Pre-Configured braas connection details
+    required: true
+  group_ids:
+    type: "array"
+    description: Group id details to get the information fo the group
+    required: true
+  access_token:
+    type: "string"
+    description: Access token if you have the token already else blank
+    required: false
+

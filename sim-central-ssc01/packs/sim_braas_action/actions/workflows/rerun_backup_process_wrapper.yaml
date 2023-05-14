@@ -1,0 +1,87 @@
+version: 1.0
+
+input:
+  - ignore_list
+  - remediation_list
+  - failure_payload
+
+vars:
+  - key_name: "BraasRemediationStore"
+  - data: []
+  - remediation: []
+
+output:
+  - exec_result: <% ctx().data %>
+  - remediation: <% ctx().remediation %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - payload: <% ctx(failure_payload).where(not $.backupServer in ctx().ignore_list and not $.clientName.toUpper() in ctx().remediation_list.select($.toUpper())).select($) %>
+        do:
+          - OnDemand_Backup_Run
+      - when: <% failed() and 1 != 1 %>
+        publish:
+          - payload: []
+        do:
+          - GET_Backup_Report_Past_2_Days
+
+  GET_Backup_Report_Past_2_Days:
+    action: sim_braas_action.remediate_report
+    input:
+      report_period: 2880
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - backup_report: <% switch(isDict(result().output) => result().output, true => {}) %>
+        do:
+          - Identify_Valid_Candidates_For_Rerun
+      - when: <% failed() %>
+        do: fail
+
+  Identify_Valid_Candidates_For_Rerun:
+    action: sim_braas_action.identify_valid_candidates
+    input:
+      backup_report: <% ctx().backup_report %>
+      failure_array: <% ctx().payload %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - payload: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - OnDemand_Backup_Run
+      - when: <% failed() %>
+        do: fail
+
+  OnDemand_Backup_Run:
+    action: sim_braas_action.rerun_backup_process
+    input:
+      payload: <% item() %>
+    with:
+      items: <% ctx().payload %>
+      concurrency: 3
+    next:
+      - when: <% succeeded() or failed() %>
+        publish:
+          - data: <% task(OnDemand_Backup_Run).result.items.select($.result.output.data) %>
+          - remediation: <% task(OnDemand_Backup_Run).result.items.select($.result.output.remediation) %>
+        do:
+          - Store_Remediation_List
+
+  Store_Remediation_List:
+    action: sim_braas_action.data_store
+    input:
+      key: <% ctx().key_name %>
+      value: <% ctx().remediation + ctx().remediation_list %>
+    next:
+      - when: <% failed() %>
+        do: fail
+      - when: <% succeeded() %>
+        do: End
+
+  End:
+    action: core.noop
+

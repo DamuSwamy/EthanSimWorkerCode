@@ -1,0 +1,158 @@
+---
+version: 1.0
+
+description: case creation logic
+
+vars:
+  - notifications: []
+  - process_name: "ServiceNow case validation"
+
+input:
+  - account_id
+  - client_name
+  - account_name
+  - failure_info
+
+output:
+  - notifications: <% ctx().notifications %>
+
+tasks:
+
+  # [117, 28]
+  get_values:
+    action: core.noop
+    next:
+      - do:
+          - print
+        publish:
+          - subject: "{{ 'Backup completed with exceptions' if regex_search(ctx().failure_info, 'exceptions') else 'Backup Failure' }}"
+          - urgency: "{{ 3 if regex_search(ctx().subject, 'exceptions') else 2 }}"
+          - impact: "{{ 3 if regex_search(ctx().subject, 'exceptions') else 2 }}"
+
+  # [119, 167]
+  print:
+    action: core.echo
+    input:
+      message: <% ctx().subject %>
+    next:
+      - do:
+          - Start
+
+  # [121, 306]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - payloadStr: <% ctx().failure_info %>
+          - beautified_info: "{{ ctx().payloadStr | replace('}', '\\n') | replace('{', '\\n') | replace(',', '\\n') | replace(\"'\", '') }}"
+          - notification: |
+              (<% ctx().process_name%>) process started
+        do:
+          - notify
+          - validate_case_exists
+
+  # [464, 314]
+  validate_case_exists:
+    action: sim_itsm2.get
+    input:
+      log_level: DEBUG
+      table: sn_customerservice_general_case
+      query:
+        active: true^state!=6^account=<% ctx().account_id %>^short_descriptionLIKEBackup^short_descriptionLIKE<% ctx().client_name %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - related_cases: <% result().result %>
+          - related_case_count: <% len(ctx().related_cases) %>
+          - notification: |
+                 <% ctx().related_case_count %> cases already available for the client (<% ctx().client_name %>)
+        do:
+          - notify
+          - create_itsm_ticket
+      - when: <% failed() %>
+        publish:
+          - related_cases: []
+          - related_case_count: 0
+          - notification: |
+                 No case found for the client (<% ctx().client_name %>)
+        do:
+          - notify
+          - create_itsm_ticket
+  
+  # [735, 436]
+  create_itsm_ticket:
+    action: sim_itsm2.create_record
+    input:
+      log_level: DEBUG
+      payload:
+        contact: "<% ctx().account_name %> Guest Contact"
+        category: Incident
+        subcategory: Functionality
+        notes_to_comments: true
+        service_offering: Backup as a Service
+        assignment_group: Infrastructure Services
+        short_description: "<% ctx().subject %> - <% ctx().client_name %> - <% str(ctx().related_case_count+1) %> Failure"
+        account: <% ctx().account_id %>
+        description: <% ctx().beautified_info %> 
+        urgency: "{{ ctx().urgency-1 if ctx().related_case_count > 0 else ctx().urgency }}"
+        impact: "{{ ctx().impact-1 if (ctx().related_case_count > 0 and regex_search(ctx().subject, 'exceptions')) else ctx().impact }}" 
+      table: sn_customerservice_general_case
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - current_case: <% result().result %>
+          - notification: |
+               The case successfully created for <% ctx().client_name %> (<% ctx().current_case.number %>)
+        do:
+          - notify
+          - make_parent_child_relations
+      - when: <% failed() %>
+        publish:
+          - current_case: {}
+          - notification: |
+               The case failed to create for <% ctx().client_name %>
+        do:
+          - notify
+          - fail
+
+  # [521, 611]
+  make_parent_child_relations:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% item(case).number %>
+      payload:
+        parent: <% ctx().current_case.number %>
+      table: sn_customerservice_general_case
+    with:
+      items: case in <% ctx().related_cases %>
+    next:
+      - when: <% succeeded() and ctx().related_case_count > 0 %>
+        publish:
+          - notification: |
+               The parent-child relation action successfully completed.
+        do:
+          - notify
+          - end
+      - when: <% failed() %>
+        publish:
+          - notification: |
+               Something went wrong while parent-child relationship function!
+        do:
+          - notify
+          - fail
+  
+  # [686, 756]
+  notify:
+    action: core.echo
+    input:
+      message: |
+        <% ctx().notification %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notifications: <% ctx().notifications.append(ctx().notification) %>
+  # [414, 759]
+  end:
+    action: core.noop

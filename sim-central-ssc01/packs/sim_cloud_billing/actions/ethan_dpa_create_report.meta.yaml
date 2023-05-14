@@ -1,0 +1,19 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: "python-script"
+name: ethan_dpa_create_report
+entry_point: "ethan_dpa_create_report.py"
+description: collect report data from DPA
+parameters:
+  report_name:
+    type: string
+    description: Report name to be generated
+    required: true
+  input_start_date:
+    type: string
+    description: Start Date format 2022-05-10
+    required: false
+  input_finish_date:
+    type: string
+    description: Finish Date format 2022-05-11
+    required: false

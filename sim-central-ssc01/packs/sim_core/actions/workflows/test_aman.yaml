@@ -1,0 +1,11 @@
+version: 1.0
+tasks:
+  # [250, 83]
+  task1:
+    action: core.noop
+    next:
+      - do:
+          - task2
+  # [251, 266]
+  task2:
+    action: core.noop

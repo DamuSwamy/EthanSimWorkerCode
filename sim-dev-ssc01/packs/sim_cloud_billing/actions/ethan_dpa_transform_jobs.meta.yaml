@@ -1,0 +1,19 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: "python-script"
+name: ethan_dpa_transform_jobs
+entry_point: "ethan_dpa_transform_jobs.py"
+description: Merge backup clients and ccb usage data
+parameters:
+  backup_clients_data:
+    type: array
+    description: Backup all clients report data
+    required: true
+  ccb_usage_data:
+    type: array
+    description: CCB usage report data
+    required: true
+  billing_period:
+    type: string
+    description: Start date to identify the period
+    required: false

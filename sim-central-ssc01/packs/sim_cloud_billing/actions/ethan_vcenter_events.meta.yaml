@@ -1,0 +1,29 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_vcenter_events
+entry_point: workflows/ethan_vcenter_events.yaml
+description: Process the vm events and insert to the database
+parameters:
+  billing_db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: dev_billing
+    position: 0
+  vcenter_id:
+    type: "string"
+    description: Custom vCenter ID from ethan
+    required: true
+    position: 1
+  vmevents:
+    type: array
+    description: List of events
+    required: true
+    position: 2
+  final_action:
+    type: boolean
+    description: if its final touch
+    required: false
+    default: false
+    position: 3

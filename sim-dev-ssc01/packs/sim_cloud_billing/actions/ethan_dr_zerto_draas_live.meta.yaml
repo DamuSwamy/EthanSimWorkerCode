@@ -1,0 +1,29 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_dr_zerto_draas_live
+entry_point: workflows/ethan_dr_zerto_draas_live.yaml
+description: Ethan DR - Zerto DRaaS Live
+parameters:
+  site_name:
+    type: string
+    description: ZVM site hostname
+    required: true
+    position: 2
+  site_address:
+    type: string
+    description: site ipaddress
+    required: true
+    position: 3
+  billing_db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: dev_billing
+    position: 0
+  cloud_db_connection:
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: true
+    default: dev_cloudmanagement
+    position: 1

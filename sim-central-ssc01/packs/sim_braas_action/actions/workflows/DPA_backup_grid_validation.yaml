@@ -1,0 +1,195 @@
+version: 1.0
+
+input:
+  - exclude_list
+  - perform_grid_check
+
+vars:
+  - next_action: {"remediation": [], "bulk_failures": [], "no_activity": []}
+  - result: {"ignore": []}
+  - key_name: "BraasIgnoreStore"
+  - vkey_name: "BraasValidationTest"
+  - ignore_list: []
+
+output:
+  - data: <% ctx().next_action %>
+
+tasks:
+  # [192, 51]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - ignore_list_from_validation: []
+          - rod_ignore_list_str: <% st2kv('system.' + ctx().key_name, default => null) %>
+          - rod_ignore_list: <% switch(isString(ctx().rod_ignore_list_str) => ctx().rod_ignore_list_str.split(","), true => []) %>
+          - ignore_list: <% ctx().rod_ignore_list.skipWhile(not $) + ctx().exclude_list %>
+          - date_now: <% now(offset=>localtz()) %>
+          - current_time: <% ctx().date_now.format("%H") %>
+          - current_date: <% ctx().date_now.format("%Y-%m-%d") %>
+          - prev_date: <% (ctx().date_now - timespan(days => 1)).format("%Y-%m-%d") %>
+          - start_date: <% ctx().current_date %>
+          - end_date: <% (ctx().date_now + timespan(days => 1)).format("%Y-%m-%d") %>
+          - start_time: "19:00:00.000"
+          - end_time: "07:00:00.000"
+          - start_date: "{{ ctx().prev_date if ctx().current_time|int >= 0 and ctx().current_time|int <= 7 else ctx().start_date }}"
+          - end_date: "{{ ctx().current_date if ctx().current_time|int >= 0 and ctx().current_time|int <= 7 else ctx().end_date }}"
+        do:
+          - Print_Ignore_Store
+          - Query_Net_Customers
+      - when: <% failed() %>
+        do:
+          - fail
+ 
+  # [42, 251]
+  Print_Ignore_Store:
+    action: core.echo
+    input:
+      message: "{{ ctx().ignore_list | join(',') if ctx().ignore_list|length > 0 else 'None' }}"
+
+    # [442, 751]
+  GET_Backup_Report:
+    action: sim_braas_action.remediate_report_v4
+    input:
+      start_date: <% ctx().start_date %>
+      start_time: <% ctx().start_time %>
+      end_date: <% ctx().end_date %>
+      end_time: <% ctx().end_time %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - backup_report: <% switch(isDict(result().output) => result().output, true => {}) %>
+          - success_report: <% switch(isList(result().output.debug_success) => result().output.debug_success, true => []) %>
+          - failure_report: <% switch(isList(result().output.debug_failures) => result().output.debug_failures, true => []) %>
+        do:
+          - Check_For_Actions
+      - when: <% failed() %>
+        do: fail
+
+  # [1342, 751]
+  Check_For_Actions:
+    action: core.noop
+    next:
+      - when: <% len(ctx().success_report) > 0 or len(ctx().failure_report) > 0 %>
+        do:
+          - Transform_Data
+      - when: <% len(ctx().ignore_list.skipWhile(not $)) > 0 %>
+        do:
+          - Store_Ignore_List
+      - when: <% len(ctx().ignore_list.skipWhile(not $)) = 0 and len(ctx().success_report) = 0 and len(ctx().failure_report) = 0 %>
+        do:
+          - End
+
+  # [542, 601]
+  Transform_Data:
+    action: sim_braas_action.transform_backup_data
+    input:
+      backup_array: <% ctx().backup_report %>
+      ignore_list: <% ctx().ignore_list %>
+      ignore_list_from_validation: <% ctx().ignore_list_from_validation %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - next_action: <% switch(isDict(result().result) => result().result, true => {}) %>
+          - ignore_list_from_failures: <% ctx().next_action.get('bulk_failures') %>
+          - ignore_list_no_activity: <% ctx().next_action.get('no_activity') %>
+          - ignore_list: <% ctx().next_action.get('final_ignore_list') %>
+        do:
+          - Store_Ignore_List
+          - Validate_Bulk_Failures
+          - Validate_No_Activity
+      - when: <% failed() %>
+        do: fail
+
+  # [42, 751]
+  Validate_Execution_Status:
+    action: sim_braas_action.validate_backup_execution_wrapper
+    input:
+      ignore_list: <% ctx().ignore_list %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - result: <% switch(isDict(result().output) => result().output, true => {}) %>
+          - ignore_list_from_validation: <% ctx().result.get('ignore') %>
+        do:
+          - GET_Backup_Report
+      - when: <% failed() %>
+        do: fail
+
+  # [1192, 601]
+  Validate_No_Activity:
+    action: core.noop
+    next:
+      - when: <% len(ctx().ignore_list_no_activity) > 0 %>
+        do:
+          - Create_Ticket_No_Activity
+
+  # [1292, 51]
+  Create_Ticket_No_Activity:
+    action: sim_braas_action.ticket_creation_grid
+    input:
+      grid_name: <% item() %>
+      subject: "Urgent: No Backup Activitiy has been detected on Avamar Grid"
+      ticket_desc: "No Backup Activitiy has been detected on Avamar Grid {grid}.\nService Desk are to escalate this as a P2 to the Cloud Team as per the On-Call Roster."
+    with:
+      items: <% ctx().ignore_list_no_activity %>
+    next:
+      - when: <% succeeded() or Failed() %>
+        do: noop
+
+  # [892, 301]
+  Validate_Bulk_Failures:
+    action: core.noop
+    next:
+      - when: <% len(ctx().ignore_list_from_failures) > 0 %>
+        do:
+          - Create_Ticket_Bulk_Failures
+
+  # [1242, 401]
+  Create_Ticket_Bulk_Failures:
+    action: sim_braas_action.ticket_creation_grid
+    input:
+      grid_name: <% item() %>
+      subject: "Urgent: There are more than 10 failures on the GRID"
+      ticket_desc: "There are more than 10 failures on the GRID - {grid}.\nService Desk are to escalate this as a P2 to the Cloud Team as per the On-Call Roster."
+    with:
+      items: <% ctx().ignore_list_from_failures %>
+    next:
+      - when: <% succeeded() or Failed() %>
+        do: noop
+
+  Query_Net_Customers:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      connection: cloudmanagement
+      query: select Name, IaaSCode, ServiceNowAccountID, SelcommAccountNumber FROM NetworkCustomer WHERE IaaSCode != ''
+    next:
+      - when: <% succeeded() and ctx().perform_grid_check = true %>
+        publish:
+          - customers: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Validate_Execution_Status
+      - when: <% succeeded() and ctx().perform_grid_check != true %>
+        publish:
+          - customers: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - GET_Backup_Report
+      - when: <% failed() %>
+        do: fail
+
+
+  # [542, 1]
+  Store_Ignore_List:
+    action: sim_braas_action.data_store
+    input:
+      key: <% ctx().key_name %>
+      value: <% ctx().ignore_list %>
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  # [892, 551]
+  End:
+    action: core.noop

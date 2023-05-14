@@ -1,0 +1,27 @@
+pack: sim_core
+enabled: true
+runner_type: orquesta
+name: get_execution_output
+entry_point: workflows/get_execution_output.yaml
+description: Get execution output
+parameters:
+  execution_ids:
+    type: array
+    required: true
+  ticket_id:
+    type: string
+  st2apikey:
+    type: string
+    description: St2 api key for getting execution output
+  instance:
+    type: string
+    description: Instance url
+    default: 127.0.0.1
+  itsm_url:
+    type: string
+    default: "https://helpdesk.essist.com.au"
+  itsm_auth_token:
+    type: string
+    description: ITSM auth token
+  itsm_client_id:
+    type: string

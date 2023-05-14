@@ -1,0 +1,49 @@
+pack: sim_exchange
+enabled: true
+runner_type: orquesta
+name: create_mailboxscript
+entry_point: workflows/create_mailboxscript.yaml
+description: Create mailbox by calling dedicated script
+parameters:
+  SamAccountName:
+    type: string
+    description: AD account short name
+    required: true
+    default: damodaran.swamy
+  email_address:
+    type: string
+    description: email address to be created
+    required: true
+    default: damodaran.swamy@etest.systems
+  mailbox_type:
+    type: string
+    description: type of the mailbox account
+    required: true
+    enum:
+      - Room
+      - Equipment
+      - Shared
+      - User
+  exchange_host:
+    type: string
+    description: exchange server
+    required: true
+    default: 10.234.17.24
+  exchange_username:
+    type: string
+    description: exchange server username
+    required: true
+    default: sim_test
+  exchange_password:
+    type: string
+    description: exchange server password
+    required: true
+    secret: true
+  ad_host:
+    type: string
+    description: ad host ip
+    required: true
+    default: 10.234.16.10
+  use_commands_instead:
+    type: string
+    default: "YES" 

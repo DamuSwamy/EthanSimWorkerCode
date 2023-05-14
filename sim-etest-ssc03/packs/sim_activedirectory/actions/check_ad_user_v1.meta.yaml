@@ -1,0 +1,5 @@
+pack: sim_activedirectory
+enabled: true
+runner_type: orquesta
+name: check_ad_user_v1
+entry_point: workflows/check_ad_user_v1.yaml

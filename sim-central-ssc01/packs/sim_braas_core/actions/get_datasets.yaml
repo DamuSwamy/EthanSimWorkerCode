@@ -1,0 +1,16 @@
+---
+name: get_datasets
+runner_type: python-script
+description: Retrieves the datasets from the Braas server. 
+enabled: true
+entry_point: get_datasets.py
+parameters:
+  braas:
+    type: "string"
+    description: Pre-Configured braas connection details
+    required: true
+  access_token:
+    type: "string"
+    description: Access token if you have the token already else blank
+    required: false
+

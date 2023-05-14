@@ -1,0 +1,151 @@
+version: 1.0
+tasks:
+  # [380, 234]
+  enable_ad_user:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: Enable-ADAccount -Identity <% ctx().user %>  -Verbose
+      host: <% ctx().ad_host %>
+      password: <% ctx().password %>
+      username: <% ctx().username %>
+      verify_ssl_cert: false
+      port: 5985
+    next:
+      - do:
+          - remove_description
+  # [383, 355]
+  remove_description:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: set-aduser -Identity <% ctx().user %>  -description " "  -Verbose
+      host: <% ctx().ad_host %>
+      password: <% ctx().password %>
+      username: <% ctx().username %>
+      verify_ssl_cert: false
+      port: 5985
+    next:
+      - do:
+          - copy_membs
+  # [387, 467]
+  copy_membs:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: Get-ADUser -Identity <% ctx().model_user %> -Properties memberof | Select-Object -ExpandProperty memberof | Add-ADGroupMember -Members <% ctx().user %>
+      password: <% ctx().password %>
+      username: <% ctx().username %>
+      verify_ssl_cert: false
+      host: <% ctx().ad_host %>
+      port: 5985
+    next:
+      - do:
+          - add_manager
+  # [682, 37]
+  add_manager:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "Get-ADUser -Identity <% ctx().user %> | Set-ADUser -Manager \"Aman.Mujawar\""
+      host: <% ctx().ad_host %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+      verify_ssl_cert: false
+      port: 5985
+    next:
+      - do:
+          - move_back_original_ou
+  # [683, 136]
+  move_back_original_ou:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: (Get-ADUser -Identity <% ctx().user %> ).distinguishedName | Move-ADObject -TargetPath "OU=Test,OU=ECORP EUC,DC=ecorp,DC=systems" -Verbose
+      host: <% ctx().ad_host %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+      verify_ssl_cert: false
+      port: 5985
+    next:
+      - do:
+          - unhide
+  # [681, 405]
+  convert_to_regular:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "Connect-ExchangeOnline -ShowBanner:$false -CertificateFilePath \"C:/Certs/Sim-Offboard-eCorp.pfx\" -CertificatePassword (ConvertTo-SecureString -String ('.|($!l_$qP/+a^p!)}|.GF(!^P=n|i') -AsPlainText -Force) -AppID \"20acf5a3-610b-42ae-a6c1-60e288948d76\" -Organization \"ecorpsystems.onmicrosoft.com\"\nSet-Mailbox -Identity sim2.test2@ethan.com.au -Type Regular\nDisconnect-ExchangeOnline -Confirm:$false -InformationAction Ignore -ErrorAction SilentlyContinue"
+      host: <% ctx().ad_host %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+      verify_ssl_cert: false
+      timeout: 180
+      port: 5985
+    next:
+      - do:
+          - add_licenes
+  # [990, 462]
+  add_licenes:
+    action: core.http
+    input:
+      url: "https://graph.microsoft.com/v1.0/users/sim2.test2@ethan.com.au/assignLicense"
+      body: "{\"addLicenses\":[{\"skuId\":\"18181a46-0d4e-45cd-891e-60aabd171b4e\"},{\"skuId\":\"f30db892-07e9-47e9-837c-80727f46fd3d\"},{\"skuId\":\"a403ebcc-fae0-4ca2-8c8c-7a907fd6c235\"}],\"removeLicenses\":[]}"
+      method: POST
+      headers:
+        Authorization: Bearer <% ctx().token %>
+        Content-Type: application/json
+    next:
+      - do:
+          - unblock_signin
+        publish:
+          - licenses_output: <% result() %>
+  # [984, 340]
+  unblock_signin:
+    action: core.http
+    input:
+      url: "https://graph.microsoft.com/v1.0/users/sim2.test2@ethan.com.au"
+      body: "{\"accountEnabled\": \"true\"}"
+      headers:
+        Authorization: Bearer <% ctx().token %>
+        Content-Type: application/json
+      method: PATCH
+  # [382, 116]
+  get_token:
+    action: core.http
+    input:
+      url: "https://login.microsoftonline.com/455ac8b0-5713-4dd7-be28-3898e9505f7e /oauth2/v2.0/token"
+      body: client_id=20acf5a3-610b-42ae-a6c1-60e288948d76&scope=https%3A%2F%2Fgraph.microsoft.com%2F.default&client_secret=Xvo8Q~xyxhtuDa_rcASU-E4tryPMriWC7EhNrbWV&grant_type=client_credentials
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+      method: GET
+    next:
+      - do:
+          - enable_ad_user
+        publish:
+          - token: <% result().body. access_token %>
+  # [681, 272]
+  unhide:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: Set-ADObject -Identity cdfeef05-4d00-4160-9dc6-4589600397dd -Replace @{msExchHideFromAddressLists=$false} -Verbose
+      host: <% ctx().ad_host %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+      verify_ssl_cert: false
+      port: 5985
+    next:
+      - do:
+          - convert_to_regular
+        publish:
+          - unhide_output: <% result() %>
+input:
+  - ad_host
+  - username
+  - password
+  - user
+  - model_user
+output:
+  - unhide_output: <% ctx().unhide_output %>
+  - licenses_output: <% ctx().licenses_output %>

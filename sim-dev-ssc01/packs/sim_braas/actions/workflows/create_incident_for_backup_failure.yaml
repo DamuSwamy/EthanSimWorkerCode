@@ -1,0 +1,137 @@
+---
+version: 1.0
+
+description: Automated case creation for backup failure events
+
+vars:
+  - notifications: []
+  - process_name: "Backup Failure Case Creation"
+
+input:
+  - input_backup_failure_object
+  - input_snow_customer_object
+
+output:
+  - notifications: <% ctx().notifications %>
+
+tasks:
+  # [105, 18]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notification: |
+              (<% ctx().process_name%>) process started
+        do:
+          - notify
+          - format_user_input
+
+  # [102, 145]
+  format_user_input:
+    action: sim_braas.extract_data_from_json
+    input:
+      input_json_1: <% ctx().input_backup_failure_object %>
+      input_json_2: <% ctx().input_snow_customer_object %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - formulated_output: <% result().output.output_json.clients %>
+          - notification: |
+              Formulated output : (<% ctx().formulated_output %>)!
+        do:
+          - notify
+          - construct_mapping
+
+  # [104, 274]
+  construct_mapping:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - account_map: <% ctx(formulated_output).select($.domainName) %>
+          - notification: "sys_id={{ ctx().account_map | join('^ORsys_id=') }}"
+        do:
+          - notify
+          - get_customer_account_name
+
+  # [102, 416]
+  get_customer_account_name:
+    action: sim_itsm2.get
+    input:
+      log_level: DEBUG
+      table: customer_account
+      query:
+        sys_id: "{{ ctx().account_map | join('^ORsys_id=') }}"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - customer_output: <% result().result %>
+          - notification: <% ctx().customer_output %>
+        do:
+          - notify
+          - construct_client_sysid_mapping
+
+  # [102, 523]
+  construct_client_sysid_mapping:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - client_sysid_map: <% dict(output=>dict(ctx(customer_output).select([$.sys_id, $.name]))) %> 
+          - notification: <% ctx().client_sysid_map %>
+        do:
+          - notify
+          - print_output
+
+  # [109, 799]
+  create_itsm_ticket:
+    action: sim_itsm2.create_record
+    input:
+      log_level: DEBUG
+      payload:
+        contact: "<% ctx().client_sysid_map.output[item(client_obj).domainName] %> Guest Contact"
+        comments: <% item(client_obj).statusCodeSummary %>
+        category: Incident
+        subcategory: Functionality
+        notes_to_comments: true
+        service_offering: Backup as a Service
+        assignment_group: Infrastructure Services
+        short_description: "Backup Failure - <% item(client_obj).clientName %> - 1st Failure"
+        account: <% item(client_obj).domainName %>
+        description: <% item(client_obj) %>
+      table: sn_customerservice_general_case
+    with:
+      items: client_obj in <% ctx().formulated_output %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notification: |
+               The case(s) successfully created!
+        do:
+          - notify
+      - when: <% failed() %>
+        publish:
+          - notification: |
+               The case(s) failed to create!
+        do:
+          - notify 
+
+  # [523, 448]
+  notify:
+    action: core.echo
+    input:
+      message: |
+        <% ctx().notification %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notifications: <% ctx().notifications.append(ctx().notification) %>
+  # [96, 660]
+  print_output:
+    action: core.echo
+    input:
+      message: "\"<% ctx().client_sysid_map %>\""
+    next:
+      - do:
+          - create_itsm_ticket

@@ -1,0 +1,132 @@
+---
+version: 1.0
+
+description: case creation logic
+
+vars:
+  - notifications: []
+  - process_name: "ServiceNow case validation"
+
+input:
+  - account_id
+  - grid_name
+  - account_name
+  - subject
+  - ticket_desc
+
+output:
+  - notifications: <% ctx().notifications %>
+
+tasks:
+
+  # [192, 51]
+  start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - urgency: 2
+          - impact: 2
+        do: 
+          - validate_case_exists
+
+  validate_case_exists:
+    action: sim_itsm2.get
+    input:
+      log_level: DEBUG
+      table: sn_customerservice_general_case
+      query:
+        active: true^state!=6^account=<% ctx().account_id %>^short_descriptionLIKE<% ctx().subject %>^short_descriptionLIKE<% ctx().grid_name %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - related_cases: <% result().result %>
+          - related_case_count: <% len(ctx().related_cases) %>
+          - notification: |
+                 <% ctx().related_case_count %> cases already available for the grid (<% ctx().grid_name %>)
+        do:
+          - notify
+          - create_itsm_ticket
+      - when: <% failed() %>
+        publish:
+          - related_cases: []
+          - related_case_count: 0
+          - notification: |
+                 No case found for the grid (<% ctx().grid_name %>)
+        do:
+          - notify
+          - create_itsm_ticket
+  
+  create_itsm_ticket:
+    action: sim_itsm2.create_record
+    input:
+      log_level: DEBUG
+      payload:
+        contact: "<% ctx().account_name %> Guest Contact"
+        contact_type: Alert
+        category: Event
+        subcategory: Infrastructure
+        notes_to_comments: true
+        service_offering: Backup as a Service
+        assignment_group: Event Management
+        short_description: "<% ctx().subject %> - <% ctx().grid_name %> - <% str(ctx().related_case_count+1) %>"
+        account: <% ctx().account_id %>
+        description: <% ctx().ticket_desc.replace("{grid}", ctx().grid_name) %>
+        urgency: <% ctx().urgency %>
+        impact: <% ctx().impact %>
+      table: sn_customerservice_general_case
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - current_case: <% result().result %>
+          - notification: |
+               The case successfully created for <% ctx().grid_name %> (<% ctx().current_case.number %>)
+        do:
+          - notify
+          - make_parent_child_relations
+      - when: <% failed() %>
+        publish:
+          - current_case: {}
+          - notification: |
+               The case failed to create for <% ctx().grid_name %>
+        do:
+          - notify
+          - fail
+
+  make_parent_child_relations:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% item(case).number %>
+      payload:
+        parent: <% ctx().current_case.number %>
+      table: sn_customerservice_general_case
+    with:
+      items: case in <% ctx().related_cases %>
+    next:
+      - when: <% succeeded() and ctx().related_case_count > 0 %>
+        publish:
+          - notification: |
+               The parent-child relation action successfully completed.
+        do:
+          - notify
+          - end
+      - when: <% failed() %>
+        publish:
+          - notification: |
+               Something went wrong while parent-child relationship function!
+        do:
+          - notify
+          - fail
+  
+  notify:
+    action: core.echo
+    input:
+      message: |
+        <% ctx().notification %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notifications: <% ctx().notifications.append(ctx().notification) %>
+  end:
+    action: core.noop

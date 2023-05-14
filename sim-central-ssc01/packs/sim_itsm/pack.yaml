@@ -1,0 +1,20 @@
+---
+ref: sim_itsm
+name: SiM ITSM
+description: IT Service Management and Ticketing system related actions
+keywords:
+    - sim
+    - itsm
+    - ticket
+version: 1.0.0
+python_versions:
+  - "2"
+  - "3"
+dependencies:
+  - core
+# Name of the pack author.
+author: Accelnomics Technologies Private Limited.
+# Email of the pack author.
+email: core@accelnomics.com
+contributors:
+  - "Venkat <venkat@accelnomics.com>"

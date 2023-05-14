@@ -1,0 +1,27 @@
+version: 1.0
+tasks:
+  # [297, 67]
+  Start:
+    action: core.noop
+    next:
+      - do:
+          - extract_1
+        publish:
+          - first_json: <%ctx().input_json %>
+        when: <% succeeded() %>
+  # [296, 403]
+  End:
+    action: core.noop
+  # [296, 216]
+  extract_1:
+    action: core.noop
+    next:
+      - do:
+          - End
+        when: <% succeeded() %>
+        publish:
+          - output_json: <% ctx().first_json.REPORT.EXPRESSION.select([$.MULTI.INSTANCE.name,$.MULTI.INSTANCE.ITEM.text])%>
+input:
+  - input_json
+output:
+  - output_json: <% ctx().output_json %>

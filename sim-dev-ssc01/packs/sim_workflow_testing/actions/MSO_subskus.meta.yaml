@@ -1,0 +1,5 @@
+pack: sim_workflow_testing
+enabled: true
+runner_type: orquesta
+name: MSO_subskus
+entry_point: workflows/MSO_subskus.yaml

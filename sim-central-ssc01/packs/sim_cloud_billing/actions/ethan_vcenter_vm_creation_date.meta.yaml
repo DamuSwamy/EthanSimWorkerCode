@@ -1,0 +1,38 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_vcenter_vm_creation_date
+entry_point: workflows/ethan_vcenter_vm_creation_date.yaml
+description: Get VM creation date by looking into the events history
+parameters:
+  billing_db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: dev_billing
+    position: 2
+  cloud_db_connection: 
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: false
+    default: dev_cloudmanagement
+    position: 3
+  vcenter:
+    type: "string"
+    description: Pre-Configured vsphere connection details
+    required: true
+    position: 0
+  vcenter_id:
+    type: "string"
+    description: Custom vCenter ID from ethan
+    required: true
+    position: 1
+  cmdb_db_connection:
+    type: string
+    description: CMDB Database connection to query customers information
+    required: false
+    default: cmdb_Ethoria
+  proxy_vcenters:
+    type: array
+    description: List of vcenter which are client specific and connecting through worker node
+    required: false

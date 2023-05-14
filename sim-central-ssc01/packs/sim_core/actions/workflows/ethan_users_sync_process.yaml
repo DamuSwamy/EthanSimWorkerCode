@@ -1,0 +1,113 @@
+---
+version: 1.0
+
+description: Merge individual customer csv files to a single csv and insert the data to database
+
+# declaration of variables
+vars:
+  - user_table_name: EthanCustomerUserAccounts
+  - temp_table_name: EthanCustomerUserAccountsTmp
+  - result: []
+
+# automation inputs 
+input: 
+  - storage_account_name
+  - container_name
+  - output_csv_path
+  - db_connection
+  - sas_config
+
+# automation outputs
+output:
+  - messages: "Inerted <% len(ctx().result) %> records"
+  
+# automation tasks 
+tasks:
+  # [165, 12]
+  azure_blob_generate_data:
+    action: sim_core.azure_blob_merge_csv
+    input:
+      storage_account_name: <% ctx().storage_account_name %>
+      container_name: <% ctx().container_name %>
+      output_folder_path: <% ctx().output_csv_path %>
+      input_folder_path: <% (now(offset=>localtz())).format("%b-%Y") %>
+      sas_config: <% ctx().sas_config %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - result: <% result().result %>
+        do:
+          - delete_tmp_records
+      - when: <% failed() %>
+        do: fail
+
+  copy_data_from_prod_to_temp:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: INSERT INTO EthanCustomerUserAccountsTmp SELECT * FROM EthanCustomerUserAccounts
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - delete_prod_records
+      - when: <% failed() %>
+        do: fail
+
+  # [215, 362]
+  insert_live_user_data:
+    action: sql.insert_bulk
+    input:
+      table: EthanCustomerUserAccounts
+      data: <% ctx().result %>
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - update_prod_data_fields
+      - when: <% failed() %>
+        do: fail
+
+  update_prod_data_fields:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: UPDATE EthanCustomerUserAccounts SET EthanCustomerUserAccounts.Falsepositive = EAT.Falsepositive,EthanCustomerUserAccounts.Falsepositivereason = EAT.Falsepositivereason,EthanCustomerUserAccounts.EthanServiceAccount = EAT.EthanServiceAccount,EthanCustomerUserAccounts.EthanGenericAccount = EAT.EthanGenericAccount FROM EthanCustomerUserAccountsTmp EAT INNER JOIN EthanCustomerUserAccounts EA ON EAT.ObjectID = EA.ObjectID AND (EAT.Falsepositive IS NOT NULL OR EAT.EthanServiceAccount IS NOT NULL OR EAT.EthanGenericAccount IS NOT NULL OR EAT.Falsepositivereason IS NOT NULL)
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - end
+      - when: <% failed() %>
+        do: fail
+    
+  # [15, 512]
+  end:
+    action: core.noop
+
+  # [435, 157]
+  delete_tmp_records:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: DELETE FROM EthanCustomerUserAccountsTmp
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - copy_data_from_prod_to_temp
+      - when: <% failed() %>
+        do: fail
+
+  delete_prod_records:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: DELETE FROM EthanCustomerUserAccounts
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - insert_live_user_data
+      - when: <% failed() %>
+        do: fail

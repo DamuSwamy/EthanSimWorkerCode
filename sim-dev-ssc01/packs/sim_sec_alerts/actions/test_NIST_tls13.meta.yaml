@@ -1,0 +1,6 @@
+pack: sim_sec_alerts
+enabled: true
+runner_type: orquesta
+name: test_NIST_tls13
+entry_point: workflows/test_NIST_tls13.yaml
+description: testing NIST TLS 1.3

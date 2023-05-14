@@ -1,0 +1,6 @@
+ssl_verify: false
+braas:
+  ric.braas.ethoria.services:
+    host: ric.braas.ethoria.services
+    passwd: 'ckVW-sutB-cE8o-k49J'
+    user: svc_csp_api

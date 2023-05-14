@@ -1,0 +1,38 @@
+pack: sim_cisco_compliance_v2
+enabled: true
+runner_type: "python-script"
+name: perform_compliance_check
+entry_point: "perform_compliance_check.py"
+description: Get Device config from NetDB
+parameters:
+  customer_id:
+    type: string
+    description: customer id
+    required: true
+  devices:
+    type: array
+    description: Devices list to perform compliance check
+    required: true
+  start:
+    type: integer
+    description: start index of the json output to start with
+    required: true
+    default: 0
+  end:
+    type: integer
+    description: Threshold limit for batch processing 
+    required: true
+  exclude_list:
+    type: array
+    description: List of device type excluded form compliance check
+    required: false
+    default: ['Firewall']
+  auth_token:
+    type: string
+    description: The query params to append endpoint
+    required: false
+  method:
+    type: string
+    description: "Optional override of the method."
+    required: false
+    default: GET

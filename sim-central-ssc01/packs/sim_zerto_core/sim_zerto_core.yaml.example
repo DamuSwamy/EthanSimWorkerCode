@@ -1,0 +1,7 @@
+ssl_verify: false
+zerto:
+  zcm_one:
+    host: 210.48.215.37
+    passwd: paasword
+    user: username
+    port: 443

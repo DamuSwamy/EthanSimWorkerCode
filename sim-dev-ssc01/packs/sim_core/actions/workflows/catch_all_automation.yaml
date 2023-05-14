@@ -1,0 +1,379 @@
+---
+version: 1.0
+
+description: catch all automation 
+
+# declaration of variables
+vars:
+  - result: null
+  - messages: list()
+  - response: list()
+  - ticket_id: empty
+  - schedule_for_later: false
+  - random_number: 0
+  - scheduled_robot_data: null
+  - contact_name: "PaulHooper"
+
+# automation inputs 
+input: 
+  - robot_name
+  - robot_type
+  - robot_data
+
+# automation outputs
+output:
+  - messages: <% ctx().messages %>
+  - output: <% ctx().output %>
+  
+# automation tasks 
+tasks:
+
+  # acknowledge execution request
+  # [234, 24]
+  ack_request: 
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish: 
+          - message: Executing automation <% ctx().robot_name %>
+          - response:
+              state: RUNNING
+              data: null
+              info: <% " Execution began in SiM-Central " + ctx().robot_name  %>
+          - scheduled_robot_data: <% ctx().robot_data %>
+          - ticket_id: <% ctx().robot_data.itsm.details.ticket_id %>
+          - auth_token_controlloer: <% ctx().robot_data.destination.controller.St2ApiKey %>
+          - auth_token_worker: <% ctx().robot_data.destination.worker.St2ApiKey %>
+          - ticket_initial_summary: <% ctx().robot_data.itsm.details.ticket_initial_summary  %>
+          - first_update: <% ctx().robot_data.itsm.details.first_update  %>
+          - auth_token_itsm: <% ctx().robot_data.itsm.details.auth_token  %>
+          - itsm_clientid: <% ctx().robot_data.itsm.details.client_id  %>
+          - itsm_url: <% ctx().robot_data.itsm.details.url  %>
+        # #629e47
+        do: 
+          - initial_ticket_update
+  # execute secondary automation which involkes target automation
+  # [303, 525]
+  execute_automation: 
+    action: sim_core.catch_all_automation_target_v2
+    input: 
+      name: <% ctx().robot_name %>
+      type: <% ctx().robot_type %>
+      data: <% ctx().robot_data %>
+      ticket_id: <% ctx().ticket_id %>
+    next: 
+      - when: <% succeeded()  and result().output.info.state = "REMEDIATION" %>
+        publish: 
+          - message: <% ctx().robot_name %> finished with code 0
+          - output: <% switch(isDict(result().output) => result().output, true => {}) %>
+          - response:
+              state: <% ctx().output.get('state', "FINISHED") %>
+              data: null
+              info: <% ctx().output.get('info', result().output) %>
+        # #629e47
+        do:
+          - resolution_update
+      - when: <% failed() or result().output.info.state = "DIAGNOSIS" %>
+        publish:
+          - message: robot (<% ctx().robot_name %>) errored out or actions failed
+          - output: <% switch(isDict(result().output) => result().output, true => {}) %>
+          - response:
+              state: <% ctx().output.get('state', "FINISHED") %>
+              data: null
+              info: <% ctx().output.get('info', result().output) %>
+        # #629e47
+        do: 
+          - escalate_ticket_update
+      # #629e47
+      - do:
+          - create_another_ticket
+        when: <% succeeded()  and  len(result().output.info.info. next_action_attributes.get('create', {})) > 0  %>
+      # #629e47
+      - do:
+          - deactivate_user
+        when: <% succeeded()  and  len(result().output.info.info. next_action_attributes.get('deactivate', {})) > 0  %>
+  # [235, 122]
+  initial_ticket_update:
+    action: core.echo
+    input:
+      message: "\"<% ctx().first_update %>\""
+    next:
+      # #629e47
+      - do:
+          - decision_create_or_update
+        when: <% succeeded() %>
+        publish:
+          - ticket_initial_description: <% result().stdout %>
+  # [73, 319]
+  Create_Connectwise_Ticket:
+    action: sim_itsm.create_connectwise_ticket
+    next:
+      # #629e47
+      - do:
+          - decide_now_or_later
+        publish:
+          - ticket_id: <% str(result().output.ticket_id) %>
+          - robot_data: <% ctx().robot_data.set(itsm, ctx().robot_data.itsm.set(details, ctx().robot_data.itsm.details.set(ticket_id, str(result().output.ticket_id)))) %>
+    input:
+      ticket_initialDescription: "\"<% ctx().ticket_initial_description %>\""
+      ticket_summary: "\"<% ctx().ticket_initial_summary %>\""
+      board_name: "\" MS - Service Requests\""
+      team_name: "\"Managed Services\""
+      ticket_contactName: <% ctx().contact_name %>
+      agreement: "\"3381\""
+      item: "\"Add Backup\""
+      owner: "\"svs_simauto\""
+      source_name: "\"Customer Portal\""
+      status: "\"In Progress\""
+      subtype: "\"Avamar\""
+      type: "\"Backup\""
+      auth_token: ZXNzaXN0ZGV2K3RuTWpvOWZ2WkhneHVKeU06SkZIYWx2VHVBZ2JpdFlQcg==
+      company_name: "\"Ethan Group\""
+  # [231, 421]
+  decide_now_or_later:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - execute_automation
+        when: <%  ctx().robot_data.data.custom_attributes.offboarding_type = "immediate"   %> 
+      # #aa5dd1
+      - do:
+          - update_robot_data_ticket_id
+        when: <% ctx().robot_data.data.custom_attributes.offboarding_type = "schedule" %>
+        publish:
+          - random_number: <% random(1,9999999) %>
+      - do:
+          - suspend
+        when: <%  ctx().robot_data.data.custom_attributes.offboarding_type = "suspend"  %>
+  # [838, 806]
+  schedule_later:
+    action: core.http
+    input:
+      url: <% ctx().robot_data.destination.controller.url %>/api/v1/rules
+      headers:
+        St2-Api-Key: <% ctx().robot_data.destination.controller.St2ApiKey %>
+      body: "{\"pack\":\"sim_core\",\"enabled\":true,\"trigger\":{\"type\":\"core.st2.DateTimer\",\"parameters\":{\"date\":\"<% datetime(ctx().robot_data.data.custom_attributes.final_date, \"%d/%m/%Y\") + timespan(hours => 10, minutes => 17) %>\",\"timezone\":\"UTC\"}},\"criteria\":{},\"action\":{\"ref\":\"sim_core.catch_all_automation\",\"parameters\":{\"robot_data\":\"<% ctx().scheduled_robot_data %>\",\"robot_name\":\"<% ctx().robot_name %>\",\"robot_type\":\"<% ctx().robot_type %>\"}},\"name\":\"catchall_schedule_<% ctx().random_number %>\",\"description\":\"catchall_schedule_<% ctx().random_number %>\"}"
+      url_hosts_blacklist: null
+      password: "@cceln0micS"
+      verify_ssl_cert: false
+    next:
+      # #629e47
+      - do:
+          - Schedule_Success
+        when: <% succeeded() %>
+
+  # [838, 912]
+  Schedule_Success:
+    action: core.noop
+  # [361, 315]
+  Update_Existing_Ticket:
+    action: sim_itsm.update_connectwise_ticket
+    input:
+      ticket_text: "\"Automation has started execution of request for ITSM ticket number - <% ctx().robot_data.itsm.details.ticket_id %>\""
+      ticket_id: <% ctx().ticket_id %>
+      auth_token: <% ctx().auth_token_itsm %>
+      itsm_url: <% ctx().itsm_url %>
+      detailDescriptionFlag: "\"true\""
+      internalAnalysisFlag: "\"false\""
+      issueFlag: "\"false\""
+      resolutionFlag: "\"false\""
+    next:
+      # #aa5dd1
+      - do:
+          - decide_now_or_later
+  # [235, 218]
+  decision_create_or_update:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - Create_Connectwise_Ticket
+        when: <%  ctx().robot_data.itsm.details.ticket_id  = "" %>
+      # #aa5dd1
+      - do:
+          - Update_Existing_Ticket
+        when: <%  ctx().robot_data.itsm.details.ticket_id   = "" %>
+      - do:
+          - decide_now_or_later
+  # [838, 589]
+  update_robot_data_ticket_id:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - update_robot_data_offboarding_type
+        when: <% succeeded() %>
+        publish:
+          - scheduled_robot_data: <% ctx().scheduled_robot_data.set(itsm, ctx().scheduled_robot_data.itsm.set(details, ctx().scheduled_robot_data.itsm.details.set(ticket_id, ctx().ticket_id ))) %>
+  # [838, 694]
+  update_robot_data_offboarding_type:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - schedule_later
+        when: <% succeeded() %>
+        publish:
+          - scheduled_robot_data: <% ctx().scheduled_robot_data.set(data,ctx().scheduled_robot_data.data.set(custom_attributes,ctx().scheduled_robot_data.data.custom_attributes.set(offboarding_type,"immediate"))) %>
+  # [617, 668]
+  escalate_ticket_update:
+    action: sim_itsm.update_connectwise_ticket
+    input:
+      ticket_text: "\"Sim Automation is escalating the service request to engineer as automation was not able to complete the operation as per request\""
+      ticket_id: <% ctx().ticket_id %>
+      auth_token: ZXNzaXN0ZGV2K3RuTWpvOWZ2WkhneHVKeU06SkZIYWx2VHVBZ2JpdFlQcg==
+      detailDescriptionFlag: "\"true\""
+      internalAnalysisFlag: "\"false\""
+      issueFlag: "\"false\""
+      resolutionFlag: "\"false\""
+      itsm_url: <% ctx().itsm_url %>
+    next:
+      # #629e47
+      - do:
+          - push_ticket
+  # [395, 667]
+  resolution_update:
+    action: sim_itsm.update_connectwise_ticket
+    input:
+      resolutionFlag: "\"true\""
+      ticket_id: <% ctx().ticket_id %>
+      ticket_text: "\"Sim Automation is resolving the service request after completion of operation as per request\""
+      auth_token: ZXNzaXN0ZGV2K3RuTWpvOWZ2WkhneHVKeU06SkZIYWx2VHVBZ2JpdFlQcg==
+      detailDescriptionFlag: "\"true\""
+      internalAnalysisFlag: "\"false\""
+      issueFlag: "\"false\""
+      itsm_url: <% ctx().itsm_url %>
+    next:
+      # #629e47
+      - do:
+          - resolve_ticket
+  # [269, 998]
+  complete:
+    action: core.echo
+    input:
+      message: "<% ctx().messages %>"
+  # [0, 662]
+  create_another_ticket:
+    action: sim_itsm.create_connectwise_ticket
+    next:
+      # #629e47
+      - do:
+          - done
+    input:
+      ticket_summary: "\"Mitel <% ctx().ticket_initial_summary %>\""
+      ticket_initialDescription: "\"<% ctx().ticket_initial_description %>\""
+      board_name: "\" UC - Service Requests\""
+      team_name: "\"UC\""
+      ticket_contactName: <% ctx().contact_name %>
+      agreement: "\"3381\""
+      item: "\"Decomissioning\""
+      owner: null
+      source_name: "\"Customer Portal\""
+      status: "\"New\""
+      subtype: "\"Call Catch\""
+      type: "\"UC Business Application\""
+      auth_token: ZXNzaXN0ZGV2K3RuTWpvOWZ2WkhneHVKeU06SkZIYWx2VHVBZ2JpdFlQcg==
+      company_name: "\"Ethan Group\""
+  # [130, 773]
+  deactivate_user:
+    action: sim_itsm.deactivate_user
+    next:
+      # #629e47
+      - do:
+          - done
+    input:
+      auth_token: ZXNzaXN0ZGV2K3RuTWpvOWZ2WkhneHVKeU06SkZIYWx2VHVBZ2JpdFlQcg==
+      user_email: aman.mujawar@ethan.com.au
+  # [391, 770]
+  resolve_ticket:
+    action: sim_itsm.resolve_connectwise_ticket
+    next:
+      # #629e47
+      - do:
+          - done
+    input:
+      ticket_id: <% ctx().ticket_id %>
+      auth_token: ZXNzaXN0ZGV2K3RuTWpvOWZ2WkhneHVKeU06SkZIYWx2VHVBZ2JpdFlQcg==
+      closure_code: Telco
+      status: Closed - Resolved
+  # [269, 896]
+  done:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - complete
+        publish:
+          - messages: <% ctx().message  %>
+  # [619, 771]
+  push_ticket:
+    action: sim_itsm.escalate_connectwise_ticket
+    input:
+      ticket_id: <% ctx().ticket_id %>
+      auth_token: ZXNzaXN0ZGV2K3RuTWpvOWZ2WkhneHVKeU06SkZIYWx2VHVBZ2JpdFlQcg==
+      status: "\"In Progress\""
+      owner: "\"\""
+      instance: <% ctx().itsm_url %>
+    next:
+      # #629e47
+      - do:
+          - done
+  # [37, 524]
+  suspend:
+    action: core.noop
+    next:
+      - do:
+          - execute_automation
+  # [849, 0]
+  begin:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - ack_request
+        when: <%  ctx().robot_type = "REQUEST" %>
+      - do:
+          - adhoc_no_ticket
+        when: <%  ctx().robot_type = "ADHOC" %>
+      - when: <% failed() %>
+  # [845, 115]
+  adhoc_no_ticket:
+    action: core.noop
+    next:
+      - do:
+          - execute_adhoc_automation
+        publish:
+          - ticket_id: "\"00000000\""
+  # [840, 221]
+  execute_adhoc_automation:
+    action: sim_core.catch_all_automation_target_v2
+    input:
+      name: <% ctx().robot_name %>
+      type: <% ctx().robot_type %>
+      data: <% ctx().robot_data %>
+      ticket_id: <% ctx().ticket_id %>
+    next:
+      - do:
+          - done_adhoc
+        when: <% succeeded() %>
+        publish:
+          - message: <% ctx().robot_name %> finished with code 0
+          - output: <% switch(isDict(result().output) => result().output, true => {}) %>
+          - response:
+              state: <% ctx().output.get('state', "FINISHED") %>
+              data: null
+              info: <% ctx().output.get('info', result().output) %>
+  # [841, 353]
+  done_adhoc:
+    action: core.noop
+    next:
+      - do:
+          - complete_adhoc
+        publish:
+          - messages: <% ctx().message  %>
+  # [1099, 387]
+  complete_adhoc:
+    action: core.echo
+    input:
+      message: <% ctx().messages %>

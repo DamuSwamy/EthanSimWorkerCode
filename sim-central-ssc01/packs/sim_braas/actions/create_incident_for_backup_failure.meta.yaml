@@ -1,0 +1,19 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: create_incident_for_backup_failure
+entry_point: workflows/create_incident_for_backup_failure.yaml
+description: "Create incident for each of backup failure or exceptions reported "
+parameters:
+  input_backup_failure_object:
+    type: array
+    items:
+      type: object
+    description: input data
+    required: true
+  input_snow_customer_object:
+    type: array
+    items:
+      type: object
+    description: input data
+    required: true

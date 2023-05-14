@@ -1,0 +1,23 @@
+version: 1.0
+tasks:
+  # [282, 156]
+  update_user:
+    action: core.http
+    input:
+      url: "https://funapp-teamsssp-prd.azurewebsites.net/api/UpdateUserProperties"
+      headers:
+        x-functions-key: dJ07oRgRQD1ZrmR6z/BitQamqWHRbNkGiCLUCbLIkHZjU0caQE01ag==
+        Content-Type: application/json
+      body: "{\n  \"tenant_id\": \"b02e50ac-20e5-4c60-bcd4-8454b3201fd1\",\n  \"teams_password_id\": \"1049\",\n  \"user_id\": \"damodaran.swamy@etest.systems\",\n  \"phone_no\": \"NONE\",\n  \"voice_routing_policy\": \"EthanDefaultVRP\",\n  \"calling_line_identity\": \"UserID\",\n  \"calling_policy\": \"AllowCalling\",\n  \"callpark_policy\": \"AllowCallPark\",\n  \"tenant_dial_plan\": \"Demo-International-NSW\"\n}"
+    next:
+      - do:
+          - success
+  # [283, 51]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - update_user
+  # [281, 259]
+  success:
+    action: core.noop

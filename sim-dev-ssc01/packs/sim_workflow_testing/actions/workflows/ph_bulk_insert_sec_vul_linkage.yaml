@@ -1,0 +1,140 @@
+version: 1.0
+tasks:
+  # [847, 320]
+  query_DB:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: Select * from sec_device_linkage
+      database: CloudManagement
+      drivername: mssql
+      host: 192.168.66.8
+      connection: null
+      password: 3ssistB1lling
+      port: 1433
+      username: svc_billingint
+      timeout: 120
+  # [846, 150]
+  insert_db:
+    action: sql.insert_bulk
+    input:
+      log_level: DEBUG
+      table: sec_device_linkage
+      database: null
+      drivername: null
+      host: null
+      port: 1433
+      password: null
+      username: null
+      timeout: 300
+      data:
+        - deviceName: Cisco 10 Gigabit Modules
+          cpeName: 
+          cpeID: 
+        - deviceName: Cisco 1000BASE-SX SFP
+          cpeName: 
+          cpeID: 
+        - deviceName: Cisco 10GBASE-LR X2 Module
+          cpeName: 
+          cpeID: 
+        - deviceName: Cisco 1941 Integrated Services Router
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:1941_integrated_services_router:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco 1941 Integrated Services Router
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:1941:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco 2851/3800 Series 24-Port EtherSwitch (with Stackwise Connectors) Service Module
+          cpeName: 
+          cpeID: 
+        - deviceName: Cisco 2921 Integrated Services Router
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:2921_integrated_services_router:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco 2921 Integrated Services Router
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:2921:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco 4331 Integrated Services Router
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:4331_integrated_services_router:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco 4331 Integrated Services Router
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:isr_4331:-:*:*:*:*:*:*:*:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco 4331 Integrated Services Router
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:integrated_services_router_4331:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco 4351 Integrated Services Router
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:4351_integrated_services_router:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco 4351 Integrated Services Router
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:isr_4351:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco 5520 Wireless Controller
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:5520_wireless_lan_controller:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco 5520 Wireless Controller
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:5520_wireless_controller:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco ASA 5515-X Adaptive Security Appliance
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:asa_5515-x:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco ASA 5515-X Adaptive Security Appliance
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:asa-5515-x:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco ASR 1000 Series IOS XE SD-WAN
+          cpeName: 
+          cpeID: 
+        - deviceName: Cisco ASR 1002-X Router
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:asr_1002-x:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco ASR 1002-X Router
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:asr1002-x:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco C897VA Integrated Services Router
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:c897va_integrated_services_router:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco Catalyst 3650 Stack Module
+          cpeName: 
+          cpeID: 
+        - deviceName: Cisco Catalyst 3650-24PD-L Switch
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:catalyst_3650-24pd-l:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco Catalyst 3650-24PS-S Switch
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:catalyst_3650-24ps-s:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco Catalyst 3650-48PD-S Switch
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:catalyst_3650-48pd-s:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco Catalyst 3650-48PS-E Switch
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:catalyst_3650-48ps-e:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco Catalyst 3650-48PS-S Switch
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:catalyst_3650-48ps-s:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco ISR 4000 Series IOS XE SD-WAN
+          cpeName: 
+          cpeID: 
+        - deviceName: Cisco ME 3400EG-2CS-A Switch
+          cpeName: 
+          cpeID: 
+        - deviceName: Cisco Nexus 2232PP 10GE Fabric Extender
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:nexus_2232pp_10ge:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco Nexus 2248TP-E Fabric Extender
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:nexus_2248tp-e:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco Nexus 5672UP Switch
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:nexus_5672up:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco Nexus 5672UP Switch
+          cpeName: 
+          cpeID: "cpe:2.3:h:cisco:nexus_5672up-16g:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco Nexus 5672UP Switch
+          cpeName: 
+          cpeID: "cpe:2.3:o:cisco:nexus_5672up_firmware:-:*:*:*:*:*:*:*"
+        - deviceName: Cisco Secure Network Server (SNS) 3495 Appliance
+          cpeName: 
+          cpeID: 
+      connection: cloudmanagement
+    next:
+      - do:
+          - query_DB
+

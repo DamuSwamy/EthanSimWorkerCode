@@ -1,0 +1,32 @@
+pack: sim_core
+enabled: true
+runner_type: orquesta
+name: ethan_users_sync_process
+entry_point: workflows/ethan_users_sync_process.yaml
+description: Get latest Users from Azure Storage Explorer and insert into database
+parameters:
+  storage_account_name:
+    type: string
+    description: The storage account name. refers xxxxxx in https://xxxxxxx.blob.core.windows.net
+    required: true
+    default: stsecprdaelrsv2
+  container_name:
+    type: string
+    description: The container name where the input/output to be stored
+    required: true
+    default: storeuserreports
+  sas_config:
+    type: string
+    description: Pre-configured sas token details
+    required: true
+    default: azure_blob_sas
+  output_csv_path:
+    type: string
+    description: Path where output files to be strored
+    required: true
+    default: Automation
+  db_connection:
+    type: string
+    description: DB connection details
+    required: true
+    default: productionCloudExtension

@@ -1,0 +1,109 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - vcenter_id
+  - vmevents
+  - final_action
+
+vars:
+  - valid_events: []
+
+output:
+  - events: <% ctx().valid_events %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - eventIdx: <% ctx(vmevents).select($.evtidx) %>
+          - eventIds: "{{ ctx().eventIdx | unique | list | join(\"','\") }}"
+        do:
+          - SQL_Select_Billing_VMEvents
+
+  SQL_Select_Billing_VMEvents:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT evtidx FROM iaasVMEvents WHERE evtidx IN ('<% ctx().eventIds %>')"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - processed_events: <% switch(isList(result().result) => result().result, true => []) %>
+          - ignore_events: <% ctx(processed_events).select($.evtidx) %>
+          - valid_events: <% ctx(vmevents).where(not $.evtidx in ctx().ignore_events).select($) %>
+          - eventidx: <% ctx(valid_events).select($.evtidx) %>
+          - vmids: <% ctx(valid_events).select($.vmID) %>
+        do:
+          - Check_For_Records
+      - when: <% failed() %>
+        do: fail
+
+  Check_For_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().vmids) > 0 %>
+        publish:
+          - uniq_vmids: "{{ ctx().vmids | unique | list | join(',') }}"
+        do:
+          - SQL_Select_Billing_VM
+      - when: <% len(ctx().vmids) <= 0 %>
+        do: 
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Billing_VM:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT ethvmid, vmID FROM iaasVM WHERE invVCServerID='<% ctx().vcenter_id %>' and vmID IN (<% ctx().uniq_vmids %>)"
+    next:
+      - when: <% succeeded() and len(result().result) > 0 %>
+        publish:
+          - billing_vm_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Transform_Events
+      - when: <% succeeded() and len(result().result) <= 0 and not ctx().final_action %>
+        do:
+          - End
+      - when: <% succeeded() and len(result().result) <= 0 and ctx().final_action %>
+        publish:
+          - events: "{%- set eventArr= [] -%}{%- for event in ctx().valid_events -%}{%- for key in event.copy() -%}{%- if event['ethvmid'] is not defined -%}{{ event.update({'ethvmid': None}) or '' }}{%- endif -%}{%- endfor -%}{{ eventArr.append(event) or ''}}{%- endfor -%}{{eventArr | tojson}}"
+          - valid_events: "{{ ctx().events | from_json_string  }}"
+        do:
+          - Event_Insert_Records
+      - when: <% failed() %>
+        do: fail
+
+  Transform_Events:
+    action: sim_cloud_billing.ethan_vcenter_events_transform
+    input:
+      events: <% ctx().valid_events %>
+      data: <% ctx().billing_vm_db_data %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - valid_events: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Event_Insert_Records
+      - when: <% failed() %>
+        do: fail
+
+  Event_Insert_Records:
+    action: sql.insert_bulk
+    input:
+      table: "iaasVMEvents"
+      data: <% ctx().valid_events %>
+      connection: <% ctx().billing_db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  End: 
+    action: core.noop

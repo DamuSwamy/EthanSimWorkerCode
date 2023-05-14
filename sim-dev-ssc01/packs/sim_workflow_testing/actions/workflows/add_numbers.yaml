@@ -1,0 +1,22 @@
+version: 1.0
+tasks:
+  # [278, 54]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - print_sum
+        publish:
+          - sum: <% ctx().a + ctx().b %>
+  # [279, 190]
+  print_sum:
+    action: core.echo
+    input:
+      message: "\"<% ctx().sum %>\""
+input:
+  - a
+  - b
+output:
+  - sum: <% ctx().sum %>
+vars:
+  - sum: null

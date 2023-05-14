@@ -1,0 +1,8 @@
+version: 1.0
+tasks:
+  # [703, 143]
+  Test_NIST:
+    action: core.http
+    input:
+      url: "https://services.nvd.nist.gov/rest/json/cves/1.0?cpeMatchString=cpe:2.3:h:cisco:4331_integrated_services_router:-:*:*:*:*:*:*:*&addOns=dictionaryCpes&apiKey=bbae5b04-84e6-4774-8e64-20094a6e6e73"
+      method: GET

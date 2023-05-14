@@ -1,0 +1,28 @@
+---
+  name: resource_pool_get
+  runner_type: python-script
+  description: Retrieve the MOID of the of the resource pool
+  entry_point: resource_pool_get.py
+  parameters:
+    resource_pool_ids:
+      type: array
+      description: Comma seperated list of RP IDs
+      required: false
+      position: 0
+    resource_pool_names:
+      type: array
+      description: Comma seperated list of RP Names
+      required: false
+      position: 1
+      default: ~
+    get_all_resource_pool:
+      type: boolean
+      description: Gets all RP from the environment
+      required: false
+      default: false
+      position: 2
+    vsphere:
+      type: string
+      description: Pre-configured vsphere endpoint
+      required: false
+      position: 3

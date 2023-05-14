@@ -1,0 +1,17 @@
+---
+  class_name: "ManagementGroupSensor"
+  enabled: false
+  entry_point: "management_group_sensor.py"
+  description: "Sensor which monitors database for scheduled power actions"
+  poll_interval: 300
+  trigger_types:
+    -
+      name: "management_group"
+      pack: "sim_cloud_billing"
+      description: "Trigger which indicates power on or power off action has been detected"
+      # This is the schema of the trigger payload the sensor generates
+      payload_schema:
+        type: "object"
+        properties:
+          trigger_payload:
+            type: "array"

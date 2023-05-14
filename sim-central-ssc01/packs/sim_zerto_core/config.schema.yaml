@@ -1,0 +1,15 @@
+---
+zerto:
+  type: "object"
+  required: true
+  properties:
+    ssl_verify:
+      description: "Verify SSL certificate used with zerto Server."
+      type: boolean
+      default: True
+    authorization:
+      description: "Authorization for zerto login."
+      type: "string"
+      required: true
+  additionalProperties: false
+

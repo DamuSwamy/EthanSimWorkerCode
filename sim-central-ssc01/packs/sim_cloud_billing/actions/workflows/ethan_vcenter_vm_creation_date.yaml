@@ -1,0 +1,90 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - vcenter_id
+  - vcenter
+  - proxy_vcenters
+
+vars:
+  - update: []
+  - create_events: ['VmClonedEvent', 'VmCreatedEvent', 'VmDeployedEvent', 'VmRegisteredEvent', 'VmConnectedEvent', 'VmDiscoveredEvent', 'com.vmware.vc.vm.SrcMigratedEvent', 'com.vmware.vc.vm.DstVmMigratedEvent', 'com.vmware.vc.vm.DstVmClonedEvent']
+         
+output:
+  - result: "<% len(ctx().update) %> records updated"
+
+
+tasks:
+  # [192, 51]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - SQL_Select_Billing_VM
+
+  # [1042, 501]
+  SQL_Select_Billing_VM:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT ethvmid,vmID,vmName FROM iaasVM WHERE invVCServerID='<% ctx().vcenter_id %>' and vmCreatedDate is NULL"
+    next:
+      - when: <% succeeded() and len(result().result) > 0 %>
+        publish:
+          - vms: <% switch(isList(result().result) => result().result, true => []) %>
+          - vm_ids: <% ctx(vms).select($.vmID) %>
+        do:
+          - Get_VM_Creation_Date
+      - when: <% succeeded() and len(result().result) = 0 %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  Get_VM_Creation_Date:
+    action: sim_vmware2.vcenter_events
+    input:
+      vsphere: <% ctx().vcenter %>
+      vcenter_id: <% ctx().vcenter_id %>
+      filter_by_vm_ids: <% ctx().vm_ids %>
+      creation_events: <% ctx().create_events %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - event_result: <% switch(isList(result().result) => result().result, true => []) %>
+          - result: "{%- set resourceArr = [] -%}{%- for vm in ctx().vms -%}{%- set created_data =  ctx().event_result | selectattr('vmID', 'defined') | selectattr('vmID', 'equalto', vm['vmID'])| list -%}{{ vm.update({'_vmID': vm['vmID']}) or ''}}{{ vm.update({'_ethvmid': vm['ethvmid']}) or ''}}{{ vm.update({'vmCreatedBy': ''}) or ''}}{{ vm.update({'vmCreatedDate': ''}) or ''}}{{ vm.update({'vmCreatedSource': ''}) or ''}}{%- if created_data -%}{{ vm.update({'vmCreatedBy': created_data[0]['eventUser']}) or ''}}{{ vm.update({'vmCreatedDate': created_data[0]['eventDate']}) or ''}}{{ vm.update({'vmCreatedSource': created_data[0]['eventState']}) or ''}}{%- endif -%}{{ resourceArr.append(vm) or '' }}{%- endfor -%}{{ resourceArr | tojson }}"
+          - update: "{{ ctx().result | from_json_string }}"
+        do:
+          - Check_For_Records
+      - when: <% failed() %>
+        do: fail
+
+  Check_For_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().update) > 0 %>
+        do:
+          - Update_VM_Records
+      - when: <% len(ctx().update) = 0 %>
+        do:
+          - End
+
+  Update_VM_Records:
+    action: sql.update_bulk
+    input:
+      connection: <% ctx().billing_db_connection %>
+      table: "iaasVM"
+      data: <% ctx().update %>
+      update_values: ['vmCreatedBy', 'vmCreatedDate', 'vmCreatedSource']
+      column_filter1: "vmID"
+      column_filter2: "ethvmid"
+    next:
+      - when: <% succeeded() %>
+        do: End
+      - when: <% failed() %>
+        do: fail
+
+  # [642, 901]
+  End: 
+    action: core.noop

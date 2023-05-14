@@ -1,0 +1,63 @@
+version: 1.0
+
+input:
+  - ignore_list
+  - braas_list
+
+vars:
+  - index: 0
+  - data: []
+
+output:
+  - ignore: <% ctx().data %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - braas_list: <% ctx(braas_list).where(not $.name in ctx().ignore_list).select($.name) %>
+        do:
+          - Data_To_Process
+
+  Data_To_Process:
+    action: core.noop
+    next:
+      - when: <% len(ctx().braas_list) > 0 %>
+        do:
+          - Get_Activities_Information
+      - when: <% len(ctx().braas_list) = 0 %>
+        do:
+          - End
+
+  Get_Activities_Information:
+    action: sim_braas_action.validate_backup_execution
+    input:
+      backup_server: <% ctx().braas_list[ctx().index] %>
+    next:
+      - when: <% ctx().index < (len(ctx().braas_list) - 1) %>
+        publish:
+          - bckup: <% ctx().braas_list[ctx().index] %>
+          - result: <% result().output.data %>
+          - index: <% ctx().index + 1 %>
+        do:
+          - Get_Activities_Information
+          - Check_For_Records
+      - when: <% ctx().index >= (len(ctx().braas_list) - 1) %>
+        publish:
+          - bckup: <% ctx().braas_list[ctx().index] %>
+          - result: <% result().output.data %>
+        do:
+          - Check_For_Records
+          - End
+
+  Check_For_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().result) = 0 %>
+        publish:
+          - data: <% ctx().data.append(ctx().bckup) %>
+
+  End:
+    action: core.noop

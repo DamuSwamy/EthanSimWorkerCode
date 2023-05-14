@@ -1,0 +1,5 @@
+pack: sim_core
+enabled: true
+runner_type: orquesta
+name: testing
+entry_point: workflows/testing.yaml

@@ -1,0 +1,89 @@
+version: 1.0
+
+vars:
+  - result: []
+  - payload_response: {}
+  - activity_id: Null
+
+input:
+  - payload
+
+output:
+  - data: <% ctx().payload_response %>
+  - remediation: <% ctx().payload['clientName'] %>
+#  - result: {"client": <% ctx().payload['clientName'] %>, "activity_id": <% ctx().activity_id %>, "backup_server": <% ctx().payload['backupServer'] %>}
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Get_AccessToken
+
+  Get_AccessToken:
+    action: sim_braas_core.get_access_token
+    input:
+      braas: <% ctx().payload['backupServer'] %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - access_token: <% result().result %>
+        do:
+          - Get_Groups
+      - when: <% failed() %>
+        do: fail
+
+  Get_Groups:
+    action: sim_braas_core.get_groups
+    input:
+      braas: <% ctx().payload['backupServer'] %>
+      access_token: <% ctx().access_token %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - groups: <% result().result %>
+          - group_id: <% ctx(groups).where($.name = ctx().payload['backupGroup']).select($.gid) %>
+          - group_id: <% ctx().group_id[0] %>
+        do:
+          - Get_Group_Members
+      - when: <% failed() %>
+        do: fail
+
+  Get_Group_Members:
+    action: sim_braas_core.get_group_members
+    input:
+      braas: <% ctx().payload['backupServer'] %>
+      access_token: <% ctx().access_token %>
+      group_ids: <% list(ctx().group_id) %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - members: <% result().result %>
+          - client_id: <% ctx(members).where($.name.toLower() = ctx().payload['clientName'].toLower()).select($.cid) %>
+          - client_id: <% ctx().client_id[0] %>
+        do:
+          - ReTrigger_Backup
+      - when: <% failed() %>
+        do: fail
+
+  ReTrigger_Backup:
+    action: sim_braas_core.ondemand_backup
+    input:
+      braas: <% ctx().payload['backupServer'] %>
+      access_token: <% ctx().access_token %>
+      group_id: <% ctx().group_id %>
+      client_id: <% ctx().client_id %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - result: <% result().result.data %>
+          - activity_id: <% ctx().result[0] %>
+          - payload_response: <% ctx(payload).set("ExecutionID" => ctx().result[0]) %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  End:
+    action: core.noop

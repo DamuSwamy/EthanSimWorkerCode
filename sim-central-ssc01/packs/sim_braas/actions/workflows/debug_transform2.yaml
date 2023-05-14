@@ -1,0 +1,22 @@
+version: 1.0
+tasks:
+  # [350, 60]
+  start:
+    action: core.echo
+    next:
+      - do:
+          - end
+        publish:
+          - output: "{% for node_name in ctx().json_data.nodes.node -%}\n{{ node_name.name }}\n{% endfor %}"
+    input:
+      message: "\"Starting transform\""
+  # [351, 194]
+  end:
+    action: core.echo
+    input:
+      message: "\"End transform\""
+input:
+  - jinja_transform
+  - json_data
+output:
+  - output_result: <%ctx().output%>

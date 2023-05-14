@@ -1,0 +1,202 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - cloud_db_connection
+  - vcenter_id
+  - vcenter
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - SQL_Select_Billing_CustIDs
+
+  SQL_Select_Billing_CustIDs:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT ethvmid,custidx FROM IaasVMCustInfo WHERE ethvmid like '<% ctx().vcenter_id%>%'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_custid_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_Billing_VM
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Billing_VM:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT ethvmid FROM iaasVM WHERE invVCServerID='<% ctx().vcenter_id %>' and vmActive='true'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_vm_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_Billing_VMDisk
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Billing_VMDisk:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT ethvmid,deviceKey,lastUpdated FROM iaasVMDisks WHERE invVCServerID='<% ctx().vcenter_id %>' and inactiveDt = '9999-12-31 23:59:59'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_vmdisk_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_CloudManagement_Iaas_Network
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_CloudManagement_Iaas_Network:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "SELECT managedID,deviceKey FROM Iaas_Network WHERE invVCServer='<% ctx().vcenter_id %>'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - cloud_iaas_network_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_Billing_Datstores
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Billing_Datstores: 
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT dsidx, storageTier FROM iaasDatastores WHERE dsidx LIKE '<% ctx().vcenter_id %>-%'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_datastore_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Get_Vcenter_Raw_Data
+      - when: <% failed() %>
+        do: fail
+
+  Get_Vcenter_Raw_Data:
+    action: sim_vmware2.vcenter_raw_data
+    input: 
+      vcenter_id: <% ctx().vcenter_id %>
+      vsphere: <% ctx().vcenter %>
+      get_vms: true
+      get_vm_disks: true
+      get_vm_networks: true
+      datastores: <% ctx().billing_datastore_db_data %>
+      custids: <% ctx().billing_custid_db_data %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - output: <% switch(isDict(result().result) => result().result, true => {}) %>
+        do:
+          - VM_Action_Generator
+          - VM_Disk_Action_Generator
+          - VM_Network_Action_Generator
+      - when: <% failed() %>
+        do: fail
+
+  VM_Action_Generator:
+    action: sim_cloud_billing.insert_and_update_list_generator
+    input:
+      db_data: <% ctx().billing_vm_db_data %>
+      vc_data: <% ctx().output.VirtualMachines %>
+      data_type: "vm"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - vm_action: <% switch(isDict(result().result) => result().result, true => {}) %>
+        do:
+          - VM_Database_Operations
+      - when: <% failed() %>
+        do: fail
+
+  VM_Disk_Action_Generator:
+    action: sim_cloud_billing.insert_and_update_list_generator
+    input:
+      db_data: <% ctx().billing_vmdisk_db_data %>
+      vc_data: <% ctx().output.VMDisks %>
+      data_type: "vm_disk"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - vm_disk_action: <% switch(isDict(result().result) => result().result, true => {}) %>
+        do:
+          - VM_Disk_Database_Operations
+      - when: <% failed() %>
+        do: fail
+
+  VM_Network_Action_Generator:
+    action: sim_cloud_billing.insert_and_update_list_generator
+    input:
+      db_data: <% ctx().cloud_iaas_network_db_data %>
+      vc_data: <% ctx().output.VMNetworks %>
+      data_type: "vm_network"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - vm_network_action: <% switch(isDict(result().result) => result().result, true => {}) %>
+        do:
+          - VM_Network_Database_Operations
+      - when: <% failed() %>
+        do: fail
+
+  VM_Database_Operations:
+    action: sim_cloud_billing.vcenter_vm_database_update
+    input:
+      insert_data: <% ctx().vm_action.insert %>
+      update_data: <% ctx().vm_action.update %>
+      remove_data: <% ctx().vm_action.remove %>
+      db_connection: <% ctx().billing_db_connection %>
+      target_table: "iaasVM"
+    next:
+      - when: <% succeeded() %>
+        do: VM_End
+      - when: <% failed() %>
+        do: fail
+
+  VM_Disk_Database_Operations:
+    action: sim_cloud_billing.vcenter_vm_disk_database_update
+    input:
+      insert_data: <% ctx().vm_disk_action.insert %>
+      update_data: <% ctx().vm_disk_action.update %>
+      remove_data: <% ctx().vm_disk_action.remove %>
+      db_connection: <% ctx().billing_db_connection %>
+      target_table: "iaasVMDisks"
+    next:
+      - when: <% succeeded() %>
+        do: VM_Disk_End
+      - when: <% failed() %>
+        do: fail
+
+  VM_Network_Database_Operations:
+    action: sim_cloud_billing.vcenter_vm_network_database_update
+    input:
+      insert_data: <% ctx().vm_network_action.insert %>
+      update_data: <% ctx().vm_network_action.update %>
+      remove_data: <% ctx().vm_network_action.remove %>
+      db_connection: <% ctx().cloud_db_connection %>
+      target_table: "Iaas_Network"
+    next:
+      - when: <% succeeded() %>
+        do: VM_Network_End
+      - when: <% failed() %>
+        do: fail
+
+  VM_End:
+    action: core.noop
+
+  VM_Disk_End:
+    action: core.noop
+
+  VM_Network_End:
+    action: core.noop

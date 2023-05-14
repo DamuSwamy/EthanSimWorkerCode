@@ -1,0 +1,74 @@
+version: 1.0
+
+vars:
+  - result: []
+  - index: 0
+
+input:
+  - payload
+
+output:
+  - result: <% ctx().payload %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Get_Activity_Details
+
+  Get_Activity_Details:
+    action: sim_braas_core.get_activity_details
+    input:
+      braas: <% ctx().payload[ctx().index]['backup_server'] %>
+      activity_id: <% ctx().payload[ctx().index]['activity_id'] %>
+    next:
+      - when: <% ctx().index < len(ctx().payload) %>
+        publish:
+          - output: <% result().result.data.content %>
+          - state: <% ctx().output.state %>
+          - client: <% ctx().payload[ctx().index]['client'] %>
+          - index: index + 1
+        do:
+          - Check_For_Actions
+          - Get_Activity_Details
+      - when: <% ctx().index >= len(ctx().payload) %>
+        publish:
+          - output: <% result().result.data.content %>
+          - state: <% ctx().output.state %>
+          - client: <% ctx().payload[ctx().index]['client'] %>
+        do: 
+          - Check_For_Actions
+          - End
+
+
+  Check_For_Actions:
+    action: core.noop
+    next:
+      - when: <% ctx().state = 'SUCCESS' %>
+        publish:
+          - payload: <% ctx(payload).where($.client != ctx().client).select($) %>
+        do:
+          - close_successful_backup_cases
+      - when: <% failed() %>
+        do: fail
+
+  close_successful_backup_cases:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().case_number %>
+      payload:
+        resolution_code: "Alert Self-Cleared"
+        close_notes: "Recent client, group and schedule backup successful. Therefore, proceeding this case to resolution"
+        state: 3
+        cause: "Alert self-cleared"
+      table: sn_customerservice_general_case
+    next:
+      - when: <% failed() %>
+        do:
+          - fail
+
+  End:
+    action: core.noop

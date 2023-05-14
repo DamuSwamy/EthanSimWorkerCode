@@ -1,0 +1,29 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_vcenter_mgmt_grp_handler
+entry_point: workflows/ethan_vcenter_mgmt_grp_handler.yaml
+description: Manages the virtual machines power action from Ethan portal
+parameters:
+  cloud_db_connection:
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: true
+    default: cloudmanagement
+  payload:
+    type: "array"
+    description: List of virtual machine objects matched the schedule
+    required: true
+  logic_app_key:
+    type: string
+    description: Logic app api key
+    required: false
+    default: "{{config_context.logicapp_api_key}}"
+    secret: true
+  input_type:
+    type: string
+    description: Target platform identifier
+    required: true
+    enum:
+      - vcenter
+      - vcloud

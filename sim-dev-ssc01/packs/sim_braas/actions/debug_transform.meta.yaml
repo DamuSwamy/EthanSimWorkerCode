@@ -1,0 +1,13 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: debug_transform
+entry_point: workflows/debug_transform.yaml
+description: Check and debug jinja transform
+parameters:
+  json_data:
+    type: object
+    description: json formatted data to be converted to xml
+  jinja_transform:
+    type: string
+    description: jinja template for your transform

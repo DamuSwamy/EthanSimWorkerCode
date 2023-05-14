@@ -1,0 +1,6 @@
+pack: sim_workflow_testing
+enabled: true
+runner_type: orquesta
+name: ph_bulk_sql_insert
+entry_point: workflows/ph_bulk_sql_insert.yaml
+description: "Testing the "

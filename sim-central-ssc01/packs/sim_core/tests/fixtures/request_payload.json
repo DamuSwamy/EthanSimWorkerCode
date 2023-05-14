@@ -1,0 +1,147 @@
+{
+  "company": "CCDBB",
+  "source": "CSP",
+  "id": "8990010dd768764c5dbf067843987b8e73498c961922",
+  "type": "REQUEST",
+  "action": "NEW",
+  "name": "ccdbb_core.offboard_user",
+  "timeout": 1500,
+  "check_interval": 300,
+  "destination": {
+    "name": "sim",
+    "controller": {
+      "url": "https://axl.accelnomics.com",
+      "St2ApiKey": "ODBkZGU5YjIyMTkxNGZmNjcwOGNhZjkyZDTU1ZjQ4MDRiOGJiZDMzYTNhZTg3Njc2ZmNkMzM3ODQ5ZDNjZQ"
+    },
+    "worker": {
+      "url": "https://axl.accelnomics.com",
+      "St2ApiKey": "ODBkZGU5YjIyMTkxNGZmNjcwOGNhZZDkyOTU1ZjQ4MDRiOGJiZDMzYTNhZTg3Njc2ZmNkMzM3ODQ5ZDNjZQ"
+    }
+  },
+  "itsm": {
+    "name": "Connectwise",
+    "details": {
+      "url": "https://helpdesk-dev.essist.com.au/v4_6_release/apis/3.0/service/",
+      "auth_token": "Basic ZXNzaXN0ZGV2K1VmQMMjl4dWkzMEJySWQ6aHptVWcxNmJvMzNlTXhCbQ==",
+      "ticket_id": "",
+      "board_id": 103,
+      "client_id": "13e3617a-b4d4-4c28-993c-80cd8cd2b88b",
+      "company_id": 2,
+      "source_id": 8,
+      "team_id": 210,
+      "ticket_contactname": "PaulHooper",
+      "ticket_initial_summary": "Disable Account - SIM Test  - Immediate",
+      "issue_flag": false,
+      "resolution_flag": false,
+      "first_update": "Received Request -     Name : SIM Test \nPosition: Case Manager    \nFinal Date: 18/10/2021   \nDOB: 01/05/1985    \nPayroll No: 12345  \nMitel Phone Number: N/A   \nOne Drive Delegated to: Aman Mujawar   \nE-mail mailbox delegated to: Aman Mujawar   \nRequestor HR person Name: Damodaran Swamy    \nThis will be executed at scheduled time above."
+    }
+  },
+  "data": {
+    "source": "ITSM",
+    "source_management_platform": "NABLE",
+    "company": "CCDBB",
+    "name": "USER EXIT PROCESS",
+    "source_region": "AU",
+    "status": "requested",
+    "type": "SERVER",
+    "schema_type": "SERVICENOW",
+    "managed_state": "managed",
+    "first_notified": "2018-09-21T06:02:33.000Z",
+    "custom_attributes": {
+      "disabled_ou": "OU=disabled,DC=accelnomics,DC=com",
+      "position": "People and Cultural Team Administrator",
+      "Name": "SiM Test User",
+      "offboarding_type": "immediate",
+      "final_date": "04/11/2021",
+      "Dob": "01/02/1995",
+      "payroll_no": "12524",
+      "mitel_phone_extension": "10605",
+      "one_drive_designated_to": "Sim Admin",
+      "delegate": "yes",
+      "email_delegated_to": "Teams Test 1",
+      "custom_attribute_9": "REQUEST"
+    }
+  },
+  "ci_details": [
+    {
+      "ci_id": "AD01",
+      "ci_name": "CCDBB-AD01",
+      "client_ci_name": "CCDBB-AD01",
+      "company": "CATHOLIC CARE",
+      "company_platform_key": "CCDBB",
+      "device_type": "SERVER",
+      "model_id": "Microsoft-server",
+      "operating_system": "Windows",
+      "os_domain": "",
+      "os_serial": "",
+      "os_service_pack": "",
+      "os_type": "",
+      "os_version": "",
+      "patch_level": "",
+      "serial_number": "sdflkkjadsf",
+      "system_name": "0225-XYZ-CHER",
+      "connections": {
+        "POWERSHELL": {
+          "ip_address": "ec2-3-109-203-134.ap-south-1.compute.amazonaws.com",
+          "password": "Eth@nGroup12345",
+          "port": "5986",
+          "username": "Administrator"
+        }
+      }
+    },
+    {
+      "ci_id": "EX01",
+      "ci_name": "CCDBB-EX01",
+      "client_ci_name": "CCDBB-EX01",
+      "company": "CATHOLIC CARE",
+      "company_platform_key": "CCDBB",
+      "device_type": "SERVER",
+      "model_id": "Microsoft-server",
+      "operating_system": "Windows",
+      "os_domain": "",
+      "os_serial": "",
+      "os_service_pack": "",
+      "os_type": "",
+      "os_version": "",
+      "patch_level": "",
+      "serial_number": "XXXX",
+      "system_name": "XXXX",
+      "connections": {
+        "POWERSHELL": {
+          "ip_address": "ec2-3-109-203-134.ap-south-1.compute.amazonaws.com",
+          "password": "Eth@nGroup12345",
+          "port": "5986",
+          "username": "Administrator",
+          "CertificateFilePath": "C:UsersAdministratorDownloadscertEthanTest.pfx",
+          "AppID": "f9954a04-347a-4a74-be7e-90deceb9ef7a",
+          "Organization": "etest.systems"
+        }
+      }
+    },
+    {
+      "ci_id": "OFFICE365",
+      "ci_name": "office365",
+      "client_ci_name": "CCDBB-office365",
+      "company": "CATHOLIC CARE",
+      "company_platform_key": "CCDBB",
+      "device_type": "app",
+      "model_id": "microsofto365",
+      "operating_system": "windows",
+      "os_domain": "",
+      "os_serial": "",
+      "os_service_pack": "",
+      "os_type": "",
+      "os_version": "",
+      "patch_level": "",
+      "serial_number": "",
+      "system_name": "",
+      "connections": {
+        "GRAPH_API": {
+          "client_id": "0ce0d2-c253-454e-bc7f-a95877f54c9f",
+          "tenant_id": "b02e5c-20e5-4c60-bcd4-8454b3201fd1",
+          "client_secret": "A7Q~jD_UGTgQWl~1H2kQBgtitmYyHuzXNmj"
+        }
+      }
+    }
+  ]
+}

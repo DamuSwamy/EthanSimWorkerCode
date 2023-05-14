@@ -1,0 +1,21 @@
+pack: sim_msol_billing
+enabled: true
+runner_type: "python-script"
+name: get_offer_matrix
+entry_point: "get_offer_matrix.py"
+description: Get offer matrix from Partner center
+parameters:
+  auth_token:
+    type: string
+    description: Auth token for the partner connect 
+    required: true
+  month:
+    type: string
+    description: Month to get the offer matrix for
+    required: false
+    default: 202301
+  file_path:
+    type: string
+    description: Path to store the response content
+    required: false
+    default: /home/skadam/offer_matrix.csv.zip 

@@ -1,0 +1,14 @@
+---
+ref: csv
+name : csv
+description : CSV utilities
+keywords:
+  - csv
+  - serialization
+  - deserialization
+  - text processing
+version: 1.0.0
+python_versions:
+  - "3"
+author : StackStorm, Inc.
+email : info@stackstorm.com

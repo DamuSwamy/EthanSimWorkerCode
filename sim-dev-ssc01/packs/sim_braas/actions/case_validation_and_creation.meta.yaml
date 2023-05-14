@@ -1,0 +1,27 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: case_validation_and_creation
+entry_point: workflows/case_validation_and_creation.yaml
+description: validate the case before creation
+parameters:
+  account_id:
+    type: string
+    description: sys id of the customer account
+    required: true
+  client_name:
+    type: string
+    description: name of the backup client
+    required: true
+  account_name:
+    type: string
+    description: name of the customer account
+    required: true
+  failure_info:
+    type: array
+    description: backup failure information
+    required: true
+  exception_info:
+    type: array
+    description: backup exception information
+    required: true

@@ -1,0 +1,9 @@
+---
+name: greet.concurrency
+pack: sim_core
+description: Limits the concurrent executions of the greet action.
+enabled: true
+resource_ref: sim_core
+policy_type: action.concurrency
+parameters:
+    threshold: 10

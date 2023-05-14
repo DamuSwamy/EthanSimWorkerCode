@@ -1,0 +1,17 @@
+version: 1.0
+tasks:
+  # [260, 124]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - get_output
+        publish:
+          - output_json: "{%- macro multi_agents(key, value, OuterObj) -%}\n    {%- set InnerObj = {} -%}\n    {%- if key == '@name' and key is string -%}\n        {{ OuterObj.update({key: value}) or \"\" }}\n    {%- elif key is iterable -%}\n        {%- for inst in value %}\n            {{ InnerObj.update({inst['@name'] : inst.ITEM['#text'] }) or \"\" }}\n        {%- endfor %}\n        {{ OuterObj.update({\"INSTANCE\": InnerObj}) or \"\" }}\n    {%- endif %}\n{%- endmacro -%}\n\n{%- set clientObjArr = [] %}\n{%- set OuterObj= {} -%}\n{%- for agents in ctx().input_json.REPORT.EXPRESSION -%}\n    {%- if agents.MULTI is iterable and (agents.MULTI is not string and agents.MULTI is not mapping) -%}\n        {%- for dict_item in agents.MULTI %}\n            {%- for key, value in dict_item.items() -%}\n               {%- set output = multi_agents(key, value, OuterObj) -%}\n            {%- endfor -%}\n            {{ clientObjArr.append(OuterObj) or \"\" }}\n        {%- endfor %}\n    {%- elif agents.MULTI is mapping -%}\n        {%- for key,value in agents.MULTI.items() -%}\n            {%- set output = multi_agents(key, value, OuterObj) -%}\n        {%- endfor -%}\n        {{ clientObjArr.append(OuterObj) or \"\" }}\n    {%- endif -%}\n{%- endfor -%}\n{%- set clientObj = {\n    \"clients\": clientObjArr\n} -%}\n{{clientObj | tojson}}"
+  # [261, 275]
+  get_output:
+    action: core.noop
+input:
+  - input_json
+output:
+  - output_json: '{{ ctx().output_json | from_json_string  }}'

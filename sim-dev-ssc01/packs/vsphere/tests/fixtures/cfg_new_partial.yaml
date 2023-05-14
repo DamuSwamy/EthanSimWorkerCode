@@ -1,0 +1,11 @@
+---
+  vsphere:
+    default:
+      host: 192.168.0.1
+      port: 443
+      user: Admin
+
+  sensors:
+    taskinfo:
+      tasknum: 5
+      vsphere: default

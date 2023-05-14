@@ -1,0 +1,28 @@
+version: 1.0
+tasks:
+  # [275, 107]
+  remove_licenses:
+    action: core.http
+    input:
+      url: "https://graph.microsoft.com/v1.0/users/<% ctx().user_email %>/assignLicense"
+      body: "{\"addLicenses\": [], \"removeLicenses\": <% ctx().licenses[0] %> }"
+      headers:
+        Authorization: Bearer <% ctx().graph_auth_token %>
+        Content-Type: application/json
+      method: POST
+    next:
+      # #629e47
+      - do:
+          - end
+        when: <% result().status_code=204 %>
+  # [275, 234]
+  end:
+    action: core.echo
+    input:
+      message: <% ctx().licenses[0] %>
+input:
+  - user_email
+  - graph_auth_token
+  - licenses
+output:
+  - licenses: <% ctx().licenses %>

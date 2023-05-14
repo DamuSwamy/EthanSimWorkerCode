@@ -1,0 +1,29 @@
+version: 1.0
+tasks:
+  # [186, 5]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - get_records
+  # [186, 101]
+  get_records:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: select count(*) as records from <% ctx().list[ctx().i] %>
+      connection: productionCloudExtension
+    next:
+      - do:
+          - count
+  # [187, 204]
+  count:
+    action: core.noop
+    next:
+      - do:
+          - pass
+  # [188, 305]
+  pass:
+    action: core.noop
+input:
+  - list

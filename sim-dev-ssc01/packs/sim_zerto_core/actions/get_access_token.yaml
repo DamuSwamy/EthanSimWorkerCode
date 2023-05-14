@@ -1,0 +1,16 @@
+---
+name: get_access_token
+runner_type: python-script
+description: Retrieves the access token from the Braas server. 
+enabled: true
+entry_point: get_access_token.py
+parameters:
+  host:
+    type: "string"
+    description: Pre-Configured zerto connection details
+    required: true
+  port:
+    type: "integer"
+    description: Pre-Configured zerto connection details
+    required: false
+    default: 443

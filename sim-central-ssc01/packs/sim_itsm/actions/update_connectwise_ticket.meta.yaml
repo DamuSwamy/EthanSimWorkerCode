@@ -1,0 +1,52 @@
+pack: sim_itsm
+enabled: true
+runner_type: orquesta
+name: update_connectwise_ticket
+entry_point: workflows/update_connectwise_ticket.yaml
+description: Update Connectwise Ticket
+parameters:
+  auth_token:
+    type: string
+    description: auth_token
+    default: ZXNzaXN0ZGV2K1VmQWRMMjl4dWkzMEJySWQ6aHptVWcxNmJvMzNlTXhCbQ==
+    required: true
+    secret: true
+  ticket_id:
+    type: string
+    default: 720146
+    required: true
+    description: ticket_id
+  ticket_text:
+    description: ticket_text
+    type: string
+    default: Testing From SiM Automation Test Ticket Update
+    required: true
+  detailDescriptionFlag:
+    description: detailDescriptionFlag
+    type: string
+    default: true
+    required: true
+  internalAnalysisFlag:
+    description: internalAnalysisFlag
+    type: string
+    default: false
+    required: true
+  resolutionFlag:
+    type: string
+    description: resolutionFlag
+    default: false
+    required: true
+  issueFlag:
+    description: issueFlag
+    type: string
+    required: true
+    default: false
+  client_id:
+    type: string
+    description: client_id
+    default: 13e3617a-b4d4-4c28-993c-80cd8cd2b88b
+    required: true
+  itsm_url:
+    type: string
+    description: ITSM URL
+    default: "https://helpdesk-dev.essist.com.au"

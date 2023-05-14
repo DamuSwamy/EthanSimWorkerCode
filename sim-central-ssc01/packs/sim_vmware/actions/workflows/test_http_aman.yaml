@@ -1,0 +1,25 @@
+version: 1.0
+tasks:
+  # [523, 98]
+  Web_REST_Login:
+    action: core.http
+    input:
+      password: Qb3rO5xZ1H
+      url: "https://<%ctx().vCenter_URL%>/rest/com/vmware/cis/session"
+      username: service_ciac_vsphere
+      method: POST
+      verify_ssl_cert: false
+    next:
+      - do:
+          - print
+        publish:
+          - status: <% result().status_code%>
+          - body: <% result().body %>
+          - headers: <% result().headers %>
+  # [762, 201]
+  print:
+    action: core.echo
+    input:
+      message: "<%str(ctx().status)%>\n<%ctx().body.value%>\n<%ctx().headers.Set-Cookie %>"
+input:
+  - vCenter_URL

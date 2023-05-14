@@ -1,0 +1,63 @@
+version: 1.0
+input:
+  - start_date
+  - start_time
+  - end_date
+  - end_time
+
+tasks:
+  # [277, 42]
+  Start:
+    action: core.noop
+    next:
+      - do:
+          - Initialize
+        publish:
+          - date_now: "<%(now(offset=>localtz())).format(\"%Y-%m-%d %H:%M:%S\") %>"
+          - start_datetime: "<% ctx().start_date %> <% ctx().start_time %>"
+          - end_datetime: "<% ctx().end_date %> <% ctx().end_time %>"
+
+  # [279, 151]
+  Initialize:
+    action: core.noop
+    next:
+      - do:
+          - get_dpa_report_data
+  test_end:
+    action: core.noop
+  # [278, 255]
+
+  # [287, 382]
+  get_dpa_report_data:
+    action: sim_braas.DPA_get_report_data_custom_v2
+    input:
+      input_finish_date: <% ctx().end_date %>
+      formatType: CSV
+      input_start_date: <% ctx().start_date %>
+      input_start_time: <% ctx().start_time %>
+      input_finish_time: <% ctx().end_time %>
+      report_name: Backup All Jobs
+    next:
+      - do:
+          - format_client_report
+        publish:
+          - rpt_current: <% result().output.debug_report %>
+  # [287, 484]
+  format_client_report:
+    action: sim_braas.format_client_csv_report
+    next:
+      - do:
+          - test_end
+        publish:
+          - success_report: <% result().result[0] %>
+          - failure_report: <% result().result[1] %>
+    input:
+      log_level: DEBUG
+      dpa_report: <%ctx().rpt_current%>
+      report_name: Backup All Jobs
+output:
+  - debug_datenow: <%ctx().date_now%>
+  - debug_startdate: <%ctx().start_datetime%>
+  - debug_enddate: <%ctx().end_datetime%>
+  - debug_failures: <% ctx().failure_report %>
+  - debug_success: <% ctx().success_report %>

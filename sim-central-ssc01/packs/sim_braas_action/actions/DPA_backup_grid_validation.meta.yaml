@@ -1,0 +1,28 @@
+pack: sim_braas_action
+enabled: true
+runner_type: orquesta
+name: DPA_backup_grid_validation
+entry_point: workflows/DPA_backup_grid_validation.yaml
+description: Automation to validate the backup grid for bulk failures and no activity issues
+parameters:
+  exclude_list:
+    type: array
+    description: Backup servers to be ignored from checking
+    required: false
+    default:
+            #- bot.braas.ethoria.services
+            #- vet.braas.ethoria.services
+            #- lau.braas.ethoria.services
+            #- lec.braas.ethoria.services
+        - hak.braas.ethoria.services
+            #- ver.braas.ethoria.services
+            #- ric.braas.ethoria.services
+            #- egrp-gbs-ave01.braas.ethoria.services
+        - cors-gbs-ave01.braas.ethoria.services
+        - grcl-gbs-ave01.braas.ethoria.services
+        - kinr-gbs-ave01.braas.ethoria.services
+  perform_grid_check:
+    type: boolean
+    description: Grid validation to be performed
+    required: false
+    default: false

@@ -1,0 +1,15 @@
+version: 1.0
+tasks:
+  # [510, 117]
+  task1:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      connection: null
+      query: SELECT * FROM cmdbcustomers
+      database: Billing
+      host: 192.168.66.8
+      password: 3ssistB1lling
+      port: 1433
+      username: svc_billingint
+      drivername: mssql

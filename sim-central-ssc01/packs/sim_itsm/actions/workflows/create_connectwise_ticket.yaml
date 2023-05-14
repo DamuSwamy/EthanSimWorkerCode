@@ -1,0 +1,42 @@
+version: 1.0
+tasks:
+  # [280, 318]
+  Success:
+    action: core.noop
+  # [281, 142]
+  Create_Ticket:
+    action: core.http
+    input:
+      url: "https://<% ctx().instance %>/v4_6_release/apis/3.0/service/tickets/"
+      headers:
+        Authorization: Basic <% ctx().auth_token %>
+        clientId: <% ctx().client_id %>
+        Content-Type: application/json; charset=utf-8
+      method: POST
+      body: "{\n  \"summary\": <% ctx().ticket_summary %>,\n  \"board\": {\n    \"name\": <% ctx().board_name %>\n  },\n  \"company\": {\n    \"identifier\": <% ctx().company_name %>\n  },\n  \"contactName\": \"<% ctx().ticket_contactName %>\",\n  \"team\": {\n    \"name\": <% ctx().team_name %>\n  },\n  \"source\": {\n    \"name\": <% ctx().source_name %>\n  },\n  \"status\": {\n    \"name\": <% ctx().status %>\n  },\n  \"Type\": {\n    \"name\": <% ctx().type %>\n  },\n  \"Subtype\": {\n    \"name\": <% ctx().subtype %>\n  },\n   \"Agreement\": {\n    \"id\": <% ctx().agreement %>\n  },\n  \"Item\": {\n    \"name\": <% ctx().item %>\n  },\n  \"owner\":{\n    \"identifier\": <% ctx().owner %>\n  },\n  \"initialDescription\": <% ctx().ticket_initialDescription %>,\n  \"customFields\": []\n}"
+    next:
+      # #629e47
+      - do:
+          - Success
+        when: <% succeeded() %>
+        publish:
+          - ticket_id: <% result().body.id %>
+input:
+  - board_name
+  - ticket_summary
+  - ticket_initialDescription
+  - ticket_contactName
+  - auth_token
+  - client_id
+  - team_name
+  - owner
+  - status
+  - item
+  - subtype
+  - agreement
+  - type
+  - instance
+  - company_name
+  - source_name
+output:
+  - ticket_id: <% ctx().ticket_id %>

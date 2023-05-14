@@ -1,0 +1,20 @@
+---
+name: zcm_get_sites
+runner_type: python-script
+description: Retrieves the sites from the zcm server. 
+enabled: true
+entry_point: zcm_get_sites.py
+parameters:
+  zerto:
+    type: "string"
+    description: Pre-Configured zcm connection details
+    required: true
+  port:
+    type: "integer"
+    description: Pre-Configured zerto connection details
+    required: false
+    default: 443
+  access_token:
+    type: "string"
+    description: Access token if you have the token already else blank
+    required: false

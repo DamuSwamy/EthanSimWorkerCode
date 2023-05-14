@@ -1,0 +1,54 @@
+version: 1.0
+
+input:
+  - db_connection
+  - sku_list
+
+vars:
+  - update_index: 0
+  - skus: []
+
+output:
+  - update_list: <% ctx().skus %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - update_subscribed_skus: <% ctx().sku_list %>
+        do:
+          - Update_PartnerCustomer_Subscribed_Skus
+
+  Update_PartnerCustomer_Subscribed_Skus:
+    action: sql.update
+    input:
+      connection: <% ctx().db_connection %>
+      table: "PartnerCustomerSubscribedSku"
+      where:
+        CustomerId: <% ctx().update_subscribed_skus[ctx().update_index].CustomerId %>
+        SkuId: <% ctx().update_subscribed_skus[ctx().update_index].SkuId %>
+      update:
+        AvailableUnits: <% ctx().update_subscribed_skus[ctx().update_index].AvailableUnits %>
+        ActiveUnits: <% ctx().update_subscribed_skus[ctx().update_index].ActiveUnits %>
+        ConsumedUnits: <% ctx().update_subscribed_skus[ctx().update_index].ConsumedUnits %>
+        SuspendedUnits: <% ctx().update_subscribed_skus[ctx().update_index].SuspendedUnits %>
+        TargetType: <% ctx().update_subscribed_skus[ctx().update_index].TargetType %>
+        TotalUnits: <% ctx().update_subscribed_skus[ctx().update_index].TotalUnits %>
+        WarningUnits: <% ctx().update_subscribed_skus[ctx().update_index].WarningUnits %>
+    next:
+      - when: <% ctx().update_index < (len(ctx().update_subscribed_skus) - 1) %>
+        publish:
+          - skus: <% ctx().skus.append(ctx().update_subscribed_skus[ctx().update_index].SkuId) %>
+          - update_index: <% ctx().update_index + 1 %>
+        do:
+          - Update_PartnerCustomer_Subscribed_Skus
+      - when: <% ctx().update_index >= (len(ctx().update_subscribed_skus) - 1) %>
+        publish:
+          - skus: <% ctx().skus.append(ctx().update_subscribed_skus[ctx().update_index].SkuId) %>
+        do:
+          - End
+
+  End:
+    action: core.noop

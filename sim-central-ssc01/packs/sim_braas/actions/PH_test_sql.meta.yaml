@@ -1,0 +1,5 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: PH_test_sql
+entry_point: workflows/PH_test_sql.yaml

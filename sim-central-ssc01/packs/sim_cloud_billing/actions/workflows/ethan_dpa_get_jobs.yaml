@@ -1,0 +1,65 @@
+version: 1.0
+
+input:
+  - billing_period
+  - input_start_date
+  - input_finish_date
+
+output:
+  - debug_report: <% ctx().report %>
+
+tasks:
+  start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do: 
+          - dpa_report_backup_all_clients
+
+  dpa_report_backup_all_clients:
+    action: sim_cloud_billing.ethan_dpa_create_report
+    input:
+      input_start_date: <% ctx().input_start_date %>
+      input_finish_date: <% ctx().input_finish_date %>
+      report_name: "Backup All Clients"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - backup_report: <% result().result %>
+        do:
+          - dpa_report_ccb_usage
+      - when: <% failed() %>
+        do: fail
+
+  dpa_report_ccb_usage:
+    action: sim_cloud_billing.ethan_dpa_create_report
+    input:
+      input_start_date: <% ctx().input_start_date %>
+      input_finish_date: <% ctx().input_finish_date %>
+      report_name: "CCB Usage Report"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - ccb_usage_report: <% result().result %>
+        do:
+          - transform_jobs
+      - when: <% failed() %>
+        do: fail
+
+  transform_jobs:
+    action: sim_cloud_billing.ethan_dpa_transform_jobs
+    input:
+      backup_clients_data: <% ctx().backup_report['DPAvm'] %>
+      ccb_usage_data: <% ctx().ccb_usage_report['dpaClient'] %>
+      billing_period: <% ctx().billing_period %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - report: <% result().result %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  End:
+    action: core.noop

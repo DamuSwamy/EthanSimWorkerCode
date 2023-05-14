@@ -1,0 +1,17 @@
+version: 1.0
+tasks:
+  # [490, 140]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - end
+        publish:
+          - result_json: "{% for agents in ctx().json_data.REPORT.EXPRESSION -%}\n{{ agents.MULTI | to_json_string}}\n{% endfor %}"
+  # [496, 279]
+  end:
+    action: core.noop
+input:
+  - json_data
+output:
+  - result_json: '{{ ctx().result_json }}'

@@ -1,0 +1,16 @@
+pack: sim_o365
+enabled: true
+runner_type: orquesta
+name: block_user_signin
+entry_point: workflows/block_user_signin.yaml
+description: Block the user from signing in
+parameters:
+  user_email:
+    type: string
+    description: User Email
+    default: sim.testuser01@etest.systems
+    required: true
+  graph_auth_token:
+    type: string
+    description: Graph API token
+    required: true

@@ -1,0 +1,44 @@
+---
+connections:
+  billing:
+    host: 192.168.66.8
+    database: billing
+    username: svc_billingint
+    password: 3ssistB1lling
+    port: 1433
+    drivername: mssql
+  cloudmanagement:
+    host: 192.168.66.8
+    database: cloudmanagement
+    username: svc_billingint
+    password: 3ssistB1lling
+    port: 1433
+    drivername: mssql
+  cmdb_Ethoria:
+    host: 10.111.26.26
+    database: cmdb_Ethoria
+    username: psreporting
+    password: VMwar3
+    port: 1433
+    drivername: mssql
+  dev_billing:
+    host: 192.168.66.8
+    database: billing_dev
+    username: "svc-simauto-ess-sql01"
+    password: "strands-yTuMvNaB/HGPVF"
+    port: 1433
+    drivername: mssql
+  dev_cloudmanagement:
+    host: 192.168.66.8
+    database: cloudmanagement_dev
+    username: "svc-simauto-ess-sql01"
+    password: "strands-yTuMvNaB/HGPVF"
+    port: 1433
+    drivername: mssql
+  productionCloudExtension:
+    host: "10.232.139.196"
+    username: "svc_SIMAutomation@psql-ethan-ecspprd-ae-1"
+    password: "Au6vs7zt35Uen3M"
+    database: DB-ECSPPRD-CSPExtension
+    port: 1433
+    drivername: mssql

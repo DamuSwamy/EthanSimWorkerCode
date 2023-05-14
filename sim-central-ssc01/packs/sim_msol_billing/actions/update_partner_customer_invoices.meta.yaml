@@ -1,0 +1,18 @@
+pack: sim_msol_billing
+enabled: true
+runner_type: orquesta
+name: update_partner_customer_invoices
+entry_point: workflows/update_partner_customer_invoices.yaml
+description: Get Partner Customer Invoices details from partner connect
+parameters:
+  db_connection:
+    type: string
+    description: DB to insert or update the customer subscription
+    default: billing 
+    required: true
+    position: 0
+  invoice_list:
+    type: array
+    description: Invoices to update the customer invoice table
+    required: true
+    position: 1

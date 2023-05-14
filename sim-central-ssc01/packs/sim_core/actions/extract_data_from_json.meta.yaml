@@ -1,0 +1,9 @@
+pack: sim_core
+enabled: true
+runner_type: orquesta
+name: extract_data_from_json
+entry_point: workflows/extract_data_from_json.yaml
+parameters:
+  input_json:
+    type: object
+    default: "{\"somekey\":\"somevalue\"}"

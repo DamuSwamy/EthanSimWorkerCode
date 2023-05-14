@@ -1,0 +1,24 @@
+pack: sim_networks
+enabled: true
+runner_type: orquesta
+name: cisco_benchmark_wrapper
+entry_point: workflows/cisco_benchmark_wrapper.yaml
+description: cisco_benchmark_wrapper
+parameters:
+  customer_id:
+    type: string
+    description: customer id to get the list of devices and compliant check
+    required: true
+  exclude_device_types:
+    type: array
+    description: List of device type excluded form compliance check
+    required: false
+    default: ['Firewall']
+  limit:
+    type: integer
+    description: Number of devices to process
+    required: false
+  auth_token:
+    type: string
+    description: The query params to append endpoint
+    required: false

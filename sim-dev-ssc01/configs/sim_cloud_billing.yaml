@@ -1,0 +1,21 @@
+ssl_verify: false
+logicapp_api_key: 24e78472e1da464f836042d96a328042
+dpa:
+  host: https://bernie.braas.ethoria.services:9002
+  password: VLzZZ5N!%ZHm
+  username: service_ciac_cpo@ethoria.local
+connections:
+  cloudmanagement:
+    host: 192.168.66.8
+    database: cloudmanagement
+    username: svc_billingint
+    password: 3ssistB1lling
+    port: 1433
+    drivername: mssql
+  dev_cloudmanagement:
+    host: 192.168.66.8
+    database: cloudmanagement_dev
+    username: "svc-simauto-ess-sql01"
+    password: "strands-yTuMvNaB/HGPVF"
+    port: 1433
+    drivername: mssql

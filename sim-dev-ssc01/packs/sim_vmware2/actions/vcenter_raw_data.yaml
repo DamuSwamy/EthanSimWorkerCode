@@ -1,0 +1,88 @@
+---
+name: vcenter_raw_data
+runner_type: python-script
+description: Retrieves the virtual machines on a vCenter Server system. It computes the union of Virtual Machine sets based on each parameter.
+enabled: true
+entry_point: vcenter_raw_data.py
+parameters:
+  vsphere:
+    type: "string"
+    description: Pre-Configured vsphere connection details
+    required: true
+    position: 0
+  vcenter_id:
+    type: "string"
+    description: Custom vCenter ID from ethan
+    required: true
+    position: 1
+  get_vms:
+    type: boolean
+    description: Gets all vms from the environment
+    required: false
+    default: false
+    position: 2
+  ids:
+    type: array
+    description: Gets vm info of given vm ids from the environment
+    required: false
+  get_vm_disks:
+    type: boolean
+    description: Gets all VM disks from the environment
+    required: false
+    default: false
+    position: 3
+  get_vm_networks:
+    type: boolean
+    description: Gets all VM networks from the environment
+    required: false
+    default: false
+    position: 4
+  get_hosts:
+    type: boolean
+    description: Gets all hosts from the environment
+    required: false
+    default: false
+    position: 5
+  get_rps:
+    type: boolean
+    description: Gets all RPs from the environment
+    required: false
+    default: false
+    position: 6
+  get_folders:
+    type: boolean
+    description: Gets all folders from the environment
+    required: false
+    default: false
+    position: 7
+  get_tags:
+    type: boolean
+    description: Gets all tags from the environment
+    required: false
+    default: false
+    position: 8
+  datastores:
+    type: array
+    description: Array of datastore from iaasDatastores
+    required: false
+    default: []
+    position: 9
+  custids:
+    type: array
+    description: Array of customer ids from IaasVMCustInfo
+    required: false
+    default: []
+    position: 10
+  vm_required_field_array:
+    type: array
+    description: List of specified fields to be constructed
+    required: false
+  vmdisk_required_field_array:
+    type: array
+    description: List of specified fields to be constructed for vmdisk
+    required: false
+  tag_filter:
+    type: array
+    description: Array of category names to be filtered
+    required: false
+    default: ['CUSTID']

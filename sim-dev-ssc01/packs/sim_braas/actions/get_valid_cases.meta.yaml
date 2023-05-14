@@ -1,0 +1,19 @@
+pack: sim_braas
+enabled: true
+runner_type: "python-script"
+name: get_valid_cases
+entry_point: "get_valid_cases.py"
+description: contruct case list
+parameters:
+  client_list:
+    type: array
+    items:
+      tyep: object
+    description: list of clients
+    required: true
+  case_list:
+    type: array
+    items:
+      type: object
+    description: servicenow case list
+    required: true

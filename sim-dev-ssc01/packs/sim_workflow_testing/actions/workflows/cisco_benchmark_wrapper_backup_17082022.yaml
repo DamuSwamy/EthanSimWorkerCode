@@ -1,0 +1,88 @@
+---
+version: 1.0
+
+description: Cisco IOS Benchmark - Device Compliant
+
+vars:
+  - Devices: []
+  - process_name: "Cisco device compliant check"
+  - deviceIndex: 0
+  - response: {}
+
+input:
+  - customer_id
+  - exclude_device_types
+  - limit
+
+tasks:
+  # [192, 51]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notification: (<% ctx().process_name%>) process started
+        do:
+          - notify
+          - get_device_list
+
+
+  get_device_list:
+    action: sim_workflow_testing.get_device_list
+    input:
+      customer_id: <% ctx().customer_id %>
+    next:
+      - when: <% succeeded() and len(result().result)>0 %>
+        publish:
+          - device_list: <% result().result %>
+          - device_count: "{{ ctx().limit if ctx().limit else ctx().device_list|length }}"
+        do:
+          - device_compliant_check
+      - when: <% succeeded() and len(result().result)<=0 %>
+        publish:
+          - notification: No devices found for customer [<% ctx().customer_id %>]
+        do:
+          - notify
+      - when: <% failed() %>
+        do:
+          - fail
+
+  # [142, 351]
+  device_compliant_check:
+    action: sim_workflow_testing.device_compliance
+    input:
+      device_object: <% ctx().device_list[ctx().deviceIndex] %>
+      exclude_list: <% ctx().exclude_device_types %>
+    next:
+      - when: <% succeeded() or failed() %>
+        publish:
+          - output: <% switch(isDict(result().output) => result().output, true => {}) %>
+          - Devices: <% ctx().Devices.append(ctx().output.result) %>             
+        do:
+          - get_device_index
+
+  get_device_index:
+    action: core.echo
+    input: 
+      message: "Processed: <% str(ctx().deviceIndex + 1) %> device(s)"
+    next:
+      - when: <% succeeded() and ctx().deviceIndex < (ctx().device_count - 1) %>
+        publish:
+          - deviceIndex: <% ctx().deviceIndex + 1 %>
+        do:
+          - device_compliant_check
+      - when: <% succeeded() and ctx().deviceIndex >= (ctx().device_count - 1) %>
+        publish:
+          - notification: Compliance check completed for customer (<% ctx().customer_id %>)
+          - response: <% dict(NetDBCompanyID=>ctx().customer_id, compliancecheckTimestamp=>task(Start).start_timestamp, Devices=>ctx().Devices) %>
+        do:
+          - notify
+
+  # [242, 551]
+  notify:
+    action: core.echo
+    input:
+      message: <% ctx().notification %>
+
+output:
+  - result: <% ctx().response %>

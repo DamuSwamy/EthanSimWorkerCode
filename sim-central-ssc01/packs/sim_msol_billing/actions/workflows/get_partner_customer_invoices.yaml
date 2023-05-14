@@ -1,0 +1,175 @@
+version: 1.0
+
+input:
+  - tenant_id
+  - password_id
+  - db_connection
+
+vars:
+  - startIndex: 0
+  - counter: 1
+  - insert_count: 0
+  - response: {}
+  - partnerconnect_response: []
+  - update_index: 0
+
+output:
+  - invoices: <% ctx().invoices %>
+
+tasks:
+  # [633, 272]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Get_AuthToken
+  # [329, 104]
+  Get_AuthToken:
+    action: sim_msol_billing.get_auth_token_v2
+    input:
+      password_id: <% ctx().password_id %>
+      tenant_id: <% ctx().tenant_id %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - auth_token: <% result().output.token %>
+        do:
+          - Get_Invoices
+      - when: <% failed() %>
+        do: fail
+
+  # [333, 322]
+  Get_Invoices:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/invoices"
+      method: GET
+      timeout: 180
+      headers:
+        Content-Type: application/json
+        Authorization: "Bearer <% ctx().auth_token %>"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - invoice_list: <% result().body.items %>
+          - total_invoices: <% result().body.totalCount %>
+        do:
+          - To_InvoiceList_Expected_Format
+      - when: <% failed() %>
+        do: fail
+
+  # [333, 522]
+  To_InvoiceList_Expected_Format:
+    action: sim_msol_billing.return_customer_invoices
+    input:
+      invoices: <% ctx().invoice_list %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - invoice_data: <% result().result %>
+        do:
+          - Get_Current_Data_From_DB
+      - when: <% failed() %>
+        do: fail
+
+  # [283, 672]
+  Get_Current_Data_From_DB:
+    action: sql.query
+    input:
+      connection: <% ctx().db_connection %>
+      query: "SELECT * FROM PartnerCustomerInvoice"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Insert_And_UpdateList_Generator
+      - when: <% failed() %>
+        do: fail
+
+  # [33, 822]
+  Insert_And_UpdateList_Generator:
+    action: sim_msol_billing.insert_and_update_list_generator
+    input:
+      db_data: <% ctx().db_data %>
+      partner_connect_data: <% ctx().invoice_data %>
+      data_type: "Invoices"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - invoices: <% result().result %>
+          - new_invoices: <% ctx().invoices.insert %>
+          - update_invoices: <% ctx().invoices.update %>
+        do:
+          - Check_For_New_Records
+      - when: <% failed() %>
+        do: fail
+
+  # [383, 1022]
+  Check_For_New_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().new_invoices) > 0 %>
+        do:
+          - New_PartnerCustomer_Invoices
+      - when: <% len(ctx().new_invoices) <= 0 %>
+        do:
+          - Check_For_Update_Records 
+
+  # [33, 472]
+  Check_For_Update_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().update_invoices) > 0 %>
+        do:
+          - Update_PartnerCustomer_Invoices
+
+  # [33, 322]
+  New_PartnerCustomer_Invoices:
+    action: sql.insert_bulk
+    input:
+      table: PartnerCustomerInvoice
+      data: <% ctx().new_invoices %>
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Check_For_Update_Records
+          - Get_PartnerCustomer_Inovice_LineItem
+      - when: <% failed() %>
+        do: fail
+
+  # [1033, 422]
+  Update_PartnerCustomer_Invoices:
+    action: sql.update_bulk
+    input:
+      connection: <% ctx().db_connection %>
+      table: "PartnerCustomerInvoice"
+      data: <% ctx().update_invoices %>
+      update_values: ['TotalCharges', 'PaidAmount', 'DocumentType', 'InvoiceType', 'CurrencyCode', 'CurrencySymbol', 'InvoiceDate']
+      column_filter1: "id"
+    next:
+      - when: <% failed() %>
+        do: fail
+      - when: <% succeeded() %>
+        do:
+          - End
+
+  # [679, 154]
+  Get_PartnerCustomer_Inovice_LineItem:
+    action: sim_msol_billing.get_invoices_line_items
+    input:
+      tenant_id: <% ctx().tenant_id %>
+      password_id: <% ctx().password_id %>
+      db_connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  # [833, 572]
+  End:
+    action: core.noop

@@ -1,0 +1,120 @@
+version: 1.0
+
+input:
+  - cloud_db_connection
+  - payload
+  - input_type
+  - logic_app_key
+
+vars:
+  - result: {"power_on": [], "power_off": []}
+  - index: 0
+  - power_on: []
+  - power_off: []
+
+output:
+  - data: <% ctx().result %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - mgmt_grps: <% ctx(payload).select($.ManagmentGroupSIName) %>
+        do:
+          - Filter_Management_Groups
+
+  Filter_Management_Groups:
+    action: core.noop
+    next:
+      - when: <% ctx().index < len(ctx().mgmt_grps) %>
+        publish:
+          - poweron_group: <% ctx(payload).where($.Action = 'Power On' and $.ManagmentGroupSIName = ctx().mgmt_grps[ctx().index]).select($).orderBy($.StartupSequence) %>
+          - poweroff_group: <% ctx(payload).where($.Action = 'Power Off' and $.ManagmentGroupSIName = ctx().mgmt_grps[ctx().index]).select($).orderByDescending($.StartupSequence) %>
+          - index: <% ctx().index + 1 %>
+          - power_on: <% ctx().power_on + ctx().poweron_group %>
+          - power_off: <% ctx().power_off + ctx().poweroff_group %>
+        do:
+          - Check_Action_Items
+          - Filter_Management_Groups
+      - when: <% ctx().index >= len(ctx().mgmt_grps) %>
+        do:
+          - End
+
+  Check_Action_Items:
+    action: core.noop
+    next:
+      - when: <% ctx().input_type = 'vcenter' and len(ctx().poweron_group) > 0 %>
+        do:
+          - vCenter_PowerOn_Action
+      - when: <% ctx().input_type = 'vcenter' and len(ctx().poweroff_group) > 0 %>
+        do:
+          - vCenter_PowerOff_Action
+      - when: <% ctx().input_type = 'vcloud' and len(ctx().poweron_group) > 0 %>
+        do:
+          - vCloud_PowerOn_Action
+      - when: <% ctx().input_type = 'vcloud' and len(ctx().poweroff_group) > 0 %>
+        do:
+          - vCloud_PowerOff_Action
+
+  vCloud_PowerOn_Action:
+    action: core.http
+    input:
+      body: "{\"vmtype\": \"vcloud\",\"managedid\": \"<% item(record).managedID %>\",\n\"action\": \"Power On\",\"useremail\": \"cpo@ethan.com.au\"\n}"
+      url: "https://apim-ethan-pmapi.azure-api.net/sendvmaction/manual/paths/invoke"
+      headers:
+        Ocp-Apim-Subscription-Key: <% ctx().logic_app_key %>
+        Content-Type: application/json
+      method: POST
+      timeout: 120
+    with:
+      items: record in <% ctx(poweron_group) %>
+    delay: 1
+    next:
+      - when: <% failed() %>
+        do: noop
+
+  vCloud_PowerOff_Action:
+    action: core.http
+    input:
+      body: "{\"vmtype\": \"vcloud\",\"managedid\": \"<% item(record).managedID %>\",\n\"action\": \"Power Off\",\"useremail\": \"cpo@ethan.com.au\"\n}"
+      url: "https://apim-ethan-pmapi.azure-api.net/sendvmaction/manual/paths/invoke"
+      headers:
+        Ocp-Apim-Subscription-Key: <% ctx().logic_app_key %>
+        Content-Type: application/json
+      method: POST
+      timeout: 120
+    with:
+      items: record in <% ctx(poweroff_group) %>
+    delay: 1
+    next:
+      - when: <% failed() %>
+        do: noop
+
+  vCenter_PowerOn_Action:
+    action: sim_cloud_billing.ethan_vcenter_mgmt_grp_power
+    input:
+      cloud_db_connection: <% ctx().cloud_db_connection %>
+      payload: <% item() %>
+      logic_app_key: <% ctx().logic_app_key %>
+    with:
+      items: <% ctx().poweron_group %>
+    next:
+      - when: <% failed() %>
+        do: noop
+
+  vCenter_PowerOff_Action:
+    action: sim_cloud_billing.ethan_vcenter_mgmt_grp_power
+    input:
+      cloud_db_connection: <% ctx().cloud_db_connection %>
+      payload: <% item() %>
+      logic_app_key: <% ctx().logic_app_key %>
+    with:
+      items: <% ctx().poweroff_group %>
+    next:
+      - when: <% failed() %>
+        do: noop
+
+  End:
+    action: core.noop

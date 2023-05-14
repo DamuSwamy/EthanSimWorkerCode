@@ -1,0 +1,29 @@
+version: 1.0
+tasks:
+  # [182, 39]
+  begin:
+    action: core.noop
+    next:
+      - do:
+          - start
+  # [182, 165]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - print
+        publish:
+          - i: <% ctx().i+1 %>
+  # [182, 305]
+  print:
+    action: core.echo
+    input:
+      message: "\" <% ctx().i %> is the number \""
+    next:
+      - do:
+          - start
+        when: <% ctx().i < 3 %>
+vars:
+  - i: 0
+output:
+  - number: <% ctx().i %>

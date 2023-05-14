@@ -1,0 +1,87 @@
+---
+  name: update_bulk
+  runner_type: "python-script"
+  description: "Update data in a SQL database"
+  enabled: true
+  entry_point: update_bulk.py
+  parameters:
+    connection:
+      type: string
+      description: "Name of <connection> from this pack's configuration that specifies how to connect to a database server."
+      required: false
+      position: 0
+    host:
+      type: string
+      description: >
+        Optional override of the database host in <connection> (required if <connection> is not specified). Database server to connect to. If not using a default port add that here. ex. host.domain.tld or host.domain.tld:1234
+      required: false
+    username:
+      type: string
+      description: "Optional override of the username in <connection> (required if <connection> is not specified). Username for authentication"
+      required: false
+    password:
+      type: string
+      description: "Optional override of the password in <connection> (required if <connection> is not specified). Password of the specified username"
+      secret: true
+      required: false
+    database:
+      type: string
+      description: "Optional override of the database in <connection> (required if <connection> is not specified). Database to connect to, to run querys against."
+      required: false
+    port:
+      description: "Port to connect to database on. If Default leave blank"
+      type: integer
+      required: false
+    drivername:
+      type: string
+      description: "Optional override of the database_type in <connection> (required if <connection> is not specified). The type of database that is being connected to."
+      required: false
+    table:
+      type: string
+      description: "Database table to UPDATE."
+      required: true
+      position: 1
+    update_values:
+      type: array
+      description: List of columns to be updated
+      required: true
+      position: 3
+    column_filter1:
+      type: string
+      description: Name of the column name1 to be filtered
+      required: true
+      position: 4
+    column_filter2:
+      type: string
+      description: Name of the column name1 to be filtered
+      required: false
+      position: 5
+    column_filter3:
+      type: string
+      description: Name of the column name1 to be filtered
+      required: false
+      position: 6
+    column_filter4:
+      type: string
+      description: Name of the column name1 to be filtered
+      required: false
+      position: 7
+    column_filter5:
+      type: string
+      description: Name of the column name1 to be filtered
+      required: false
+      position: 8
+    data:
+      type: array
+      description: >
+        Dictionary of data to be used to as Values to update for the UPDATE statement
+        [
+        {
+          'column_1': 'data_to_update_1',
+          'column_2': 'data_to_update_2',
+          'column_3': 'data_to_update_3',
+          'column_4': 'data_to_update_4',
+        }
+        ]
+      required: true
+      position: 2

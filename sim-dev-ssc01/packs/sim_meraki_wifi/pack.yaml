@@ -1,0 +1,21 @@
+---
+ref: sim_meraki_wifi
+name: SiM Meraki oOhmedia WiFi SSID Password Change
+description: SiM automation to change the SSID password on Meraki Wireless Networks
+keywords:
+    - sim
+    - ssid
+    - wifi
+    - meraki
+version: 1.0.0
+python_versions:
+  - "2"     
+  - "3"
+dependencies:
+  - core
+# Name of the pack author.
+author: Ethan Group
+# Email of the pack author.
+email: craig.peris@ethan.com.au
+contributers:
+  - Craig Peris<craig.peris@ethan.com.au>

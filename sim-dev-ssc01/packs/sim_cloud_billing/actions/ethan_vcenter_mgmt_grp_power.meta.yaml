@@ -1,0 +1,21 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_vcenter_mgmt_grp_power
+entry_point: workflows/ethan_vcenter_mgmt_grp_power.yaml
+description: Based on the payload info perform power on/off
+parameters:
+  cloud_db_connection:
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: true
+    default: cloudmanagement
+  payload:
+    type: "object"
+    description: Virtual machine objects matched the schedule
+    required: true
+  logic_app_key:
+    type: string
+    description: logic app api key
+    required: true
+    default: "{{config_context.logicapp_api_key}}"

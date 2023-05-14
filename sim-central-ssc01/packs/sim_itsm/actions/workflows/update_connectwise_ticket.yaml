@@ -1,0 +1,35 @@
+version: 1.0
+tasks:
+  # [270, 322]
+  Success:
+    action: core.noop
+  # [270, 111]
+  Update_Ticket:
+    action: core.http
+    input:
+      url: <% ctx().itsm_url %>/v4_6_release/apis/3.0/service/tickets/<% ctx().ticket_id %>/notes
+      headers:
+        Authorization: Basic <% ctx().auth_token %>
+        clientId: <% ctx().client_id %>
+        Content-Type: application/json; charset=utf-8
+      method: POST
+      body: "{\n        \"ticketId\": <% ctx().ticket_id %>,\n        \"text\": <% ctx().ticket_text %>,\n        \"detailDescriptionFlag\": <% ctx().detailDescriptionFlag %>,\n        \"internalAnalysisFlag\": <% ctx().internalAnalysisFlag %>,\n        \"resolutionFlag\": <% ctx().resolutionFlag %>,\n        \"issueFlag\": <% ctx().issueFlag %>,\n        }\n}"
+    next:
+      # #629e47
+      - do:
+          - Success
+        when: <% succeeded() %>
+        publish:
+          - response: <% result().body %>
+input:
+  - auth_token
+  - ticket_id
+  - ticket_text
+  - detailDescriptionFlag
+  - internalAnalysisFlag
+  - resolutionFlag
+  - issueFlag
+  - client_id
+  - itsm_url
+output:
+  - response: <% ctx().response %>

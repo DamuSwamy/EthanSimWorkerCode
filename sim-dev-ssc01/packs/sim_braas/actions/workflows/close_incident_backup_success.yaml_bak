@@ -1,0 +1,110 @@
+---
+version: 1.0
+
+description: Automated case closure for backup success events
+
+vars:
+  - notifications: []
+  - process_name: "Backup Success Case Resolution"
+
+input:
+  - input_backup_success_object
+  - input_snow_customer_object
+
+output:
+  - notifications: <% ctx().notifications %>
+
+tasks:
+  # [192, 51]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notification: |
+              (<% ctx().process_name%>) process started
+        do:
+          - notify
+          - format_user_input
+
+  # [92, 251]
+  format_user_input:
+    action: sim_braas.extract_data_from_json_2
+    input:
+      input_json_1: <% dict(dpaclients=>dict(client=>ctx().input_backup_success_object)) %>
+      input_json_2: <% dict(result=>ctx().input_snow_customer_object) %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - generated_output: <% result().output.output_json.clients %>
+          - account_sysids: <% ctx().generated_output.values().account_sysid %>
+          - clients: <% ctx().generated_output.keys() %>
+        do:
+          - get_customer_account_name
+      - when: <% failed() %>
+        do:
+          - fail
+
+  # [192, 401]
+  get_customer_account_name:
+    action: sim_itsm2.get
+    input:
+      log_level: DEBUG
+      table: customer_account
+      query:
+        sys_id: "{{ ctx().account_sysids | join('^ORsys_id=') }}"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - customer_output: <% result().result %>
+        do:
+          - construct_client_sysid_mapping
+      - when: <% failed() %>
+        do:
+          - fail
+  
+  # [142, 551]
+  construct_client_sysid_mapping:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - client_sysid_map: <% dict(output=>dict(ctx(customer_output).select([$.sys_id, $.name]))) %>
+        do:
+          - validate_and_resolve
+
+  # [292, 751]
+  validate_and_resolve:
+    action: sim_braas.close_successful_backup_cases
+    input:
+      account_id: <% ctx().generated_output[item(client)].account_sysid %>
+      client_name: <% item(client) %>
+      account_name: <% ctx().client_sysid_map.output[ctx().generated_output[item(client)].account_sysid] %>
+      failure_info: <% str(ctx().generated_output[item(client)].failure_info) %>
+    with:
+      items: client in <% ctx().clients %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notification: |
+               The case(s) successfully closed!
+        do:
+          - notify
+      - when: <% failed() %>
+        publish:
+          - notification: |
+               The one or more case(s) failed to close!
+        do:
+          - notify
+          - fail
+  
+  # [492, 201]
+  notify:
+    action: core.echo
+    input:
+      message: |
+        <% ctx().notification %>
+next:
+      - when: <% succeeded() %>
+        publish:
+          - notifications: <% ctx().notifications.append(ctx().notification) %>

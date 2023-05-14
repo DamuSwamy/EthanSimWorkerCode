@@ -1,0 +1,151 @@
+---
+version: 1.0
+
+description: Cisco IOS Benchmark - Device Compliant
+
+vars:
+  - Devices: []
+  - process_name: "Cisco device compliant check"
+  - deviceIndex: 0
+  - response: {}
+  - target_automation: sim_cisco_compliance.config_compliance
+  - startIndex: 0
+  - counter: 1
+  - insert_count: 0
+
+input:
+  - customer_id
+  - exclude_device_types
+  - status_table_name
+  - details_table_name
+  - limit
+  - batch_size
+
+tasks:
+  # [192, 51]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notification: (<% ctx().process_name%>) process started
+          - start_time: <% (now(offset=>localtz())).format("%Y-%m-%d %H:%M:%S") %>
+        do:
+          - notify
+          - cleanup_details_table
+          - get_device_list
+
+  # [864, 67]
+  cleanup_status_table:
+    action: sql.delete
+    input:
+      table: <% ctx().status_table_name %>
+      connection: productionCloudExtension
+      where:
+        NetDBCompanyID: <% ctx().customer_id %>
+
+  # [192, 201]
+  cleanup_details_table:
+    action: sql.query
+    input:
+      connection: productionCloudExtension
+      query: DELETE  from <% ctx().details_table_name %> where NetDBDeviceID in (Select NetDBDeviceID from <% ctx().status_table_name %> where NetDBCompanyID = <% ctx().customer_id %>);
+    next:
+      - when: <% succeeded() %>
+        do:
+          - cleanup_status_table
+
+
+  # [464, 217]
+  get_device_list:
+    action: sim_cisco_compliance_v2.get_device_list
+    input:
+      customer_id: <% ctx().customer_id %>
+      limit: <% ctx().limit %>
+    next:
+      - when: <% succeeded() and len(result().result)>0 %>
+        publish:
+          - device_list: <% result().result %>
+        do:
+          - do_compliance_check
+      - when: <% succeeded() and len(result().result)<=0 %>
+        publish:
+          - notification: No devices found for customer [<% ctx().customer_id %>]
+        do:
+          - notify
+      - when: <% failed() %>
+        do:
+          - fail
+
+  # [142, 351]
+  do_compliance_check:
+    action: sim_cisco_compliance_v2.perform_compliance_check
+    delay: 5
+    input:
+      devices: <% ctx().device_list %>
+      start: <% ctx().startIndex %>
+      end: <% ctx().batch_size %>
+      exclude_list: <% ctx().exclude_device_types %>
+      customer_id: <% ctx().customer_id %>
+    next:
+      - when: <% succeeded() or failed() %>
+        publish:
+          - output: <% switch(isList(result().result) => result().result, true => []) %>
+          - response: <% dict(NetDBCompanyID=>ctx().customer_id, compliancecheckTimestamp=>ctx().start_time, Devices=>ctx().output) %>
+        do:
+          - prepare_data_for_insert
+
+  # [667, 354]
+  notify:
+    action: core.echo
+    input:
+      message: <% ctx().notification %>
+
+  # [363, 496]
+  prepare_data_for_insert:
+    action: sim_cisco_compliance_v2.config_compliance 
+    input:
+      input_json: <% ctx().response %>
+    next:
+      - when: <% succeeded() and len(result().result.ComplianceStatus) > 0 %>
+        publish:
+          - startIndex: <% ctx().batch_size %>
+          - batch_size: <% ctx().batch_size + (ctx().startIndex / ctx().counter) %>
+          - counter: <% ctx().counter + 1 %>
+          - insert_count: <% ctx().insert_count + len(result().result.ComplianceStatus) %>  
+          - ComplianceDetails: <% result().result.ComplianceDetails %>
+          - ComplianceStatus: <% result().result.ComplianceStatus %>
+        do:
+          - insert_status_data
+          - do_compliance_check
+          - insert_details_data
+      - when: <% succeeded() and len(result().result.ComplianceStatus) <= 0 %>
+        publish:
+          - notification: Processed <% str(ctx().insert_count) %> device(s) data for customer (<% ctx().customer_id %>)
+        do:
+          - notify
+      - when: <% failed() %>
+        publish:
+          - output: <% switch(isDict(result().result) => result().result, true => {}) %>
+          - notification: Failed to process the devices from (<% ctx().startIndex %>) data for customer (<% ctx().customer_id %>)
+        do:
+          - fail
+
+  # [763, 596]
+  insert_status_data:
+    action: sql.insert_bulk
+    input:
+      table: <% ctx().status_table_name %>
+      data: <% ctx().ComplianceStatus %>
+      connection: productionCloudExtension
+
+  # [914, 217]
+  insert_details_data:
+    action: sql.insert_bulk
+    input:
+      table: <% ctx().details_table_name %>
+      data: <% ctx().ComplianceDetails %>
+      connection: productionCloudExtension
+
+output:
+  - notifications: <% ctx().notification %>

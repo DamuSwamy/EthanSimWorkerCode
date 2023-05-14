@@ -1,0 +1,43 @@
+---
+version: 1.0
+
+description: Device compliance check process
+
+vars:
+  - device_id: null
+  - device_name: null
+  - device_type: null
+  - process_name: "Device compliance check"
+
+input:
+  - device_object
+  - exclude_list
+  - count
+
+tasks:
+  # [192, 51]
+  start:
+    action: core.echo
+    input:
+      message: <% str(ctx().count) %>
+    next:
+      - when: <% succeeded() or failed() %>
+        do:
+          - compliance_check
+
+  # [292, 251]
+  compliance_check:
+    action: sim_networks.perform_compliance_check
+    input:
+      device_id: <% str(ctx(device_object).NetDBDeviceId) %>
+      device_type: <% ctx(device_object).NetDBDeviceType %>
+      exclude_list: <% ctx().exclude_list %>
+      time_stamp: <% task(start).start_timestamp %> 
+    next:
+      - when: <% succeeded() or failed() %>
+        publish:
+          - output: <% switch(isDict(result().result) => result().result, true => {}) %>
+
+output:
+  - result: <% ctx().output %>
+

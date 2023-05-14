@@ -1,0 +1,5 @@
+pack: linux
+enabled: true
+runner_type: orquesta
+name: test_date
+entry_point: workflows/test_date.yaml

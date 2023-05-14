@@ -1,0 +1,33 @@
+pack: sim_workflow_testing
+enabled: true
+runner_type: "python-script"
+name: perform_compliance_check
+entry_point: "perform_compliance_check.py"
+description: Get Device config from NetDB
+parameters:
+  device_id:
+    type: string
+    description: Device id to get the current config of the device
+    required: true
+  device_type:
+    type: string
+    description: Type of the device (i.e. Router, Switch, Firewall)
+    required: true
+  exclude_list:
+    type: array
+    description: List of device type excluded form compliance check
+    required: false
+    default: ['Firewall']
+  time_stamp:
+    type: string
+    description: Timestamp of the process started
+    required: true
+  auth_token:
+    type: string
+    description: The query params to append endpoint
+    required: false
+  method:
+    type: string
+    description: "Optional override of the method."
+    required: false
+    default: GET

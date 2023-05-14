@@ -1,0 +1,105 @@
+version: 1.0
+tasks:
+  # [199, 40]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - count_query
+        publish:
+          - i: 0
+          - x: " "
+          - attention: " "
+  # [198, 145]
+  count_query:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: select count(*) as records from <% ctx().list[ctx().i] %>
+      connection: productionCloudExtension
+    next:
+      - do:
+          - count
+        publish:
+          - count: <% result().result[0].records %>
+  # [191, 247]
+  count:
+    action: core.noop
+    next:
+      - do:
+          - skip
+        publish:
+          - x: <% concat(ctx().x,ctx().list[ctx().i],"-",str(ctx().count),"\n") %>
+  # [185, 342]
+  skip:
+    action: core.noop
+    next:
+      - do:
+          - records
+        when: <% ctx().count != 0 %>
+      - do:
+          - print
+        when: <% ctx().count = 0 %>
+        publish:
+          - attention: true
+  # [95, 465]
+  records:
+    action: core.noop
+    next:
+      - do:
+          - print
+  # [258, 566]
+  print:
+    action: core.echo
+    input:
+      message: "\" <% ctx().count %> \""
+    next:
+      - do:
+          - next
+        publish:
+          - i: <% ctx().i+1 %>
+  # [493, 198]
+  next:
+    action: core.noop
+    next:
+      - do:
+          - count_query
+        when: <% ctx().i < len(ctx().list) %>
+      - do:
+          - mails
+        when: <% ctx().i >= len(ctx().list) %>
+  # [693, 325]
+  mails:
+    action: core.noop
+    next:
+      - do:
+          - attention
+        when: <% ctx().attention = "yes" %>
+      - do:
+          - update
+        when: <% ctx().attention != "yes" %>
+  # [533, 424]
+  attention:
+    action: core.sendmail
+    input:
+      to: supriya.kadam@ethan.com.au
+      subject: Attention required
+      body: One of the records is empty
+    next:
+      - do:
+          - end
+  # [860, 424]
+  update:
+    action: core.sendmail
+    input:
+      to: supriya.kadam@ethan.com.au
+      body: "\" <% ctx().x %> \""
+      subject: update
+    next:
+      - do:
+          - end
+  # [703, 578]
+  end:
+    action: core.noop
+input:
+  - list

@@ -1,0 +1,28 @@
+pack: sim_msol
+enabled: true
+runner_type: orquesta
+name: place_msol_order_from_offer_id
+entry_point: workflows/place_msol_order_from_offer_id.yaml
+description: Place Order on Microsoft Online from Offer ID
+parameters:
+  tenant_id:
+    type: string
+    default: d0aaafc0-4f56-478a-b986-fd9eb70046d6
+    description: Tenant ID for Microsoft Online
+    required: true
+  customer_tenant_id:
+    type: string
+    default: cbdf64d8-3641-436a-9665-ff6eb110d377
+    required: true
+  line_items_raw:
+    type: string
+    default: "d621d86a-79d2-433d-b5bd-523bc61fa5b6,Microsoft 365 E5,8bdbb60b-e526-43e9-92ef-ab760c8e0b72,2,monthly,P1Y:d621d86a-79d2-433d-b5bd-523bc61fa5b6,Microsoft Teams Rooms Standard,2c883339-ef9c-4cce-81b8-e5adea60794c,1,monthly,P1Y"
+    required: true
+  password_id:
+    type: string
+    default: "\"1046\""
+    required: true
+  ticket_id:
+    type: string
+    default: INC0010080
+    required: true

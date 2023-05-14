@@ -1,0 +1,91 @@
+version: 1.0
+tasks:
+  # [277, 42]
+  Start:
+    action: core.noop
+    next:
+      - do:
+          - Initialise
+        publish:
+          - date_now: "<%(now(offset=>localtz())).format(\"%Y-%m-%d %H:%M:%S\") %>"
+          - start_date: <% (now(offset=>localtz()) - timespan(days => 1)).format("%Y-%m-%d") %>
+          - end_date: <%(now(offset=>localtz())).format("%Y-%m-%d") %>
+          - start_db_date: <% (now(offset=>localtz()) - timespan(days => 5)).format("%Y-%m-%d") %>
+  # [279, 151]
+  Initialise:
+    action: core.noop
+    next:
+      - do:
+          - query_net_customers
+  # [797, 429]
+  build_insert_new_records:
+    action: core.noop
+    next:
+      - do:
+          - create_new_tix
+  # [800, 790]
+  test_end:
+    action: core.noop
+  # [278, 255]
+  query_net_customers:
+    action: sql.query
+    next:
+      - do:
+          - get_dpa_report_data
+        publish:
+          - network_cust: <% result().result %>
+    input:
+      log_level: DEBUG
+      connection: cloudmanagement
+      query: select Name, IaaSCode, ServiceNowAccountID, SelcommAccountNumber FROM NetworkCustomer WHERE IaaSCode != ''
+  # [801, 606]
+  create_new_tix:
+    action: sim_braas.create_incident_for_backup_failure_2
+    next:
+      - do:
+          - test_end
+    input:
+      input_backup_failure_object: "{{ctx().failure_report}}"
+      input_snow_customer_object: "{{ctx().network_cust}}"
+  # [287, 382]
+  get_dpa_report_data:
+    action: sim_braas.DPA_get_report_data_custom
+    input:
+      input_finish_date: <% ctx().end_date %>
+      formatType: CSV
+      input_start_date: <% ctx().start_date %>
+      input_start_time: "09:00:00.000"
+      input_finish_time: "23:59:00.000"
+      report_name: Backup All Jobs
+    next:
+      - do:
+          - format_client_report
+        publish:
+          - rpt_current: <% result().output.debug_report %>
+  # [287, 484]
+  format_client_report:
+    action: sim_braas.format_client_csv_report
+    next:
+      - do:
+          - close_success_tickets
+        publish:
+          - success_report: <% result().result[0] %>
+          - failure_report: <% result().result[1] %>
+    input:
+      log_level: DEBUG
+      dpa_report: <%ctx().rpt_current%>
+      report_name: Backup All Jobs
+  # [286, 648]
+  close_success_tickets:
+    action: sim_braas.backup_ticket_closure
+    next:
+      - do:
+          - build_insert_new_records
+    input:
+      dpa_report: "{{ctx().success_report}}"
+output:
+  - debug_datenow: <%ctx().date_now%>
+  - debug_startdate: <%ctx().start_date%>
+  - debug_enddate: <%ctx().end_date%>
+  - debug_failures: <%ctx().failure_report%>
+  

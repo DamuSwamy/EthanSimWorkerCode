@@ -1,0 +1,16 @@
+version: 2
+
+jobs:
+  circleci_is_disabled_job:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - run:
+          shell: /bin/bash
+          command: echo CircleCI disabled on StackStorm-Exchange
+
+workflows:
+  version: 2
+  circleci_is_disabled:
+    jobs:
+      - circleci_is_disabled_job

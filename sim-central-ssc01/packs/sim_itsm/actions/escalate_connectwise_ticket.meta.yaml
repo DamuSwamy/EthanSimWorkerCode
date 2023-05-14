@@ -1,0 +1,47 @@
+pack: sim_itsm
+enabled: true
+runner_type: orquesta
+name: escalate_connectwise_ticket
+entry_point: workflows/escalate_connectwise_ticket.yaml
+description: Escalate Connectwise Ticket
+parameters:
+  auth_token:
+    type: string
+    description: auth_token
+    default: ZXNzaXN0ZGV2K1VmQWRMMjl4dWkzMEJySWQ6aHptVWcxNmJvMzNlTXhCbQ==
+    required: false
+    secret: true
+  ticket_id:
+    type: string
+    default: 720146
+    required: true
+    description: ticket_id
+  client_id:
+    type: string
+    description: client_id
+    default: 13e3617a-b4d4-4c28-993c-80cd8cd2b88b
+    required: true
+  instance:
+    type: string
+    description: instance url
+    default: helpdesk-dev.essist.com.au
+    required: false
+  status:
+    type: string
+    default: ">Closed - Resolved"
+    description: resolution status
+  owner:
+    type: string
+    description: owner
+    default: "\"\""
+    required: false
+  board_name:
+    type: string
+    description: CW board_name or queue_name where ticket should be created
+    default: " MS - Service Requests"
+    required: true
+  team_name:
+    type: string
+    description: team_id
+    default: Managed Services
+    required: true

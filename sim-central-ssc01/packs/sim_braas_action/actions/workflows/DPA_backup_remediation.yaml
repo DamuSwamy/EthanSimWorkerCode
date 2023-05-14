@@ -1,0 +1,220 @@
+version: 1.0
+
+input:
+  - exclude_list
+
+vars:
+  - next_action: {"remediation": [], "bulk_failures": [], "no_activity": []}
+  - result: {"ignore": []}
+  - key_name: "BraasIgnoreStore"
+  - rkey_name: "BraasRemediationStore"
+  - response: {"remediation": [], "ignore": []}
+  - ignore_list: []
+
+output:
+  - data: <% ctx().response %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - rod_ignore_list_str: <% st2kv('system.' + ctx().key_name, default => null) %>
+          - rod_remediation_list_str: <% st2kv('system.' + ctx().rkey_name, default => null) %>
+          - rod_ignore_list: <% switch(isString(ctx().rod_ignore_list_str) => ctx().rod_ignore_list_str.split(","), true => []) %>
+          - rod_remediation_list: <% switch(isString(ctx().rod_remediation_list_str) => ctx().rod_remediation_list_str.split(","), true => []) %>
+        do:
+          - Print_Ignore_Store
+          - Print_Remediation_Store
+          - Query_Net_Customers
+      - when: <% failed() %>
+        do:
+          - fail
+ 
+  Print_Ignore_Store:
+    action: core.echo
+    input:
+      message: "{{ ctx().rod_ignore_list_str if ctx().rod_ignore_list_str != None else 'None' }}"
+
+  Print_Remediation_Store:
+    action: core.echo
+    input:
+      message: "{{ ctx().rod_remediation_list_str if ctx().rod_remediation_list_str != None else 'None' }}"
+
+  GET_Backup_Report:
+    action: sim_braas_action.remediate_report
+    input:
+      report_period: 30
+    next:
+      - when: <% len(result().output.debug_failures) > 0 or len(result().output.debug_failures) > 0 %>
+        publish:
+          - backup_report: <% switch(isDict(result().output) => result().output, true => {}) %> 
+        do:
+          - Transform_Data
+      - when: <% not len(result().output.debug_failures) > 0 %>
+        do:
+          - Check_For_Actions
+      - when: <% len(result().output.debug_success) > 0 %>
+        publish:
+          - success_report: <% switch(isList(result().output.debug_success) => result().output.debug_success, true => []) %>
+        do: 
+          - Close_SuccessFul_Tickets
+      - when: <% failed() %>
+        do: fail
+
+  Transform_Data:
+    action: sim_braas_action.transform_backup_data
+    input:
+      backup_array: <% ctx().backup_report %>
+      ignore_list: <% ctx().rod_ignore_list.skipWhile(not $) + ctx().exclude_list %>
+      ignore_list_from_validation: <% ctx().ignore_list_from_validation %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - next_action: <% switch(isDict(result().result) => result().result, true => {}) %>
+          - ignore_list_from_failures: <% ctx().next_action.get('bulk_failures') %>
+          - ignore_list_no_activity: <% ctx().next_action.get('no_activity') %>
+          - ignore_list: <% ctx().ignore_list_from_failures + ctx().ignore_list_no_activity + ctx().rod_ignore_list %>
+        do:
+          - Check_For_Actions
+          - Ticket_Needed_No_Activity
+          - Ticket_Needed_Bulk_Failures
+      - when: <% failed() %>
+        do: fail
+
+  Validate_Execution_Status:
+    action: sim_braas_action.validate_backup_execution_wrapper
+    input:
+      ignore_list: <% ctx().rod_ignore_list.skipWhile(not $) + ctx().exclude_list %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - result: <% switch(isDict(result().output) => result().output, true => {}) %>
+          - ignore_list_from_validation: <% ctx().result.get('ignore') %>
+#          - ignore_list: <% ctx().ignore_list_from_validation + ctx().rod_ignore_list %>
+        do:
+          - GET_Backup_Report
+      - when: <% failed() %>
+        do: fail
+
+  Ticket_Needed_No_Activity:
+    action: core.noop
+    next:
+      - when: <% len(ctx().ignore_list_no_activity) > 0 %>
+        do:
+          - Create_Ticket_No_Activity
+
+  Create_Ticket_No_Activity:
+    action: sim_braas_action.ticket_creation_grid
+    input:
+      grid_name: <% item() %>
+      subject: "No Backup Activitiy has been detected on Avamar Grid"
+      ticket_desc: "No Backup Activitiy has been detected on Avamar Grid {grid}.\nService Desk are to escalate this as a P2 to the Cloud Team as per the On-Call Roster."
+    with:
+      items: <% ctx().ignore_list_from_validation %>
+    next:
+      - when: <% succeeded() or Failed() %>
+        do: noop
+
+  Ticket_Needed_Bulk_Failures:
+    action: core.noop
+    next:
+      - when: <% len(ctx().ignore_list_from_failures) > 0 %>
+        do:
+          - Create_Ticket_Bulk_Failures
+
+  Create_Ticket_Bulk_Failures:
+    action: sim_braas_action.ticket_creation_grid
+    input:
+      grid_name: <% item() %>
+      subject: "There are more than 10 failures on the GRID"
+      ticket_desc: "There are more than 10 failures on the GRID - {grid}.\nService Desk are to escalate this as a P2 to the Cloud Team as per the On-Call Roster."
+    with:
+      items: <% ctx().ignore_list_from_failures %>
+    next:
+      - when: <% succeeded() or Failed() %>
+        do: noop
+
+  Check_For_Actions:
+    action: core.noop
+    next:
+      - when: <% len(ctx().ignore_list.skipWhile(not $)) > 0 %>
+        publish:
+          - response: <% ctx(response).set("ignore" => ctx().ignore_list.flatten()) %>
+        do:
+          - Store_Ignore_List
+      - when: <% len(ctx().next_action.get('remediation')) > 0 %>
+        publish:
+          - failure_payload: <% ctx().next_action.get('remediation') %>
+        do:
+          - Rerun_Backup_Jobs
+      - when: <% len(ctx().ignore_list.skipWhile(not $)) = 0 and len(ctx().next_action.get('remediation')) = 0 %>
+        do:
+          - End
+
+  Query_Net_Customers:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      connection: cloudmanagement
+      query: select Name, IaaSCode, ServiceNowAccountID, SelcommAccountNumber FROM NetworkCustomer WHERE IaaSCode != ''
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - customers: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Validate_Execution_Status
+      - when: <% failed() %>
+        do: fail
+
+  Store_Ignore_List:
+    action: sim_braas_action.data_store
+    input:
+      key: <% ctx().key_name %>
+      value: <% ctx().ignore_list %>
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  Rerun_Backup_Jobs:
+    action: sim_braas_action.rerun_backup_process_wrapper
+    input:
+      failure_payload: <% ctx().failure_payload %>
+      remediation_list: <% ctx().rod_remediation_list %>
+      ignore_list: <% ctx().rod_ignore_list.skipWhile(not $) + ctx().exclude_list %>
+    next:
+      - when: <% len(result().output.remediation) > 0 %>
+        publish:
+          - failure_payload_after_rerun: <% result().output.exec_result %>
+          - response: <% ctx(response).set("remediation" => ctx().failure_payload_after_rerun) %>
+        do:
+          - Create_Ticket_Rerun
+      - when: <% len(result().output.remediation) = 0 %>
+        do:
+          - OnDemand_End
+      - when: <% failed() %>
+        do: fail
+
+  Close_SuccessFul_Tickets:
+    action: sim_braas.backup_ticket_closure
+    input:
+      dpa_report: <% ctx().success_report %>
+
+  Create_Ticket_Rerun:
+    action: sim_braas.create_incident_for_backup_failure_2
+    input:
+      input_backup_failure_object: <% ctx().failure_payload_after_rerun %>
+      input_snow_customer_object: <% ctx().customers %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - OnDemand_End
+      - when: <% failed() %>
+        do: fail
+
+  OnDemand_End:
+    action: core.noop
+
+  End:
+    action: core.noop

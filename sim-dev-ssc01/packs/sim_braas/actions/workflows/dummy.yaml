@@ -1,0 +1,48 @@
+---
+version: 1.0
+
+description: Automated case closure for backup success events
+
+vars:
+  - notifications: []
+  - process_name: "Backup Success Case Resolution"
+  - cases_to_close: {}
+
+tasks:
+  # [192, 51]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notification: |
+              (<% ctx().process_name%>) process started
+        do:
+          - notify
+          - get_valid_cases
+
+  # [842, 301]
+  get_valid_cases:
+    action: sim_braas.get_valid_cases
+    input:
+      client_list: [{"client":"sydnwbizp01","group":"GRCL-IM-VMW-IMAG-SEN-7D-2000-30D12M7Y","schedule":"PLAT-7D-2000-0600"},{"client":"sydnwcomp101","group":"GRCL-IM-VMW-IMAG-SEN-7D-2000-30D12M7Y","schedule":"PLAT-7D-2000-0600"}]
+      case_list: [{"number":"CS0192738","description":"(\nbackupGroup: GRCL-IM-VMW-IMAG-SEN-7D-2000-30D12M7Y\n backupServer: lec.braas.ethoria.services\n clientName: sydnwbizp01\n custid: GRCL\n domainName: /vb3-vc33.iaas.ethoria.services/GRCL\n duration: 1\n finishTime: 2022-08-10 20:00:02\n id: sydnwcomp45|1660125601|1\n mediaServer: sen.braas.ethoria.services\n schedule: PLAT-7D-2000-0600\n startTime: 2022-08-10 20:00:01\n startTimeGMT: 2022-08-10 10:00:01\n status: failed\n statusCodeSummary: Activity failed - virtual machine client does not exist in vSphere\n\n)",},{"number":"my12345","description":"[\nbackupGroup: GADV-AG-WIN-FILE-SEN-1900-30D84M07Y\n backupServer: bot.braas.ethoria.services\n clientName: eltsrv-145.vic.gadens.local\n custid: GADV\n domainName: /GADV\n duration: 17987\n finishTime: 2022-08-16 23:59:56\n id: eltsrv-145.vic.gadens.local|1660640409|17987\n mediaServer: sen.braas.ethoria.services\n schedule: BRAS-7D-1900-0600\n startTime: 2022-08-16 19:00:09\n startTimeGMT: 2022-08-16 09:00:09\n status: success\n statusCodeSummary: Activity completed with exceptions.\n]"}]
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - validCaseList: <% result().result %>
+      - when: <% failed() %>
+        do:
+          - fail
+
+  # [574, 375]
+  notify:
+    action: core.echo
+    input:
+      message: |
+        <% ctx().notification %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notifications: <% ctx().notifications.append(ctx().notification) %>
+

@@ -1,0 +1,11 @@
+pack: sim_msol_billing
+enabled: true
+runner_type: "python-script"
+name: return_customer_invoices
+entry_point: "return_customer_invoices.py"
+description: Convert the given array objects to expected format for db insert
+parameters:
+  invoices:
+    type: array
+    description: List of inovices retrieved from partner connect inovices api
+    required: true

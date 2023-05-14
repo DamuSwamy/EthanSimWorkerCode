@@ -1,0 +1,13 @@
+---
+ref: sim_itsm2
+name: sim_itsm2
+description: ServiceNow Integration Pack for Ethan Group
+keywords:
+  - servicenow
+  - incident management
+  - itsm
+version: 1.0.0
+python_versions:
+  - "3"
+author: Original author James Fryman, Modified by Accelnomics
+email: aman@accelnomics.com

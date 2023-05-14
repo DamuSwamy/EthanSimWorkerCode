@@ -1,0 +1,19 @@
+pack: sim_itsm2
+enabled: true
+runner_type: orquesta
+name: Test_Escalate
+entry_point: workflows/Test_Escalate.yaml
+description: Ecalation test
+parameters:
+  ticket_id:
+    type: string
+    description: ticket
+    default: CS0058271
+  order_details:
+    type: object
+    description: order_details
+    default: "{\"description\":\"SiM Automation has successfully completed the MSOL Order\nOrder Id: <% ctx().order_id %>\n<% ctx().order_details %>\",\"resolution_code\":\"Completed\",\"close_notes\":\"successful completion of order from SiM Automation \",\"state\":\"3\"}"
+  order_id:
+    type: string
+    default: 0b225ca0-a226-4388-9563-918a2cec60ca
+    required: true

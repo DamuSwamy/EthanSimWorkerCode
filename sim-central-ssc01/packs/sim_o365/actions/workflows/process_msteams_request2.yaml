@@ -1,0 +1,229 @@
+version: 1.0
+tasks:
+  # [239, 62]
+  start:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - update
+        publish:
+          - update_user_output: Automation execution started
+  # [873, 603]
+  update_resolve:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticketid %>
+      payload:
+        comments: "SiM Automation has successfully updated the user properties.\n\nOutput of update properties action is as follows:\n\n<% ctx().update_user_output %>\n\nThis change may take upto 1 hour, so kindly suggest the user to log out and login after 1 hr to check.\n\nSiM Automation will resolve this ticket, please don't hesitate to reach out should you need any further assistance on this request."
+        state: 3
+        cause: MS Teams Voice user updated successfully
+        assigned_to: svc_sim_automation
+        closed_by: 84cf417087ff3410bd1d32e80cbb3502
+        closed_at: "2022-02-06 17:03:07"
+        notes_to_comments: true
+        service_offering: Managed 365
+      table: sn_customerservice_general_case
+    next:
+      - do:
+          - success
+  # [239, 162]
+  update:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      payload:
+        comments: "We have received the request for update properties of <% ctx().user_id %>, SiM Automation will work on this request and update this ticket."
+        state: 2
+        assigned_to: svc_sim_automation
+        service_offering: Managed 365
+      table: sn_customerservice_general_case
+      number: <% ctx().ticketid %>
+    next:
+      # #629e47
+      - do:
+          - is_assign_license_required
+  # [239, 262]
+  is_assign_license_required:
+    action: core.noop
+    next:
+      # #d14c83
+      - do:
+          - Update_User_Directly
+        when: <% ctx().sku_ids = 'NA' %>
+      - do:
+          - assign_licenses
+        when: <% ctx().sku_ids != 'NA' %>
+  # [535, 364]
+  Update_User_Directly:
+    action: core.http
+    next:
+      # #629e47
+      - do:
+          - wait_1_mins
+        when: <% result().status_code=200 or result().status_code=204 %>
+        publish:
+          - update_user_output: <% result().body %>
+      - do:
+          - escalate
+        when: <% result().status_code !=200 and result().status_code != 204 %>
+        publish:
+          - update_user_output: <% result().body %>
+    input:
+      url: "https://funapp-teamsssp-prd.azurewebsites.net/api/UpdateUserProperties"
+      body: "{\n  \"tenant_id\": \"<% ctx().tenant_id %>\",\n  \"teams_password_id\": <% ctx().teams_password_id %>,\n  \"user_id\": \"<% ctx().user_id %>\",\n  \"phone_no\": \"<% ctx().phone_no %>\",\n  \"voice_routing_policy\": \"<% ctx().voice_routing_policy %>\",\n  \"calling_line_identity\": \"<% ctx().calling_line_identity %>\",\n  \"calling_policy\": \"<% ctx().calling_policy %>\",\n  \"callpark_policy\": \"<% ctx().callpark_policy %>\",\n  \"tenant_dial_plan\": \"<% ctx().tenant_dial_plan %>\"\n}"
+      headers:
+        x-functions-key: dJ07oRgRQD1ZrmR6z/BitQamqWHRbNkGiCLUCbLIkHZjU0caQE01ag==
+        Content-Type: application/json
+      method: POST
+  # [28, 365]
+  assign_licenses:
+    action: core.http
+    next:
+      - do:
+          - wait_3_mins
+    input:
+      url: "https://funapp-teamsssp-prd.azurewebsites.net/api/AssignLicense"
+      body: "{\n  \"tenant_id\": \"<% ctx().tenant_id %>\",\n  \"user_id\": \"<% ctx().user_id %>\",\n  \"graph_password_id\": <% ctx().graph_password_id %>, \"sku_ids\": \"<% ctx().sku_ids %>\"\n}"
+      headers:
+        x-functions-key: KSFSRr3cKvQmSa6//77H1eAjUlloAJFDCG6aJYgWvqRhYBksVv46Sg==
+        Content-Type: application/json
+      method: POST
+  # [29, 468]
+  wait_3_mins:
+    action: core.local
+    next:
+      - do:
+          - check_license
+        publish:
+          - iter: 0
+    input:
+      cmd: sleep 180
+      timeout: 360
+  # [870, 458]
+  wait_1_mins:
+    action: core.local
+    next:
+      # #629e47
+      - do:
+          - update_resolve
+    input:
+      cmd: sleep 60
+      timeout: 180
+  # [32, 583]
+  check_license:
+    action: core.http
+    next:
+      - do:
+          - update_user_command
+        when: <% result().status_code = 200 or result().status_code = 204 %>
+      - do:
+          - wait_2_mins
+        when: <% result().status_code != 200 and result().status_code != 204 and iter !=1 %>
+    input:
+      url: "https://funapp-teamsssp-prd.azurewebsites.net/api/GetLicenseDetails"
+      headers:
+        x-functions-key: lidKYMGLxmJaW6eAp7yEmZCG7TwgqfW8wzaAgGzpsnAWnKFijmy94w==
+        Content-Type: application/json
+      method: GET
+      body: "{\n\"tenant_id\": \"<% ctx().tenant_id %>\",\n\"user_id\": \"<% ctx().user_id %>\",\n\"graph_password_id\": <% ctx().graph_password_id %>}"
+  # [552, 829]
+  update_user_command:
+    action: core.http
+    next:
+      # #629e47
+      - do:
+          - wait
+        when: <% result().status_code = 200 or result().status_code = 204 %>
+        publish:
+          - update_user_output: <% result().body %>
+      - do:
+          - escalate
+        when: <% result().status_code != 200 and result().status_code != 204 %>
+        publish:
+          - update_user_output: <% result().body %>
+    input:
+      url: "https://funapp-teamsssp-prd.azurewebsites.net/api/UpdateUserProperties"
+      body: "{\n  \"tenant_id\": \"<% ctx().tenant_id %>\",\n  \"teams_password_id\": <% ctx().teams_password_id %>,\n  \"user_id\": \"<% ctx().user_id %>\",\n  \"phone_no\": \"<% ctx().phone_no %>\",\n  \"voice_routing_policy\": \"<% ctx().voice_routing_policy %>\",\n  \"calling_line_identity\": \"<% ctx().calling_line_identity %>\",\n  \"calling_policy\": \"<% ctx().calling_policy %>\",\n  \"callpark_policy\": \"<% ctx().callpark_policy %>\",\n  \"tenant_dial_plan\": \"<% ctx().tenant_dial_plan %>\"\n}"
+      headers:
+        x-functions-key: dJ07oRgRQD1ZrmR6z/BitQamqWHRbNkGiCLUCbLIkHZjU0caQE01ag==
+        Content-Type: application/json
+      method: POST
+  # [33, 711]
+  wait_2_mins:
+    action: core.local
+    next:
+      - do:
+          - check_license
+        publish:
+          - iter: 1
+      - do:
+          - update_user_command
+    input:
+      cmd: sleep 120
+      timeout: 180
+  # [575, 548]
+  escalate:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticketid %>
+      payload:
+        comments: "SiM Automation tried to update the user properties but failed.\nOutput of update properties action is as follows:\n\n<% ctx().update_user_output %>\n\nOur engineer will look into this failure and do the needful."
+        state: 2
+        assigned_to: 
+        service_offering: Managed 365
+      table: sn_customerservice_general_case
+    next:
+      - do:
+          - success
+  # [873, 896]
+  assign_update_resolve:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticketid %>
+      payload:
+        comments: "SiM Automation has assigned the license and successfully updated the user properties.\n\nOutput of update properties action is as follows:\n\n<% ctx().update_user_output %>\n\nThis change may take upto 1 hour, so kindly suggest the user to log out and login after 1 hr to check.\n\nSiM Automation will resolve this ticket, please don't hesitate to reach out should you need any further assistance on this request."
+        state: 3
+        cause: MS Teams Voice user updated successfully
+        assigned_to: svc_sim_automation
+        closed_by: 84cf417087ff3410bd1d32e80cbb3502
+        closed_at: "2022-02-06 17:03:07"
+        notes_to_comments: true
+        service_offering: Managed 365
+      table: sn_customerservice_general_case
+    next:
+      - do:
+          - success
+  # [552, 986]
+  wait:
+    action: core.local
+    input:
+      cmd: sleep 60
+      timeout: 180
+    next:
+      - do:
+          - assign_update_resolve
+  # [875, 742]
+  success:
+    action: core.noop
+input:
+  - ticketid
+  - tenant_id
+  - teams_password_id
+  - user_id
+  - phone_no
+  - voice_routing_policy
+  - calling_line_identity
+  - calling_policy
+  - callpark_policy
+  - tenant_dial_plan
+  - graph_password_id
+  - sku_ids
+  - xfunctionskey_assign_licenses
+  - xfunctionskey_update_user
+  - xfunctionskey_check_licenses
+output:
+  - update_user_output: <% ctx().update_user_output %>

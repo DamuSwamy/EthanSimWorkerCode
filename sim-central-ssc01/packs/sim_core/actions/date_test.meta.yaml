@@ -1,0 +1,6 @@
+pack: sim_core
+enabled: true
+runner_type: orquesta
+name: date_test
+entry_point: workflows/date_test.yaml
+description: test

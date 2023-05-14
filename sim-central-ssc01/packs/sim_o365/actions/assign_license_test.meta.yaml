@@ -1,0 +1,10 @@
+pack: sim_o365
+enabled: true
+runner_type: orquesta
+name: assign_license_test
+entry_point: workflows/assign_license_test.yaml
+description: testing
+parameters:
+  test:
+    type: string
+    default: test

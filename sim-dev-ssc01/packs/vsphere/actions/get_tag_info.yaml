@@ -1,0 +1,30 @@
+---
+    name: get_tag_info
+    runner_type: python-script
+    description: Retrieves the information of a tag with the given category and tag
+    enabled: true
+    entry_point: get_tag_info.py
+    parameters:
+        category_name:
+            type: 'string'
+            description: Name of the tag category
+            required: false
+            default: ~
+        category_id:
+            type: 'string'
+            description: ID of the tag category
+            required: false
+        tag_name:
+            type: 'string'
+            description: Name of the tag
+            required: false
+            default: ~
+        tag_id:
+            type: 'string'
+            description: ID of the tag
+            required: false
+        vsphere:
+            type: "string"
+            description: Pre-Configured vsphere connection details
+            required: false
+            default: ~

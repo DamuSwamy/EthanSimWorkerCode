@@ -1,0 +1,19 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_dpa_get_jobs
+entry_point: workflows/ethan_dpa_get_jobs.yaml
+description: collect report data from DPA
+parameters:
+  billing_period:
+    type: string
+    description: Report name to be generated
+    required: false
+  input_start_date:
+    type: string
+    description: Start Date format 2022-05-10
+    required: false
+  input_finish_date:
+    type: string
+    description: Finish Date format 2022-05-11
+    required: false

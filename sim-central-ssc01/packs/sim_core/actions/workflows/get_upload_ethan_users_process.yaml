@@ -1,0 +1,103 @@
+---
+version: 1.0
+
+description: Get and Upload $th 
+
+# declaration of variables
+vars:
+  - result: null
+  - messages: list()
+  - response: list()
+  - ticket_id: empty
+  - schedule_for_later: false
+  - random_number: 0
+  - scheduled_robot_data: null
+  - contact_name: "PaulHooper"
+  - itsm_tick_name: ""
+  - folder_path: <% (now(offset=>localtz())).format("%b-%Y") %>
+  - file_name: users.csv
+  - container_name: storeuserreports
+  - storage_account_name: stsecprdaelrsv2
+
+# automation inputs 
+input: 
+  - robot_name
+  - robot_type
+  - robot_data
+
+# automation outputs
+output:
+  - messages: <% ctx().messages %>
+  
+# automation tasks 
+tasks:
+  # [269, 1066]
+  complete:
+    action: core.echo
+    input:
+      message: "<% ctx().messages %>"
+  # [824, 1]
+  begin:
+    action: core.noop
+    next:
+      - do:
+          - adhoc_no_ticket
+        when: <%  ctx().robot_type = "ADHOC" %>
+      - when: <% failed() %>
+  # [835, 109]
+  adhoc_no_ticket:
+    action: core.noop
+    next:
+      - do:
+          - execute_adhoc_automation
+        publish:
+          - ticket_id: "\"00000000\""
+  # [835, 210]
+  execute_adhoc_automation:
+    action: sim_core.catch_all_automation_target_v2
+    input:
+      name: <% ctx().robot_name %>
+      type: <% ctx().robot_type %>
+      data: <% ctx().robot_data %>
+      ticket_id: <% ctx().ticket_id %>
+    next:
+      - do:
+          - upload_data_to_azure
+        when: <% succeeded() %>
+        publish:
+          - message: <% ctx().robot_name %> finished with code 0
+          - output: <% switch(isDict(result().output) => result().output, true => {}) %>
+          - response:
+              state: <% ctx().output.get('state', "FINISHED") %>
+              data: null
+              info: <% ctx().output.get('info', result().output) %>
+
+  # [535, 410]
+  upload_data_to_azure:
+    action: sim_core.azure_blob_upload
+    input:
+      json_data: <% ctx().output.info.task_output.stdout %>
+      input_file_name: <% ctx().file_name %>
+      input_folder_path: <% ctx().folder_path %>
+      container_name: <% ctx().container_name %>
+      storage_account_name: <% ctx().storage_account_name %>
+    next:
+      - when: <% failed() %>
+        do: fail
+      - when: <% succeeded() %>
+        do: done_adhoc
+
+  # [835, 309]
+  done_adhoc:
+    action: core.noop
+    next:
+      - do:
+          - complete_adhoc
+        publish:
+          - messages: <% ctx().message  %>
+  # [835, 418]
+  complete_adhoc:
+    action: core.echo
+    input:
+      message: <% ctx().messages %>
+

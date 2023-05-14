@@ -1,0 +1,71 @@
+pack: sim_o365
+enabled: true
+runner_type: orquesta
+name: update_msteamsvoiceuser_properties
+entry_point: workflows/update_msteamsvoiceuser_properties.yaml
+description: Update MS teams voice user properties by calling functions app
+parameters:
+  ticketid:
+    type: string
+    description: SN Ticket ID
+    required: true
+    default: CS0076847
+  tenant_id:
+    type: string
+    description: "tenant_id of customer "
+    required: true
+    default: b02e50ac-20e5-4c60-bcd4-8454b3201fd1
+  teams_password_id:
+    type: string
+    description: teams_password_id
+    required: true
+    default: 1049
+  user_id:
+    type: string
+    description: user_id
+    required: true
+    default: damodaran.swamy@etest.systems
+  phone_no:
+    type: string
+    description: phone_no
+    required: true
+    default: NONE
+  voice_routing_policy:
+    type: string
+    description: voice_routing_policy
+    required: true
+  calling_line_identity:
+    type: string
+    description: calling_line_identity
+    required: true
+  calling_policy:
+    type: string
+    description: calling_policy
+    required: true
+  callpark_policy:
+    type: string
+    description: callpark_policy
+    required: true
+  tenant_dial_plan:
+    type: string
+    default: tenant_dial_plan
+    required: true
+  graph_password_id:
+    type: string
+    description: graph_password_id
+    default: 1045
+  sku_ids:
+    type: string
+    description: sku_ids
+  xfunctionskey_assign_licenses:
+    type: string
+    required: true
+    default: KSFSRr3cKvQmSa6//77H1eAjUlloAJFDCG6aJYgWvqRhYBksVv46Sg==
+  xfunctionskey_update_user:
+    type: string
+    required: true
+    default: dJ07oRgRQD1ZrmR6z/BitQamqWHRbNkGiCLUCbLIkHZjU0caQE01ag==
+  xfunctionskey_check_licenses:
+    type: string
+    default: lidKYMGLxmJaW6eAp7yEmZCG7TwgqfW8wzaAgGzpsnAWnKFijmy94w==
+    required: true

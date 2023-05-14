@@ -1,0 +1,23 @@
+---
+ref: sim_braas_action
+name: SiM BRaaS - Remediation Actions
+description: Actions for BRaaS and Reporting DPA
+keywords:
+    - sim
+    - avamar
+    - DPA
+    - backup
+    - remediation
+version: 1.0.1
+python_versions:
+  - "2"
+  - "3"
+dependencies:
+  - sim_braas_core
+  - sim_braas
+# Name of the pack author.
+author: nandhakumar.arumugam@accelnomics.com
+# Email of the pack author.
+email: nandhakumar.arumugam@accelnomics.com
+contributors:
+  - "Nandhakumar <nandhakumar.arumugam@accelnomics.com>"

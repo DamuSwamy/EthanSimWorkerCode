@@ -1,0 +1,16 @@
+pack: sim_cisco_compliance
+enabled: true
+runner_type: "python-script"
+name: trigger_config_compliance
+entry_point: "trigger_config_compliance.py"
+description: make an api call to same instance to retrieve the data
+parameters:
+  automation_name:
+    type: string
+    description: enter action name to be triggered
+    required: true
+    default: sim_cisco_compliance.config_compliance
+  input_json:
+    type: object
+    description: "input params of the function"
+    required: true

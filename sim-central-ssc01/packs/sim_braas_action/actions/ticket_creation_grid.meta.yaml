@@ -1,0 +1,29 @@
+pack: sim_braas_action
+enabled: true
+runner_type: orquesta
+name: ticket_creation_grid
+entry_point: workflows/ticket_creation_grid.yaml
+description: validate the case before creation
+parameters:
+  account_id:
+    type: string
+    description: sys id of the customer account
+    required: true
+    default: acb9ad8d87c7b810bd1d32e80cbb35ee
+  grid_name:
+    type: string
+    description: name of the backup grid
+    required: true
+  account_name:
+    type: string
+    description: name of the customer account
+    required: true
+    default: "Ethan Core"
+  subject:
+    type: string
+    description: backup failure information
+    required: true
+  ticket_desc:
+    type: string
+    description: backup failure information description
+    required: true

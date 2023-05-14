@@ -1,0 +1,53 @@
+---
+version: 1.0
+
+description: servicenow ticket closure logic
+
+vars:
+  - notifications: []
+
+output:
+  - status: <% ctx().notifications %>
+
+input:
+  - case_number
+
+tasks:
+  
+  # [592, 351]
+  close_successful_backup_cases:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().case_number %>
+      payload:
+        resolution_code: "Alert Self-Cleared" 
+        close_notes: "Recent client, group and schedule backup successful. Therefore, proceeding this case to resolution"
+        state: 3
+        cause: "Alert self-cleared"
+      table: sn_customerservice_general_case
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notification: |
+               The case has successfully closed.
+        do:
+          - notify
+      - when: <% failed() %>
+        publish:
+          - notification: |
+               Something went wrong while closing the case function!
+        do:
+          - notify
+          - fail
+  
+  # [192, 401]
+  notify:
+    action: core.echo
+    input:
+      message: |
+        <% ctx().notification %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notifications: <% ctx().notifications.append(ctx().notification) %>

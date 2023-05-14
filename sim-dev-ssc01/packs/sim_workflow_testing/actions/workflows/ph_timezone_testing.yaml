@@ -1,0 +1,18 @@
+version: 1.0
+output:
+  - debug_dateUTC: <%ctx().dateUTC%>
+  - debug_dateTZ: <%ctx().dateTZ%>
+
+tasks:
+  # [580, 90]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - end
+        publish:
+          - dateUTC: "<%(now()).format(\"%Y-%m-%d %H:%M:%S\") %>"
+          - dateTZ: "<% now(offset=>localtz()).format(\"%Y-%m-%d %H:%M:%S\") %>"
+  # [579, 240]
+  end:
+    action: core.noop

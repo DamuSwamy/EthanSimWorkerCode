@@ -1,0 +1,108 @@
+version: 1.0
+tasks:
+  # [53, 7]
+  task1:
+    action: core.noop
+    next:
+      - do:
+          - get_records
+        publish:
+          - i: 0
+          - x: " "
+          - attention: " "
+  # [62, 117]
+  get_records:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: select count(*) as records from <% ctx().list[ctx().i] %>
+      connection: productionCloudExtension
+    next:
+      - do:
+          - count
+        publish:
+          - count: <% result().result[0].records %>
+  # [61, 213]
+  count:
+    action: core.noop
+    next:
+      - do:
+          - next
+        publish:
+          - x: <% concat(ctx().x,ctx().list[ctx().i], " - " ,str(ctx().count)) %>
+  # [73, 312]
+  next:
+    action: core.noop
+    next:
+      - do:
+          - pass
+        when: <% ctx().count != 0 %>
+      - do:
+          - msg
+        when: <% ctx().count = 0 %>
+        publish:
+          - attention: true
+  # [38, 409]
+  pass:
+    action: core.noop
+    next:
+      - do:
+          - msg
+  # [62, 542]
+  msg:
+    action: core.echo
+    input:
+      message: "\" <% ctx().count %> \""
+    next:
+      - do:
+          - skip
+        publish:
+          - i: <% ctx().i+1 %>
+  # [354, 248]
+  skip:
+    action: core.noop
+    next:
+      - do:
+          - get_records
+        when: <%ctx().i<len(ctx().list)%>
+      - do:
+          - mails
+        when: <% ctx().i >= len(ctx().list) %>
+  # [507, 352]
+  mails:
+    action: core.noop
+    next:
+      - do:
+          - attention
+        when: <% ctx().attention = "yes" %>
+      - do:
+          - task3
+        when: <% ctx().attention != "yes" %>
+  # [398, 466]
+  attention:
+    action: core.sendmail
+    input:
+      to: supriya.kadam@ethan.com.au
+      subject: attention
+      body: missing
+    next:
+      - do:
+          - end
+  # [741, 465]
+  task3:
+    action: core.sendmail
+    input:
+      to: supriya.kadam@ethan.com.au
+      subject: update
+      body: "\" <% ctx().x %> \""
+    next:
+      - do:
+          - end
+  # [555, 564]
+  end:
+    action: core.noop
+input:
+  - list
+vars:
+  - i: 0
+  - x: null

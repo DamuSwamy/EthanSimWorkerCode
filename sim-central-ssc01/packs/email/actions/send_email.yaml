@@ -1,0 +1,43 @@
+---
+  name: "send_email"
+  runner_type: "python-script"
+  description: "Send an email."
+  enabled: true
+  entry_point: "send_email.py"
+  parameters:
+    email_from:
+      type: "string"
+      description: "Email address to use as FROM."
+      required: true
+    email_to:
+      type: "array"
+      description: "Email addresses to send TO."
+      required: true
+    email_cc:
+      type: "array"
+      description: "Email addresses to send Cc."
+      required: false
+    subject:
+      type: "string"
+      description: "Subject of the email"
+      required: true
+    message:
+      type: "string"
+      description: "Message to send on the email"
+      required: true
+    account:
+      type: "string"
+      description: "Account to use. Must be configured in email.yaml"
+      required: true
+    mime:
+      type: "string"
+      description: "The mime type of the message (html or plain)."
+      default: "plain"
+      enum:
+        - "plain"
+        - "html"
+    attachments:
+      type: "array"
+      items:
+        type: "string"
+      description: "The absolute paths to the files to be included as attachments."

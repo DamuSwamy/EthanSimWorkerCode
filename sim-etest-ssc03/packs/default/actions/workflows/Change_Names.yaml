@@ -1,0 +1,122 @@
+version: 1.0
+tasks:
+  # [220, 15]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - check_inputs
+        publish:
+          - i: 0
+          - x: " "
+          - count: <% len(ctx().input) %>
+  # [221, 135]
+  check_inputs:
+    action: core.noop
+    next:
+      - do:
+          - next
+  # [220, 241]
+  next:
+    action: core.noop
+    next:
+      - do:
+          - check
+  # [232, 361]
+  check:
+    action: core.noop
+    next:
+      - do:
+          - aman
+        when: <% ctx().input[ctx().i] = "aman" %>
+        publish:
+          - x: <% concat(ctx().x,ctx().input[ctx().i],"-","mujawar","\n") %>
+      - do:
+          - supriya
+        when: <% ctx().input[ctx().i] = "supriya" %>
+        publish:
+          - x: <% concat(ctx().x,ctx().input[ctx().i],"-","kadam","\n") %>
+      - do:
+          - damu
+        when: <% ctx().input[ctx().i] = "damu" %>
+        publish:
+          - x: <% concat(ctx().x,ctx().input[ctx().i],"-","swamy","\n") %>
+      - do:
+          - other
+        when: <% ctx().input[ctx().i] != "damu" and ctx().input[ctx().i] != "supriya" and ctx().input[ctx().i] != "aman" %>
+        publish:
+          - x: <% concat(ctx().x,ctx().input[ctx().i],"-","unknown","\n") %>
+  # [694, 522]
+  other:
+    action: core.noop
+    next:
+      - do:
+          - skip
+  # [0, 485]
+  aman:
+    action: core.noop
+    next:
+      - do:
+          - skip
+  # [188, 523]
+  supriya:
+    action: core.noop
+    next:
+      - do:
+          - skip
+  # [431, 535]
+  damu:
+    action: core.noop
+    next:
+      - do:
+          - skip
+  # [395, 715]
+  skip:
+    action: core.noop
+    next:
+      - do:
+          - loop_end
+        publish:
+          - i: <% ctx().i+1 %>
+  # [1163, 398]
+  end:
+    action: core.echo
+    input:
+      message: "\" End loop \""
+    next:
+      - do:
+          - full_name
+  # [689, 297]
+  loop_end:
+    action: core.noop
+    next:
+      - do:
+          - check_inputs
+        when: <% ctx().i < len(ctx().input) %>
+      - do:
+          - end
+        when: <% ctx().i >= len(ctx().input) %>
+  # [804, 720]
+  email_aman:
+    action: core.echo
+    input:
+      message: "\" Email Aman \""
+  # [1186, 728]
+  email_supriya:
+    action: core.echo
+    input:
+      message: "\" Email Supriya \""
+  # [989, 510]
+  full_name:
+    action: core.noop
+    next:
+      - do:
+          - email_aman
+        when: <% ctx().count > 2 %>
+      - do:
+          - email_supriya
+        when: <% ctx().count <= 2 %>
+input:
+  - input
+output:
+  - list: <% ctx().x.trim() %>

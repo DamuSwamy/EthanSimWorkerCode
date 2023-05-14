@@ -1,0 +1,12 @@
+---
+name: greet
+pack: sim_meraki_wifi
+runner_type: "local-shell-script"
+description: Greet Ethan!
+enabled: true
+entry_point: greet.sh
+parameters:
+    greeting:
+        type: string
+        description: target robot
+        required: true

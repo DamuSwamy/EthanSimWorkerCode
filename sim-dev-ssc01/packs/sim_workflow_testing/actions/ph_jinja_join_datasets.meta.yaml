@@ -1,0 +1,13 @@
+pack: sim_workflow_testing
+enabled: true
+runner_type: orquesta
+name: ph_jinja_join_datasets
+entry_point: workflows/ph_jinja_join_datasets.yaml
+description: This joins two datasets off a common value.
+parameters:
+  json1:
+    type: object
+    description: Firstdataset
+  json2:
+    type: object
+    description: second dataset

@@ -1,0 +1,15 @@
+version: 1.0
+tasks:
+  # [496, 171]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - task2
+        publish:
+          - key: "<% now().format(\"%Y-%m-%d %H:%M:%S\") %>"
+  # [495, 297]
+  task2:
+    action: core.echo
+    input:
+      message: "\"<% ctx().key %>\""

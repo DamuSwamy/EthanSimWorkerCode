@@ -1,0 +1,28 @@
+pack: sim_msol
+enabled: true
+runner_type: orquesta
+name: modify_msol_quantity_NCE_1.5
+entry_point: workflows/modify_msol_quantity_NCE_1.5.yaml
+description: Modify MSOL Quantity Phase 2 NCE 1.5
+parameters:
+  tenant_id:
+    type: string
+    default: 04470183-206f-4e50-a7da-f18dd8066ef9
+    description: Tenant ID for Microsoft Online
+    required: true
+  password_id:
+    type: string
+    default: "\"1046\""
+    required: true
+  param_line_items_raw_json:
+    type: object
+    default: null
+    required: true
+  customer_tenant_id:
+    type: string
+    description: Customer's Tenant ID
+    default: 0a31fe55-dd30-4a5c-acf2-702b17d9706d
+    required: true
+  auth_token:
+    type: string
+    required: true

@@ -1,0 +1,78 @@
+import st2reactor
+from datetime import datetime, timedelta
+from dateutil import tz
+from st2client.client import Client
+
+from st2reactor.sensor.base import Sensor
+
+class RuleMonitoringSensor(Sensor):
+    def __init__(self, sensor_service, config):
+        super(RuleMonitoringSensor, self).__init__(sensor_service=sensor_service, config=config)
+        self._logger = self.sensor_service.get_logger(__name__)
+        self._rule_name = 'Ethan Backup - BRaaS - Scan Live'
+        self._notification_email = self.config.get('notification_email')
+        self._st2client = Client(base_url='http://127.0.0.1')
+        self._last_execution_time = None
+
+    def setup(self):
+        cron_schedule = self._get_cron_schedule(self._rule_name)
+        self._logger.debug(f"Cron schedule for rule {self._rule_name}: {cron_schedule}")
+        self._schedule_next_run(cron_schedule)
+
+    def run(self):
+        # Get the most recent execution time for the rule
+        executions = self._st2client.executions.query(rule=self._rule_name, limit=1, order_by="-start_timestamp")
+        if executions:
+            self._last_execution_time = datetime.fromisoformat(executions[0].start_timestamp)
+        else:
+            self._last_execution_time = None
+
+        # Check if the rule has not been executed at its scheduled time
+        if self._last_execution_time is None or self._next_run > self._last_execution_time:
+            self._logger.info(f"The rule {self._rule_name} has not been triggered at its scheduled time.")
+            if self._notification_email:
+                self._send_notification_email()
+        else:
+            self._logger.info(f"The rule {self._rule_name} has already been triggered at {self._last_execution_time}.")
+
+        # Schedule the next run
+        self._schedule_next_run(self._cron_schedule)
+
+    def cleanup(self):
+        pass
+
+    def add_trigger(self, trigger):
+        pass
+
+    def update_trigger(self, trigger):
+        pass
+
+    def remove_trigger(self, trigger):
+        pass
+
+
+    def _get_cron_schedule(self, rule_name):
+        rule = self._st2client.rules.get_by_name(rule_name)
+        print(rule)
+        if rule.trigger and rule.trigger['type'] == 'core.st2.CronTimer':
+            cron_expression = rule.trigger.get('parameters', {})
+            if cron_expression:
+                return cron_expression
+
+    def _send_notification_email(self):
+        # Code to send an email notification
+        pass
+
+    def _schedule_next_run(self, cron_schedule):
+        self._cron_schedule = cron_schedule
+        self._next_run = datetime.now(tz.tzlocal()).replace(
+            year=int(datetime.now(tz.tzlocal()).year),
+            month=cron_schedule['month'],
+            day=int(cron_schedule['day']),
+            hour=int(cron_schedule['hour']),
+            minute=int(cron_schedule['minute']),
+            second=int(cron_schedule.get('second', 0)),
+            microsecond=0
+        ) + timedelta(seconds=1)
+        self._logger.debug(f"Scheduling next run for {self._next_run}")
+        self.sensor_service.schedule(name="rule_monitoring_sensor", run_every=self._next_run)

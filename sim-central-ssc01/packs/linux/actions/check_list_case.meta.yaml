@@ -1,0 +1,10 @@
+pack: linux
+enabled: true
+runner_type: orquesta
+name: check_list_case
+entry_point: workflows/check_list_case.yaml
+parameters:
+  remediation_list:
+    type: array
+    description: list
+    required: true

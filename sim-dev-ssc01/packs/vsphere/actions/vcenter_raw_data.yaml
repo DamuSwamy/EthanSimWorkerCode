@@ -1,0 +1,40 @@
+---
+name: vcenter_raw_data
+runner_type: python-script
+description: Retrieves the virtual machines on a vCenter Server system. It computes the union of Virtual Machine sets based on each parameter.
+enabled: true
+entry_point: vcenter_raw_data.py
+parameters:
+  vsphere:
+    type: "string"
+    description: Pre-Configured vsphere connection details
+    required: true
+  vcenter_id:
+    type: "string"
+    description: Custom vCenter ID from ethan
+    required: true
+  get_vms:
+    type: boolean
+    description: Gets all vms from the environment
+    required: false
+    default: false
+  get_hosts:
+    type: boolean
+    description: Gets all hosts from the environment
+    required: false
+    default: false
+  get_rps:
+    type: boolean
+    description: Gets all RPs from the environment
+    required: false
+    default: false
+  get_folders:
+    type: boolean
+    description: Gets all folders from the environment
+    required: false
+    default: false
+  get_tags:
+    type: boolean
+    description: Gets all tags from the environment
+    required: false
+    default: false

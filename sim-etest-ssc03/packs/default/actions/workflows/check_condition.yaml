@@ -1,0 +1,43 @@
+version: 1.0
+tasks:
+  # [214, 17]
+  check_del_forward:
+    action: core.noop
+    next:
+      - do:
+          - both_no
+        when: <%ctx().delegate%> = no and <%ctx().forward%> = no
+      - do:
+          - atleast_one_yes
+        when: <%ctx().delegate%> = yes or <%ctx().forward%> = yes
+        publish:
+          - a: 'yes'
+          - b: 'yes'
+  # [31, 165]
+  both_no:
+    action: core.noop
+  # [402, 159]
+  atleast_one_yes:
+    action: core.echo
+    next:
+      - do:
+          - del_yes
+        when: <%ctx().delegate%> = <% ctx().a %>
+      - do:
+          - forward_yes
+        when: <%ctx().forward%> = <% ctx().b %>
+    input:
+      message: ' next '
+  # [214, 284]
+  del_yes:
+    action: core.echo
+    input:
+      message: " <%ctx().delegate%> "
+  # [573, 279]
+  forward_yes:
+    action: core.echo
+    input:
+      message: " <%ctx().forward%> "
+input:
+  - delegate
+  - forward

@@ -1,0 +1,127 @@
+version: 1.0
+
+output:
+  - debug_report: <% ctx().report_export %>
+
+input:
+  - input_start_date
+  - input_finish_date
+  - dpa_api_endpoint
+  - dpa_username
+  - dpa_password
+  - report_name
+
+tasks:
+  start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do: 
+          - dpa_create_report
+
+  dpa_create_report:
+    action: core.http
+    input:
+      url: "<% ctx().dpa_api_endpoint %>/dpa-api/report"
+      body: "<runReportParameters><report><name><% ctx().report_name %></name></report><nodeLinks><nodeLink type=\"Group\"><id>00000000-0000-0000-0000-000000000001</id><name>Root</name><child type=\"Group\"><id>00000000-0000-0000-0000-000000000010</id><name>Groups</name><child type=\"Group\"><name>Configuration</name><id>8ad04346-9abd-4466-8bd8-05306b63519d</id><child type=\"Group\"><name>Servers</name><id>307c9831-e611-453d-bbb8-89ff3e0248b7</id><child type=\"Group\"><name>Backup Servers</name><id>c5723b8f-c5b7-4237-af29-b689203fbc44</id><child type=\"Group\"><name>EMC Avamar</name><id>a58abe61-ad35-4365-ab91-b53afa54e294</id></child></child></child></child></child></nodeLink></nodeLinks><timeConstraints type=\"absolute\"><startTime date=\"<% ctx().input_start_date %>\" time=\"00:00:00.000\" tzid=\"Australia/Sydney\"/><endTime date=\"<% ctx().input_finish_date %>\" time=\"23:59:00.000\" tzid=\"Australia/Sydney\"/></timeConstraints><formatParameters><formatType>CSV</formatType><fitContent>false</fitContent></formatParameters><user><logonName>administrator</logonName></user><runInDebug>false</runInDebug></runReportParameters>"
+      method: POST
+      password: <% ctx().dpa_password %>
+      username: <% ctx().dpa_username %>
+      verify_ssl_cert: false
+      headers:
+        Content-Type: application/vnd.emc.apollo-v1+xml
+      allow_redirects: true
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - myheaders: <% result().headers %>
+          - report_link: <% result().headers.Location %>
+          - reportid: "{% set list1 = ctx().report_link.split('/') %}\n{{ list1|last }}"
+        do:
+          - sleep_30
+      - when: <% failed() %>
+        do: fail
+
+  dpa_retrieve_report:
+    action: core.http
+    input:
+      url: <% ctx().report_link %>
+      method: GET
+      password: <% ctx().dpa_password %>
+      username: <% ctx().dpa_username %>
+      verify_ssl_cert: false
+    next:
+      - when: <% result().status_code = 200 %>
+        publish:
+          - report_body: <% result().body %>
+        do:
+          - report_success
+      - when: <% result().status_code != 200 %>
+        do:
+          - sleep_30
+
+  sleep_30:
+    action: core.pause
+    input:
+      log_level: DEBUG
+      max_pause: 30
+    next:
+      - when: <% succeeded() %>
+        do:
+          - dpa_retrieve_report
+
+  create_csv_export:
+    action: core.http
+    input:
+      url: "<% ctx().dpa_api_endpoint %>/dpa-api/report-exports"
+      headers:
+        Content-Type: application/vnd.emc.apollo-v1+xml
+      password: <% ctx().dpa_password %>
+      username: <% ctx().dpa_username %>
+      body: "<exportReportParameters><publicationMethod>file</publicationMethod><fileName>null</fileName><reportRunIdentifier><% ctx().reportid %></reportRunIdentifier><formatParameters><formatType>CSV</formatType><pageOrientation>Portrait</pageOrientation><pageSize>A4</pageSize><fitContent>false</fitContent></formatParameters></exportReportParameters>"
+      verify_ssl_cert: false
+      method: POST
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - exportheaders: <% result().headers %>
+          - export_link: <% result().headers.Location %>
+        do:
+          - sleep_export_report
+
+  sleep_export_report:
+    action: core.pause
+    input:
+      log_level: DEBUG
+      max_pause: 30
+    next:
+      - when: <% succeeded() %>
+        do:
+          - dpa_retrieve_export
+
+  dpa_retrieve_export:
+    action: core.http
+    input:
+      url: <% ctx().export_link %>
+      password: <% ctx().dpa_password %>
+      username: <% ctx().dpa_username %>
+      verify_ssl_cert: false
+    next:
+      - when: <% result().status_code = 200%>
+        publish:
+          - report_export: <% result().body %>
+        do:
+          - report_end
+      - when: <% result().status_code != 200 %>
+        do:
+          - sleep_export_report
+
+  report_success:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - create_csv_export
+
+  report_end:
+    action: core.noop

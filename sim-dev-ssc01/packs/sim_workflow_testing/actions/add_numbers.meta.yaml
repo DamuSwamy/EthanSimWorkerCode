@@ -1,0 +1,15 @@
+pack: sim_workflow_testing
+enabled: true
+runner_type: orquesta
+name: add_numbers
+entry_point: workflows/add_numbers.yaml
+description: Add any two numbers
+parameters:
+  a:
+    type: number
+    description: first number
+    required: true
+  b:
+    type: number
+    description: Second Number
+    required: true

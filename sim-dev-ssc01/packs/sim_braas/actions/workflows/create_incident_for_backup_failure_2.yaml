@@ -1,0 +1,107 @@
+---
+version: 1.0
+
+description: Automated case creation for backup failure events
+
+vars:
+  - notifications: []
+  - process_name: "Backup Failure Case Creation"
+
+input:
+  - input_backup_failure_object
+  - input_snow_customer_object
+
+output:
+  - notifications: <% ctx().notifications %>
+
+tasks:
+  # [192, 51]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notification: |
+              (<% ctx().process_name%>) process started
+        do:
+          - notify
+          - format_user_input
+
+  format_user_input:
+    action: sim_braas.extract_data_from_json_2
+    input:
+      input_json_1: <% dict(dpaclients=>dict(client=>ctx().input_backup_failure_object)) %>
+      input_json_2: <% dict(result=>ctx().input_snow_customer_object) %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - generated_output: <% result().output.output_json.clients %>
+          - account_sysids: <% ctx().generated_output.values().account_sysid %>
+          - clients: <% ctx().generated_output.keys() %>
+        do:
+          - get_customer_account_name
+      - when: <% failed() %>
+        do:
+          - fail
+
+  get_customer_account_name:
+    action: sim_itsm2.get
+    input:
+      log_level: DEBUG
+      table: customer_account
+      query:
+        sys_id: "{{ ctx().account_sysids | join('^ORsys_id=') }}"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - customer_output: <% result().result %>
+        do:
+          - construct_client_sysid_mapping
+      - when: <% failed() %>
+        do:
+          - fail
+  
+  construct_client_sysid_mapping:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - client_sysid_map: <% dict(output=>dict(ctx(customer_output).select([$.sys_id, $.name]))) %>
+        do:
+          - validate_and_create
+
+  validate_and_create:
+    action: sim_braas.case_validation_and_creation
+    input:
+      account_id: <% ctx().generated_output[item(client)].account_sysid %>
+      client_name: <% item(client) %>
+      account_name: <% ctx().client_sysid_map.output[ctx().generated_output[item(client)].account_sysid] %>
+      failure_info: <% str(ctx().generated_output[item(client)].failures) %>
+      exception_info: <% str(ctx().generated_output[item(client)].exceptions) %>
+    with:
+      items: client in <% ctx().clients %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notification: |
+               The case(s) successfully created!
+        do:
+          - notify
+      - when: <% failed() %>
+        publish:
+          - notification: |
+               The one or more case(s) failed to create!
+        do:
+          - notify
+          - fail
+  
+  notify:
+    action: core.echo
+    input:
+      message: |
+        <% ctx().notification %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notifications: <% ctx().notifications.append(ctx().notification) %>
+

@@ -1,0 +1,202 @@
+version: 1.0
+
+input:
+  - tenant_id
+  - password_id
+  - db_connection
+
+vars:
+  - email_receiver: mohammad.ebrahimi@ethan.com.au,paul.hooper@ethan.com.au,aman.mujawar@ethan.com.au,nandhakumar.arumugam@ethan.com.au
+
+tasks:
+  # [329, 104]
+  Get_AuthToken:
+    action: sim_msol_billing.get_auth_token
+    input:
+      password_id: <% ctx().password_id %>
+      tenant_id: <% ctx().tenant_id %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - auth_token: <% result().output.token %>
+        do:
+          - Get_PartnerCustomer_Invoice_Max
+      - when: <% failed() %>
+        do: fail
+
+  # [229, 304]
+  Get_PartnerCustomer_Invoice_Max:
+    action: sql.query
+    input:
+      connection: <% ctx().db_connection %>
+      query: "Select max(id) as max_invoice from PartnerCustomerInvoice where id like 'D%' and InvoiceDetails is NULL"
+    next:
+      - when: <% succeeded() and result().result[0].max_invoice %>
+        publish:
+          - max_invoice_id: <% result().result[0].max_invoice %>
+        do:
+          - Get_Customer_Invoice_Azure_Lineitem
+          - Get_Customer_Invoice_Office_Lineitem
+      - when: <% succeeded() and not result().result[0].max_invoice %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  # [379, 454]
+  Get_Customer_Invoice_Azure_Lineitem:
+    action: sim_msol_billing.return_customer_invoices_lineitem
+    input:
+      max_invoice_id: <% ctx().max_invoice_id %>
+      auth_token: <% ctx().auth_token %>
+      line_item: "Azure"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - azure_line_item: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Insert_Partner_Customer_Invoice_LineItem_Azure_Archived
+      - when: <% failed() %>
+        do: fail
+
+  # [679, 504]
+  Get_Customer_Invoice_Office_Lineitem:
+    action: sim_msol_billing.return_customer_invoices_lineitem
+    input:
+      max_invoice_id: <% ctx().max_invoice_id %>
+      auth_token: <% ctx().auth_token %>
+      line_item: "Office"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - office_line_item: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Insert_Partner_Customer_Invoice_LineItem_Office_Archived
+      - when: <% failed() %>
+        do: fail
+
+  # [629, 654]
+  Insert_Partner_Customer_Invoice_LineItem_Azure_Archived:
+    action: sql.query
+    input:
+      connection: <% ctx().db_connection %>
+      query: "INSERT INTO PartnerInvoiceLineItemAzure_Archived SELECT  [ChargeType],[ConsumptionDiscount],[ConsumptionPrice],[Currency],[DetailLineItemId],[IncludedQuantity],[InvoiceLineItemType],[ListPrice],[OverageQuantity],[PretaxCharges],[PretaxEffectiveRate],[PostTaxEffectiveRate],[PostTaxTotal],[Sku],[TaxAmount],[BillingCycleType],[BillingProvider],[ChargeEndDate],[ChargeStartDate],[ConsumedQuantity],[CustomerCompanyName],[CustomerId],[DomainName],[InvoiceNumber],[MpnId],[OrderId],[PartnerBillableAccountId],[PartnerId],[Region],[PartnerName],[ResourceGuid],[ResourceName],[ServiceName],[ServiceType],[SubscriptionDescription],[SubscriptionId],[SubscriptionName],[Tier2MpnId],[Unit],( SELECT max(Billing_Period) From Bill_Cycle_Status where Cycle_State='Closed' ) from PartnerInvoiceLineItemAzure"
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Delete_From_PartnerInvoiceLineItemAzure
+      - when: <% failed() %>
+        do: fail
+
+  # [179, 704]
+  Insert_Partner_Customer_Invoice_LineItem_Office_Archived:
+    action: sql.query
+    input:
+      connection: <% ctx().db_connection %>
+      query: "INSERT INTO PartnerInvoiceLineItemOffice_Archived SELECT [InvoiceNumber],[Amount],[BillingCycleType],[BillingProvider],[ChargeEndDate],[ChargeStartDate],[ChargeType],[Currency],[CustomerId],[CustomerName],[DomainName],[DurableOfferId],[InvoiceLineItemType],[MpnId],[OfferId],[OfferName],[OrderId],[PartnerId],[Quantity],[SubscriptionDescription],[SubscriptionEndDate],[SubscriptionId],[SubscriptionName],[SubscriptionStartDate],[Subtotal],[SyndicationPartnerSubscriptionNumber],[Tax],[Tier2MpnId],[TotalForCustomer],[TotalOtherDiscount],[UnitPrice],( SELECT max(Billing_Period) From Bill_Cycle_Status where Cycle_State='Closed') FROM PartnerInvoiceLineItemOffice"
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Delete_From_PartnerInvoiceLineItemOffice
+      - when: <% failed() %>
+        do: fail
+
+  # [1029, 854]
+  Delete_From_PartnerInvoiceLineItemAzure:
+    action: sql.delete
+    input:
+      table: PartnerInvoiceLineItemAzure
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Insert_Bulk_PartnerInvoiceLineItemAzure
+
+  # [29, 904]
+  Delete_From_PartnerInvoiceLineItemOffice:
+    action: sql.delete
+    input:
+      table: PartnerInvoiceLineItemOffice
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Insert_Bulk_PartnerInvoiceLineItemOffice
+
+  # [979, 1054]
+  Insert_Bulk_PartnerInvoiceLineItemAzure:
+    action: sql.insert_bulk
+    input:
+      table: PartnerInvoiceLineItemAzure
+      data: <% ctx().azure_line_item %>
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Update_PartnerCustomerInvoice
+      - when: <% failed() %>
+        do: fail
+
+  # [279, 1054]
+  Insert_Bulk_PartnerInvoiceLineItemOffice:
+    action: sql.insert_bulk
+    input:
+      table: PartnerInvoiceLineItemOffice
+      data: <% ctx().office_line_item %>
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Update_PartnerCustomerInvoice
+      - when: <% failed() %>
+        do: fail
+
+  # [529, 304]
+  Update_PartnerCustomerInvoice:
+    join: all
+    action: sql.update
+    input:
+      connection: <% ctx().db_connection %>
+      table: "PartnerCustomerInvoice"
+      where:
+        id: <% ctx().max_invoice_id %>
+      update:
+        InvoiceDetails: 0
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Exec_Charge_Rarting_Procedure
+
+  # [979, 504]
+  Exec_Charge_Rarting_Procedure:
+    delay: 30
+    action: mssql.execute.query
+    input:
+      database: <% ctx().db_connection %>
+      query_string: "exec PartnerCustomerChargeRating"
+    next:
+      - when: <% failed() %>
+        do: fail
+      - when: <% succeeded() %>
+        do:
+          - Success_Email 
+
+  # [1129, 704]
+  Success_Email:
+    action: core.sendmail
+    input:
+      from: SiM.Automation@ethan.com.au
+      to: <% ctx().email_receiver %>
+      send_empty_body: false
+      subject: MSOL - CSP Invoice Generated - <% ctx().max_invoice_id %>
+      body: "Hello,<br>\nPlease take note that a new CSP invoice has been generated with the number <% ctx().max_invoice_id %>.<br>Moreover, The stored procedure PartnerCustomerChargeRating successfully executed.<br><br><br>\nRegards,<br>\nEthan SiM Automation<br>"
+    next:
+      - when: <% failed() %>
+        do: noop
+      - when: <% succeeded() %>
+        do:
+          - End
+
+  # [29, 454]
+  End:
+    action: core.noop

@@ -1,0 +1,5 @@
+pack: sim_workflow_testing
+enabled: true
+runner_type: orquesta
+name: ph_bulk_insert_sec_vul_linkage
+entry_point: workflows/ph_bulk_insert_sec_vul_linkage.yaml

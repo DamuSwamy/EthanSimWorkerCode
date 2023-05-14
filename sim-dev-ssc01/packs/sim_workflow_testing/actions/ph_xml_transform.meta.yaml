@@ -1,0 +1,6 @@
+pack: sim_workflow_testing
+enabled: true
+runner_type: orquesta
+name: ph_xml_transform
+entry_point: workflows/ph_xml_transform.yaml
+description: testing saxon install

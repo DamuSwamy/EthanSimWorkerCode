@@ -1,0 +1,11 @@
+---
+name: parse_file
+runner_type: python-script
+description: Parse a file in XML format and return JSON object.
+enabled: true
+entry_point: parse_xml_file.py
+parameters:
+  file_path:
+    type: string
+    description: Path to the file to parse.
+    required: true

@@ -1,0 +1,26 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_vcenter_mgmt_grp_wrapper
+entry_point: workflows/ethan_vcenter_mgmt_grp_wrapper.yaml
+description: Wrapper to manage the management group events
+parameters:
+  billing_db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: cloud_billing
+  cloud_db_connection:
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: true
+    default: cloudmanagement
+  cmdb_db_connection:
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: true
+    default: cmdb_Ethoria
+  payload:
+    type: "array"
+    description: List of virtual machine objects matched the schedule
+    required: true

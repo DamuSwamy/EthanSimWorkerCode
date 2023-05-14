@@ -1,0 +1,19 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: close_incident_backup_success
+entry_point: workflows/close_incident_backup_success.yaml
+description: close cases of successful backup
+parameters:
+  input_backup_success_object:
+    type: array
+    items:
+      type: object
+    description: input data
+    required: false
+  input_snow_customer_object:
+    type: array
+    items:
+      type: object
+    description: input data
+    required: false

@@ -1,0 +1,11 @@
+pack: sim_msol_billing
+enabled: true
+runner_type: "python-script"
+name: convert_result_to_list
+entry_point: "convert_result_to_list.py"
+description: Convert the given array objects to expected format for db insert
+parameters:
+  customers:
+    type: array
+    description: List of customer retrieved from partner connect customers api
+    required: true

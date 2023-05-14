@@ -1,0 +1,6 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: "python-script"
+name: ethan_rule_monitoring
+entry_point: "ethan_rule_monitoring.py"
+description: Monitor the rule enforcements to see if the rule has triggered.

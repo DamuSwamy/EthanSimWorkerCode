@@ -1,0 +1,107 @@
+version: 1.0
+tasks:
+  # [273, 10]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - get_count
+        publish:
+          - i: 0
+          - x: " "
+          - attention: " "
+  # [275, 211]
+  count:
+    action: core.noop
+    next:
+      - do:
+          - task5
+        when: <
+        publish:
+          - x: <% concat(ctx().x,ctx().list[ctx().i]," - ",str(ctx().count),"\n") %>
+  # [92, 423]
+  next:
+    action: core.noop
+    next:
+      - do:
+          - print
+  # [269, 106]
+  get_count:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: select count(*) as records from <%ctx().list[ctx().i]%>
+      connection: productionCloudExtension
+    next:
+      - do:
+          - count
+        publish:
+          - count: <% result().result[0].records %>
+          - x: <% concat(ctx().x,ctx().list[ctx().i], " - " ,str(ctx().count),"\n") %>
+  # [261, 554]
+  print:
+    action: core.echo
+    input:
+      message: "\"<%ctx().count%>\""
+    next:
+      - do:
+          - passed
+        publish:
+          - i: <% ctx().i+1 %>
+  # [515, 205]
+  passed:
+    action: core.noop
+    next:
+      - do:
+          - get_count
+        when: <%ctx().i<len(ctx().list)%>
+      - do:
+          - task1
+        when: <%ctx().i>=len(ctx().list)%>
+  # [839, 186]
+  task1:
+    action: core.noop
+    next:
+      - do:
+          - task3
+        when: <% ctx().attention = "yes" %>
+      - do:
+          - task4
+        when: <% ctx().attention != "yes" %>
+  # [828, 454]
+  task2:
+    action: core.noop
+  # [654, 320]
+  task3:
+    action: core.sendmail
+    next:
+      - do:
+          - task2
+    input:
+      to: supriya.kadam@ethan.com.au
+      subject: attention
+      body: empty records found
+  # [1019, 318]
+  task4:
+    action: core.sendmail
+    next:
+      - do:
+          - task2
+    input:
+      to: supriya.kadam@ethan.com.au
+      subject: update
+      body: "\" <% ctx().x %> \""
+  # [327, 326]
+  task5:
+    action: core.noop
+    next:
+      - do:
+          - print
+        when: <% ctx().count=0 %>
+        publish:
+          - attention: true
+      - do:
+          - next
+        when: <% ctx().count!=0 %>
+input:
+  - list

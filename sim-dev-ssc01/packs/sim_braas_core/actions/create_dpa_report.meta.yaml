@@ -1,0 +1,35 @@
+pack: sim_braas_core
+enabled: true
+runner_type: orquesta
+name: create_dpa_report
+entry_point: workflows/create_dpa_report.yaml
+description: collect report data from DPA
+parameters:
+  dpa_api_endpoint:
+    type: string
+    description: DPA server url
+    required: true
+    default: https://bernie.braas.ethoria.services:9002
+  dpa_username:
+    type: string
+    description: DPA server login username
+    required: true
+    default: service_ciac_cpo@ethoria.local
+  dpa_password:
+    type: string
+    description: DPA server login username
+    required: true
+    secret: true
+    default: "{{ st2kv.system.dpa_service_ciac_cpo_passwd | decrypt_kv }}"
+  report_name:
+    type: string
+    description: Report name to be generated
+    required: true
+  input_start_date:
+    type: string
+    description: Start Date format 2022-05-10
+    required: true
+  input_finish_date:
+    type: string
+    description: Finish Date format 2022-05-11
+    required: true

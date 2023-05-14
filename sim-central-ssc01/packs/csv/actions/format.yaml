@@ -1,0 +1,21 @@
+---
+name: format
+runner_type: python-script
+description: Format a Python list into a CSV string
+enabled: true
+entry_point: format.py
+parameters:
+  data:
+    type: array
+    description: Data to parse
+    required: true
+  delimiter:
+    type: string
+    description: String delimiter character.
+    required: false
+    default: ","
+  quote_char:
+    type: string
+    description: Character used to quote the strings.
+    required: false
+    default: "\""

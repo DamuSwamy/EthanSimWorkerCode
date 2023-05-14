@@ -1,0 +1,102 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - cmdb_db_connection
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - SQL_Select_Billing_VM
+
+  SQL_Select_Billing_VM:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT custidx, vmName, vmHostName, vmStorageTotal, vmRAM, vmActive, lastUpdated FROM iaasVM"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_vm_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_CMDB_Customers
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_CMDB_Customers:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT custidx, custid FROM cmdbCustomers ORDER BY custid ASC"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - cmdb_customer_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+          - vm_with_org_data: "{%- set finalVmArray = [] -%}{%- for vm in ctx().billing_vm_db_data -%}{%- for cust in ctx().cmdb_customer_db_data if cust['custidx'] == vm['custidx'] -%}{{vm.update({\"Org\": cust['custid']}) or \"\"}}{{finalVmArray.append(vm) or \"\"}}{%- endfor -%}{%- endfor -%}{{finalVmArray | tojson}}"
+        do:
+          - DPA_Get_Jobs
+      - when: <% failed() %>
+        do: fail
+
+  DPA_Get_Jobs:
+    action: sim_cloud_billing.ethan_dpa_get_jobs
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - dpa_jobs_data: <% switch(isList(result().output.debug_report) => result().output.debug_report, true => []) %>
+        do:
+          - Transform_VM_DPA_Data
+      - when: <% failed() %>
+        do: fail
+
+  Transform_VM_DPA_Data:
+    action: sim_cloud_billing.ethan_dpa_transform_report
+    input:
+      sql_vm_data: <% ctx().vm_with_org_data %>
+      dpa_data: <% ctx().dpa_jobs_data %>
+      db_connection: <% ctx().billing_db_connection %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - output: <% switch(isDict(result().result) => result().result, true => {}) %>
+          - dpa_clients: <% ctx().output.get('dpaclients', 0) %>
+          - billing_period: <% ctx().output.get('billingPeriod', null) %>
+          - last_event_date: <% (now(offset=>localtz())).format("%Y-%m-%d %H:%M:%S") %>
+          - scan_log: <% dict(system_id=>ctx().billing_period, system_type=>'DPA', system_name=>'JOBS', num_of_records=>ctx().dpa_clients, additional_info=>'REPORT_'+ctx().billing_period, last_event_at=>ctx().last_event_date) %>
+        do: 
+          - Insert_Scanned_Data
+          - Purge_Executions_SQL
+          - Purge_Executions_Transform
+      - when: <% failed() %>
+        do: fail
+
+  Insert_Scanned_Data:
+    action: sql.insert_bulk
+    input:
+      table: "IaaSScanLog"
+      data: <% list(ctx().scan_log) %>
+      connection: <% ctx().billing_db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: noop
+
+  Purge_Executions_SQL:
+    delay: 30
+    action: core.local
+    input:
+      cmd: /opt/stackstorm/st2/bin/st2-purge-executions --config-file /etc/st2/st2.conf --timestamp="<% (now(offset=>localtz())).format("%Y-%m-%dT%H:%M:%S.%fZ") %>" --action-ref="sql.insert_bulk"
+
+  Purge_Executions_Transform:
+    delay: 30
+    action: core.local
+    input:
+      cmd: /opt/stackstorm/st2/bin/st2-purge-executions --config-file /etc/st2/st2.conf --timestamp="<% (now(offset=>localtz())).format("%Y-%m-%dT%H:%M:%S.%fZ") %>" --action-ref="sim_cloud_billing.ethan_dpa_transform_report"
+
+  End: 
+    action: core.noop

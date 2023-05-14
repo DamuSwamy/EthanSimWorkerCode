@@ -1,0 +1,11 @@
+pack: sim_braas
+enabled: true
+runner_type: "python-script"
+name: get_clients_from_dpa_report
+entry_point: "get_client_list.py"
+description: contruct client list from the dpa report
+parameters:
+  dpa_report:
+    type: string
+    description: name of the backup client
+    required: true

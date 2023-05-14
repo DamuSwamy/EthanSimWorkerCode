@@ -1,0 +1,11 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: backup_ticket_closure
+entry_point: workflows/backup_ticket_closure.yaml
+description: close existing cases where backup success for client today
+parameters:
+  dpa_report:
+    type: array
+    description: dpa report
+    required: true

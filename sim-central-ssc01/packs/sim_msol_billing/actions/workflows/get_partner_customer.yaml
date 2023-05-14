@@ -1,0 +1,106 @@
+version: 1.0
+
+input:
+  - tenant_id
+  - password_id
+  - db_connection
+
+output:
+  - customers: <% ctx().formatted_result %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - current_date: <% now(offset=>localtz()).format("%d") %>
+        do:
+          - Get_AuthToken
+  # [329, 104]
+  Get_AuthToken:
+    action: sim_msol_billing.get_auth_token_v2
+    input:
+      password_id: <% ctx().password_id %>
+      tenant_id: <% ctx().tenant_id %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - auth_token: <% result().output.token %>
+        do:
+          - Get_PartnerCustomer
+      - when: <% failed() %>
+        do: fail
+
+  # [333, 322]
+  Get_PartnerCustomer:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers"
+      method: GET
+      headers:
+        Content-Type: application/json
+        Authorization: "Bearer <% ctx().auth_token %>"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - customer_list: <% result().body.items %>
+          - total_customers: <% result().body.totalCount %>
+        do:
+          - To_CustomerList_Expected_Format
+      - when: <% failed() %>
+        do: fail
+
+  To_CustomerList_Expected_Format:
+    action: sim_msol_billing.convert_result_to_list
+    input:
+      customers: <% ctx().customer_list %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - formatted_result: <% result().result %>
+        do:
+          - Delete_From_PartnerCustomer_Temp
+      - when: <% failed() %>
+        do: fail
+
+  # [914, 217]
+  Delete_From_PartnerCustomer_Temp:
+    action: sql.delete
+    input:
+      table: PartnerCustomerTemp
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Insert_Into_PartnerCustomer_Temp
+      - when: <% failed() %>
+        do: fail
+
+  Insert_Into_PartnerCustomer_Temp:
+    action: sql.insert_bulk
+    input:
+      table: PartnerCustomerTemp
+      data: <% ctx().formatted_result %>
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Insert_Into_PartnerCustomer
+      - when: <% failed() %>
+        do: fail
+
+  Insert_Into_PartnerCustomer:
+    action: sql.query
+    input:
+      connection: <% ctx().db_connection %>
+      query: "insert into PartnerCustomer (CustomerId,Domain,Name,RelationshipToPartner) select a.CustomerId as CustomerId,a.Domain as Domain,a.Name as Name,a.RelationshipToPartner as RelationshipToPartner From PartnerCustomerTemp a full outer join PartnerCustomer b on a.CustomerId = b.CustomerId where b.CustomerId is null"
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  End:
+    action: core.noop

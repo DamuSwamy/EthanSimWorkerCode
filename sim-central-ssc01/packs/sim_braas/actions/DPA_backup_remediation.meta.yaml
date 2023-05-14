@@ -1,0 +1,5 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: DPA_backup_remediation
+entry_point: workflows/DPA_backup_remediation.yaml

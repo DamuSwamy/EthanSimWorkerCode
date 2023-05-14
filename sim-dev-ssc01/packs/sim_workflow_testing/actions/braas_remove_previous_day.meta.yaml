@@ -1,0 +1,6 @@
+pack: sim_workflow_testing
+enabled: true
+runner_type: orquesta
+name: braas_remove_previous_day
+entry_point: workflows/braas_remove_previous_day.yaml
+description: removes the previous days records for braas failure reporting

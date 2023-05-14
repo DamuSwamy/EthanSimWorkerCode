@@ -1,0 +1,81 @@
+pack: sim_itsm
+enabled: true
+runner_type: orquesta
+name: create_connectwise_ticket
+entry_point: workflows/create_connectwise_ticket.yaml
+description: Create Connectwise Ticket
+parameters:
+  board_name:
+    type: string
+    description: CW board_name or queue_name where ticket should be created
+    default: " MS - Service Requests"
+    required: true
+  ticket_summary:
+    type: string
+    description: ticket summary
+    default: SiM Ticket Creation
+    required: true
+  ticket_initialDescription:
+    description: ticket_initialDescription
+    type: string
+    default: Testing,\\r\nSiM Automation,\\r\nTest Ticket Creation
+    required: true
+  ticket_contactName:
+    description: ticket_contactName
+    type: string
+    default: PaulHooper
+    required: true
+  auth_token:
+    type: string
+    description: auth_token
+    default: ZXNzaXN0ZGV2K3RuTWpvOWZ2WkhneHVKeU06SkZIYWx2VHVBZ2JpdFlQcg==
+    required: false
+    secret: true
+  client_id:
+    type: string
+    description: client_id
+    default: 13e3617a-b4d4-4c28-993c-80cd8cd2b88b
+    required: true
+  team_name:
+    type: string
+    description: team_id
+    default: Managed Services
+    required: true
+  owner:
+    type: string
+    default: "\"\""
+    required: false
+  status:
+    type: string
+    default: In Progress
+    required: true
+  item:
+    type: string
+    default: Decomissioning
+    required: true
+  subtype:
+    type: string
+    default: Avamar
+    required: true
+  agreement:
+    type: string
+    default: 3381
+    required: true
+  type:
+    type: string
+    default: Backup
+    required: true
+  instance:
+    type: string
+    default: helpdesk-dev.essist.com.au
+    required: false
+  company_name:
+    type: string
+    description: company_name
+    default: Ethan Group
+    required: true
+  source_name:
+    type: string
+    description: source_name
+    default: Customer Portal
+    required: true

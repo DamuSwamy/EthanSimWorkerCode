@@ -1,0 +1,276 @@
+version: 1.0
+input:
+  - tenant_id
+  - customer_tenant_id
+  - line_items_raw
+  - password_id
+  - ticket_id
+  - pwdstatepassword
+output:
+  - order_details: <% ctx().order_details %>
+tasks:
+  # [114, 522]
+  Get_Access_Token_from_Microsoft_Online_API:
+    action: core.http
+    input:
+      url: "https://login.microsoftonline.com/<% ctx().tenant_id %> /oauth2/token"
+      body: client_id=<% ctx().client_id %>&resource=https%3A%2F%2Fgraph.windows.net&client_secret=<% ctx().client_secret %>&grant_type=client_credentials
+      method: GET
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+    next:
+      # #629e47
+      - do:
+          - initialize_variables
+        when: <% succeeded() %>
+        publish:
+          - auth_token: <% result().body. access_token %>
+  # [572, 858]
+  end_success:
+    action: core.echo
+    input:
+      message: access token <% ctx().auth_token %> fetched
+  # [709, 411]
+  Create_Cart:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers/<% ctx().customer_tenant_id %>/carts"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+      body: "{\n  \"lineItems\": <% ctx().line_items_cart %>\n}"
+      method: POST
+      timeout: 180
+    next:
+      # #629e47
+      - do:
+          - Checkout_Cart
+        when: <% succeeded() %>
+        publish:
+          - cart_id: <% result().body.id %>
+  # [708, 516]
+  Checkout_Cart:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers/<% ctx().customer_tenant_id %>/carts/<% ctx().cart_id %>/checkout"
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+      method: POST
+      timeout: 180
+    next:
+      # #629e47
+      - do:
+          - build_order_output
+        when: <% str(result().body).indexOf('orderErrors') = -1 %>
+        publish:
+          - order_id: <% result().body.orders[0].id %>
+          - order_details: <% result().body %>
+          - billing_cycle: <% result().body.orders[0].billingCycle %>
+          - currency_code: <% result().body.orders[0].currencyCode %>
+          - order_line_items: <% result().body.orders.lineItems.select([$.friendlyName, $.quantity, $.termDuration]) %>
+      - do:
+          - escalate_ticket
+        when: <% str(result().body).indexOf('orderErrors') != -1 %>
+        publish:
+          - order_error: <% result().body. orderErrors[0].description %>
+          - order_details: <% result().body %>
+  # [841, 782]
+  end_error:
+    action: core.noop
+  # [117, 406]
+  Get_client_secret:
+    action: sim_passwordstate.retrieve_password_from_password_id_api
+    input:
+      password_id: <% ctx().password_id %>
+      url: "https://pwd.etest.systems"
+    next:
+      # #629e47
+      - do:
+          - Get_Access_Token_from_Microsoft_Online_API
+        when: <% succeeded() %>
+        publish:
+          - client_id: <% result().output.retrieved_username %>
+          - client_secret: <% result().output.retrieved_password %>
+  # [105, 636]
+  initialize_variables:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - Extract_Data
+        when: <% succeeded() %>
+        publish:
+          - it: 0
+          - len_offers_selected: <% len(ctx().line_items_raw.split('||')) %>
+          - customer_tenant_id: <% ctx().line_items_raw.split('||')[ctx().it].split(',')[0] %>
+          - country_id: AU
+  # [312, 1140]
+  process_line_items:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - push_to_line_items_cart
+        when: <% succeeded() %>
+        publish:
+          - line_item: <% dict(id=> ctx().it, catalogItemId=>ctx().fetched_cat_id, quantity=>ctx().quantity, billingCycle=> ctx().billing_cycle, termDuration=> ctx().term_duration) %>
+  # [107, 817]
+  Extract_Data:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - get_catalog_id
+        when: <% ctx().it < ctx().len_offers_selected %>
+        publish:
+          - offer_id: <% ctx().line_items_raw.split('||')[ctx().it].split(',')[2] %>
+          - quantity: <% ctx().line_items_raw.split('||')[ctx().it].split(',')[3] %>
+          - billing_cycle: <% ctx().line_items_raw.split('||')[ctx().it].split(',')[4] %>
+          - term_duration: <% ctx().line_items_raw.split('||')[ctx().it].split(',')[5] %>
+          - product_name: <% ctx().line_items_raw.split('||')[ctx().it].split(',')[1] %>
+          - customer_tenant_id: <% ctx().line_items_raw.split('||')[ctx().it].split(',')[0] %>
+          - product_identity: <% ctx().line_items_raw.split('||')[ctx().it].split(',')[2].split(':')[0] %>
+          - sku_identity: <% ctx().line_items_raw.split('||')[ctx().it].split(',')[2].split(':')[1] %>
+      # #629e47
+      - do:
+          - Create_Cart
+        when: <% ctx().it >= ctx().len_offers_selected %>
+  # [4, 1135]
+  push_to_line_items_cart:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - Extract_Data
+        when: <% succeeded() %>
+        publish:
+          - line_items_cart: <% ctx().get('line_items_cart' , []) + [ ctx(line_item)] %>
+          - it: <% ctx().it + 1%>
+  # [117, 302]
+  get_secrets_passwordsafe:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - Get_client_secret
+        when: <% succeeded() %>
+  # [571, 760]
+  resolve_ticket:
+    action: sim_itsm2.update
+    next:
+      # #629e47
+      - do:
+          - end_success
+        when: <% succeeded() %>
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticket_id %>
+      table: sn_customerservice_general_case
+      payload:
+        comments: "SiM Automation has successfully completed the MSOL Order\n<% ctx().order_output %>"
+        resolution_code: Completed
+        close_notes: "Successful completion of MSOL order from SiM Automation "
+        state: 3
+        cause: Ethan Online Request for MSOL License purchase from SiM Automation
+        assigned_to: svc_sim_automation
+        closed_by: 84cf417087ff3410bd1d32e80cbb3502
+        closed_at: "2022-02-15 17:03:07"
+        notes_to_comments: true
+  # [841, 664]
+  escalate_ticket:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticket_id %>
+      payload:
+        comments: "SiM Automation was unable to complete the MSOL order,our engineer will review this request and action manually.\n\nOrder details follow\nCUSTOMER TENANT ID,PRODUCT NAME,OFFER ID,QUANTITY,BILLING FREQUENCY,TERM\n<% ctx().line_items_raw %>\n\nOrder Error: <% ctx().order_error %>\nDetailed error message\n<% ctx().order_details %>"
+        state: 2
+        assigned_to: 
+      table: sn_customerservice_general_case
+    next:
+      - do:
+          - end_error
+  # [128, 4]
+  get_inputs:
+    action: sim_itsm2.get
+    input:
+      log_level: DEBUG
+      query:
+        number: <% ctx().ticket_id %>
+      table: sn_customerservice_general_case
+    next:
+      # #629e47
+      - do:
+          - print
+        publish:
+          - time_10minsago: "<% (now() - timespan(minutes => 10)).format(\"%Y-%m-%d %H:%M:%S\") %>"
+          - ticket_opened: "<% datetime(result().result[0].opened_at).format(\"%Y-%m-%d %H:%M:%S\") %>"
+          - automation_start: "<% datetime(task().start_timestamp).format(\"%Y-%m-%d %H:%M:%S\")  %>"
+          - pwdstateusername: svc-pwd-stackstorm
+          - line_item: {}
+          - line_items_cart: []
+  # [120, 206]
+  check_for_itsm_ticket_time:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - get_secrets_passwordsafe
+        when: <% datetime(ctx().time_10minsago) <  datetime(ctx().ticket_opened) %>
+      - do:
+          - older_ticket_escalate
+        when: <% datetime(ctx().time_10minsago) >=  datetime(ctx().ticket_opened) %>
+        publish:
+          - line_items_raw: <%  ctx().line_items_raw %>
+  # [404, 170]
+  older_ticket_escalate:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticket_id %>
+      payload:
+        comments: "SiM Automation found that this ITSM ticket is older than 10 minutes hence may result into duplicate order so it decided to escalate this ticket to engineer for further review, our engineer will review this request and verify if the order is already processed and do the needful\n\nOrder details follow\nCUSTOMER TENANT ID,PRODUCT NAME,OFFER ID,QUANTITY,BILLING FREQUENCY,TERM\n<% ctx().line_items_raw %>"
+        state: 2
+        assigned_to: 
+      table: sn_customerservice_general_case
+    next:
+      - do:
+          - end_error_older_ticket
+        publish:
+          - order_details: SiM Automation found that this ITSM ticket is older than 10 minutes hence may result into duplicate order so it decided to escalate this ticket to engineer for further review, engineer will review this request and verify if the order is already processed
+  # [756, 174]
+  end_error_older_ticket:
+    action: core.echo
+    input:
+      message: "Time 10 minutes ago <% datetime(ctx().time_10minsago)  %>  \nTime of ITSM ticket open <% datetime(ctx().ticket_opened) %>"
+  # [571, 663]
+  build_order_output:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - resolve_ticket
+        publish:
+          - order_output: "Order ID - <% ctx().order_id %>\nBilling Cycle - <% ctx().billing_cycle %>\nCurrency Code - <% ctx().currency_code %>\n\nOrdered Product List -\n<% ctx().order_line_items %>"
+  # [122, 108]
+  print:
+    action: core.echo
+    input:
+      message: <% ctx().automation_start %>
+    next:
+      # #629e47
+      - do:
+          - check_for_itsm_ticket_time
+  # [311, 990]
+  get_catalog_id:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/products/<% ctx().product_identity %>/skus/<% ctx().sku_identity %>/availabilities?country=AU&targetSegment=Commercial"
+      auth: null
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+    next:
+      # #629e47
+      - do:
+          - process_line_items
+        publish:
+          - fetched_cat_id: <% result().body.items[0].catalogItemId %>

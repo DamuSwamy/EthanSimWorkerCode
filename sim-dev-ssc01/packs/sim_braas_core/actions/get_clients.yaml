@@ -1,0 +1,20 @@
+---
+name: get_clients
+runner_type: python-script
+description: Retrieves the clients from the Braas server. 
+enabled: true
+entry_point: get_clients.py
+parameters:
+  braas:
+    type: "string"
+    description: Pre-Configured braas connection details
+    required: true
+  domain_name:
+    type: "string"
+    description: Domain name to get the cid details
+    required: false
+  access_token:
+    type: "string"
+    description: Access token if you have the token already else blank
+    required: false
+

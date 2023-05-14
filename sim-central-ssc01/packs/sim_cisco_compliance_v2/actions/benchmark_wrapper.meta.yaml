@@ -1,0 +1,45 @@
+pack: sim_cisco_compliance_v2
+enabled: true
+runner_type: orquesta
+name: benchmark_wrapper
+entry_point: workflows/benchmark_wrapper.yaml
+description: benchmark_wrapper
+parameters:
+  customer_id:
+    type: string
+    description: customer id to get the list of devices and compliant check
+    required: true
+    position: 1
+  status_table_name:
+    type: string
+    description: The name of the table for status data insert
+    required: true
+    default: DeviceComplianceStatus
+    position: 2
+  details_table_name:
+    type: string
+    description: The name of the table for details data insert
+    required: true
+    default: DeviceComplianceDetails
+    position: 3
+  exclude_device_types:
+    type: array
+    description: List of device type excluded form compliance check
+    required: false
+    default: ['Firewall','Server','Wireless LAN Controller','Access Point - LWAP','Unknown']
+    position: 4
+  limit:
+    type: integer
+    description: Number of devices to process
+    required: false
+    position: 6
+  batch_size:
+    type: integer
+    description: Number of devices to process
+    required: false
+    default: 20
+    position: 5
+  auth_token:
+    type: string
+    description: The query params to append endpoint
+    required: false

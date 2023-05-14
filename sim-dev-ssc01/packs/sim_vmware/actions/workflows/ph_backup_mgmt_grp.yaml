@@ -1,0 +1,41 @@
+version: 1.0
+tasks:
+  # [848, 265]
+  get_mgmt_grp_info:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: "select a.ServerFriendlyName,\nc.Action,\na.managedID,\na.Name,\nb.vmID,\na.StartupDelay,\na.StartupSequence,\na.ShutdownDelay,\na.ManagmentGroupSIName,\nb.vmGuestToolsStatus,\nb.managedBy,\nb.managedByID,\nc.ActionTime\nFrom IaaS_ManagementGroupMember a,\nIaaS_Live b,\nIaaS_ManagementGroupSchedule c,\nIaaS_ManagementGroup d\nwhere c.Day = '<% ctx().dayofweek %>'\nand c.ActionTime = '<% ctx().startTime %>'\nand a.ServerFriendlyName=b.vmName\nand b.vmActive='1'\nand b.managedBy = 'vcloud'\nand d.GroupStatus = 'Enabled'\nand a.ManagmentGroupSIName = c.ManagementGroupSIName\nand a.ManagmentGroupSIName = d.Name"
+      connection: cloudmanagement
+    next:
+      - do:
+          - send_logicapp_power_action
+        publish:
+          - records: <% result().result %>
+  # [848, 493]
+  send_logicapp_power_action:
+    action: core.http
+    input:
+      body: "{\n\"vmtype\": \"vcloud\",\n\"managedid\": \"<% item(record).managedID %>\",\n\"action\": \"<% ctx().powerAction %>\",\n\"useremail\": \"cpo@ethan.com.au\"\n}"
+      url: "https://apim-ethan-pmapi.azure-api.net/sendvmaction/manual/paths/invoke"
+      headers:
+        Ocp-Apim-Subscription-Key: 24e78472e1da464f836042d96a328042
+        Content-Type: application/json
+      method: POST
+      timeout: 120
+    with:
+      items: record in <% ctx(records) %>
+    delay: 1
+  # [849, 85]
+  Initialise:
+    action: core.noop
+    next:
+      - do:
+          - get_mgmt_grp_info
+        publish:
+          - dayofweek: <%(now(offset=>localtz())).format("%A") %>
+output:
+  - debug_daynow: <%ctx().dayofweek%>
+input:
+  - startTime
+  - powerAction

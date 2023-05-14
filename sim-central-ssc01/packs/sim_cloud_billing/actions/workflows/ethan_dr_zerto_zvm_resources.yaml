@@ -1,0 +1,130 @@
+version: 1.0
+
+input:
+  - site_name
+  - site_address
+  - billing_db_connection
+
+vars:
+  - new_resources: []
+
+output:
+  - resources: "<% str(len(ctx().new_resources)) %> inserted"
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - SQL_Select_Billing_Latest_ZertVMResources
+
+  SQL_Select_Billing_Latest_ZertVMResources:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT Top 1 * FROM ZertVMResources WHERE rvmRecoverySiteName='<% ctx().site_name %>' Order by rvmScanDate DESC"
+    next:
+      - when: <% succeeded() and len(result().result) > 0 %>
+        publish:
+          - billing_zert_latest_resource_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+          - latest_scan_date: <% ctx().billing_zert_latest_resource_db_data[0].rvmScanDate %>
+          - latest_scan: <% ctx().latest_scan_date.split("T") %>
+          - start_date: <% ctx().latest_scan[0] %>
+          - start_time: <% ctx().latest_scan[1].split(":")[0] %>
+          - start_time: "<% ctx().start_time %>:00:00"
+          - start_date_time: "<% ctx().start_date %> <% ctx().start_time %>"
+          - end_date: <% (now(offset=>localtz())).format("%Y-%m-%d") %>
+        do:
+          - Get_Live_ZertVMResources
+      - when: <% succeeded() and len(result().result) = 0 %>
+        publish:
+          - start_date: <% (now(offset=>localtz()) - timespan(days => 1)).format("%Y-%m-%d") %>
+          - start_time: "12:00:00"
+          - start_date_time: "<% ctx().start_date %> <% ctx().start_time %>"
+          - end_date: <% (now(offset=>localtz())).format("%Y-%m-%d") %>
+        do:
+          - Get_Live_ZertVMResources
+      - when: <% failed() %>
+        do: fail
+
+  Get_Live_ZertVMResources:
+    action: sim_zerto_core.zvm_get_resources_report
+    input:
+      zvm_host: <% ctx().site_address %>
+      start_date: <% ctx().start_date %>
+      start_time: <% ctx().start_time %>
+      end_date: <% ctx().end_date %>
+    next:
+      - when: <% succeeded() and len(result().result) > 0 %>
+        publish:
+          - resources: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_Billing_ZertVMResources
+      - when: <% succeeded() and len(result().result) = 0 %>
+        publish:
+          - scan_log: <% dict(system_id=>ctx().site_address, system_type=>'Zerto', system_name=>ctx().site_name, num_of_records=>len(result().result), additional_info=>'RESOURCES') %>
+        do:
+          - Insert_Scanned_Data
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Billing_ZertVMResources:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT rvmName, rvmGUID, rvmScanDate FROM ZertVMResources WHERE rvmScanDate >= CONVERT(DATETIME, '<% ctx().start_date_time %>', 120)"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_zert_resource_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+          - new_resources: "{% set accumulator = namespace(found='no') %}{%- set resourceArr = [] -%}{%- for liv in ctx().resources -%}{%- set accumulator.found = 'no' -%}{%- for db in ctx().billing_zert_resource_db_data if db['rvmGUID'] == liv['rvmGUID'] and db['rvmScanDate'].split('.')[0] == liv['rvmScanDate'].split('.')[0] -%}{%- set accumulator.found = 'yes' -%}{%- endfor -%}{% if accumulator.found == 'no' and liv['rvmGUID'] != '' -%}{{ resourceArr.append(liv) or '' }}{%- endif %}{%- endfor -%}{{resourceArr | tojson}}"
+          - new_resources: "{{ ctx().new_resources | from_json_string  }}"
+        do:
+          - Check_For_Records
+      - when: <% failed() %>
+        do: fail
+
+  Check_For_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().new_resources) > 0 %>
+        publish:
+          - last_event_date: <% (now(offset=>localtz())).format("%Y-%m-%d %H:%M:%S") %>
+          - scan_log: <% dict(system_id=>ctx().site_address, system_type=>'Zerto', system_name=>ctx().site_name, num_of_records=>len(ctx().new_resources), last_event_at=>ctx().last_event_date, additional_info=>'RESOURCES') %>
+        do:
+          - Insert_New_Resource_Records
+          - Insert_Scanned_Data
+      - when: <% len(ctx().new_resources) = 0 %>
+        publish:
+          - scan_log: <% dict(system_id=>ctx().site_address, system_type=>'Zerto', system_name=>ctx().site_name, num_of_records=>len(ctx().new_resources), additional_info=>'RESOURCES') %>
+        do:
+          - Insert_Scanned_Data
+          - End
+
+  Insert_New_Resource_Records:
+    action: sql.insert_bulk
+    input:
+      table: "ZertVMResources"
+      data: <% ctx().new_resources %>
+      connection: <% ctx().billing_db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  Insert_Scanned_Data:
+    action: sql.insert_bulk
+    input:
+      table: "IaaSScanLog"
+      data: <% list(ctx().scan_log) %>
+      connection: <% ctx().billing_db_connection %>
+    next:
+      - when: <% failed() or succeeded() %>
+        do: noop
+
+  End: 
+    action: core.noop

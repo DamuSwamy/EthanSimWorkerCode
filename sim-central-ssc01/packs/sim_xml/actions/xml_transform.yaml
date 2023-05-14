@@ -1,0 +1,17 @@
+---
+name: "xml_transform"
+runner_type: "python-script"
+description: "XSLT for your XML"
+enabled: true
+entry_point: "xml_transform.py"
+parameters:
+    xml:
+        type: "string"
+        description: "xml to transform"
+        required: true
+        position: 0
+    xslt:
+        type: "string"
+        description: "xslt to transform"
+        required: true
+        position: 1

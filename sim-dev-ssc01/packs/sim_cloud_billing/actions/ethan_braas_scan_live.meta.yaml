@@ -1,0 +1,24 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_braas_scan_live
+entry_point: workflows/ethan_braas_scan_live.yaml
+description: Synchronize the data between ethan database and braas data
+parameters:
+  billing_db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: dev_billing
+    position: 0
+  cloud_db_connection:
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: true
+    default: dev_cloudmanagement
+    position: 1
+  braas_server:
+    type: "string"
+    description: Pre-Configured Braas connection details
+    required: true
+    position: 2

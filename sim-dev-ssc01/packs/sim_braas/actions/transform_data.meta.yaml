@@ -1,0 +1,10 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: transform_data
+entry_point: workflows/transform_data.yaml
+description: transform Json using jinja
+parameters:
+  input_json:
+    type: object
+    description: input data

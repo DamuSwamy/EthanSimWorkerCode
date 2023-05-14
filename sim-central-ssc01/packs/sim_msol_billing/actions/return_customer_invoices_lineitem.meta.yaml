@@ -1,0 +1,20 @@
+pack: sim_msol_billing
+enabled: true
+runner_type: "python-script"
+name: return_customer_invoices_lineitem
+entry_point: "return_customer_invoices_lineitem.py"
+description: Convert the given array objects to expected format for db insert
+parameters:
+  max_invoice_id:
+    type: string
+    description: Max Invoice ID
+    required: true
+  auth_token:
+    type: string
+    description: Auth token for the partner connect
+    required: true
+  line_item:
+    type: string
+    description: Line item to process either Azure or Office
+    required: true
+

@@ -1,0 +1,47 @@
+version: 1.0
+tasks:
+  # [274, 65]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - resolve
+        when: <% ctx().status = "Success" %>
+      - do:
+          - update
+        when: <% ctx().status != "Success" %>
+  # [468, 183]
+  resolve:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticketid %>
+      payload:
+        comments: "We have successfully assigned the Number and policies to this user.\nThis change may take up to 1 hour to take effect please advise the user to logout and login to Teams app after an hour.\n\nAutomation is resolving this service request after completion of operation as per request, Please feel free to reply to this update to reopen the case again"
+        resolution_code: Completed
+        close_notes: Sim Automation is resolving the service request after completion of operation as per request
+        state: 3
+        cause: MS Teams Voice user updated successfully
+        assigned_to: svc_sim_automation
+        closed_by: 84cf417087ff3410bd1d32e80cbb3502
+        closed_at: "2022-02-06 17:03:07"
+        notes_to_comments: true
+        service_offering: Managed 365
+      table: sn_customerservice_general_case
+  # [64, 186]
+  update:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      payload:
+        comments: Update failed
+        state: 2
+        assigned_to: 
+        service_offering: Managed 365
+      table: sn_customerservice_general_case
+      number: <% ctx().ticketid %>
+input:
+  - status
+  - ticketid
+  - message
+  - error

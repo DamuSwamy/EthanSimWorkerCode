@@ -1,0 +1,31 @@
+version: 1.0
+tasks:
+  # [152, 19]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - Original
+        publish:
+          - temp: <% ctx().x %>
+  # [152, 278]
+  Swap:
+    action: core.echo
+    input:
+      message: "\" new x is <% ctx().x %> and new y is <% ctx().y %> \""
+  # [152, 135]
+  Original:
+    action: core.echo
+    next:
+      - do:
+          - Swap
+        publish:
+          - x: <% ctx().y %>
+          - y: <% ctx().temp %>
+    input:
+      message: "\" x is <% ctx().x %> and y is <% ctx().y %> \""
+input:
+  - x
+  - y
+output:
+  - Result: "The numbers have been reversed"

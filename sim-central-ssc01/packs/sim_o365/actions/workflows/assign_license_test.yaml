@@ -1,0 +1,35 @@
+version: 1.0
+tasks:
+  # [282, 176]
+  api_request:
+    action: core.http
+    input:
+      url: "https://funapp-teamsssp-prd.azurewebsites.net/api/AssignLicense"
+      body: "{\n  \"tenant_id\": \"b02e50ac-20e5-4c60-bcd4-8454b3201fd1\",\n  \"user_id\": \"damodaran.swamy@etest.systems\",\n  \"graph_password_id\": \"1045\",\n  \"sku_ids\": \"06ebc4ee-1bb5-47dd-8120-11324bc54e06,a403ebcc-fae0-4ca2-8c8c-7a907fd6c235\"\n  }"
+      headers:
+        x-functions-key: KSFSRr3cKvQmSa6//77H1eAjUlloAJFDCG6aJYgWvqRhYBksVv46Sg==
+        Content-Type: application/json
+      method: POST
+      verify_ssl_cert: true
+      allow_redirects: true
+    next:
+      - do:
+          - success
+        publish:
+          - result1: <% result(). status_code%>
+        when: <% result().status_code = 400 %>
+  # [280, 68]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - api_request
+  # [282, 277]
+  success:
+    action: core.local
+    input:
+      cmd: sleep 1
+input:
+  - test
+output:
+  - result1: <% ctx().result1 %>

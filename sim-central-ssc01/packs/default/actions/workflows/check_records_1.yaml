@@ -1,0 +1,112 @@
+version: 1.0
+tasks:
+  # [334, 16]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - check_records
+        publish:
+          - i: 0
+          - x: " "
+  # [334, 123]
+  check_records:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: select count(*) as records from <% ctx().List[i] %>
+      connection: productionCloudExtension
+    next:
+      - do:
+          - count
+        publish:
+          - count: <% result().result[0].records %>
+  # [334, 227]
+  count:
+    action: core.noop
+    next:
+      - do:
+          - next
+        publish:
+          - x: <% concat(ctx().List[ctx().i]," - ",str(ctx().count) ,"\n"%>
+  # [334, 334]
+  next:
+    action: core.noop
+    next
+      - do:
+          - records_found
+        publish:
+          - attention: true
+        when: <% ctx().count = 0 %>
+      - do:
+          - skip
+        when: <% ctx().count != 0 %>
+  # [334, 441]
+  records_found:
+    action: core.noop
+    next:
+      - do:
+          - output
+  # [435, 561]
+  output:
+    action: core.echo
+    input:
+      message: "\" <% ctx().count %> \""
+    next:
+      - do:
+          - pass
+        publish:
+          - i: <% ctx().i+1 %>
+        when: <% ctx().i < ctx().len(List) %>
+  # [614, 275]
+  pass:
+    action: core.noop
+    next:
+      - do:
+          - check_records
+        when: <% ctx().i < len(ctx().List) %>
+      - do:
+          - end
+  # [83, 419]
+  skip:
+    action: core.noop
+    next:
+      - do:
+          - records_found
+  # [901, 357]
+  end:
+    action: core.echo
+    input:
+      message: "\" tables completed \""
+    next:
+      - do:
+          - attention
+        when: <% ctx().attention = "yes" %>
+      - do:
+          - update
+        when: <% ctx().attention != "yes" %>
+  # [768, 483]
+  attention:
+    action: core.sendmail
+    next:
+      - do:
+          - stop
+    input:
+      to: supriya.kadam@ethan.com.au
+      subject: Needs attention
+      body: <% ctx().x %>
+  # [1033, 478]
+  update:
+    action: core.sendmail
+    next:
+      - do:
+          - stop
+    input:
+      body: <% ctx().x %>
+      to: supriya.kadam@ethan.com.au
+      subject: No issues found
+  # [899, 592]
+  stop:
+    action: core.noop
+input:
+  - List

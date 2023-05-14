@@ -1,0 +1,16 @@
+pack: sim_o365
+enabled: true
+runner_type: orquesta
+name: hide_address_gal
+entry_point: workflows/hide_address_gal.yaml
+description: Hide address from Global Address list using Microsoft Graph API
+parameters:
+  user_email:
+    type: string
+    description: User email to hide from GAL
+    required: true
+    default: sim.testuser01@etest.systems
+  graph_auth_token:
+    type: string
+    description: Graph API auth token
+    required: true

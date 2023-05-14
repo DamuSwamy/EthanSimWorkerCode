@@ -1,0 +1,10 @@
+pack: sim_braas_action
+enabled: true
+runner_type: orquesta
+name: rerun_backup_process
+entry_point: workflows/rerun_backup_process.yaml
+parameters:
+  payload:
+    type: object
+    description: Failure object
+    required: true

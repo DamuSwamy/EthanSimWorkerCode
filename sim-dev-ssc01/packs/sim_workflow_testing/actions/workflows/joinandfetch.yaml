@@ -1,0 +1,36 @@
+version: 1.0
+tasks:
+  # [342, 85]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - print_json1
+  # [342, 187]
+  print_json1:
+    action: core.echo
+    input:
+      message: "\"<% ctx().json1 %>\""
+    next:
+      - do:
+          - print_json2
+  # [341, 302]
+  print_json2:
+    action: core.echo
+    input:
+      message: "\"<% ctx().json2 %>\""
+    next:
+      - do:
+          - print_json_result
+        publish:
+          - json_output: "{ \"customers\" : [\n{% for cust in ctx().json1.output1.result -%}\n{\n\"cust\": \"{{cust.custFullName}}\",\n{%- for cust2 in ctx().json2.output2.records -%}\n{% if cust2.custidx == cust.custidx %}\n\"SN\": \"{{cust2.SNAccountID}}\"\n{%- endif %}\n{%- endfor %}\n}{{ \", \" if not loop.last else \"\" }}\n{%- endfor %}\n]\n}"
+  # [341, 411]
+  print_json_result:
+    action: core.echo
+    input:
+      message: "\"completed\""
+input:
+  - json1
+  - json2
+output:
+  - json_output: <% ctx().json_output %>

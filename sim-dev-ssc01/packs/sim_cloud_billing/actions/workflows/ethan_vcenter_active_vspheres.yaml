@@ -1,0 +1,118 @@
+version: 1.0
+
+input:
+  - cmdb_db_connection
+  - email_to
+
+vars:
+  - result: {}
+  - index: 0
+  - response: []
+  - html_response: ""
+
+output:
+  - result: <% ctx().response %>
+  - html_data: <% ctx().html_tag %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - css_style: '<style>.ethanEmail { font-size: 14px; font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;}.ethanEmail div.info{ padding: 5px 3px 3px 3px;}.ethanEmail .footer{ margin-top: 20px;}.ethanEmail table { font-size: 14px; border-collapse: collapse; border-spacing: 0;width: 100%;}.ethanEmail table td, .ethanEmail table th {border: 1px solid #ccc; text-align: left; padding: 3px 3px;}.ethanEmail table th { padding-top: 5px; padding-bottom: 5px; background-color: #23a3c8; color: #fefefe;font-weight: normal;}</style>'
+          - header: '<h4>vCenter Status Check</h4><div class="info">Action:</div><div class="info">Details: A continual check of the connectivity to the vCenters from the SiM machines.</div><table><th>Name</th><th>vCenterID</th><th>vCenterIP</th><th>Ping</th><th>vAPI</th>'
+          - start_html: '<html xmlns:foo="http://www.foo.org/" xmlns:bar="http://www.bar.org"><% ctx().css_style %><body><div class="ethanEmail"><% ctx().header %>'
+          - end_html: '<br></table><div class="info">Additional Information:</div><div class="footer">Thank You,<br>Ethan Group Cloud Service Team</div></div></body></html>'
+        do:
+          - SQL_Select_CMDB_vCenters
+
+  SQL_Select_CMDB_vCenters:
+    action: sql.query
+    input:
+      connection: <% ctx().cmdb_db_connection %>
+      query: "Select rtrim(invVCServerID) as invVCServerID, rtrim(vcName) as vcName, rtrim(vcIPAddress) as vcIPAddress FROM iaasVCServer WHERE vcActive = '1' ORDER BY invVCServerID"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - vcenters: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Ping_Vcenter
+      - when: <% failed() %>
+        do: fail
+
+  Ping_Vcenter:
+    action: core.local
+    input:
+      cmd: ping -c4 <% ctx().vcenters[ctx().index].vcIPAddress %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - ping_result: "Pass"
+          - ping_html_result: "<td>Pass</td>"
+        do:
+          - Vcenter_Login
+      - when: <% failed() %>
+        publish:
+          - ping_result: "Fail"
+          - ping_html_result: "<td style=\"background-color:red\">Fail</td>"
+        do:
+          - Vcenter_Login
+
+  Vcenter_Login:
+    action: sim_vmware2.hello_vsphere
+    input:
+      vsphere: <% ctx().vcenters[ctx().index].vcName %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - vapi_result: "Pass"
+          - vapi_html_result: "<td>Pass</td>"
+          - result: <% ctx(result).set("Name"=>ctx().vcenters[ctx().index].vcName,"vCenterID"=>ctx().vcenters[ctx().index].invVCServerID,"vCenterIP"=>ctx().vcenters[ctx().index].vcIPAddress,"Ping"=>ctx().ping_result,"vAPI"=>ctx().vapi_result) %>
+          - html_result: '<tr><td><% ctx().vcenters[ctx().index].vcName %></td><td><% ctx().vcenters[ctx().index].invVCServerID %></td><td><% ctx().vcenters[ctx().index].vcIPAddress %></td><% ctx().ping_html_result %><% ctx().vapi_html_result %></tr>'
+        do:
+          - Still_More
+      - when: <% failed() %>
+        publish:
+          - vapi_result: "Fail"
+          - vapi_html_result: "<td style=\"background-color:red\">Fail</td>"
+          - result: <% ctx(result).set("Name"=>ctx().vcenters[ctx().index].vcName,"vCenterID"=>ctx().vcenters[ctx().index].invVCServerID,"vCenterIP"=>ctx().vcenters[ctx().index].vcIPAddress,"Ping"=>ctx().ping_result,"vAPI"=>ctx().vapi_result) %>
+          - html_result: '<tr><td><% ctx().vcenters[ctx().index].vcName %></td><td><% ctx().vcenters[ctx().index].invVCServerID %></td><td><% ctx().vcenters[ctx().index].vcIPAddress %></td><% ctx().ping_html_result %><% ctx().vapi_html_result %></tr>'
+        do:
+          - Still_More
+
+  Still_More:
+    action: core.noop
+    next:
+      - when: <% ctx().index < (len(ctx().vcenters) - 1) %>
+        publish:
+          - html_response: <% ctx().html_response + ctx().html_result %>
+          - response: <% ctx().response.append(ctx().result) %>
+          - index: <% ctx().index + 1 %>
+        do:
+          - Ping_Vcenter
+      - when: <% ctx().index >= (len(ctx().vcenters) - 1) %>
+        publish:
+          - html_response: <% ctx().html_response + ctx().html_result %>
+          - response: <% ctx().response.append(ctx().result) %>
+          - html_tag: <% ctx().start_html + ctx().html_response + ctx().end_html %>
+        do: 
+          - Send_Email
+
+  Send_Email:
+    action: core.sendmail
+    input:
+      from: SiM.Automation@ethan.com.au
+      to: <% ctx().email_to %>
+      subject: SiM - CCB vCenter - Status
+      body: "<% ctx().html_tag %>"
+      send_empty_body: false
+    next:
+      - when: <% failed() %>
+        do: fail
+      - when: <% succeeded() %>
+        do:
+          - End
+
+  End:
+    action: core.noop

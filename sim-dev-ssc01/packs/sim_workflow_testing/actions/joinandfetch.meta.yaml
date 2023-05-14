@@ -1,0 +1,14 @@
+pack: sim_workflow_testing
+enabled: true
+runner_type: orquesta
+name: joinandfetch
+entry_point: workflows/joinandfetch.yaml
+description: Join jsons and run jinja
+parameters:
+  json1:
+    type: object
+    default: "{}"
+  json2:
+    type: object
+    description: json 2
+    default: "{}"

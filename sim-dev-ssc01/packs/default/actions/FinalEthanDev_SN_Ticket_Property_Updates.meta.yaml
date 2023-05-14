@@ -1,0 +1,15 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: FinalEthanDev_SN_Ticket_Property_Updates
+entry_point: workflows/EthanDev SN Ticket Property updates.yaml
+description: Workflow to change properties of SN tickets
+parameters:
+  Ticket_IDs:
+    description: list of ticket IDs
+    type: array
+    required: true
+  Property:
+    type: object
+    description: The properties to be allotted
+    required: true

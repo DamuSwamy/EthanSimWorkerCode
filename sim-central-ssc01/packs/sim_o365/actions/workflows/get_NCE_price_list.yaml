@@ -1,0 +1,37 @@
+version: 1.0
+tasks:
+  # [241, 52]
+  get_creds_from_passwordsafe:
+    action: core.noop
+    next:
+      - do:
+          - get_token
+        publish:
+          - client_id: 3a3b1e72-3599-4394-a9f8-d30053c4acc4
+          - client_secret: .F2XKCYu.2_pGlptw8j662XO1rT.tgzsu2
+          - tenant_id: d0aaafc0-4f56-478a-b986-fd9eb70046d6
+  # [241, 161]
+  get_token:
+    action: core.http
+    next:
+      - do:
+          - get_pricelist
+        publish:
+          - auth_token: <% result().body. access_token %>
+    input:
+      url: "https://login.microsoftonline.com/<% ctx().tenant_id %> /oauth2/token"
+      body: client_id=<% ctx().client_id %>&resource=https%3A%2F%2Fgraph.windows.net&client_secret=<% ctx().client_secret %>&grant_type=client_credentials
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+        resource: "https://api.partner.microsoft.com"
+      method: GET
+  # [241, 274]
+  get_pricelist:
+    action: core.http
+    input:
+      url: "https://api.partner.microsoft.com/v1.0/sales/pricesheets(Market='AU',PricesheetView='updatedlicensebased')/$value?timeline=history&month=202202"
+      method: GET
+      headers:
+        Authorization: Bearer <% ctx().auth_token %>
+        Accept-Encoding: deflate
+        Host: api.partner.microsoft.com

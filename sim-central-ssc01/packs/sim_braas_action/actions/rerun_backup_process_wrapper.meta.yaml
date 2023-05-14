@@ -1,0 +1,22 @@
+pack: sim_braas_action
+enabled: true
+runner_type: orquesta
+name: rerun_backup_process_wrapper
+entry_point: workflows/rerun_backup_process_wrapper.yaml
+parameters:
+  failure_payload:
+    type: array
+    items:
+      type: object
+    description: Failure Backup list
+    required: true
+  ignore_list:
+    type: array
+    description: Backups to be ignored from rerunning
+    required: false
+    default: []
+  remediation_list:
+    type: array
+    description: Reran jobs for the clients to be ignored in next check to avoid infinite loop
+    required: false
+    default: []

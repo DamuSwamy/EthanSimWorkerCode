@@ -1,0 +1,14 @@
+---
+  ssl_verify: false
+
+  vsphere:
+    default:
+      host: 192.168.0.1
+      port: 443
+      user: Admin
+      passwd: password
+
+  sensors:
+    taskinfo:
+      tasknum: 5
+      vsphere: default

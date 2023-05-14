@@ -1,0 +1,133 @@
+---
+url: "https://netdb.essist.com.au/api/v1/cpe"
+auth_token: "0ab414e6487e35477157f38640f58e8ae6a0df89"
+compliance:
+  - check_name: Enable aaa new model
+    regex_to_match: (?<!\! )aaa new-model.*
+    look_for_match_yes_no: yes
+  - check_name: Enable aaa authentication login
+    regex_to_match: (?<!\! )aaa authentication login.*
+    look_for_match_yes_no: yes
+  - check_name: Enable aaa authentication enable default
+    regex_to_match: (?<!\! )aaa authentication enable default.*
+    look_for_match_yes_no: yes
+  - check_name: Set login authentication for line con 0
+    regex_to_match: (?<!\! )login authentication for line con 0.*
+    look_for_match_yes_no: yes
+  - check_name: Set login authentication for line tty
+    regex_to_match: (?<!\! )login authentication for line tty.*
+    look_for_match_yes_no: yes
+  - check_name: Set login authentication for line vty
+    regex_to_match: (?<!\!)login authentication for line vty.*
+    look_for_match_yes_no: yes
+  - check_name: Disable ip http server
+    regex_to_match: (?<!\! )no ip http server.*
+    look_for_match_yes_no: yes
+  - check_name: Disable ip http secure-server
+    regex_to_match: (?<!\! )no ip http secure-server.*
+    look_for_match_yes_no: yes
+  - check_name: Privilege level check for Fallback user
+    regex_to_match: (?<!\! )username (.+) privilege 15 secret.*
+    look_for_match_yes_no: yes
+    lookup_value_count: 1
+  - check_name: Set transport input ssh for line vty connections
+    regex_to_match: (?<!\! )line vty[\s\S]+?transport input ssh.*
+    look_for_match_yes_no: yes
+  - check_name: SSH Timeout Value Check
+    regex_to_match: (?<!\! )ip ssh time-out (\d+).*
+    look_for_match_yes_no: yes
+  - check_name: Enable Password Encryption
+    regex_to_match: (?<!\! )service password-encryption.*
+    look_for_match_yes_no: yes
+  - check_name: Set no exec for line aux
+    regex_to_match: (?<!\! )line aux[\s\S]?[\s\S]+?(?<=no-exec)[\s\S]+?line(.+)$
+    look_for_match_yes_no: yes
+  - check_name: Set access-class for use with line vty connections
+    regex_to_match: (?<!\! )line vty[\s\S]?[\s\S]+?(?<=access-class)[\s\S]+?line(.+)$
+    look_for_match_yes_no: yes
+  - check_name: Create access-list for use with line vty connections
+    regex_to_match: (?<!\! ) 
+    look_for_match_yes_no: yes
+  - check_name: Set exec-timeout to less than or equal to 10 minutes line console 0
+    regex_to_match: (?<!\! )line con[\s\S]?[\s\S]+?(?<=exec-timeout)[\s\S]+?line(.+)$
+    look_for_match_yes_no: yes
+  - check_name: Set exec-timeout to less than or equal to 10 minutes line vty 0
+    regex_to_match: (?<!\! )line vty[\s\S]?[\s\S]+?(?<=exec-timeout)[\s\S]+?line(.+)$
+    look_for_match_yes_no: yes
+  - check_name: Set exec-timeout to less than or equal to 10 minutes line aux 0
+    regex_to_match: (?<!\! )line aux[\s\S]?[\s\S]+?(?<=exec-timeout)[\s\S]+?line(.+)$
+    look_for_match_yes_no: yes
+  - check_name: Set transport input none for line aux 
+    regex_to_match: (?<!\! )line aux[\s\S]?[\s\S]+?(?<=transport input none)[\s\S]+?line(.+)$
+    look_for_match_yes_no: yes
+  - check_name: Set the banner-text for banner exec
+    regex_to_match: (?<!\! )banner exec.*
+    look_for_match_yes_no: yes
+  - check_name: Set the banner-text for banner login
+    regex_to_match: (?<!\! )banner login.*
+    look_for_match_yes_no: yes
+  - check_name: Set the banner-text for banner motd
+    regex_to_match: (?<!\! )banner motd.*
+    look_for_match_yes_no: yes
+  - check_name: Set password for enable secret
+    regex_to_match: (?<!\! )enable secret.*
+    look_for_match_yes_no: yes
+  - check_name: Enable password service-encryption
+    regex_to_match: (?<!\! )password service-encryption.*
+    look_for_match_yes_no: yes
+  - check_name: Enable username secret for all local users
+    regex_to_match: (?<!\! )username .+ privilege 15 (.+)
+    look_for_match_yes_no: yes
+    lookup_value: secret
+  - check_name: Set the hostname
+    regex_to_match: (?<!\! )hostname .*
+    look_for_match_yes_no: yes
+  - check_name: Set the ip domain-name
+    regex_to_match: (?<!\! )ip domain name .*
+    look_for_match_yes_no: yes
+  - check_name: Running the secure version of SSH
+    regex_to_match: (?<!\! )ip ssh version 2.*
+    look_for_match_yes_no: yes
+  - check_name: SSH Timeout
+    regex_to_match: (?<!\! )ip ssh timeout.*
+    look_for_match_yes_no: yes
+  - check_name: SSH Authentication Retries
+    regex_to_match: (?<!\! )ip ssh authentication-retries.*
+    look_for_match_yes_no: yes
+  - check_name: Audit Loggin for Login Failures and Success
+    regex_to_match: (?<!\! )login on-success log[\s\S]+(?:(?<!\!)login on-failure log)
+    look_for_match_yes_no: yes
+  - check_name: Enable system message logging to a local buffe
+    regex_to_match: (?<!\! )logging buffered.*
+    look_for_match_yes_no: yes
+  - check_name: Logging critical logs to device console
+    regex_to_match: (?<!\! )logging console critical.*
+    look_for_match_yes_no: yes
+  - check_name: Log system messages and debug output to a remote host
+    regex_to_match: (?<!\! )logging host .*
+    look_for_match_yes_no: yes
+  - check_name: Limit messages logged to the syslog servers based on severity level informational
+    regex_to_match: (?<!\! )logging trap informational.*
+    look_for_match_yes_no: yes
+  - check_name: Apply a time stamp to debugging messages or system logging messages
+    regex_to_match: (?<!\! )service timestamps debug datetime msec.*
+    look_for_match_yes_no: yes
+  - check_name: Bind logging to Loopback Interface
+    regex_to_match: (?<!\! )logging source-interface Loopback\d+.*
+    look_for_match_yes_no: yes
+  - check_name: Single Loopback Interface Check
+    regex_to_match: (?<!\! )interface Loopback.*
+    look_for_match_yes_no: yes
+    lookup_value_count: 1
+  - check_name: Set an IP for the NTP server
+    regex_to_match: (?<!\! )ntp server.*
+    look_for_match_yes_no: yes
+  - check_name: Force AAA to use the IP address of a specified interface for all outgoing AAA packets
+    regex_to_match: (?<!\! )ip radius source-interface.*
+    look_for_match_yes_no: yes
+  - check_name: Bind the NTP service to the loopback interface.
+    regex_to_match: (?<!\! )ntp server .+ ? source Loopback.*
+    look_for_match_yes_no: yes
+  - check_name: Bind the TFTP client to the loopback interface
+    regex_to_match: (?<!\! )ip tftp source-interface Loopback.*
+    look_for_match_yes_no: yes

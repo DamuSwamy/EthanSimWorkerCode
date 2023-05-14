@@ -1,0 +1,34 @@
+---
+name: azure_blob_upload
+pack: sim_core
+description: |
+    Upload the blob to azure storage
+runner_type: python-script
+entry_point: azure_blob_upload.py
+parameters:
+  storage_account_name:
+    type: string
+    description: The storage account name. refers xxxxxx in https://xxxxxxx.blob.core.windows.net
+    required: true
+    default: stsecprdaelrsv2
+  container_name:
+    type: string
+    description: The container name where the input/output to be stored
+    required: True
+    default: storeuserreports
+  sas_token:
+    type: string
+    description: |
+        shared access signature (SAS) token
+    default: "{{ config_context.azure_blob_sas }}"
+    secret: false
+    required: false
+  data:
+    type: string
+    description: The data to be added to the blob file
+    required: True
+  file_name:
+    type: string
+    description: The data to be added to the blob file
+    required: True
+    default: users.csv

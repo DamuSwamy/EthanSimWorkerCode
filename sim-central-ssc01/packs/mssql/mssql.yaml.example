@@ -1,0 +1,18 @@
+---
+default: employees
+
+connections:
+  employees:
+    server: "prod-sql"
+    user: "corp-domain\\service-user"
+    password: "service-password"
+  finance:
+    server: "prod-sql"
+    database: "employees"
+    user: "corp-domain\\finance-user"
+    password: "top-secret-password"
+
+output_csv:
+  file_prefix: "mssql-query"
+  file_suffix: ".csv"
+  directory: null

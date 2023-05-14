@@ -1,0 +1,82 @@
+version: 1.0
+
+vars:
+  - next_action: {}
+
+output:
+  - data: <% ctx().next_action %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - GET_Backup_Report
+
+  GET_Backup_Report:
+    action: sim_braas.DPA_daily_backup_report
+    input:
+      report_period: 300
+    next:
+      - when: <% len(result().output.debug_failures) > 0 %>
+        publish:
+          - failures: <% switch(isList(result().output.debug_failures) => result().output.debug_failures, true => []) %>
+        do:
+          - Transform_Data
+      - when: <% not len(result().output.debug_failures) > 0 %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  Transform_Data:
+    action: sim_braas.transform_backup_data
+    input:
+      backup_failure_array: <% ctx().failures %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - next_action: <% switch(isDict(result().result) => result().result, true => {}) %>
+        do:
+          - Query_Net_Customers
+          - Store_Ignore_List
+      - when: <% failed() %>
+        do: fail
+
+  Query_Net_Customers:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      connection: cloudmanagement
+      query: select Name, IaaSCode, ServiceNowAccountID, SelcommAccountNumber FROM NetworkCustomer WHERE IaaSCode != ''
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - customers: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Create_New_Ticket
+          - Rerun_Backup_Jobs
+      - when: <% failed() %>
+        do: fail
+
+  Create_New_Ticket:
+    action: sim_braas.create_incident_for_backup_failure_2
+    input:
+      input_backup_failure_object: <% ctx().next_action.remediation %>
+      input_snow_customer_object: <% ctx().customers %>
+     next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  Rerun_Backup_Jobs:
+    action: core.noop
+
+  Store_Ignore_List:
+    action: core.noop
+
+  End:
+    action: core.noop

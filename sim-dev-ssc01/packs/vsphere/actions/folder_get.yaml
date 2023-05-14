@@ -1,0 +1,17 @@
+---
+  name: folder_get
+  runner_type: python-script
+  description: Retrieve the MOID of the of the folder
+  entry_point: folder_get.py
+  parameters:
+    get_all_folders:
+      type: boolean
+      description: Gets all folders from the environment
+      required: false
+      default: false
+      position: 0
+    vsphere:
+      type: string
+      description: Pre-configured vsphere endpoint
+      required: false
+      position: 1

@@ -1,0 +1,31 @@
+version: 1.0
+tasks:
+  # [564, 82]
+  start:
+    action: core.echo
+    input:
+      message: "\"Starting transform\""
+    next:
+      - do:
+          - end
+        publish:
+          - output: "{\"clients\" : [\n{% for agents in ctx().json_data.REPORT.EXPRESSION -%}\n{% set outer_loop = loop %}\n{% if agents.MULTI is iterable and (agents.MULTI is not string and agents.MULTI is not mapping) -%}\n{% for record in agents.MULTI -%}\n{ \"client\":{{record|tojson}} } {{ \", \" if not outer_loop.last or not loop.last else \"\" }}\n{%- endfor %}\n{%- else %}\n{ \"client\":{{agents.MULTI|tojson}}}{{ \", \" if not loop.last else \"\" }}\n{%- endif %}\n{%- endfor %}\n]}"
+  # [563, 262]
+  end:
+    action: core.echo
+    input:
+      message: "\"End transform\""
+    next:
+      - do:
+          - whoknows
+        publish:
+          - test: "{\n{% for client in ctx().output.clients.client |to_json_string -%}\n{{client}}\n{%- endfor %}\n}"
+  # [563, 431]
+  whoknows:
+    action: core.noop
+input:
+  - json_data
+  - jinja_transform
+output:
+  - output_result: <%ctx().output%>
+  - output_test: <%ctx().test%>

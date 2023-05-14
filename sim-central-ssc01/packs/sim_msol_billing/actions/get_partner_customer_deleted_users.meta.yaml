@@ -1,0 +1,30 @@
+pack: sim_msol_billing
+enabled: true
+runner_type: orquesta
+name: get_partner_customer_deleted_users
+entry_point: workflows/get_partner_customer_deleted_users.yaml
+description: Get Partner Customer deleted users from partner connect
+parameters:
+  tenant_id:
+    type: string
+    description: Tenant ID for MSOL Online
+    default: d0aaafc0-4f56-478a-b986-fd9eb70046d6
+    required: true
+    position: 0
+  password_id:
+    type: string
+    default: "27546"
+    required: true
+    position: 1
+  db_connection:
+    type: string
+    description: DB to insert or update the customer subscription
+    default: dev_billing 
+    required: true
+    position: 2
+  batch_size:
+    type: integer
+    description: Number of customers subscription per batch processing
+    default: 10
+    required: false
+    position: 3

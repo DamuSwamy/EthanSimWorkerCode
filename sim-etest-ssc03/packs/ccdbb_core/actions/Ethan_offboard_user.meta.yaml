@@ -1,0 +1,11 @@
+pack: ccdbb_core
+enabled: true
+runner_type: orquesta
+name: Ethan_offboard_user
+entry_point: workflows/Ethan_offboard_user.yaml
+description: Offboard CCDBB user
+parameters:
+  data:
+    type: object
+    description: Input json payload
+    required: true

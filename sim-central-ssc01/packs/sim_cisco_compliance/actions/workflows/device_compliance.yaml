@@ -1,0 +1,33 @@
+---
+version: 1.0
+
+description: Device compliance check process
+
+vars:
+  - device_id: null
+  - device_name: null
+  - device_type: null
+  - process_name: "Device compliance check"
+
+input:
+  - device_object
+  - exclude_list
+  - count
+  - customer_id  
+
+tasks:
+  compliance_check:
+    action: sim_cisco_compliance.perform_compliance_check
+    input:
+      device_id: <% str(ctx(device_object).NetDBDeviceId) %>
+      device_type: <% ctx(device_object).NetDBDeviceType %>
+      exclude_list: <% ctx().exclude_list %>
+      time_stamp: <% (now(offset=>localtz())).format("%Y-%m-%d %H:%M:%S") %> 
+      customer_id: <% ctx(customer_id) %> 
+    next:
+      - when: <% succeeded() or failed() %>
+        publish:
+          - output: <% switch(isDict(result().result) => result().result, true => {}) %>
+output:
+  - result: <% ctx().output %>
+

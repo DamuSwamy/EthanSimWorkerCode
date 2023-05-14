@@ -1,0 +1,103 @@
+version: 1.0
+tasks:
+  # [151, 2]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - task1
+        publish:
+          - i: 0
+          - x: " "
+  # [154, 100]
+  task1:
+    action: sql.query
+    next:
+      - do:
+          - task2
+        publish:
+          - count: <% result().result[0].records %>
+    input:
+      log_level: DEBUG
+      query: select count(*) as records from <%ctx().List[ctx().i]%>
+      connection: productionCloudExtension
+  # [153, 208]
+  task2:
+    action: core.noop
+    next:
+      - do:
+          - task3
+        when: <% ctx().count = 0 %>
+        publish:
+          - attention: true
+      - do:
+          - task4
+        when: <% ctx().count != 0 %>
+  # [36, 325]
+  task3:
+    action: core.noop
+    next:
+      - do:
+          - task5
+  # [332, 316]
+  task4:
+    action: core.noop
+    next:
+      - do:
+          - task5
+  # [161, 453]
+  task5:
+    action: core.echo
+    input:
+      message: "\" <% ctx().count %> \""
+    next:
+      - do:
+          - task10
+        publish:
+          - x: <% concat(ctx().x,ctx().List[ctx().i]," - ",str(ctx().count),"\n") %>
+          - i: <% ctx().i+1 %>
+  # [744, 154]
+  task6:
+    action: core.noop
+    next:
+      - do:
+          - task8
+        when: <% attention = "yes" %>
+      - do:
+          - task7
+        when: <% attention != "yes" %>
+  # [811, 305]
+  task7:
+    action: core.sendmail
+    input:
+      to: supriya.kadam@ethan.com.au
+      subject: update
+      body: "\" <% ctx().count %> \""
+    next:
+      - do:
+          - task9
+  # [567, 303]
+  task8:
+    action: core.sendmail
+    input:
+      to: supriya.kadam@ethan.com.au
+      subject: attention
+      body: some table is null
+    next:
+      - do:
+          - task9
+  # [677, 427]
+  task9:
+    action: core.noop
+  # [535, 71]
+  task10:
+    action: core.noop
+    next:
+      - do:
+          - task1
+        when: <% ctx().i<len(ctx().List) %>
+      - do:
+          - task6
+        when: <% ctx().i >= len(ctx().List) %>
+input:
+  - List

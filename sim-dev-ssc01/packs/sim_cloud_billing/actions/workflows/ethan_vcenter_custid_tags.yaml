@@ -1,0 +1,225 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - cmdb_db_connection
+  - vcenter_id
+  - vcenter
+
+vars:
+  - result: {}
+  - undefined_vms: []
+  - vm_list: []
+
+output:
+  - result: <% ctx().result.get('vm_update', []) %>
+  - processed: <% ctx().result %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - SQL_Select_Billing_VM_Empty_CustID
+
+  SQL_Select_Billing_VM_Empty_CustID:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT ethvmid,vmID FROM iaasVM WHERE invVCServerID='<% ctx().vcenter_id %>' and vmActive='true' and (custidx = '' OR custidx IS NULL OR custidx ='99999')"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_vm_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+          - vms: <% ctx(billing_vm_db_data).select($.vmID) %>
+          - vm_list: "{{ ctx().vms | list }}"
+        do:
+          - SQL_Select_Billing_CustIDs
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Billing_CustIDs:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT custidx, ethvmid, vmID, vmName, vmCustTag, vmCustAnno, dsCustTag, cmdbCustID, cmdbCustShortName FROM IaasVMCustInfo WHERE ethvmid LIKE '<% ctx().vcenter_id %>%'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_custid_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+          - undefined_vms: <% ctx(billing_custid_db_data).where($.custidx != '' and $.custidx = '99999').select($.vmID) %>
+        do:
+          - Check_For_Actions
+      - when: <% failed() %>
+        do: fail
+
+  Check_For_Actions:
+    action: core.noop
+    next:
+      - when: <% len(ctx().vm_list) > 0 or len(ctx().undefined_vms) > 0 %>
+        do:
+          - SQL_Select_CMDB_Customers
+      - when: <% len(ctx().vm_list) = 0 and len(ctx().undefined_vms) = 0 %>
+        publish:
+          - scan_log: <% dict(system_id=>ctx().vcenter_id, system_type=>'vcenter_custid_tags', system_name=>ctx().vcenter, additional_info=>'CUSTID') %>
+        do:
+          - Insert_Scanned_Data
+          - End
+
+  SQL_Select_CMDB_Customers:
+    action: sql.query
+    input:
+      connection: <% ctx().cmdb_db_connection %>
+      query: "SELECT custidx, custid, rtrim(custShortName) as custShortName, custActive FROM cmdbCustomers WHERE custActive = 'true'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - cmdb_cust_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Tags_Needed
+      - when: <% failed() %>
+        do: fail
+
+  Tags_Needed:
+    action: core.noop
+    next:
+      - when: <% ctx().vcenter = 'JCUN-TSV-VC01' %>
+        publish:
+          - get_tags: false
+        do:
+          - Get_Vcenter_Raw_Data
+      - when: <% ctx().vcenter != 'JCUN-TSV-VC01' %>
+        publish:
+          - get_tags: true
+        do:
+          - Get_Vcenter_Raw_Data
+
+  Get_Vcenter_Raw_Data:
+    action: sim_vmware2.vcenter_raw_data
+    input:
+      vcenter_id: <% ctx().vcenter_id %>
+      vsphere: <% ctx().vcenter %>
+      get_vms: true
+      get_vm_disks: true
+      get_tags: <% ctx().get_tags %>
+      ids: <% ctx().vm_list + ctx().undefined_vms %>
+      vm_required_field_array: ['_custAnno', '_ethvmid','vmID', 'vmName']
+      vmdisk_required_field_array: ['_ethvmid','_deviceKey', 'vmID', 'vmDatastoreID']
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - raw_vm_output: <% switch(isDict(result().result) => result().result, true => {}) %>
+        do:
+          - Transform_VM_Customer_Data
+      - when: <% failed() %>
+        do: fail
+
+  Transform_VM_Customer_Data:
+    action: sim_cloud_billing.ethan_vcenter_custid_transform
+    input:
+      db_data: <% ctx().cmdb_cust_db_data %>
+      vc_data: <% ctx().raw_vm_output %>
+      vcenter: <% ctx().vcenter %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - trans_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Insert_or_Update_List_Generator
+      - when: <% failed() %>
+        do: fail
+
+  Insert_or_Update_List_Generator:
+    action: sim_cloud_billing.ethan_vcenter_custid_generator
+    input:
+      vcenter_data: <% ctx().trans_data %>
+      custinfo_data: <% ctx().billing_custid_db_data %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - result: <% switch(isDict(result().result) => result().result, true => {}) %>
+          - last_event_date: <% (now(offset=>localtz())).format("%Y-%m-%d %H:%M:%S") %>
+          - scan_log: <% dict(system_id=>ctx().vcenter_id, system_type=>'vcenter_custid_tags', system_name=>ctx().vcenter, num_of_records=>len(ctx().result.update) + len(ctx().result.insert), additional_info=>'CUSTID', last_event_at=>ctx().last_event_date) %>
+        do:
+          - Check_For_Records
+          - Insert_Scanned_Data
+      - when: <% failed() %>
+        do: fail
+
+  Insert_Scanned_Data:
+    action: sql.insert_bulk
+    input:
+      table: "IaaSScanLog"
+      data: <% list(ctx().scan_log) %>
+      connection: <% ctx().billing_db_connection %>
+    next:
+      - when: <% failed() %>
+        do: noop
+
+  Check_For_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().result.update) > 0 %>
+        do:
+          - Update_CustInfo_Records
+      - when: <% len(ctx().result.insert) > 0 %>
+        do:
+          - Insert_CustInfo_Records
+      - when: <% len(ctx().result.vm_update) > 0 %>
+        do:
+          - Update_VM_CustIdx_Records
+      - when: <% len(ctx().result.update) = 0 and len(ctx().result.vm_update) = 0 and len(ctx().result.insert) = 0 %>
+        do: End
+
+  Update_VM_CustIdx_Records:
+    action: sql.update_bulk
+    input:
+      connection: <% ctx().billing_db_connection %>
+      table: "iaasVM"
+      data: <% ctx().result.vm_update %>
+      update_values: ['custidx']
+      column_filter1: "ethvmid"
+    next:
+      - when: <% succeeded() %>
+        do: VM_Update_End
+      - when: <% failed() %>
+        do: fail
+
+  Insert_CustInfo_Records:
+    action: sql.insert_bulk
+    input:
+      connection: <% ctx().billing_db_connection %>
+      table: "IaasVMCustInfo"
+      data: <% ctx().result.insert %>
+    next:
+      - when: <% succeeded() %>
+        do: CustID_Insert_End
+      - when: <% failed() %>
+        do: fail
+
+  Update_CustInfo_Records:
+    action: sql.update_bulk
+    input:
+      connection: <% ctx().billing_db_connection %>
+      table: "IaasVMCustInfo"
+      data: <% ctx().result.update %>
+      update_values: ['custidx', 'vmName', 'vmCustTag', 'vmCustAnno', 'dsCustTag', 'cmdbCustID', 'cmdbCustShortName']
+      column_filter1: "ethvmid"
+    next:
+      - when: <% succeeded() %>
+        do: CustID_Update_End
+      - when: <% failed() %>
+        do: fail
+
+  CustID_Insert_End:
+    action: core.noop
+
+  CustID_Update_End:
+    action: core.noop
+
+  VM_Update_End:
+    action: core.noop
+
+  End: 
+    action: core.noop

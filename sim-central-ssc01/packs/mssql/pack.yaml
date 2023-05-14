@@ -1,0 +1,15 @@
+---
+ref: mssql
+name: mssql
+description: st2 content pack containing Microsoft SQL Server integrations
+keywords:
+  - mssql
+  - sql
+  - microsoft
+  - sql server
+  - database
+version: 1.0.0
+python_versions:
+  - "3"
+author: codyaray
+email: talktome@codyaray.com

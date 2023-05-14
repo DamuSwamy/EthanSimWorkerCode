@@ -1,0 +1,29 @@
+---
+name: get_activities
+runner_type: python-script
+description: Retrieves the activities from the Braas server. 
+enabled: true
+entry_point: get_activities.py
+parameters:
+  braas:
+    type: "string"
+    description: Pre-Configured braas connection details
+    required: true
+  duration:
+    type: "integer"
+    description: duration of activities
+    required: false
+    default: 0
+  size:
+    type: "integer"
+    description: page size 
+    required: false
+    default: 20
+  braas_id:
+    type: "string"
+    description: Braas server id for activities identification
+    required: false
+  access_token:
+    type: "string"
+    description: Access token if you have the token already else blank
+    required: false

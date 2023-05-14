@@ -1,0 +1,7 @@
+---
+name: greet
+pack: sim_core
+description: "Greet StackStorm"
+action_ref: "sim_core.greet"
+formats:
+  - "greet {{greeting}}"

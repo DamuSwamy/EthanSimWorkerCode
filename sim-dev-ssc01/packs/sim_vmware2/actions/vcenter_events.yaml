@@ -1,0 +1,61 @@
+---
+name: vcenter_events
+runner_type: python-script
+description: Retrieves the events on a vCenter Server system. 
+enabled: true
+entry_point: vcenter_events.py
+parameters:
+  vsphere:
+    type: "string"
+    description: Pre-Configured vsphere connection details
+    required: true
+  vcenter_id:
+    type: "string"
+    description: Custom vCenter ID from ethan
+    required: true
+  event_period:
+    type: integer
+    description: Events to be retrieved from today to last n days
+    required: false
+    default: 5
+  event_type_filters:
+    type: array
+    description: List of events to be filtered for the processing
+    required: false
+    default: 
+      - VmClonedEvent
+      - VmCreatedEvent
+      - VmDeployedEvent
+      - VmRegisteredEvent
+      - VmConnectedEvent
+      - VmDiscoveredEvent
+      - com.vmware.vc.vm.SrcMigratedEvent
+      - com.vmware.vc.vm.DstVmMigratedEvent
+      - com.vmware.vc.vm.DstVmClonedEvent
+      - VmStartingEvent
+      - VmPoweredOnEvent
+      - VmPoweredOffEvent
+      - com.vmware.vc.HA.VmUnprotectedEvent
+      - VmReconfiguredEvent
+      - VmRemovedEvent
+      - VmRenamedEvent
+  vm_ignore_list: 
+    type: array
+    description: List of events to be ignored based on vm names
+    required: false
+    default: ['ave-pro-', 'ave-web-', 'ave-gs-', 'ave-lec-', 'ave-bot-', 'ave-hul-', 'ave-vet-', 'ave-ric-', 'ave-ver-', 'ave-lec.', 'egrp-vb1-avp', 'egrp-vb4-avp', 'egrp-vb3-avp', 'Z-VRA']
+  creation_events: 
+    type: array
+    description: List of events which will be triggered as part of the creation
+    required: false
+    default: ['VmClonedEvent', 'VmCreatedEvent', 'VmDeployedEvent', 'VmRegisteredEvent', 'VmConnectedEvent', 'VmDiscoveredEvent', 'com.vmware.vc.vm.SrcMigratedEvent', 'com.vmware.vc.vm.DstVmMigratedEvent', 'com.vmware.vc.vm.DstVmClonedEvent', 'VmRemovedEvent']
+  update_events: 
+    type: array
+    description: List of update events
+    required: false
+    default: ['VmStartingEvent', 'VmPoweredOnEvent', 'VmPoweredOffEvent', 'VmUnprotectedEvent', 'VmReconfiguredEvent', 'VmRenamedEvent', 'VmPoweredOffEvent']
+  exclude_user_events:
+    type: array
+    description: Gets all RPs from the environment
+    required: false
+    default: []

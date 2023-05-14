@@ -1,0 +1,123 @@
+---
+version: 1.0
+
+description: Retrieve the user details for the given first and last name
+
+# declaration of variables
+vars:
+  - result: []
+  - user_table_name: EthanCustomerUserAccounts
+
+# automation inputs 
+input: 
+  - first_name
+  - last_name
+  - ticket_id
+  - db_connection
+  - attach_to_ticket
+  - file_path
+
+# automation outputs
+output:
+  - messages: "The requested action completed successfully"
+  
+# automation tasks 
+tasks:
+  # [192, 51]
+  start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - last_name: "{%- set last_name = ctx().last_name.split(' ') -%}{%- if last_name|length > 1 -%}{%- set last_name = last_name[0]+'%'+last_name[1] -%}{%- else -%}{% set last_name = ctx().last_name -%}{%- endif -%}{{ last_name }}"
+          - first_name: "{%- set first_name = ctx().first_name.split(' ') -%}{%- if first_name|length > 1 -%}{%- set first_name = first_name[0]+'%'+first_name[1] -%}{%- else -%}{% set first_name = ctx().first_name -%}{%- endif -%}{{ first_name }}"
+        do:
+          - fetch_user_details
+
+  # [92, 251]
+  fetch_user_details:
+    action: sql.query
+    input:
+      connection: <% ctx().db_connection %>
+      query: "SELECT * FROM <% ctx().user_table_name %> WHERE FirstName like '%<% ctx().first_name %>%' and LastName like '%<% ctx().last_name %>%' and Falsepositive IS NULL"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - user_list: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - check_user_availablity
+      - when: <% failed() %>
+        do: fail
+  
+  # [242, 401]
+  check_user_availablity:
+    action: core.noop
+    next:
+      - when: <% len(ctx().user_list) > 0 %>
+        do:
+          - generate_csv_file
+      - when: <% len(ctx().user_list) = 0 %>
+        do:
+          - user_not_found
+
+  # [192, 601]
+  user_not_found:
+    action: core.noop
+
+  # [692, 551]
+  generate_csv_file:
+    action: sim_core.create_csv_file
+    input:
+      file_path: <% ctx().file_path %>
+      json_data: <% ctx().user_list %>
+    next:
+      - when: <% succeeded() and ctx().attach_to_ticket = true %>
+        do:
+          - attach_to_ticket
+      - when: <% succeeded() and ctx().attach_to_ticket != true %>
+        do:
+          - echo_data
+      - when: <% failed() %>
+        do: fail
+
+  # [642, 251]
+  attach_to_ticket:
+    action: sim_itsm2.upload_attachment2
+    input:
+      table: sn_customerservice_general_case
+      number: <% ctx().ticket_id %>
+      file: <% ctx().file_path %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - add_comment
+      - when: <% failed() %>
+        do: fail
+
+  # [892, 401]
+  echo_data:
+    action: core.local 
+    input:
+      cmd: "cat <% ctx().file_path %>"
+    next:
+      - when: <% succeeded() %>
+        do:
+          - end
+      - when: <% failed() %>
+        do: noop
+
+  # [542, 401]
+  end:
+    action: core.noop
+  # [904, 230]
+  add_comment:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticket_id %>
+      payload:
+        comments: Sim Automation has attached a csv file having list of accounts present in customer AD domains for this user, our engineer will offboard the user from each of mentioned domains in file as per standard operating procedure
+      table: sn_customerservice_general_case
+    next:
+      - do:
+          - echo_data

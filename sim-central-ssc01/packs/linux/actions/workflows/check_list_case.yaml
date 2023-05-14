@@ -1,0 +1,17 @@
+version: 1.0
+tasks:
+  # [341, 105]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - end
+        publish:
+          - new_list: <% ctx().remediation_list.select($.toUpper()) %>
+  # [344, 314]
+  end:
+    action: core.noop
+input:
+  - remediation_list
+output:
+  - new_list: <% ctx().new_list %>

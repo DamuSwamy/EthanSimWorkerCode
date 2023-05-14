@@ -1,0 +1,51 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_cloud_billing_vcenter_wrapper
+entry_point: workflows/ethan_cloud_billing_vcenter_wrapper.yaml
+description: Synchronize the data between ethan database and vcenter data
+parameters:
+  billing_db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: cloud_billing
+  cloud_db_connection: 
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: true
+    default: cloudmanagement
+  cmdb_db_connection:
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: true
+    default: cmdb_Ethoria
+  workflow_name:
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: true
+    enum:
+      - ethan_vcenter_virtual_machines
+      - ethan_vcenter_custid_tags
+      - ethan_vcenter_datastores
+      - ethan_vcenter_active_vspheres
+      - ethan_vcenter_vm_creation_date
+      - ethan_vcenter_vmdisk_disktier_sync
+  proxy_vcenters:
+    type: array
+    description: List of vcenter which are client specific and connecting through worker node
+    required: false
+    default:
+      - name: JCUN-TSV-VC01
+        cust_id: 128
+        cust_anno: JCUN        
+      - name: JCUN-VCENTER
+        cust_id: 128
+        cust_anno: JCUN
+  ignore_list:
+    type: array
+    description: List of vcenter to be ignored 
+    required: false
+    default: 
+      - FS1-VC1
+      - FS2-VC2

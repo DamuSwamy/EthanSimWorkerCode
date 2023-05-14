@@ -1,0 +1,6 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: DPA_close_success_tickets
+entry_point: workflows/DPA_close_success_tickets.yaml
+description: Closes the previous days tickets which have now executed successfully

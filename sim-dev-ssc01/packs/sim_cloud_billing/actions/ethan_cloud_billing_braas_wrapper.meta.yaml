@@ -1,0 +1,52 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_cloud_billing_braas_wrapper
+entry_point: workflows/ethan_cloud_billing_braas_wrapper.yaml
+description: Ethan BRaaS Wrapper
+parameters:
+  billing_db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: dev_billing
+    position: 0
+  cloud_db_connection:
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: true
+    default: dev_cloudmanagement
+    position: 1
+  workflow_name:
+    type: string
+    description: Workflow name to trigger
+    required: true
+    position: 2
+    enum:
+      - ethan_braas_get_activities
+      - ethan_braas_scan_live
+  braas_servers:
+    type: array
+    description: List of zvm sites to be ignored
+    required: true
+    position: 3
+    default: 
+      - ric.braas.ethoria.services
+      - bot.braas.ethoria.services
+      - hak.braas.ethoria.services
+      - vet.braas.ethoria.services
+      - lau.braas.ethoria.services
+      - lec.braas.ethoria.services
+      - cors-gbs-ave01.braas.ethoria.services
+      - sims-vdc-ave01.braas.ethoria.services
+      - grcl-gbs-ave01.braas.ethoria.services
+      - hul.braas.ethoria.services
+      - ver.braas.ethoria.services
+      - egrp-gbs-ave01.braas.ethoria.services
+  ignore_braas_servers:
+    type: array
+    description: List of zvm sites to be ignored
+    required: false
+    position: 4
+    default: 
+      - hul.braas.ethoria.services

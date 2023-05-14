@@ -1,0 +1,11 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: Test_Craig
+entry_point: workflows/Test_Craig.yaml
+description: Testing with Craig
+parameters:
+  name:
+    type: string
+    description: Input the name here
+    required: true

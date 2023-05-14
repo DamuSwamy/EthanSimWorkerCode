@@ -1,0 +1,10 @@
+pack: melair_core
+enabled: true
+runner_type: orquesta
+name: onboard_user
+entry_point: workflows/onboard_user.yaml
+description: Onboard a user
+parameters:
+  data:
+    type: object
+    description: input json payload

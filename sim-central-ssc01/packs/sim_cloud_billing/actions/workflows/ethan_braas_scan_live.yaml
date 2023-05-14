@@ -1,0 +1,218 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - cloud_db_connection
+  - braas_server
+
+vars:
+  - result: []
+
+output:
+  - data: "Inserted <% len(ctx().result) %> records"
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Get_AccessToken
+
+  Get_AccessToken:
+    action: sim_braas_core.get_access_token
+    input:
+      braas: <% ctx().braas_server %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - access_token: <% result().result %>
+        do:
+          - Get_Clients
+      - when: <% failed() %>
+        do: fail
+
+  Get_Clients:
+    action: sim_braas_core.get_clients
+    input:
+      braas: <% ctx().braas_server %>
+      access_token: <% ctx().access_token %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - clients: <% result().result %>
+          - instanceUuids: <% ctx(clients).where($.containsKey('instanceUuid') and $.instanceUuid).select($.instanceUuid) %>
+          - persistentIDs: "{{ ctx().instanceUuids | unique | list | join(\"','\") }}"
+        do:
+          - Get_Schedules
+          - Insert_Client_Records
+      - when: <% failed() %>
+        do: fail
+
+  Insert_Client_Records:
+    action: sql.insert_bulk
+    input:
+      table: "Braas_Clients"
+      data: <% ctx().clients %>
+      connection: <% ctx().cloud_db_connection %>
+    next:
+      - when: <% failed() %>
+        do: noop
+
+  Get_Schedules:
+    action: sim_braas_core.get_schedules
+    input:
+      braas: <% ctx().braas_server %>
+      access_token: <% ctx().access_token %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - schedules: <% result().result %>
+        do:
+          - Insert_Schedule_Records
+          - Get_Retentions
+      - when: <% failed() %>
+        do: fail
+
+  Insert_Schedule_Records:
+    action: sql.insert_bulk
+    input:
+      table: "Braas_Schedules"
+      data: <% ctx().schedules %>
+      connection: <% ctx().cloud_db_connection %>
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  Get_Retentions:
+    action: sim_braas_core.get_retentions
+    input:
+      braas: <% ctx().braas_server %>
+      access_token: <% ctx().access_token %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - retentions: <% result().result %>
+        do:
+          - Insert_Retention_Records
+          - Get_Groups
+      - when: <% failed() %>
+        do: fail
+
+  Insert_Retention_Records:
+    action: sql.insert_bulk
+    input:
+      table: "Braas_Retentions"
+      data: <% ctx().retentions %>
+      connection: <% ctx().cloud_db_connection %>
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  Get_Groups:
+    action: sim_braas_core.get_groups
+    input:
+      braas: <% ctx().braas_server %>
+      access_token: <% ctx().access_token %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - groups: <% result().result %>
+          - group_id: <% ctx(groups).select($.gid) %>
+        do:
+          - Get_Group_Members
+          - Insert_Group_Records
+      - when: <% failed() %>
+        do: fail
+
+  Insert_Group_Records:
+    action: sql.insert_bulk
+    input:
+      table: "Braas_Groups"
+      data: <% ctx().groups %>
+      connection: <% ctx().cloud_db_connection %>
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  Get_Group_Members:
+    action: sim_braas_core.get_group_members
+    input:
+      braas: <% ctx().braas_server %>
+      access_token: <% ctx().access_token %>
+      group_ids: <% ctx().group_id %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - members: <% result().result %>
+        do:
+          - SQL_Select_Billing_VM
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Billing_VM:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT vmPersistentID, ethvmID FROM iaasVM WHERE vmActive = '1' AND vmPersistentID IN ('<% ctx().persistentIDs %>')"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - active_vms: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Enhance_Data
+      - when: <% failed() %>
+        do: fail
+
+  Enhance_Data:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - result: "{%- set accumulator = namespace(scheduleId='', groupName='', retentionId='', persistantID='') -%}{%- set resourceArr = [] -%}{%- for mem in ctx().members -%}{%- set member_obj = {'managedID': '', 'clientType': '', 'persistantID': '', 'vmName': '', 'vmIP': '', 'vmDatacenter': '', 'RetentionName': '', 'RetentionType': '', 'RetentionDuration': '0', 'RetentionUnit': '','GroupMethod': '', 'GroupName': '', 'RetentionID': '', 'ScheduleRecurrence': '', 'ScheduleName': '', 'ScheduleID': '', 'ScheduleStart': '', 'ScheduleDuration': '0', 'ScheduleNextRun': '', 'ScheduleDaily': '', 'ScheduleWeekly': '', 'ScheduleMonthly': ''} %}{{ member_obj.update({'client': mem['name']}) or ''}}{{ member_obj.update({'braascid': mem['cid']}) or ''}}{{ member_obj.update({'GroupID': mem['gid']}) or ''}}{{ member_obj.update({'GroupDomain': mem['domain']}) or ''}}{%- for group in ctx().groups if group['gid']|string == mem['gid']|string -%}{%- set accumulator.scheduleId = group['scheduleId'] -%}{%- set accumulator.retentionId = group['retentionId'] -%}{%- set accumulator.groupName = group['name'] -%}{{ member_obj.update({'GroupMethod': group['rule']}) or ''}}{{ member_obj.update({'GroupName': group['name']}) or ''}}{{ member_obj.update({'RetentionID': accumulator.retentionId}) or ''}}{%- endfor -%}{%- for schedule in ctx().schedules if schedule['id']|string == accumulator.scheduleId|string -%}{%- set recurrenceEnum = schedule['recurrenceEnum'] -%}{%- if recurrenceEnum == 'Weekly' -%}{{ member_obj.update({'ScheduleRecurrence': 'Weekly: ' + schedule['daysOfWeek']|join(' ')}) or ''}}{%- elif recurrenceEnum == 'Daily' -%}{{ member_obj.update({'ScheduleRecurrence': 'Daily: ' + schedule['timesOfDay']| join(' ')}) or '' }}{%- else -%}{{ member_obj.update({'ScheduleRecurrence': recurrenceEnum}) or ''}}{%- endif -%}{{ member_obj.update({'ScheduleName': schedule['name']}) or '' }}{{ member_obj.update({'ScheduleID': schedule['id']}) or '' }}{{ member_obj.update({'ScheduleStart': schedule['startTime']}) or '' }}{{ member_obj.update({'ScheduleDuration': schedule['duration']}) or '' }}{{ member_obj.update({'ScheduleNextRun': schedule['nextRunTime']}) or '' }}{%- endfor -%}{%- for retention in ctx().retentions if retention['id'] == accumulator.retentionId -%}{%- set duration = retention['duration'] -%}{%- if retention['duration'] is not defined or retention['duration'] is none -%}{%- set duration = '0' -%}{%- endif -%}{{ member_obj.update({'RetentionName': retention['name']}) or '' }}{{ member_obj.update({'RetentionType': retention['basicRetentionType']}) or '' }}{{ member_obj.update({'RetentionDuration': duration}) or '' }}{{ member_obj.update({'RetentionUnit': retention['durationUnit']}) or '' }}{%- endfor -%}{%- for client in ctx().clients if client['cid'] == mem['cid'] -%}{{ member_obj.update({'clientType': client['clientType']}) or '' }}{%- if client['instanceUuid'] is defined -%}{%- set accumulator.persistantID = client['instanceUuid'] -%}{{ member_obj.update({'persistantID': accumulator.persistantID}) or '' }}{%- endif -%}{%- if client['vmName'] is defined -%}{{ member_obj.update({'vmName': client['vmName']}) or '' }}{%- endif -%}{%- if client['pagingAddress'] is defined -%}{{ member_obj.update({'vmIP': client['pagingAddress']}) or '' }}{%- endif -%}{%- if client['datacenter'] is defined -%}{{ member_obj.update({'vmDatacenter': client['datacenter']}) or '' }}{%- endif -%}{%- endfor -%}{%- if 'Default' not in accumulator.groupName -%}{%- for vm in ctx().active_vms if vm['vmPersistentID'] == accumulator.persistantID -%}{{ member_obj.update({'managedID': vm['ethvmID']}) or ''}}{%- endfor -%}{%- endif -%}{{ resourceArr.append(member_obj) or '' }}{%- endfor -%}{{ resourceArr | tojson }}"
+          - result: "{{ ctx().result | from_json_string }}"
+        do:
+          - Check_For_Records
+
+  Check_For_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().result) > 0 %>
+        publish:
+          - last_event_date: <% (now(offset=>localtz())).format("%Y-%m-%d %H:%M:%S") %>
+          - scan_log: <% dict(system_id=>0, system_type=>'BRaaS', system_name=>ctx().braas_server, num_of_records=>len(ctx().result), last_event_at=>ctx().last_event_date, additional_info=>'LIVE') %>
+        do:
+          - Insert_Into_BRaaS_Live
+          - Insert_Scanned_Data
+      - when: <% len(ctx().result) = 0 %>
+        publish:
+          - scan_log: <% dict(system_id=>0, system_type=>'BRaaS', system_name=>ctx().braas_server, num_of_records=>len(ctx().result), additional_info=>'LIVE') %>
+        do:
+          - Insert_Scanned_Data
+          - End
+
+  Insert_Into_BRaaS_Live:
+    action: sql.insert_bulk
+    input:
+      table: "Braas_Live"
+      data: <% ctx().result %>
+      connection: <% ctx().cloud_db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  Insert_Scanned_Data:
+    action: sql.insert_bulk
+    input:
+      table: "IaaSScanLog"
+      data: <% list(ctx().scan_log) %>
+      connection: <% ctx().billing_db_connection %>
+    next:
+      - when: <% failed() %>
+        do: noop
+
+  End:
+    action: core.noop

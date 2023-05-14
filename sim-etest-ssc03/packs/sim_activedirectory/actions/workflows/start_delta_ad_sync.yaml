@@ -1,0 +1,48 @@
+version: 1.0
+tasks:
+  # [320, 98]
+  start_delta_ad_sync:
+    action: core.winrm_ps_cmd
+    next:
+      # #629e47
+      - do:
+          - end
+        publish:
+          - task_output: <% task().result %>
+          - task_name: <% task().task_name %>
+          - task_std_output: <% task().result.get('stdout', 'NA') %>
+          - task_std_error: <% task().result.get('stderr', 'NA') %>
+          - task_std_ret_code: <% task().result.get('return_code', -100) %>
+          - task_std_succeeded: <% task().result.get('succeeded', false) %>
+          - task_std_failed: <% task().result.get('failed', true) %>
+          - task_error: <% task().result.get('error', 'NA') %>
+          - task_error_trcbk: <% task().result.get('traceback', 'NA') %>
+    input:
+      transport: <% ctx().transport %>
+      cmd: "$pw = convertto-securestring -AsPlainText -Force -String '<% ctx().password %>'\n$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist \"<% ctx().username %>\",$pw\n$session = new-pssession -computername localhost -credential $cred\nInvoke-Command -Session $Session -ScriptBlock {hostname}\nInvoke-Command -Session $Session -ScriptBlock {Import-Module -Name \"ADSync\"}\nInvoke-Command -Session $Session -ScriptBlock {Start-ADSyncSyncCycle -PolicyType Delta -Verbose}\n Remove-PSSession -Session $Session"
+      host: <% ctx().ad_host %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+      verify_ssl_cert: false
+  # [322, 200]
+  end:
+    action: core.echo
+    input:
+      message: " Task Name: <% ctx().task_name %> \n Exit code: <% ctx().task_output.get('return_code', 'NA') %> \n succeeded: <% ctx().task_output.get('succeeded', 'NA') %> \n Error: <%   ctx().task_output.get('error', 'NA') %>  "
+input:
+  - ad_host
+  - username
+  - password
+  - objectid
+  - transport
+  - verify_ssl_cert
+output:
+  - task_output: <% ctx().task_output %>
+  - task_name: <% ctx().task_name %>
+  - task_std_output: <% ctx().task_std_output %>
+  - task_std_error: <% ctx().task_std_error %>
+  - task_std_ret_code: <% ctx().task_std_ret_code %>
+  - task_std_succeeded: <% ctx().task_std_succeeded %>
+  - task_std_failed: <% ctx().task_std_failed %>
+  - task_error: <% ctx().task_error %>
+  - task_error_trcbk: <% ctx().task_error_trcbk %>

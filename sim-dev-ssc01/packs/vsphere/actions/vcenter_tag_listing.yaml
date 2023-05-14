@@ -1,0 +1,15 @@
+---
+    name: vcenter_tag_listing
+    runner_type: python-script
+    description: Retrieves the information of a tag with the given category and tag
+    enabled: true
+    entry_point: vcenter_tag_listing.py
+    parameters:
+        vsphere:
+            type: "string"
+            description: Pre-Configured vsphere connection details
+            required: true
+        vcenter_id:
+            type: "string"
+            description: Pre-Configured vsphere id from Ethan
+            required: true    

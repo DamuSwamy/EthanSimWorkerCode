@@ -1,0 +1,190 @@
+version: 1.0
+
+input:
+  - tenant_id
+  - password_id
+  - db_connection
+  - batch_size
+
+vars:
+  - startIndex: 0
+  - counter: 1
+  - insert_count: 0
+  - response: {}
+  - partnerconnect_response: []
+  - new_subscribed_skus: None
+  - update_index: 0
+
+output:
+  - subscribed_skus: <% ctx().subscribed_skus %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - current_date: <% now(offset=>localtz()).format("%d") %>
+        do:
+          - Get_AuthToken
+  # [329, 104]
+  Get_AuthToken:
+    action: sim_msol_billing.get_auth_token_v2
+    input:
+      password_id: <% ctx().password_id %>
+      tenant_id: <% ctx().tenant_id %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - auth_token: <% result().output.token %>
+          - current_date: <% now(offset=>localtz()).format("%d") %>
+        do:
+          - Get_PartnerCustomer
+      - when: <% ctx().current_date = "01" %>
+        do:
+          - Archive_Process
+      - when: <% failed() %>
+        do: fail
+
+  # [333, 322]
+  Get_PartnerCustomer:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers"
+      method: GET
+      headers:
+        Content-Type: application/json
+        Authorization: "Bearer <% ctx().auth_token %>"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - customer_list: <% result().body.items %>
+          - total_customers: <% result().body.totalCount %>
+        do:
+          - To_CustomerList_Expected_Format
+      - when: <% failed() %>
+        do: fail
+
+  To_CustomerList_Expected_Format:
+    action: sim_msol_billing.convert_result_to_list
+    input:
+      customers: <% ctx().customer_list %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - formatted_result: <% result().result %>
+        do:
+          - Get_PartnerCustomer_Subscribed_Skus
+      - when: <% failed() %>
+        do: fail
+
+  Get_PartnerCustomer_Subscribed_Skus:
+    action: sim_msol_billing.return_customer_subscribed_skus
+    input:
+      customers: <% ctx().formatted_result %>
+      auth_token: <% ctx().auth_token %>
+      start: <% ctx().startIndex %>
+      end: <% ctx().batch_size %>
+    next:
+      - when: <% succeeded() and ctx().startIndex < ctx().total_customers %>
+        publish: 
+          - output: <% switch(isList(result().result) => result().result, true => []) %>
+          - partnerconnect_response: <% ctx().partnerconnect_response + ctx().output %>
+          - startIndex: <% ctx().batch_size %>
+          - batch_size: <% ctx().batch_size + (ctx().startIndex / ctx().counter) %>
+          - counter: <% ctx().counter + 1 %>
+        do:
+          - Get_PartnerCustomer_Subscribed_Skus
+      - when: <% succeeded() and ctx().startIndex >= ctx().total_customers %>
+        do:
+          - Get_Current_Data_From_DB
+      - when: <% failed() %>
+        do: fail
+
+  Get_Current_Data_From_DB:
+    action: sql.query
+    input:
+      connection: <% ctx().db_connection %>
+      query: "SELECT * FROM PartnerCustomerSubscribedSku"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Insert_And_UpdateList_Generator
+      - when: <% failed() %>
+        do: fail
+
+  Insert_And_UpdateList_Generator:
+    action: sim_msol_billing.insert_and_update_list_generator
+    input:
+      db_data: <% ctx().db_data %>
+      partner_connect_data: <% ctx().partnerconnect_response %>
+      data_type: "SubscribedSkus"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - subscribed_skus: <% result().result %>
+          - new_subscribed_skus: <% ctx().subscribed_skus.insert %>
+          - update_subscribed_skus: <% ctx().subscribed_skus.update %>
+        do:
+          - Check_For_New_Records
+      - when: <% failed() %>
+        do: fail
+
+  Check_For_New_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().new_subscribed_skus) > 0 %>
+        do:
+          - New_PartnerCustomer_Subscribed_Skus
+      - when: <% len(ctx().new_subscribed_skus) <= 0 %>
+        do:
+          - Check_For_Update_Records
+
+  Check_For_Update_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().update_subscribed_skus) > 0 %>
+        do:
+          - Update_PartnerCustomer_Subscribed_Skus
+      - when: <% len(ctx().update_subscribed_skus) <= 0 %>
+        do:
+          - End
+
+  New_PartnerCustomer_Subscribed_Skus:
+    action: sql.insert_bulk
+    input:
+      table: PartnerCustomerSubscribedSku
+      data: <% ctx().new_subscribed_skus %>
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Check_For_Update_Records
+      - when: <% failed() %>
+        do: fail
+
+  Update_PartnerCustomer_Subscribed_Skus:
+    action: sim_msol_billing.update_partner_customer_subscribed_skus
+    input:
+      db_connection: <% ctx().db_connection %>
+      sku_list: <% ctx().update_subscribed_skus %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  Archive_Process:
+    action: sql.query
+    input:
+      connection: <% ctx().db_connection %>
+      query: "INSERT INTO PartnerCustomerSubscribedSku_Archived SELECT [CustomerId], [AvailableUnits], [ActiveUnits], [CapabilityStatus], [ConsumedUnits], [LicenseGroupId],[ProductName], [ServicePlans], [SkuId], [SkuPartNumber], [SuspendedUnits], [TargetType], [TotalUnits], [WarningUnits], (SELECT Billing_Period FROM Bill_Cycle_Status WHERE Cycle_State='In Progress') FROM PartnerCustomerSubscribedSku"
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  End:
+    action: core.noop

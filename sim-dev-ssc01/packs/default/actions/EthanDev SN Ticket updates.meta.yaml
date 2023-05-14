@@ -1,0 +1,19 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: EthanDev SN Ticket updates
+entry_point: workflows/EthanDev SN Ticket updates.yaml
+description: Workflow to change properties of SN tickets
+parameters:
+  Ticket_IDs:
+    description: list of ticket IDs
+    type: array
+    required: true
+  Assignment_Group:
+    type: string
+    description: Assignment group to be alloted
+    required: true
+  Service_Offering:
+    type: string
+    description: The property to be allotted
+    required: true

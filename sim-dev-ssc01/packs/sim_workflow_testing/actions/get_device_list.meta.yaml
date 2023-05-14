@@ -1,0 +1,20 @@
+pack: sim_workflow_testing
+enabled: true
+runner_type: "python-script"
+name: get_device_list
+entry_point: "get_device_list.py"
+description: Get Device List from NetDB
+parameters:
+  customer_id:
+    type: string
+    description: Customer id to get the list of devices under the client
+    required: true
+  auth_token:
+    type: string
+    description: Auth token
+    required: false
+  method:
+    type: string
+    description: "Optional override of the method."
+    required: false
+    default: GET

@@ -1,0 +1,52 @@
+version: 1.0
+tasks:
+  # [191, 0]
+  begin:
+    action: core.noop
+    next:
+      - do:
+          - start
+        publish:
+          - i: 0
+  # [191, 293]
+  change_property:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().first_ticket %>
+      payload:
+        service_offering: DaaS Enhanced
+      table: sn_customerservice_general_case
+    next:
+      - do:
+          - start
+        when: <% ctx().i < ctx().Ticket_IDs.len() %>
+      - do:
+          - output
+        when: <% ctx().i > -1 %>
+  # [13, 397]
+  output:
+    action: core.echo
+    input:
+      message: "\" <% ctx().first_ticket %> is updated \""
+  # [191, 97]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - next_ID
+        publish:
+          - first_ticket: <% ctx().Ticket_IDs[ctx().i] %>
+        when: <
+  # [191, 195]
+  next_ID:
+    action: core.noop
+    next:
+      - do:
+          - change_property
+        publish:
+          - i: <% ctx().i+1 %>
+input:
+  - Ticket_IDs
+output:
+  - ticket: <% ctx().first_ticket %> is updated

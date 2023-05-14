@@ -1,0 +1,12 @@
+pack: sim_braas_action
+enabled: true
+runner_type: orquesta
+name: remediate_report
+entry_point: workflows/remediate_report.yaml
+parameters:
+  report_period:
+    type: "integer"
+    description: Past x hours events to be pulled
+    required: true
+    default: 120
+

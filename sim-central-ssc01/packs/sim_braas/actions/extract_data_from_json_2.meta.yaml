@@ -1,0 +1,13 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: extract_data_from_json_2
+entry_point: workflows/extract_data_from_json_2.yaml
+description: extra data
+parameters:
+  input_json_1:
+    type: object
+    description: input data
+  input_json_2:
+    type: object
+    description: input data

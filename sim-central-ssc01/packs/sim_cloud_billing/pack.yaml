@@ -1,0 +1,22 @@
+---
+ref: sim_cloud_billing
+name: SiM Cloud Billing
+description: VMware processes for vSphere and vCloud
+keywords:
+    - sim
+    - vmware
+    - vsphere
+version: 1.0.0
+python_versions:
+  - "2"
+  - "3"
+dependencies:
+  - core
+  - sim_vmware2
+  - sim_braas_core
+# Name of the pack author.
+author: Accelnomics
+# Email of the pack author.
+email: nandhakumar.arumugam@accelnomics.com
+contributors:
+  - "Nandhakumar <nandhakumar.arumugam@accelnomics.com>"

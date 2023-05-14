@@ -1,0 +1,11 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: debug_transform2
+entry_point: workflows/debug_transform2.yaml
+description: debug
+parameters:
+  jinja_transform:
+    type: string
+  json_data:
+    type: object

@@ -1,0 +1,24 @@
+---
+default: productionCloudExtension
+
+connections:
+  productionCloudExtension:
+    server: "10.232.139.196"
+    user: "svc_SIMAutomation@psql-ethan-ecspprd-ae-1"
+    password: "Au6vs7zt35Uen3M"
+    database: DB-ECSPPRD-CSPExtension
+  finance:
+    server: "prod-sql"
+    database: "employees"
+    user: "corp-domain\\finance-user"
+    password: "top-secret-password"
+  billing:
+    server: "192.168.66.8"
+    database: "billing"
+    user: "billingsvr"
+    password: Pr0visi0n
+
+output_csv:
+  file_prefix: "mssql-query"
+  file_suffix: ".csv"
+  directory: null

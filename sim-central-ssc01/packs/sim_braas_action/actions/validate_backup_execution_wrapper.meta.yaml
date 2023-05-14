@@ -1,0 +1,17 @@
+pack: sim_braas_action
+enabled: true
+runner_type: orquesta
+name: validate_backup_execution_wrapper
+entry_point: workflows/validate_backup_execution_wrapper.yaml
+parameters:
+  braas_list:
+    type: array
+    items:
+      type: object
+    description: Backup server list
+    required: true
+    default: [{"name":"bot.braas.ethoria.services"},{"name":"vet.braas.ethoria.services"},{"name":"lau.braas.ethoria.services"},{"name":"lec.braas.ethoria.services"},{"name":"ric.braas.ethoria.services"},{"name":"hak.braas.ethoria.services"},{"name":"egrp-gbs-ave01.braas.ethoria.services"},{"name":"cors-gbs-ave01.braas.ethoria.services"},{"name":"grcl-gbs-ave01.braas.ethoria.services"},{"name":"kinr-gbs-ave01.braas.ethoria.services"},{"name":"ver.braas.ethoria.services"}]
+  ignore_list:
+    type: array
+    description: Backup servers to be ignored from checking
+    required: false

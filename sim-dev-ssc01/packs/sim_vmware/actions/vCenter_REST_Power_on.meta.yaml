@@ -1,0 +1,17 @@
+pack: sim_vmware
+enabled: true
+runner_type: orquesta
+name: vCenter_REST_Power_on
+entry_point: workflows/vCenter_REST_Power_on.yaml
+description: Power On server in vCenter via Rest Call
+parameters:
+  vCenter_URL:
+    type: string
+    description: vCenter URL address
+    required: true
+    default: vb3-vc3.iaas.ethoria.services
+  vcenter_vmid:
+    type: string
+    description: VMiD of the server from vcenter data.
+    required: true
+    default: 5853

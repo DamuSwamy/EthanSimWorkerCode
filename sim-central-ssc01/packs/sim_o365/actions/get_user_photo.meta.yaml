@@ -1,0 +1,6 @@
+pack: sim_o365
+enabled: true
+runner_type: orquesta
+name: get_user_photo
+entry_point: workflows/get_user_photo.yaml
+description: Get users photo

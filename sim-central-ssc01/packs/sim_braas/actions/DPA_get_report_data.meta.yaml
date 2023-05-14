@@ -1,0 +1,13 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: DPA_get_report_data
+entry_point: workflows/DPA_get_report_data.yaml
+description: collect report data from DPA
+parameters:
+  input_start_date:
+    type: string
+    description: Start Date format 2022-05-10
+  input_finish_date:
+    type: string
+    description: Finish Date format 2022-05-11

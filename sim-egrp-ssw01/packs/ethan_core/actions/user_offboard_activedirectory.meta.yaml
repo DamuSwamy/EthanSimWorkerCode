@@ -1,0 +1,43 @@
+pack: ethan_core
+enabled: true
+runner_type: orquesta
+name: user_offboard_activedirectory
+entry_point: workflows/user_offboard_activedirectory.yaml
+description: Active directory steps for CCDBB user offboarding
+metadata_file: actions/user_offboard_activedirectory.meta.yaml
+parameters:
+  ad_host:
+    type: string
+    description: AD host to connect to
+    required: true
+    default: ec2-35-154-52-226.ap-south-1.compute.amazonaws.com
+  username:
+    type: string
+    description: username
+    required: true
+    default: Administrator
+  password:
+    type: string
+    description: password
+    required: true
+    default: Eth@nGroup12345
+    secret: true
+  display_user:
+    type: string
+    description: Display name of AD User to off_board
+    required: true
+    default: SiM Test User
+  ticket_id:
+    type: string
+    default: "\"\""
+    required: true
+  new_description:
+    type: string
+    description: New Description of AD user
+  new_ou:
+    type: string
+    description: New OU of the user
+  properties_to_clear:
+    type: string
+    description: Properties to clear
+    required: false

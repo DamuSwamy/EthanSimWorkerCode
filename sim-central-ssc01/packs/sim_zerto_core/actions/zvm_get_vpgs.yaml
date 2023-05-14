@@ -1,0 +1,21 @@
+---
+name: zvm_get_vpgs
+runner_type: python-script
+description: Retrieves the vpgs from the zvm server. 
+enabled: true
+entry_point: zvm_get_vpgs.py
+parameters:
+  zvm_host:
+    type: "string"
+    description: zvm hostname
+    required: true
+  port:
+    type: "integer"
+    description: Pre-Configured port connection details
+    required: false
+    default: 9669
+  access_token:
+    type: "string"
+    description: Access token if you have the token already else blank
+    required: false
+

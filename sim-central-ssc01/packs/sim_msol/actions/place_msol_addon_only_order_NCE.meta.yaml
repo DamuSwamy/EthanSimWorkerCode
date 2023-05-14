@@ -1,0 +1,28 @@
+pack: sim_msol
+enabled: true
+runner_type: orquesta
+name: place_msol_addon_only_order_NCE
+entry_point: workflows/place_msol_addon_only_order_nce.yaml
+description: Place MSOL add only order NCE phase 2
+parameters:
+  tenant_id:
+    type: string
+    default: 04470183-206f-4e50-a7da-f18dd8066ef9
+    description: Tenant ID for Microsoft Online
+    required: true
+  password_id:
+    type: string
+    default: "\"1046\""
+    required: true
+  param_line_items_raw_json:
+    type: object
+    default: null
+    required: true
+  customer_tenant_id:
+    type: string
+    description: Customer's Tenant ID
+    default: 0a31fe55-dd30-4a5c-acf2-702b17d9706d
+    required: true
+  auth_token:
+    type: string
+    required: true

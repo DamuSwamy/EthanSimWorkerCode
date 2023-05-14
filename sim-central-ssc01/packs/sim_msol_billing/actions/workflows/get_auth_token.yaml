@@ -1,0 +1,37 @@
+version: 1.0
+
+input:
+  - tenant_id
+  - password_id
+
+output:
+  - token: <% ctx().auth_token %>
+
+tasks:
+  # [329, 104]
+  Get_client_secret:
+    action: sim_passwordstate.retrieve_password_from_password_id_api
+    input:
+      password_id: <% str(ctx().password_id) %>
+      url: "https://pwd.ecorp.systems"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - client_id: <% result().output.retrieved_username %>
+          - client_secret: <% result().output.retrieved_password %>
+        do:
+          - Get_Access_Token_from_Microsoft_Online_API
+
+  # [333, 322]
+  Get_Access_Token_from_Microsoft_Online_API:
+    action: core.http
+    input:
+      url: "https://login.microsoftonline.com/<% ctx().tenant_id %> /oauth2/token"
+      body: client_id=<% ctx().client_id %>&resource=https%3A%2F%2Fgraph.windows.net&client_secret=<% ctx().client_secret %>&grant_type=client_credentials
+      method: GET
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - auth_token: <% result().body. access_token %>

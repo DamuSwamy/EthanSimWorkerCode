@@ -1,0 +1,143 @@
+version: 1.0
+
+input:
+  - tenant_id
+  - password_id
+  - db_connection
+  - batch_size
+
+vars:
+  - startIndex: 0
+  - counter: 1
+  - insert_count: 0
+  - deleted_users: []
+
+output:
+  - users: <% ctx().deleted_users %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Get_AuthToken
+
+  # [329, 104]
+  Get_AuthToken:
+    action: sim_msol_billing.get_auth_token_v2
+    input:
+      password_id: <% ctx().password_id %>
+      tenant_id: <% ctx().tenant_id %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - auth_token: <% result().output.token %>
+        do:
+          - Delete_From_PartnerCustomerDeleteUsers_Temp
+      - when: <% failed() %>
+        do: fail
+
+    # [333, 322]
+  Get_PartnerCustomer:
+    action: core.http
+    input:
+      url: "https://api.partnercenter.microsoft.com/v1/customers"
+      method: GET
+      headers:
+        Content-Type: application/json
+        Authorization: "Bearer <% ctx().auth_token %>"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - customer_list: <% result().body.items %>
+          - total_customers: <% result().body.totalCount %>
+        do:
+          - To_CustomerList_Expected_Format
+      - when: <% failed() %>
+        do: fail
+
+  To_CustomerList_Expected_Format:
+    action: sim_msol_billing.convert_result_to_list
+    input:
+      customers: <% ctx().customer_list %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - formatted_result: <% result().result %>
+        do:
+          - Get_PartnerCustomer_DeletedUsers
+      - when: <% failed() %>
+        do: fail
+
+  # [914, 217]
+  Delete_From_PartnerCustomerDeleteUsers_Temp:
+    action: sql.delete
+    input:
+      table: PartnerCustomerDeletedUsers_temp
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Get_PartnerCustomer
+
+  Get_PartnerCustomer_DeletedUsers:
+    action: sim_msol_billing.return_customer_deletedusers
+    input:
+      customers: <% ctx().formatted_result %>
+      auth_token: <% ctx().auth_token %>
+      start: <% ctx().startIndex %>
+      end: <% ctx().batch_size %>
+    next:
+      - when: <% succeeded() and ctx().startIndex < ctx().total_customers %>
+        publish:
+          - output: <% switch(isList(result().result) => result().result, true => []) %>
+          - startIndex: <% ctx().batch_size %>
+          - batch_size: <% ctx().batch_size + (ctx().startIndex / ctx().counter) %>
+          - counter: <% ctx().counter + 1 %>
+          - deleted_users: <% ctx().deleted_users + ctx().output %>
+        do:
+          - Get_PartnerCustomer_DeletedUsers
+      - when: <% succeeded() and ctx().startIndex >= ctx().total_customers %>
+        do:
+          - Check_For_New_Records
+      - when: <% failed() %>
+        do: fail
+
+  Check_For_New_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().deleted_users) > 0 %>
+        do:
+          - Insert_DeletedUsers_PartnerCustomerDeletedUsers_temp
+      - when: <% len(ctx().deleted_users) <= 0 %>
+        do:
+          - End
+
+  Insert_DeletedUsers_PartnerCustomerDeletedUsers_temp:
+    action: sql.insert_bulk
+    input:
+      table: PartnerCustomerDeletedUsers_temp
+      data: <% ctx().deleted_users %>
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Insert_DeletedUsers_PartnerCustomerDeletedUsers
+      - when: <% failed() %>
+        do: fail
+
+  Insert_DeletedUsers_PartnerCustomerDeletedUsers:
+    action: sql.query
+    input:
+      connection: <% ctx().db_connection %>
+      query: "INSERT INTO PartnerCustomerDeletedUsers ([CustomerId], [id], [userPrincipalName], [firstName], [lastName], [displayName], [immutableId], [userDomainType], [state], [softDeletionTime]) SELECT a.* FROM PartnerCustomerDeletedUsers_temp a LEFT JOIN PartnerCustomerDeletedUsers b on a.customerId = b.customerid and a.id = b.id and a.displayName = b.displayName WHERE b.CustomerId is null"
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  End:
+    action: core.noop

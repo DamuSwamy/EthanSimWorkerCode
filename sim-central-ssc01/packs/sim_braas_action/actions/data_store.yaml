@@ -1,0 +1,24 @@
+---
+name: data_store
+pack: sim_braas_action
+description: |
+    The configuration dict is encrypted in the KV store with only the key returned to keep configuration content secret.
+runner_type: python-script
+entry_point: data_store.py
+parameters:
+  key:
+    type: string
+    description: The key name to store the data into key store
+    required: false
+    default: msol_prod_refresh_token 
+  value:
+    type: array
+    description: The value of the key to be stored
+    required: True
+  expiry:
+    type: integer
+    description: |
+        The expiry time in seconds for encrypted configuration data.
+    default: 3600
+    required: false
+

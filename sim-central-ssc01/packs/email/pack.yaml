@@ -1,0 +1,13 @@
+---
+ref: email
+name: email
+description: E-Mail Actions/Sensors for StackStorm
+keywords:
+  - email
+  - messaging
+  - imap
+version: 2.0.3
+author: James Fryman
+email: james@stackstorm.com
+python_versions:
+  - "3"

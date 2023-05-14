@@ -1,0 +1,523 @@
+version: 1.0
+tasks:
+  # [311, 1]
+  start:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - parse_inputs
+        publish:
+          - started: <% task().start_timestamp %>
+  # [311, 98]
+  parse_inputs:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - print_inputs
+        when: <% succeeded() %>
+        publish:
+          - display_user: <% ctx().data.data.custom_attributes.Name %>
+          - ad_host: <% ctx().data.ci_details.where($.ci_id = 'AD01').select(str($.connections.POWERSHELL.ip_address)) %>
+          - username: <% ctx().data.ci_details.where($.ci_id = 'AD01').select($.connections.POWERSHELL.username) %>
+          - password: <% ctx().data.ci_details.where($.ci_id = 'AD01').select($.connections.POWERSHELL.password) %>
+          - new_ou: <% ctx().data.data.custom_attributes.disabled_ou %>
+          - delegate_forward_email: <% ctx().data.data.custom_attributes.emailDelegateUser %>
+          - client_id: <% ctx().data.ci_details.where($.ci_id='OFFICE365').select($.connections.GRAPH_API.client_id) %>
+          - client_secret: <% ctx().data.ci_details.where($.ci_id='OFFICE365').select($.connections.GRAPH_API.client_secret) %>
+          - tenant_id: <% ctx().data.ci_details.where($.ci_id='OFFICE365').select($.connections.GRAPH_API.tenant_id) %>
+          - app_id: <% ctx().data.ci_details.where($.ci_id='EX01').select($.connections.POWERSHELL.AppID) %>
+          - organisation: <% ctx().data.ci_details.where($.ci_id='EX01').select($.connections.POWERSHELL.Organization) %>
+          - certificate_file_path: <% ctx().data.ci_details.where($.ci_id='EX01').select($.connections.POWERSHELL.CertificateFilePath ) %>
+          - ticket_id: <% ctx().data.itsm.details.ticket_id %>
+          - ex_host: <% ctx().data.ci_details.where($.ci_id = 'EX01').select(str($.connections.POWERSHELL.ip_address)) %>
+          - admin_url: <% ctx().data.data.custom_attributes.admin_url %>
+          - emailDelegate: <% ctx().data.data.custom_attributes.emailDelegate %>
+          - forwardDelegate: <% ctx().data.data.custom_attributes.forwardDelegate %>
+          - forwardDelegateUser: <% ctx().data.data.custom_attributes.forwardDelegateUser %>
+          - emailDelegateUser: <% ctx().data.data.custom_attributes.emailDelegateUser %>
+          - oneDriveDelegate: <% ctx().data.data.custom_attributes.oneDriveDelegate %>
+          - oneDriveDelegateUser: <% ctx().data.data.custom_attributes.oneDriveDelegateUser %>
+          - forwarded_user_address: <% ctx().data.data.custom_attributes.forwardDelegateUser %>
+          - one_drive_user_address: <% ctx().data.data.custom_attributes.oneDriveDelegateUser %>
+          - manager: <% ctx().data.data.custom_attributes.manager %>
+  # [310, 295]
+  check_ad_user:
+    action: sim_activedirectory.check_ad_user
+    input:
+      ad_host: <% ctx().ad_host[0] %>
+      display_name: <% ctx().display_user %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+    next:
+      # #629e47
+      - do:
+          - get_before_status
+        when: <% str(result().output.task_output.stdout) = "1" and  result().output.task_output.succeeded = true %>
+        publish:
+          - user_count: <% result().output.task_output.stdout %>
+      - do:
+          - update_ticket_escalate
+        when: <% str(result().output.task_output.stdout) != "1"  or result().output.task_output.succeeded = false %>
+        publish:
+          - user_count: <% result().output.task_output.stdout %>
+  # [622, 473]
+  ad_user_exit:
+    action: ppq_core.user_offboard_activedirectory
+    next:
+      # #629e47
+      - do:
+          - fetch_email
+        publish:
+          - execution_log: <% result().output.execution_log %>
+    input:
+      ad_host: <% ctx().ad_host[0] %>
+      display_user: <% ctx().display_user %>
+      password: <% ctx().password[0] %>
+      username: <% ctx().username[0] %>
+      ticket_id: <% ctx().ticket_id %>
+      properties_to_clear: Manager
+      new_description: User offboarded as part of Service Request <%  ctx().ticket_id %>
+      new_ou: <% ctx().new_ou %>
+  # [577, 206]
+  update_ticket_escalate:
+    action: core.echo
+    input:
+      message: Input User Issue. Escalating ticket.Reason\n<% ctx().user_count %> user(s) found
+    next:
+      - do:
+          - end_1_usernotfound
+        publish:
+          - state: DIAGNOSIS
+          - info:
+              summary: User NOT off-boarded completely
+              next_action: escalate
+              root_cause: actions_failed
+              first_notified: <% ctx().started %>
+              last_worked_upon: <% task().end_timestamp %>
+              next_action_attributes:
+                escalate:
+                  resolution_flag: false
+                  team_name: UC
+                  owner: 
+                  status: In Progress
+                  ticket_update: Sim Automation is resolving the service request after completion of operation as per request
+          - execution_log: "[{\"task_name\":\"check_ad_user\",\"expected_returncode\":\"1\", \"actual_returncode\":<% ctx().user_count  %>}]"
+  # [315, 1225]
+  exchange_user_exit_del_YES:
+    action: ppq_core.user_offboard_exchange_process_v2
+    next:
+      # #629e47
+      - do:
+          - o365_user_exit
+        publish:
+          - execution_log: <% ctx().execution_log  +  result().output.execution_log %>
+    input:
+      ad_host: <% ctx().ex_host[0] %>
+      app_id: <% ctx().app_id[0] %>
+      organisation: <% ctx().organisation[0] %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+      type: Shared
+      certificate_file_path: <% ctx().certificate_file_path[0] %>
+      admin_url: <% ctx().data.data.custom_attributes.admin_url %>
+      user_email: <% ctx().email %>
+      emailDelegate: <%ctx().emailDelegate%>
+      forwardDelegate: <%ctx().forwardDelegate%>
+      oneDriveDelegate: <%ctx().oneDriveDelegate%>
+      emailDelegateUser: <%ctx().delegated_usr_address%>
+      forwardDelegateUser: <%ctx().forwarded_usr_address%>
+      oneDriveDelegateUser: <%ctx().one_drive_usr_address%>
+  # [911, 939]
+  exchange_user_exit_del_NO:
+    action: ppq_core.user_offboard_exchange_process_v2
+    next:
+      # #629e47
+      - do:
+          - o365_user_exit
+        publish:
+          - execution_log: <% ctx().execution_log  +  result().output.execution_log %>
+    input:
+      ad_host: <% ctx().ex_host[0] %>
+      app_id: <% ctx().app_id[0] %>
+      organisation: <% ctx().organisation[0] %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+      type: Shared
+      user_email: <% ctx().email %>
+      certificate_file_path: <% ctx().certificate_file_path[0] %>
+      emailDelegate: <% ctx().emailDelegate %>
+      forwardDelegate: <% ctx().forwardDelegate %>
+      oneDriveDelegate: <%ctx().oneDriveDelegate%>
+      emailDelegateUser: <% ctx().delegated_user_address %>
+      forwardDelegateUser: <% ctx().forwarded_user_address %>
+      oneDriveDelegateUser: <% ctx().one_drive_user_address %>
+  # [907, 1272]
+  o365_user_exit:
+    action: ppq_core.user_offboard_o365_licenses
+    input:
+      client_id: <% ctx().client_id[0] %>
+      client_secret: <% ctx().client_secret[0] %>
+      tenant_id: <% ctx().tenant_id[0] %>
+      user_email: <% ctx().email %>
+    next:
+      # #629e47
+      - do:
+          - trigger_delta_sync
+        publish:
+          - execution_log: <% ctx().execution_log +  result().output.execution_log  %>
+  # [864, 210]
+  end_1_usernotfound:
+    action: core.noop
+  # [310, 634]
+  ticket_update:
+    action: core.echo
+    input:
+      message: <% ctx().before_status %>
+    next:
+      # #629e47
+      - do:
+          - ad_user_exit
+        when: <% ctx().data.data.custom_attributes.offboarding_type = "immediate" %>
+      - do:
+          - user_offboard_suspend_process
+        when: <% ctx().data.data.custom_attributes.offboarding_type = "suspend" %>
+  # [187, 1521]
+  ticket_update_final:
+    action: core.echo
+    input:
+      message: <% ctx().after_status %>
+    next:
+      # #629e47
+      - do:
+          - build_delegate_notification
+        publish:
+          - failed_actions: <% ctx(execution_log).where($.expected_returncode != $.actual_returncode).select($.task_name) %>
+          - site1: <% regex_replace( ctx().admin_url, "admin", "my") %>
+          - site2: <% regex_replace( ctx().email, "\.|\@", "_").toLower() %>
+          - ext: /personal/
+          - one_drive_site: <%  ctx().site1 +  ctx().ext + ctx().site2  %>
+  # [324, 2141]
+  update_output_no_mitel:
+    action: core.echo
+    input:
+      message: "\"<% ctx().info %>\""
+    next:
+      - do:
+          - end
+  # [312, 887]
+  get_delegate_email:
+    action: sim_activedirectory.fetch_email_object_ad_user
+    next:
+      # #629e47
+      - do:
+          - get_forward_email
+        publish:
+          - delegated_usr_address: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
+          - delegated_user_objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
+    input:
+      ad_host: <% ctx().ad_host[0] %>
+      display_name: <% ctx().emailDelegateUser %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+  # [310, 394]
+  get_before_status:
+    action: ppq_core.get_user_status
+    next:
+      # #629e47
+      - do:
+          - fetch_manager_email
+        when: <% succeeded() %>
+        publish:
+          - before_status: "<% regex(\" +:\").replace(result().output.complete_user_status, \":\") %>"
+          - manager: "{{ 'Aman Mujawar' if not ctx().manager else ctx().manager }}"
+    input:
+      when: Before
+      ad_host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+      client_id: <% ctx().client_id[0] %>
+      client_secret: <% ctx().client_secret[0] %>
+      tenant_id: <% ctx().tenant_id[0] %>
+      display_name: <% ctx().display_user %>
+      app_id: <% ctx().app_id[0] %>
+      certificate_file_path: <% ctx().certificate_file_path[0] %>
+      organisation: <% ctx().organisation[0] %>
+      admin_url: <% ctx().admin_url %>
+  # [187, 1424]
+  get_after_status:
+    action: ppq_core.get_user_status
+    next:
+      # #629e47
+      - do:
+          - ticket_update_final
+        publish:
+          - after_status: "<% regex(\" +:\").replace(result().output.complete_user_status, \":\") %>"
+        when: <% succeeded() %>
+    input:
+      when: After
+      ad_host: <% ctx().ad_host[0] %>
+      client_id: <% ctx().client_id[0] %>
+      client_secret: <% ctx().client_secret[0] %>
+      display_name: <% ctx().display_user %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+      tenant_id: <% ctx().tenant_id[0] %>
+      app_id: <% ctx().app_id[0] %>
+      certificate_file_path: <% ctx().certificate_file_path[0] %>
+      organisation: <% ctx().organisation[0] %>
+      admin_url: <% ctx().admin_url %>
+  # [311, 195]
+  print_inputs:
+    action: core.echo
+    next:
+      # #629e47
+      - do:
+          - check_ad_user
+    input:
+      message: "\"<% ctx().organisation %>\""
+  # [189, 1760]
+  print_failed_actions:
+    action: core.echo
+    next:
+      # #629e47
+      - do:
+          - REMEDIATION_IMMED
+        when: <% len(ctx().failed_actions) = 0 and ctx().data.data.custom_attributes.offboarding_type = "immediate"  %>
+      # #d1583b
+      - do:
+          - DIAGNOSIS
+        when: <% len(ctx().failed_actions) != 0 %>
+      - do:
+          - REMEDIATION_SUSP
+        when: <% len(ctx().failed_actions) = 0 and ctx().data.data.custom_attributes.offboarding_type = "suspend"  %>
+    input:
+      message: "\"<% ctx().failed_actions %>\""
+  # [530, 1841]
+  REMEDIATION_IMMED:
+    action: core.noop
+    next:
+      - do:
+          - print_output
+        publish:
+          - state: REMEDIATION
+          - info: {"summary": "User off-boarded from all systems", "ticket": <% ctx().ticket_id %>,"manager_email": <% ctx().manager_email %>, "next_action": "resolve_deactivate_create", "root_cause": "off boarded", "first_notified": <% ctx().started %>, "last_worked_upon": <% task().end_timestamp %>, "next_action_attributes": { "resolve": { "status": "Closed - Resolved", "resolution_flag": "true", "closure_code": "Telco", "ticket_update": "Sim Automation is resolving the service request after completion of operation as per request" }, "create": {"status": "New", "source_name": "Customer Portal", "agreement": "3381", "board_name": " UC - Service Requests", "company_name": "Ethan Group", "team_name": "UC", "ticket_initialDescription": "Please remove Mitel phone removal request", "ticket_summary": "Mitel phone removal request", "item": "Decomissioning", "type":  "UC Business Application", "body": "dummy_body", "subtype":  "Call Catch", "owner": "" }, "deactivate": { "username": <% ctx().email %>, "useremail": <% ctx().email %>}}} 
+  # [184, 1869]
+  DIAGNOSIS:
+    action: core.noop
+    next:
+      - do:
+          - ticket_update_failure
+        publish:
+          - state: DIAGNOSIS
+          - info: {"summary":"User NOT off-boarded completely", "ticket": <% ctx().ticket_id %>,"manager_email": <% ctx().manager_email %>, "next_action": "escalate_create", "root_cause": "actions_failed", "first_notified": <% ctx().started %>,"last_worked_upon": <% task().end_timestamp %>,"next_action_attributes": { "escalate": { "resolution_flag": "false", "team_name": "UC", "owner": "", "status": "In Progress", "ticket_update": "Sim Automation is escalating the service request to engineer to complete failed actions" }, "create": {"status": "New", "source_name": "Customer Portal", "agreement": "3381", "board_name": " UC - Service Requests", "company_name": "Ethan Group", "team_name": "UC", "ticket_initialDescription": "Please remove Mitel phone removal request", "ticket_summary": "Mitel phone removal request", "item": "Decomissioning", "type":  "UC Business Application", "body": "dummy_body", "subtype":  "Call Catch", "owner": "" }}}
+        when: <% ctx().data.data.custom_attributes.remove_mitel = "Yes" %>
+      - do:
+          - end_failures_present
+        when: <% ctx().data.data.custom_attributes.remove_mitel != "Yes" %>
+        publish:
+          - state: DIAGNOSIS
+          - info: {"summary":"User NOT off-boarded completely", "ticket": <% ctx().ticket_id %>,"manager_email": <% ctx().manager_email %>, "next_action": "escalate", "root_cause": "actions_failed", "first_notified": <% ctx().started %>,"last_worked_upon": <% task().end_timestamp %>,"next_action_attributes": { "escalate": { "resolution_flag": "false", "team_name": "UC", "owner": "", "status": "In Progress", "ticket_update": "Sim Automation is escalating the service request to engineer to complete failed actions manually" }}}
+  # [0, 612]
+  user_offboard_suspend_process:
+    action: ppq_core.offboard_user_suspend_process
+    next:
+      # #629e47
+      - do:
+          - get_after_status
+        publish:
+          - execution_log: <% result().output.execution_log %>
+    input:
+      ad_host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+      client_id: <% ctx().client_id[0] %>
+      tenant_id: <% ctx().tenant_id[0] %>
+      client_secret: <% ctx().client_secret[0] %>
+      display_name: <% ctx().display_user %>
+      new_description: DO NOT RESET OR UNLOCK THIS USER PLS REFER TO SERVICE REQUEST <% ctx().ticket_id %>
+  # [824, 1843]
+  REMEDIATION_SUSP:
+    action: core.noop
+    next:
+      - do:
+          - print_output
+        publish:
+          - state: REMEDIATION
+          - info: {"summary": "User off-boarded from all systems", "ticket": <% ctx().ticket_id %>,"manager_email": <% ctx().manager_email %>, "next_action": "resolve", "root_cause": "off boarded", "first_notified": <% ctx().started %>, "last_worked_upon": <% task().end_timestamp %>, "next_action_attributes": { "resolve": { "status": "Closed - Resolved", "resolution_flag": "true", "closure_code": "Telco", "ticket_update": "Sim Automation is resolving the service request after completion of operation as per request" }}}
+  # [673, 2092]
+  end:
+    action: core.noop
+  # [650, 1946]
+  print_output:
+    action: core.echo
+    input:
+      message: "\"<% ctx().info %>\""
+    next:
+      - do:
+          - info_null
+        when: <% ctx().data.data.custom_attributes.remove_mitel != "Yes" %>
+        publish:
+          - info: "{}"
+      - do:
+          - end
+        when: <% ctx().data.data.custom_attributes.remove_mitel = "Yes" %>
+  # [325, 2042]
+  info_null:
+    action: core.noop
+    next:
+      - do:
+          - update_output_no_mitel
+        publish:
+          - info: { "summary": "User off-boarded from all systems", "ticket": <% ctx().ticket_id %>,"manager_email": <% ctx().manager_email %>, "next_action": "resolve_deactivate", "root_cause": "off boarded", "first_notified": <% ctx().started %>,"last_worked_upon" : <%task().end_timestamp %>, "next_action_attributes": { "resolve" : { "status" : "Closed - Resolved", "resolution_flag" : "true", "closure_code" : "Telco", "ticket_update": "Sim Automation is resolving the service request after completion of operation as per request" }, "deactivate": { "username": <% ctx().email %>, "useremail": <% ctx().email %> }}}
+  # [909, 809]
+  delegation_NO:
+    action: core.noop
+    next:
+      - do:
+          - exchange_user_exit_del_NO
+  # [624, 687]
+  check_delegation:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - check_delegation_type
+        when: <% ctx().data.data.custom_attributes.emailDelegate = "Yes" or ctx().data.data.custom_attributes.forwardDelegate = "Yes" or ctx().data.data.custom_attributes.oneDriveDelegate = "Yes"%>
+      - do:
+          - delegation_NO
+        when: <% ctx().data.data.custom_attributes.emailDelegate != "Yes" and ctx().data.data.custom_attributes.forwardDelegate != "Yes" and ctx().data.data.custom_attributes.oneDriveDelegate != "Yes"%>
+  # [617, 584]
+  fetch_email:
+    action: sim_activedirectory.fetch_email_object_ad_user
+    next:
+      # #629e47
+      - do:
+          - check_delegation
+        publish:
+          - email: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
+          - objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
+    input:
+      ad_host: <% ctx().ad_host[0] %>
+      display_name: <% ctx().display_user %>
+      password: <% ctx().password[0] %>
+      username: <% ctx().username[0] %>
+  # [288, 1960]
+  ticket_update_failure:
+    action: core.echo
+    next:
+      - do:
+          - print_output
+    input:
+      message: "Following Sim Automation actions failed, an engineer will manually action these - \n\n\"<% ctx().failed_actions %>\""
+  # [3, 2017]
+  end_failures_present:
+    action: core.noop
+  # [901, 1432]
+  trigger_delta_sync:
+    action: sim_activedirectory.start_delta_ad_sync
+    input:
+      ad_host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+    next:
+      # #629e47
+      - do:
+          - get_after_status
+  # [21, 1626]
+  build_delegate_notification:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - notification_required
+        when: <% ctx().data.data.custom_attributes.emailDelegate = "Yes" and ctx().failed_actions.indexOf('delegate_mailbox') = -1 %>
+        publish:
+          - delegate_notification: {"delegate":"Yes","email": <% ctx().delegated_usr_address %>,"display_name": <% ctx().display_user %>,"one_drive_site": <% ctx().one_drive_site %>}
+      - do:
+          - notification_NOT_required
+        when: <% ctx().data.data.custom_attributes.emailDelegate != "Yes" or  ctx().failed_actions.indexOf('delegate_mailbox') != -1%>
+        publish:
+          - delegate_notification: {"delegate":"No","email":""}
+  # [370, 1581]
+  notification_required:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - print_failed_actions
+  # [620, 1681]
+  notification_NOT_required:
+    action: core.noop
+    next:
+      - do:
+          - print_failed_actions
+  # [314, 774]
+  check_delegation_type:
+    action: core.noop
+    next:
+      - do:
+          - get_delegate_email
+        publish:
+          - emailDelegateUser: "{{ \"Aman Mujawar\" if not ctx().emailDelegateUser else ctx().emailDelegateUser }}"
+          - forwardDelegateUser: "{{ \"Aman Mujawar\" if not ctx().forwardDelegateUser else ctx().forwardDelegateUser }}"
+          - oneDriveDelegateUser: "{{ \"Aman Mujawar\" if not  ctx().oneDriveDelegateUser else ctx().oneDriveDelegateUser }}"
+  # [313, 988]
+  get_forward_email:
+    action: sim_activedirectory.fetch_email_object_ad_user
+    input:
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+      ad_host: <% ctx().ad_host[0] %>
+      display_name: <%ctx().forwardDelegateUser%>
+    next:
+      - do:
+          - get_one_drive
+        publish:
+          - forwarded_usr_address: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
+          - forwarded_usr_objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
+  # [314, 1099]
+  get_one_drive:
+    action: sim_activedirectory.fetch_email_object_ad_user
+    next:
+      - publish:
+          - one_drive_usr_address: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
+          - one_drive_user_objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
+        do:
+          - exchange_user_exit_del_YES
+    input:
+      ad_host: <% ctx().ad_host[0] %>
+      display_name: <%ctx().oneDriveDelegateUser%>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+  # [310, 519]
+  fetch_manager_email:
+    action: sim_activedirectory.fetch_email_object_ad_user
+    next:
+      - do:
+          - ticket_update
+        publish:
+          - manager_email: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
+    input:
+      ad_host: <% ctx().ad_host[0] %>
+      display_name: <% ctx().manager %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+
+vars:
+  - log: ""
+  - email: "aman.mujawar@ethan.com.au"
+  - manager_email: "aman.mujawar@ethan.com.au"
+  - delegated_user_address: "aman.mujawar@ethan.com.au"
+  - delegated_usr_address: ""
+  - forwarded_usr_address: ""
+  - one_drive_usr_address: ""
+input:
+  - data
+output:
+  - state: <% ctx().state %>
+  - info: <% ctx().info %>
+  - execution_log: <% ctx().execution_log %>
+  - failed_actions: <% ctx().failed_actions %>
+  - delegate_notification: <% ctx().delegate_notification %>

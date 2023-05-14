@@ -1,0 +1,28 @@
+pack: sim_msol
+enabled: true
+runner_type: orquesta
+name: place_msol_order_NCE_1.5
+entry_point: workflows/place_msol_order_NCE_1.5.yaml
+description: Place Order on Microsoft Online from Catalog ID NCE Phase 1 PROD version day 1.5
+parameters:
+  tenant_id:
+    type: string
+    default: d0aaafc0-4f56-478a-b986-fd9eb70046d6
+    description: Tenant ID for Microsoft Online
+    required: true
+  customer_tenant_id:
+    type: string
+    default: 0a31fe55-dd30-4a5c-acf2-702b17d9706d
+    required: true
+  line_items_raw:
+    type: string
+    default: "d621d86a-79d2-433d-b5bd-523bc61fa5b6,Microsoft 365 E5,8bdbb60b-e526-43e9-92ef-ab760c8e0b72,2,monthly,P1Y:d621d86a-79d2-433d-b5bd-523bc61fa5b6,Microsoft Teams Rooms Standard,2c883339-ef9c-4cce-81b8-e5adea60794c,1,monthly,P1Y"
+    required: true
+  password_id:
+    type: string
+    default: "27546"
+    required: true
+  ticket_id:
+    type: string
+    default: INC0010080
+    required: true

@@ -1,0 +1,85 @@
+version: 1.0
+tasks:
+  # [523, 140]
+  REST_vsphere_login:
+    action: core.http
+    input:
+      password: Qb3rO5xZ1H
+      url: "https://<%ctx().vCenter_URL%>/rest/com/vmware/cis/session"
+      username: service_ciac_vsphere
+      method: POST
+      verify_ssl_cert: false
+    next:
+      - do:
+          - print
+        publish:
+          - status: <% result().status_code%>
+          - body: <% result().body %>
+          - headers: <% result().headers %>
+      - do:
+          - REST_vm_power_state
+        publish:
+          - body: <% result().body %>
+  # [955, 197]
+  print:
+    action: core.echo
+    input:
+      message: "<%str(ctx().status)%>\n<%ctx().body.value%>"
+  # [517, 272]
+  REST_vm_power_state:
+    action: core.http
+    input:
+      password: Eth@nGroup
+      url: "https://<%ctx().vCenter_URL%>/rest/vcenter/vm/vm-<%ctx().vcenter_vmid%>/power"
+      headers:
+        vmware-api-session-id: <%ctx().body.value%>
+      verify_ssl_cert: false
+      method: GET
+    next:
+      - do:
+          - REST_vm_power_start
+  # [517, 426]
+  REST_vm_power_start:
+    action: core.http
+    input:
+      password: Eth@nGroup
+      url: "https://<%ctx().vCenter_URL%>/rest/vcenter/vm/vm-<%ctx().vcenter_vmid%>/power/start"
+      headers:
+        vmware-api-session-id: <%ctx().body.value%>
+      method: POST
+      verify_ssl_cert: false
+    next:
+      - do:
+          - print_start
+        publish:
+          - status: <% result().status_code%>
+          - body: <% result().body %>
+          - headers: <% result().headers %>
+      # #629e47
+      - do:
+          - success
+        when: <%result().status_code = 200%>
+      # #aa5dd1
+      - do:
+          - success_started
+        when: <%result().status_code = 400%>
+        publish:
+          - output_status: success
+          - output_status_msg: <%result().body.value.messages.default_message%>
+          # [947, 528]
+  print_start:
+    action: core.echo
+    input:
+      message: "<%str(ctx().status)%>\n<%ctx().body.value.messages.default_message%>\n<%ctx().headers%>"
+  # [263, 623]
+  success:
+    action: core.noop
+  # [570, 619]
+  success_started:
+    action: core.noop
+input:
+  - vCenter_URL
+  - vcenter_vmid
+output:
+  - output_status: <%ctx().output_status%>
+  - output_status_msg: <%ctx().output_status_msg%>

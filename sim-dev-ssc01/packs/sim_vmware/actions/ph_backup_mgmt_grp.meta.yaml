@@ -1,0 +1,15 @@
+pack: sim_vmware
+enabled: true
+runner_type: orquesta
+name: ph_backup_mgmt_grp
+entry_point: workflows/ph_backup_mgmt_grp.yaml
+description: Backup management group process whilst im away
+parameters:
+  startTime:
+    type: string
+    description: start time of mgmtgrp
+    required: true
+  powerAction:
+    type: string
+    description: power Action powerOn/powerOff
+    required: true

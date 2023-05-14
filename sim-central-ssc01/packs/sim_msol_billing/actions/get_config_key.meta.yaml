@@ -1,0 +1,23 @@
+---
+name: get_config_key
+pack: sim_msol_billing
+description: |
+    The configuration dict is encrypted in the KV store with only the key returned to keep configuration content secret.
+runner_type: python-script
+entry_point: get_config_key.py
+parameters:
+  key:
+    type: string
+    description: The key name to store the data into key store
+    required: false
+    default: msol_prod_refresh_token 
+  value:
+    type: string
+    description: The value of the key to be stored
+    required: True
+  expiry:
+    type: integer
+    description: |
+        The expiry time in seconds for encrypted configuration data.
+    default: 7890000
+    required: false

@@ -1,0 +1,107 @@
+version: 1.0
+tasks:
+  # [264, 34]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - get_records_count
+        publish:
+          - i: 0
+          - x: " "
+          - attention: " "
+  # [285, 137]
+  get_records_count:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: select count(*) as records from <% ctx().list[ctx().i] %>
+      connection: productionCloudExtension
+    next:
+      - do:
+          - count
+        publish:
+          - count: <% result().result[0].records %>
+  # [277, 242]
+  count:
+    action: core.noop
+    next:
+      - do:
+          - get_x
+        publish:
+          - x: <% concat(ctx().x,ctx().list[ctx().i], " - " ,str(ctx().count),"\n") %>
+  # [279, 346]
+  get_x:
+    action: core.noop
+    next:
+      - do:
+          - get_attention
+        when: <% ctx().count != 0 %>
+      - do:
+          - print_count
+        when: <% ctx().count = 0 %>
+        publish:
+          - attention: true
+  # [146, 467]
+  get_attention:
+    action: core.noop
+    next:
+      - do:
+          - print_count
+  # [391, 538]
+  print_count:
+    action: core.echo
+    input:
+      message: "\" <% ctx().count %> \""
+    next:
+      - do:
+          - loop_end
+        publish:
+          - i: <% ctx().i+1 %>
+  # [554, 206]
+  loop_end:
+    action: core.noop
+    next:
+      - do:
+          - get_records_count
+        when: <% ctx().i < len(ctx().list) %>
+      - do:
+          - skip
+        when: <% ctx().i >= len(ctx().list) %>
+  # [852, 254]
+  skip:
+    action: core.noop
+    next:
+      - do:
+          - attention_mail
+        when: <% ctx().attention = "yes" %>
+      - do:
+          - update_mail
+        when: <% ctx().attention != "yes" %>
+  # [812, 533]
+  end:
+    action: core.noop
+  # [966, 370]
+  update_mail:
+    action: core.sendmail
+    next:
+      - do:
+          - end
+    input:
+      to: supriya.kadam@ethan.com.au
+      subject: Update mail
+      body: "\" <% ctx().x %> \""
+  # [704, 374]
+  attention_mail:
+    action: core.sendmail
+    next:
+      - do:
+          - end
+    input:
+      to: supriya.kadam@ethan.com.au
+      body: Please check for empty records
+      subject: Attention Required
+input:
+  - list
+output:
+  - count: <% ctx().x.trim() %>

@@ -1,0 +1,105 @@
+---
+version: 1.0
+
+description: Cisco IOS Benchmark - Device Compliant
+
+vars:
+  - Devices: []
+  - process_name: "Cisco device compliant check"
+  - deviceIndex: 0
+  - response: {}
+
+input:
+  - customer_id
+  - exclude_device_types
+  - limit
+
+tasks:
+  # [192, 51]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notification: (<% ctx().process_name%>) process started
+          - target_automation: sim_cisco_compliance.config_compliance
+          - St2ApiKey: MTc3MjBjODg1YjUwZDM2NzM2OGFkNjBkMjE0NWIxOWVkYTBmMThlZWY0ODUwMTcwYzQzNzJlZDcwYTIzYzAwYQ
+        do:
+          - notify
+          - get_device_list
+
+
+  # [464, 217]
+  get_device_list:
+    action: sim_cisco_compliance.get_device_list
+    input:
+      customer_id: <% ctx().customer_id %>
+    next:
+      - when: <% succeeded() and len(result().result)>0 %>
+        publish:
+          - device_list: <% result().result %>
+          - device_count: "{{ ctx().limit if ctx().limit else ctx().device_list|length }}"
+        do:
+          - do_compliance_check
+      - when: <% succeeded() and len(result().result)<=0 %>
+        publish:
+          - notification: No devices found for customer [<% ctx().customer_id %>]
+        do:
+          - notify
+      - when: <% failed() %>
+        do:
+          - fail
+
+  # [142, 351]
+  do_compliance_check:
+    action: sim_cisco_compliance.device_compliance
+    input:
+      device_object: <% ctx().device_list[ctx().deviceIndex] %>
+      exclude_list: <% ctx().exclude_device_types %>
+      count: <% ctx().deviceIndex + 1 %>
+      customer_id: <% ctx().customer_id %>
+    next:
+      - when: <% (succeeded() or failed()) and (ctx().deviceIndex) < (ctx().device_count-1) %>
+        publish:
+          - output: <% switch(isDict(result().output) => result().output, true => {}) %>
+          - Devices: <% ctx().Devices.append(ctx().output.result) %>
+          - deviceIndex: <% ctx().deviceIndex + 1 %>
+        do:
+          - do_compliance_check
+      - when: <% (succeeded() or failed()) and ctx().deviceIndex >= (ctx().device_count-1) %>
+        publish:
+          - notification: Processed <% str(ctx().deviceIndex+1) %> device(s) for customer (<% ctx().customer_id %>)
+          - Devices: <% ctx().Devices.append(ctx().output.result) %>  
+          - response: <% str(dict(NetDBCompanyID=>ctx().customer_id, compliancecheckTimestamp=>task(Start).start_timestamp, Devices=>ctx().Devices)) %>
+        do:
+          - notify
+          - trigger_new_workflow
+
+  # [359, 605]
+  get_output:
+    action: core.local
+    input:
+      cmd: sleep 60
+      timeout: 120
+
+  # [667, 354]
+  notify:
+    action: core.echo
+    input:
+      message: <% ctx().notification %>
+  # [363, 496]
+  trigger_new_workflow:
+    action: core.http
+    input:
+      url: "https://sim-central.sim.esecure.systems/api/v1/executions"
+      body: '{"action": "<% ctx().target_automation %>","parameters":{"input_json": "<% ctx().response %>" } ,"user":null}'
+      headers:
+        St2-Api-Key: <% ctx().St2ApiKey %>
+      verify_ssl_cert: false
+    next:
+      - do:
+          - get_output
+
+output:
+  - result: <% task("trigger_new_workflow").result %>
+  - notifications: <% ctx().notification %>

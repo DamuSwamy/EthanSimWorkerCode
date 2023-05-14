@@ -1,0 +1,55 @@
+version: 1.0
+
+input:
+  - group_id_array
+  - access_token
+  - braas
+
+vars:
+  - index: 0
+  - group_members: []
+
+output:
+  - data: <% ctx().group_members %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Data_To_Process
+
+  Data_To_Process:
+    action: core.noop
+    next:
+      - when: <% len(ctx().group_id_array) > 0 %>
+        do:
+          - Get_Group_Members
+      - when: <% len(ctx().group_id_array) = 0 %>
+        do:
+          - End
+
+  Get_Group_Members:
+    action: sim_braas_core.get_group_members
+    input:
+      braas: <% ctx().braas %>
+      access_token: <% ctx().access_token %>
+      group_id: <% ctx().group_id_array[ctx().index] %>
+    next:
+      - when: <% ctx().index < (len(ctx().group_id_array) - 1) %>
+        publish:
+          - members: <% result().result %>
+          - index: <% ctx().index + 1 %>
+          - group_members: <% ctx().group_members + ctx().members %>
+        do:
+          - Get_Group_Members
+      - when: <% ctx().index >= (len(ctx().group_id_array) - 1) %>
+        publish:
+          - members: <% result().result %>
+          - group_members: <% ctx().group_members + ctx().members %>
+        do:
+          - End
+
+  End:
+    action: core.noop

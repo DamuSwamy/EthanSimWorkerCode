@@ -1,0 +1,25 @@
+pack: sim_braas_action
+enabled: true
+runner_type: orquesta
+name: remediate_report_v4
+entry_point: workflows/remediate_report_v4.yaml
+parameters:
+  start_date:
+    type: "string"
+    description: Report start date
+    required: true
+  start_time:
+    type: "string"
+    description: Report start time
+    required: true
+    default: "19:00:00.000"
+  end_date:
+    type: "string"
+    description: Report end date
+    required: true
+  end_time:
+    type: "string"
+    description: Report end time
+    required: true
+    default: "07:00:00.000"
+

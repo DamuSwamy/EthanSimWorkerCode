@@ -1,0 +1,105 @@
+version: 1.0
+tasks:
+  # [186, 5]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - get_records
+        publish:
+          - i: 0
+          - x: " "
+          - attention: " "
+  # [186, 101]
+  get_records:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: select count(*) as records from <% ctx().list[ctx().i] %>
+      connection: productionCloudExtension
+    next:
+      - do:
+          - count
+        publish:
+          - count: <% result().result[0].records %>
+  # [187, 204]
+  count:
+    action: core.noop
+    next:
+      - do:
+          - pass
+        publish:
+          - x: <% concat(ctx().x,ctx().list[ctx().i], " - " ,str(ctx().count)) %>
+  # [185, 304]
+  pass:
+    action: core.noop
+    next:
+      - do:
+          - skip
+        when: <% ctx().count != 0 %>
+      - do:
+          - print
+        when: <% ctx().count = 0 %>
+        publish:
+          - attention: true
+  # [85, 415]
+  skip:
+    action: core.noop
+    next:
+      - do:
+          - print
+  # [300, 517]
+  print:
+    action: core.echo
+    next:
+      - do:
+          - next
+        publish:
+          - i: <% ctx().i+1 %>
+    input:
+      message: "\"  <% ctx().count %> \""
+  # [732, 225]
+  email_send:
+    action: core.noop
+    next:
+      - do:
+          - attention
+        when: <% ctx().attention = "yes" %>
+      - do:
+          - update
+        when: <% ctx().attention != "yes" %>
+  # [412, 266]
+  next:
+    action: core.noop
+    next:
+      - do:
+          - get_records
+        when: <%ctx().i<len(ctx().list)%>
+      - do:
+          - email_send
+        when: <%ctx().i>=len(ctx().list)%>
+  # [757, 477]
+  task3:
+    action: core.noop
+  # [633, 371]
+  attention:
+    action: core.sendmail
+    next:
+      - do:
+          - task3
+    input:
+      to: supriya.kadam@ethan.com.au
+      subject: attention please
+      body: Missing records
+  # [906, 367]
+  update:
+    action: core.sendmail
+    next:
+      - do:
+          - task3
+    input:
+      to: supriya.kadam@ethan.com.au
+      subject: update
+      body: "\" <% ctx().x %> \""
+input:
+  - list

@@ -1,0 +1,6 @@
+pack: sim_notifications
+enabled: true
+runner_type: orquesta
+name: webex_send_chat_notification
+entry_point: workflows/webex_send_chat_notification.yaml
+description: Sends a chat msg via api to webex chat

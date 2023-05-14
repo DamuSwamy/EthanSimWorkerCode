@@ -1,0 +1,61 @@
+version: 1.0
+tasks:
+  # [274, 374]
+  success:
+    action: core.noop
+  # [274, 203]
+  Deactivate_User:
+    action: core.http
+    next:
+      # #629e47
+      - do:
+          - success
+        when: <% result().status_code = 204 %>
+        publish:
+          - user_status: DEACTIVATED
+      # #d1583b
+      - do:
+          - failure
+        when: <% result().status_code != 204 %>
+        publish:
+          - user_status: UNKNOWN
+    input:
+      url: "https://helpdesk-dev.essist.com.au/v4_6_release/apis/3.0/system/members/<% ctx().user_id %>/deactivate"
+      headers:
+        Authorization: Basic <% ctx().auth_token %>
+        clientId: <% ctx().client_id %>
+        Content-Type: application/json; charset=utf-8
+      method: POST
+  # [535, 301]
+  failure:
+    action: core.noop
+  # [274, 56]
+  get_user_id_from_email:
+    action: core.http
+    input:
+      url: "https://helpdesk-dev.essist.com.au/v4_6_release/apis/3.0/system/members?pageSize=1000&conditions=primaryEmail=\"<% ctx().user_email %>\""
+      headers:
+        Authorization: Basic <% ctx().auth_token %>
+        clientId: <% ctx().client_id %>
+        Content-Type: application/json; charset=utf-8
+    next:
+      # #629e47
+      - do:
+          - Deactivate_User
+        when: <% succeeded() %>
+        publish:
+          - user_id: <% result().body[0].id %>
+      # #d1583b
+      - do:
+          - failure
+        when: <% failed() %>
+input:
+  - user_email
+  - auth_token
+  - client_id
+output:
+  - user_status: <% ctx().user_status %>
+  - user_id: <% ctx().user_id %>
+vars:
+  - user_status: unknown
+  - user_id: 1234

@@ -1,0 +1,6 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: datetimecheck
+entry_point: workflows/datetimecheck.yaml
+description: test

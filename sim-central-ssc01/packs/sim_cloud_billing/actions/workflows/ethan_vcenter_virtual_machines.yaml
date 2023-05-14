@@ -1,0 +1,532 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - cloud_db_connection
+  - vcenter_id
+  - vcenter
+  - pull_period
+  - proxy_vcenters
+
+vars:
+  - create_events: ['VmClonedEvent', 'VmConnectedEvent', 'VmCreatedEvent', 'VmDeployedEvent', 'VmMigratedEvent', 'VmRegisteredEvent', 'VmDiscoveredEvent']
+  - remove_event: ['VmRemovedEvent', 'VmDecommisionedEvent']
+  - reconfigure_event: 'VmReconfiguredEvent'
+  - events: []
+
+output:
+  - result: <% ctx().events %>
+
+
+tasks:
+  # [192, 51]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Get_Vcenter_Events
+
+  # [142, 851]
+  SQL_Select_Billing_CustIDs:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT ethvmid,custidx FROM IaasVMCustInfo WHERE ethvmid like '<% ctx().vcenter_id%>%'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_custid_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_Billing_Datstores
+      - when: <% failed() %>
+        do: fail
+
+  # [292, 1051]
+  SQL_Select_Billing_Datstores:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT dsidx, storageTier FROM iaasDatastores WHERE dsidx LIKE '<% ctx().vcenter_id %>-%'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_datastore_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Check_For_Actions
+      - when: <% failed() %>
+        do: fail
+
+  # [143, 200]
+  Get_Vcenter_Events:
+    action: sim_vmware2.vcenter_events
+    input:
+      vsphere: <% ctx().vcenter %>
+      vcenter_id: <% ctx().vcenter_id %>
+      event_period: <% ctx().pull_period %>
+      #event_period: 600
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - orig_events: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Action_Needed_0
+      - when: <% failed() %>
+        do: fail
+
+  # [42, 351]
+  Action_Needed_0:
+    action: core.noop
+    next:
+      - when: <% len(ctx().orig_events) > 0 %>
+        do:
+          - Billing_VcEvents_Operations
+      - when: <% len(ctx().orig_events) = 0 %>
+        publish:
+          - scan_log: <% dict(system_id=>ctx().vcenter_id, system_type=>'vCenter', system_name=>ctx().vcenter, num_of_records=>len(ctx().orig_events)) %>
+        do:
+          - Insert_Scanned_Data
+          - End
+
+  # [342, 701]
+  Action_Needed_1:
+    action: core.noop
+    next:
+      - when: <% len(ctx().events) > 0 %>
+        publish:
+          - last_event_date: <% (now(offset=>localtz())).format("%Y-%m-%d %H:%M:%S") %>
+          - scan_log: <% dict(system_id=>ctx().vcenter_id, system_type=>'vCenter', system_name=>ctx().vcenter, num_of_records=>len(ctx().events), last_event_at=>ctx().last_event_date) %>
+        do:
+          - SQL_Select_Billing_Datstores
+          - Insert_Scanned_Data
+      - when: <% 1 != 1 %>
+        do:
+          - SQL_Select_Billing_CustIDs
+      - when: <% len(ctx().events) = 0 %>
+        publish:
+          - scan_log: <% dict(system_id=>ctx().vcenter_id, system_type=>'vCenter', system_name=>ctx().vcenter, num_of_records=>len(ctx().events)) %>
+        do:
+          - Insert_Scanned_Data
+          - End
+
+  # [142, 501]
+  Insert_Scanned_Data:
+    action: sql.insert_bulk
+    input:
+      table: "IaaSScanLog"
+      data: <% list(ctx().scan_log) %>
+      connection: <% ctx().billing_db_connection %>
+    next:
+      - when: <% failed() %>
+        do: noop
+ 
+
+  # [442, 551]
+  Billing_VcEvents_Operations:
+    action: sim_cloud_billing.ethan_vcenter_events
+    input:
+      billing_db_connection: <% ctx().billing_db_connection %>
+      vmevents: <% ctx().orig_events %>
+      vcenter_id: <% ctx().vcenter_id %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - events: <% switch(isList(result().output.events) => result().output.events, true => []) %>
+          - vm_uniq_remove_events: <% ctx(events).where($.eventType in ctx().remove_event and $.containsKey('ethvmid')).select($.vmID).distinct() %>
+#          - vm_uniq_update_events: <% ctx(events).where(not $.eventType in ctx().create_events and not $.eventType in ctx().remove_event and $.eventType != ctx().reconfigure_event and not $.vmID in ctx().vm_uniq_remove_events).select($.vmID).distinct() %>
+          - vm_uniq_reconfigure_events: <% ctx(events).where($.eventType = ctx().reconfigure_event and not $.vmID in ctx().vm_uniq_remove_events).select($.vmID).distinct() %>
+          - vm_uniq_configure_event_id: "{{ ctx().vm_uniq_reconfigure_events | join(',') }}"
+          - vm_uniq_create_events: <% ctx(events).where($.eventType in ctx().create_events and not $.vmID in ctx().vm_uniq_reconfigure_events and not $.vmID in ctx().vm_uniq_remove_events and not $.containsKey('ethvmid')).select($.vmID).distinct() %>
+          - vm_uniq_update_events: <% ctx(events).where(not $.eventType in ctx().create_events and not $.eventType in ctx().remove_event and $.eventType != ctx().reconfigure_event and not $.vmID in ctx().vm_uniq_remove_events and not $.vmID in ctx().vm_uniq_reconfigure_events and not $.vmID in ctx().vm_uniq_create_events).select($.vmID).distinct() %>
+          - vm_uniq_update_id: "{{ ctx().vm_uniq_update_events | join(',') }}"
+        do:
+          - Action_Needed_1
+      - when: <% failed() %>
+        do: fail
+
+  # [2592, 1101]
+  Billing_VcEvents_Insert:
+    action: sim_cloud_billing.ethan_vcenter_events
+    input:
+      billing_db_connection: <% ctx().billing_db_connection %>
+      vmevents: <% ctx().events %>
+      vcenter_id: <% ctx().vcenter_id %>
+      final_action: true
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Event_End
+      - when: <% failed() %>
+        do: fail
+
+  # [542, 301]
+  Check_For_Actions:
+    action: core.noop
+    next:
+      - when: <% len(ctx().vm_uniq_create_events) > 0 %>
+        do:
+          - Get_Vcenter_Raw_Create_Data
+      - when: <% len(ctx().vm_uniq_update_events) > 0 %>
+        do:
+          - Prepare_Vcenter_Update_Data
+      - when: <% len(ctx().vm_uniq_remove_events) > 0 %>
+        do:
+          - Remove_List_Generator
+      - when: <% len(ctx().vm_uniq_reconfigure_events) > 0  %>
+        do:
+          - SQL_Select_Billing_VM
+      - when: <% len(ctx().vm_uniq_create_events) = 0 and len(ctx().vm_uniq_update_events) = 0 and len(ctx().vm_uniq_remove_events) = 0 and len(ctx().vm_uniq_reconfigure_events) = 0 %>
+        do: 
+          - End
+      - when: <% failed() %>
+        do: 
+          - Get_Vcenter_Raw_Update_Data
+
+  # [742, 501]
+  Prepare_Vcenter_Update_Data:
+    action: core.noop
+    next:
+      - when: <% succeeded() or failed() %>
+        publish:
+          - vm_uniq_reconfigure_events: <% ctx().vm_uniq_update_events %>
+          - vm_uniq_configure_event_id: <% ctx().vm_uniq_update_id %>
+        do:
+          - SQL_Select_Billing_VM
+
+  # [1542, 1051]
+  Get_Vcenter_Raw_Reconfigure_Data:
+    action: sim_vmware2.vcenter_raw_data
+    input:
+      vcenter_id: <% ctx().vcenter_id %>
+      vsphere: <% ctx().vcenter %>
+      get_vms: true
+      get_vm_disks: true
+      get_vm_networks: true
+      datastores: <% ctx().billing_datastore_db_data %>
+      #custids: <% ctx().billing_custid_db_data %>
+      ids: <% ctx().vm_uniq_reconfigure_events %>
+      proxy_vcenters: <% ctx().proxy_vcenters %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - reconfigure_vm_output: <% switch(isDict(result().result) => result().result, true => {}) %>
+        do:
+          - VM_Action_Generator
+          - VM_Disk_Action_Generator
+          - VM_Network_Action_Generator
+      - when: <% failed() %>
+        do: fail
+
+  # [1792, 901]
+  VM_Action_Generator:
+    action: sim_cloud_billing.ethan_vcenter_vm_generator_v1
+    input:
+      db_data: <% ctx().billing_vm_db_data %>
+      vc_data: <% ctx().reconfigure_vm_output.VirtualMachines %>
+      data_type: "vm"
+      events: <% ctx().events %>
+      create_events: <% ctx().create_events %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - vm_action: <% switch(isDict(result().result) => result().result, true => {}) %>
+        do:
+          - VM_Database_Operations
+      - when: <% failed() %>
+        do: fail
+
+  # [1992, 1101]
+  VM_Database_Operations:
+    action: sim_cloud_billing.vcenter_vm_database_update
+    input:
+      insert_data: <% ctx().vm_action.insert %>
+      update_data: <% ctx().vm_action.update %>
+      remove_data: <% ctx().vm_action.remove %>
+      db_connection: <% ctx().billing_db_connection %>
+      target_table: "iaasVM"
+    next:
+      - when: <% succeeded() %>
+        do: Reconfigure_VM_End
+      - when: <% failed() %>
+        do: fail
+
+  # [42, 651]
+  VM_Disk_Action_Generator:
+    action: sim_cloud_billing.ethan_vcenter_vm_generator_v1
+    input:
+      db_data: <% ctx().billing_vmdisk_db_data %>
+      vc_data: <% ctx().reconfigure_vm_output.VMDisks %>
+      data_type: "vm_disk"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - vm_disk_action: <% switch(isDict(result().result) => result().result, true => {}) %>
+        do:
+          - VM_Disk_Database_Operations
+      - when: <% failed() %>
+        do: fail
+
+  # [2292, 1101]
+  VM_Disk_Database_Operations:
+    action: sim_cloud_billing.vcenter_vm_disk_database_update
+    input:
+      insert_data: <% ctx().vm_disk_action.insert %>
+      update_data: <% ctx().vm_disk_action.update %>
+      remove_data: <% ctx().vm_disk_action.remove %>
+      db_connection: <% ctx().billing_db_connection %>
+      target_table: "iaasVMDisks"
+    next:
+      - when: <% succeeded() %>
+        do: Reconfigure_VM_Disk_End
+      - when: <% failed() %>
+        do: fail
+
+  # [692, 1101]
+  VM_Network_Action_Generator:
+    action: sim_cloud_billing.ethan_vcenter_vm_generator_v1
+    input:
+      db_data: <% ctx().cloud_iaas_network_db_data %>
+      vc_data: <% ctx().reconfigure_vm_output.VMNetworks %>
+      data_type: "vm_network"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - vm_network_action: <% switch(isDict(result().result) => result().result, true => {}) %>
+        do:
+          - VM_Network_Database_Operations
+      - when: <% failed() %>
+        do: fail
+
+  # [642, 1]
+  VM_Network_Database_Operations:
+    action: sim_cloud_billing.vcenter_vm_network_database_update
+    input:
+      insert_data: <% ctx().vm_network_action.insert %>
+      update_data: <% ctx().vm_network_action.update %>
+      remove_data: <% ctx().vm_network_action.remove %>
+      db_connection: <% ctx().cloud_db_connection %>
+      target_table: "Iaas_Network"
+    next:
+      - when: <% succeeded() %>
+        do: Reconfigure_VM_Network_End
+      - when: <% failed() %>
+        do: fail
+
+  # [1042, 501]
+  SQL_Select_Billing_VM:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT ethvmid,vmID FROM iaasVM WHERE invVCServerID='<% ctx().vcenter_id %>' and vmID in (<% ctx().vm_uniq_configure_event_id %>)"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_vm_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_Billing_VMDisk
+      - when: <% failed() %>
+        do: fail
+
+  # [892, 651]
+  SQL_Select_Billing_VMDisk:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT ethvmid,vmID,deviceKey,lastUpdated FROM iaasVMDisks WHERE invVCServerID='<% ctx().vcenter_id %>' and inactiveDt = '9999-12-31 23:59:59' and vmID in (<% ctx().vm_uniq_configure_event_id %>)"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_vmdisk_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_CloudManagement_Iaas_Network
+      - when: <% failed() %>
+        do: fail
+
+  # [1392, 851]
+  SQL_Select_CloudManagement_Iaas_Network:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "SELECT managedID,vmID,deviceKey FROM Iaas_Network WHERE invVCServer='<% ctx().vcenter_id %>' and vmID in (<% ctx().vm_uniq_configure_event_id %>)"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - cloud_iaas_network_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Get_Vcenter_Raw_Reconfigure_Data
+      - when: <% failed() %>
+        do: fail
+          
+  # [1392, 401]
+  Get_Vcenter_Raw_Create_Data:
+    action: sim_vmware2.vcenter_raw_data
+    input:
+      vcenter_id: <% ctx().vcenter_id %>
+      vsphere: <% ctx().vcenter %>
+      get_vms: true
+      get_vm_disks: true
+      get_vm_networks: true
+      datastores: <% ctx().billing_datastore_db_data %>
+      #custids: <% ctx().billing_custid_db_data %>
+      ids: <% ctx().vm_uniq_create_events %>
+      proxy_vcenters: <% ctx().proxy_vcenters %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - create_vm_output: <% switch(isDict(result().result) => result().result, true => {}) %>
+        do:
+          - Insert_List_Generator
+      - when: <% failed() %>
+        do: fail
+
+  # [1192, 651]
+  Get_Vcenter_Raw_Update_Data:
+    action: sim_vmware2.vcenter_raw_data
+    input: 
+      vcenter_id: <% ctx().vcenter_id %>
+      vsphere: <% ctx().vcenter %>
+      get_vms: true
+      datastores: <% ctx().billing_datastore_db_data %>
+      #custids: <% ctx().billing_custid_db_data %>
+      ids: <% ctx().vm_uniq_update_events %>
+      proxy_vcenters: <% ctx().proxy_vcenters %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - update_vm_output: <% switch(isDict(result().result) => result().result, true => {}) %>
+        do:
+          - Update_Database_Operations
+      - when: <% failed() %>
+        do: fail
+
+  # [1542, 601]
+  Insert_List_Generator:
+    action: sim_cloud_billing.ethan_vcenter_vm_generator_v2
+    input:
+      data: <% ctx().create_vm_output %>
+      action: "insert"
+      events: <% ctx().events %>
+      create_events: <% ctx().create_events %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - insert_action: <% switch(isDict(result().result) => result().result, true => {}) %>
+        do:
+          - Create_Database_Operations
+      - when: <% failed() %>
+        do: fail
+
+  # [1292, 201]
+  Remove_List_Generator:
+    action: sim_cloud_billing.ethan_vcenter_vm_generator_v2
+    input:
+      data: {}
+      action: "remove"
+      events: <% ctx().events %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - remove_action: <% switch(isDict(result().result) => result().result, true => {}) %>
+        do:
+          - Remove_Database_Operations
+      - when: <% failed() %>
+        do: fail
+
+
+  # [1942, 751]
+  Create_Database_Operations:
+    action: sim_cloud_billing.vcenter_create_database_ops
+    input:
+      vms: <% ctx().insert_action.vm %>
+      vmdisks: <% ctx().insert_action.vmdisk %>
+      vmnetworks: <% ctx().insert_action.vmnetwork %>
+      billing_db_connection: <% ctx().billing_db_connection %>
+      cloud_db_connection: <% ctx().cloud_db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do: Create_End
+      - when: <% failed() %>
+        do: fail
+
+  # [1042, 851]
+  Update_Database_Operations:
+    action: sim_cloud_billing.vcenter_update_database_ops
+    input:
+      vms: <% ctx().update_vm_output.VirtualMachines %>
+      vmdisks: <% ctx().update_vm_output.VMDisks %>
+      vmnetworks: <% ctx().update_vm_output.VMNetworks %>
+      billing_db_connection: <% ctx().billing_db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do: Update_End
+      - when: <% failed() %>
+        do: fail
+
+  # [1042, 351]
+  Remove_Database_Operations:
+    action: sim_cloud_billing.vcenter_remove_database_ops
+    input:
+      vms: <% ctx().remove_action.vm %>
+      vmdisks: <% ctx().remove_action.vmdisk %>
+      vmnetworks: <% ctx().remove_action.vmnetwork %>
+      billing_db_connection: <% ctx().billing_db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do: Remove_End
+      - when: <% failed() %>
+        do: fail
+
+  # [2392, 951]
+  Create_End:
+    delay: 30
+    action: core.noop
+    next:
+      - when: <% len(ctx().vm_uniq_create_events) > 0 and not len(ctx().vm_uniq_reconfigure_events) > 0 %>
+        do: 
+          - Billing_VcEvents_Insert
+
+  # [1192, 1001]
+  Update_End:
+    action: core.noop
+
+  # [2092, 901]
+  Remove_End:
+    action: core.noop
+
+  # [1742, 401]
+  Reconfigure_VM_End:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do: Reconfigure_End
+    
+  # [1892, 601]
+  Reconfigure_VM_Disk_End:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do: Reconfigure_End
+
+  # [842, 151]
+  Reconfigure_VM_Network_End:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do: Reconfigure_End
+
+  # [2192, 551]
+  Reconfigure_End:
+    join: all
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do: 
+          - Billing_VcEvents_Insert
+
+  # [2392, 751]
+  Event_End:
+    action: core.noop
+
+  # [642, 901]
+  End: 
+    action: core.noop

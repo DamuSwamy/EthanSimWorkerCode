@@ -1,0 +1,39 @@
+version: 1.0
+
+vars:
+  - notifications: []
+  - process_name: "Security NIST retrieve data"
+
+tasks:
+  # [1293, 96]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - notify
+          - get_nist_data
+        publish:
+          - notification: (<% ctx().process_name%>) process started
+          - cpeID: <% ctx().asset.cpeID %>
+          - netDBModel: <% ctx().asset.Model %>
+          - deviceName: <% ctx().asset.DeviceName %>
+          - model: <% ctx().asset.MatchingModel %>
+          - vendor: <% ctx().asset.MatchingModel %>
+          - AssetID: <% ctx().asset.AssetID %>
+          - OS: <% ctx().asset.MatchingOSType %>
+          - OSver: <% ctx().asset.MatchingOSVersion %>
+          - OScpe: <% ctx().asset.MatchingOSType %>
+  # [1040, 620]
+  notify:
+    action: core.echo
+    input:
+      message: <% ctx().notification %>
+  # [1504, 311]
+  get_nist_data:
+    action: core.http
+    input:
+      url: "https://services.nvd.nist.gov/rest/json/cves/1.0?cpeMatchString=<% ctx().cpeID %>&addOns=dictionaryCpes&apiKey=bbae5b04-84e6-4774-8e64-20094a6e6e73"
+      method: GET
+input:
+  - asset
+

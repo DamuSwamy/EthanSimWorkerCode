@@ -1,0 +1,17 @@
+---
+  class_name: "vCenterManagementGroupSensor"
+  enabled: false
+  entry_point: "vcenter_management_group_sensor.py"
+  description: "Sensor which monitors database for scheduled power actions"
+  poll_interval: 900
+  trigger_types:
+    -
+      name: "vcenter_management_group_action"
+      pack: "sim_cloud_billing"
+      description: "Trigger which indicates power on or power off action has been detected"
+      # This is the schema of the trigger payload the sensor generates
+      payload_schema:
+        type: "object"
+        properties:
+          trigger_payload:
+            type: "array"

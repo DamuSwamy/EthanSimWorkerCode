@@ -1,0 +1,13 @@
+version: 1.0
+tasks:
+  # [509, 105]
+  webex_send_msg:
+    action: core.http
+    input:
+      url: "https://webexapis.com/v1/messages"
+      body: "{\n  \"roomId\" : \"Y2lzY29zcGFyazovL3VzL1JPT00vMDNjMzk4ZjAtNTQ5Ni0xMWViLTg4NDEtNWY1MTc2OGJjN2U1\",\n  \"markdown\" : \"SiM Test Message\\n Hello World!\",\n  \"text\" : \"SiM Test Message  Hello World!\"\n}"
+      headers:
+        Authorization: Bearer YmY0ZWU5ODAtZWM0ZS00YTJlLWI4NzEtMDdjZTE5MzgyN2M5Y2JhMGI0MDMtNjUx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
+        Content-Type: application/json
+      method: POST
+      file_content_type: null

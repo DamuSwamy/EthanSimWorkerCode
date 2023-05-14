@@ -1,0 +1,51 @@
+version: 1.0
+
+input:
+  - db_connection
+  - invoice_list
+
+vars:
+  - update_index: 0
+  - invoices: []
+
+output:
+  - invoices: <% ctx().invoices %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Update_PartnerCustomer_Invoices
+
+  Update_PartnerCustomer_Invoices:
+    action: sql.update
+    input:
+      connection: <% ctx().db_connection %>
+      table: "PartnerCustomerInvoice"
+      where:
+        id: <% ctx().invoice_list[ctx().update_index].id %>
+      update:
+        TotalCharges: <% ctx().invoice_list[ctx().update_index].TotalCharges %>
+        PaidAmount: <% ctx().invoice_list[ctx().update_index].PaidAmount %>
+        DocumentType: <% ctx().invoice_list[ctx().update_index].DocumentType %>
+        InvoiceType: <% ctx().invoice_list[ctx().update_index].InvoiceType %>
+        CurrencyCode: <% ctx().invoice_list[ctx().update_index].CurrencyCode %>
+        CurrencySymbol: <% ctx().invoice_list[ctx().update_index].CurrencySymbol %>
+        InvoiceDate: <% ctx().invoice_list[ctx().update_index].InvoiceDate %>
+    next:
+      - when: <% ctx().update_index < (len(ctx().invoice_list) - 1) %>
+        publish:
+          - invoices: <% ctx().invoices.append(ctx().invoice_list[ctx().update_index].id) %>
+          - update_index: <% ctx().update_index + 1 %>
+        do:
+          - Update_PartnerCustomer_Invoices
+      - when: <% ctx().update_index >= (len(ctx().invoice_list) - 1) %>
+        publish:
+          - invoices: <% ctx().invoices.append(ctx().invoice_list[ctx().update_index].id) %>
+        do:
+          - End
+
+  End:
+    action: core.noop

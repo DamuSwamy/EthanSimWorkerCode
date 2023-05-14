@@ -1,0 +1,10 @@
+pack: ppq_core
+enabled: true
+runner_type: orquesta
+name: onboard_user
+entry_point: workflows/onboard_user.yaml
+description: onboard a new user
+parameters:
+  data:
+    type: object
+    description: input json payload

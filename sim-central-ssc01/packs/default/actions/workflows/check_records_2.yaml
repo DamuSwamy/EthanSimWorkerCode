@@ -1,0 +1,71 @@
+version: 1.0
+tasks:
+  # [332, 37]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - count_records
+        publish:
+          - i: 0
+          - x: " "
+  # [347, 141]
+  count_records:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: select count(*) as records from <% ctx().list %>
+      connection: productionCloudExtension
+    next:
+      - do:
+          - skip
+        publish:
+          - count: <% result().result[0].records %>
+          - x: <% concat(ctx().list[ctx().i],"-",str(ctx().count),"\n") %>
+  # [345, 238]
+  skip:
+    action: core.noop
+    next:
+      - do:
+          - publish_attention
+        when: <% ctx().count = 0 %>
+        publish:
+          - attention: true
+      - do:
+          - null
+        when: <% ctx().count != 0 %>
+  # [668, 219]
+  pass:
+    action: core.noop
+    next:
+      - do:
+          - count_records
+        when: <% ctx().i < ctx().len(list) %>
+      - do:
+          - task1
+  # [236, 340]
+  publish_attention:
+    action: core.noop
+    next:
+      - do:
+          - message
+  # [480, 334]
+  null:
+    action: core.noop
+    next:
+      - do:
+          - message
+  # [383, 462]
+  message:
+    action: core.echo
+    input:
+      message: "\" <% ctx().count %> \""
+    next:
+      - do:
+          - pass
+        when: <% ctx().i < ctx().len(list) %>
+  # [813, 313]
+  task1:
+    action: core.noop
+input:
+  - list

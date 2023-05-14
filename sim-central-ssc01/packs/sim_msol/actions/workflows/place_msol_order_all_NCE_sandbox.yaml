@@ -1,0 +1,215 @@
+version: 1.0
+input:
+  - tenant_id
+  - password_id
+  - customer_tenant_id
+  - new_param_line_items_raw_json
+  - existing_param_line_items_raw_json
+  - ticket_id
+output:
+  - modify_orders_result: <%ctx().modify_orders_result %>
+  - base_orders_result: <%ctx().base_orders_result %>
+  - addon_orders_result: <%ctx().addon_orders_result %>
+tasks:
+  # [594, 144]
+  Get_client_secret:
+    action: sim_passwordstate.retrieve_password_from_password_id_api
+    input:
+      password_id: <% ctx().password_id %>
+      url: "https://pwd.ecorp.systems"
+    next:
+      # #629e47
+      - do:
+          - check_old_or_new_ticket
+        when: <% succeeded() %>
+        publish:
+          - client_id: <% result().output.retrieved_username %>
+          - client_secret: <% result().output.retrieved_password %>
+  # [333, 322]
+  Get_Access_Token_from_Microsoft_Online_API:
+    action: core.http
+    input:
+      url: "https://login.microsoftonline.com/<% ctx().tenant_id %> /oauth2/token"
+      body: client_id=<% ctx().client_id %>&resource=https%3A%2F%2Fgraph.windows.net&client_secret=<% ctx().client_secret %>&grant_type=client_credentials
+      method: GET
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+    next:
+      # #629e47
+      - do:
+          - initialize_variables
+        when: <% succeeded() %>
+        publish:
+          - auth_token: <% result().body. access_token %>
+  # [332, 429]
+  initialize_variables:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - Modify_Existing_Order_if_any
+        when: <% succeeded() %>
+  # [330, 864]
+  Decision_Base_Addon_Modify:
+    action: core.noop
+    next:
+      - do:
+          - resolve_ticket
+        when: <% ctx().modify_orders_result.indexOf('Failed') = -1 and ctx().base_orders_result.indexOf('Failed') = -1 and ctx().addon_orders_result.indexOf('Failed') = -1 %>
+      - do:
+          - escalate_ticket
+        when: <% ctx().modify_orders_result.indexOf('Failed') != -1 or ctx().base_orders_result.indexOf('Failed') != -1 or ctx().addon_orders_result.indexOf('Failed') != -1 %>
+  # [108, 1070]
+  Success:
+    action: core.noop
+  # [503, 1065]
+  Success_with_Exceptions:
+    action: core.noop
+  # [331, 636]
+  Place_Base_order_if_any:
+    action: sim_msol.place_msol_base_only_order_NCE
+    input:
+      customer_tenant_id: <% ctx().customer_tenant_id %>
+      param_line_items_raw_json: <% ctx().new_param_line_items_raw_json %>
+      password_id: "\"1046\""
+      tenant_id: <% ctx().tenant_id %>
+      auth_token: <% ctx().auth_token %>
+    next:
+      # #629e47
+      - do:
+          - sleep
+        when: <% succeeded() %>
+        publish:
+          - base_orders_result: <% result().output.result_summary %>
+  # [330, 764]
+  Place_Addon_order_if_any:
+    action: sim_msol.place_msol_add_on_only_order_NCE_v2
+    input:
+      customer_tenant_id: <% ctx().customer_tenant_id %>
+      param_line_items_raw_json: <% ctx().new_param_line_items_raw_json %>
+      password_id: "\"1046\""
+      tenant_id: <% ctx().tenant_id %>
+      auth_token: <% ctx().auth_token %>
+    next:
+      # #629e47
+      - do:
+          - Decision_Base_Addon_Modify
+        when: <% succeeded() %>
+        publish:
+          - addon_orders_result: <% result().output.result_summary %>
+  # [331, 529]
+  Modify_Existing_Order_if_any:
+    action: sim_msol.modify_msol_quantity_NCE_sandbox
+    input:
+      customer_tenant_id: <% ctx().customer_tenant_id %>
+      param_line_items_raw_json: <% ctx().existing_param_line_items_raw_json %>
+      password_id: "\"1046\""
+      tenant_id: <% ctx().tenant_id %>
+      auth_token: <% ctx().auth_token %>
+    next:
+      # #629e47
+      - do:
+          - Place_Base_order_if_any
+        publish:
+          - modify_orders_result: <% result().output.result_summary %>
+        when: <% succeeded() %>
+  # [338, 101]
+  populate_clientid_secret:
+    action: core.noop
+    next:
+      - do:
+          - Get_client_secret
+        when: <% succeeded() %>
+        publish:
+          - time_10minsago: "<% (now() - timespan(minutes => 10)).format(\"%Y-%m-%d %H:%M:%S\") %>"
+  # [337, 0]
+  get_ticket:
+    action: sim_itsm2.get
+    input:
+      log_level: DEBUG
+      query:
+        number: <% ctx().ticket_id %>
+      table: sn_customerservice_general_case
+    next:
+      - do:
+          - populate_clientid_secret
+        publish:
+          - ticket_opened: "<% datetime(result().result[0].opened_at).format(\"%Y-%m-%d %H:%M:%S\") %>"
+          - automation_start: "<% datetime(task().start_timestamp).format(\"%Y-%m-%d %H:%M:%S\")  %>"
+          - pwdstateusername: svc-pwd-stackstorm
+  # [332, 211]
+  check_old_or_new_ticket:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - Get_Access_Token_from_Microsoft_Online_API
+        when: <% datetime(ctx().time_10minsago) < datetime(ctx().ticket_opened) %>
+      - do:
+          - older_ticket_update
+        when: <% datetime(ctx().time_10minsago) >=  datetime(ctx().ticket_opened) %>
+  # [598, 275]
+  older_ticket_update:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticket_id %>
+      payload:
+        comments: SiM Automation found that this ITSM ticket is older than 10 minutes hence may result into duplicate order so it decided to escalate this ticket to engineer for further review, our engineer will review this request and verify if the order is already processed and do the needful.
+        state: 2
+        assigned_to: 
+      table: sn_customerservice_general_case
+    next:
+      - do:
+          - end_error_older_ticket
+        publish:
+          - modify_orders_result: SiM Automation found that this ITSM ticket is older than 10 minutes hence may result into duplicate order so it decided to escalate this ticket to engineer for further review, engineer will review this request and verify if the order is already processed
+          - base_orders_result: SiM Automation found that this ITSM ticket is older than 10 minutes hence may result into duplicate order so it decided to escalate this ticket to engineer for further review, engineer will review this request and verify if the order is already processed
+          - addon_orders_result: SiM Automation found that this ITSM ticket is older than 10 minutes hence may result into duplicate order so it decided to escalate this ticket to engineer for further review, engineer will review this request and verify if the order is already processed
+  # [875, 280]
+  end_error_older_ticket:
+    action: core.echo
+    input:
+      message: "Time 10 minutes ago <% datetime(ctx().time_10minsago)  %>  \nTime of ITSM ticket open <% datetime(ctx().ticket_opened) %>"
+  # [109, 959]
+  resolve_ticket:
+    action: sim_itsm2.update
+    next:
+      - do:
+          - Success
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticket_id %>
+      payload:
+        work_notes: "SiM Automation has successfully completed the MSOL Order.\n\nModify Orders result:\n<% ctx().modify_orders_result %>\nNew Base Orders result: <% ctx().base_orders_result %>\nNew Addon orders result:\n<% ctx().addon_orders_result %>"
+        resolution_code: Completed
+        close_notes: "Successful completion of MSOL order from SiM Automation "
+        state: 3
+        cause: Ethan Online Request for MSOL License purchase from SiM Automation
+        assigned_to: svc_sim_automation
+        closed_by: 84cf417087ff3410bd1d32e80cbb3502
+        closed_at: "2022-02-15 17:03:07"
+      table: sn_customerservice_general_case
+  # [502, 960]
+  escalate_ticket:
+    action: sim_itsm2.update
+    next:
+      - do:
+          - Success_with_Exceptions
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticket_id %>
+      payload:
+        comments: "SiM Automation was unable to complete the MSOL order, our engineer will review this request and action failed items manually.\n\nModify Orders result\n<% ctx().modify_orders_result %>\nNew Base Orders result: <% ctx().base_orders_result %>\nNew Addon orders result\n<% ctx().addon_orders_result %>"
+        state: 2
+        assigned_to: 
+      table: sn_customerservice_general_case
+  # [611, 702]
+  sleep:
+    action: core.local
+    input:
+      cmd: sleep 30
+      timeout: 180
+    next:
+      - do:
+          - Place_Addon_order_if_any

@@ -1,0 +1,11 @@
+pack: sim_activedirectory
+enabled: true
+runner_type: orquesta
+name: list_users
+entry_point: workflows/list_users.yaml
+description: List all users available
+parameters:
+  data:
+    type: object
+    description: Input json payload
+    required: true

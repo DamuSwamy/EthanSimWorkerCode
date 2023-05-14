@@ -1,0 +1,171 @@
+version: 1.0
+
+input:
+  - cloud_db_connection
+  - payload
+  - logic_app_key
+
+vars:
+  - result: {}
+
+output:
+  - data: <% ctx().payload %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% ctx().payload['Action'].toLower() = 'power on' %>
+        publish:
+          - nable_action: "enable"
+          - power_state: 1
+        do:
+          - Pre_Validation_Check
+      - when: <% ctx().payload['Action'].toLower() = 'power off' %>
+        publish:
+          - nable_action: "disable"
+          - power_state: 0
+        do:
+          - Check_Nable_Disable_Required
+      - when: <% ctx().payload['Action'].toLower() != 'power on' and ctx().payload['Action'].toLower() != 'power off' %>
+        do:
+          - No_Valid_Action_Found
+
+  Check_Nable_Disable_Required:
+    action: core.noop
+    next:
+      - when: <% ctx().payload.containsKey('nableManagedID') %>
+        do:
+          - Nable_Monitoring
+          - Pre_Validation_Check
+      - when: <% not ctx().payload.containsKey('nableManagedID') %>
+        do:
+          - Pre_Validation_Check
+
+  Pre_Validation_Check:
+    delay: 10
+    action: sim_vmware2.vcenter_raw_data
+    input:
+      vsphere: <% ctx().payload['vcName'] %>
+      vcenter_id: <% ctx().payload['managedByID'] %>
+      get_vms: true
+      ids: <% [ctx().payload['vmID']] %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - vm_status: <% result().result.VirtualMachines %>
+        do:
+          - Check_Status
+      - when: <% failed() %>
+        do:
+          - Error_End
+
+  Check_Status:
+    action: core.noop
+    next:
+      - when: <% ctx().power_state = 0 and len(ctx().vm_status) > 0 and ctx().vm_status[0].vmPowerState = 1 and ctx().vm_status[0].vmGuestState.toLower() = 'running' %>
+        do:
+          - Guest_Shutdown
+      - when: <% ctx().power_state = 0 and len(ctx().vm_status) > 0 and ctx().vm_status[0].vmPowerState = 1 and ctx().vm_status[0].vmGuestState.toLower() != 'running' %>
+        do:
+          - Power_Off_Virtual_Machine
+      - when: <% ctx().power_state = 1 and len(ctx().vm_status) > 0 and ctx().vm_status[0].vmPowerState = 0 %>
+        do:
+          - Power_On_Virtual_Machine
+      - when: <% (ctx().power_state = 1 and len(ctx().vm_status) > 0 and ctx().vm_status[0].vmPowerState = 1) or (ctx().power_state = 0 and len(ctx().vm_status) > 0 and ctx().vm_status[0].vmPowerState = 0) %>
+        do:
+          - Already_In_Desired_State
+      - when: <% len(ctx().vm_status) = 0 %>
+        do:
+          - No_VM_Found
+
+  Already_In_Desired_State:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - SQL_Update_IaaS_Live
+
+  No_VM_Found:
+    action: core.noop
+
+  Guest_Shutdown:
+    action: sim_vmware2.vm_shutdown
+    input:
+      vsphere: <% ctx().payload['vcName'] %>
+      id: ["vm-<% ctx().payload['vmID'] %>"]
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Power_Off_Virtual_Machine
+      - when: <% failed() %>
+        do: fail
+
+  Power_On_Virtual_Machine:
+    delay: <% ctx().payload['StartupDelay'] %>
+    action: sim_vmware2.vm_hw_power_on
+    input:
+      vsphere: <% ctx().payload['vcName'] %>
+      vm_id: "vm-<% ctx().payload['vmID'] %>"
+    next:
+      - when: <% succeeded() %>
+        do:
+          - SQL_Update_IaaS_Live
+      - when: <% failed() %>
+        do: fail
+
+  Power_Off_Virtual_Machine:
+    delay: <% ctx().payload['ShutdownDelay'] %>
+    action: sim_vmware2.vm_hw_power_off
+    input:
+      vsphere: <% ctx().payload['vcName'] %>
+      vm_id: "vm-<% ctx().payload['vmID'] %>"
+    next:
+      - when: <% succeeded() and ctx().payload.containsKey('nableManagedID') %>
+        do:
+          - Nable_Monitoring
+          - SQL_Update_IaaS_Live
+      - when: <% succeeded() and not ctx().payload.containsKey('nableManagedID') %>
+        do:
+          - SQL_Update_IaaS_Live
+      - when: <% failed() %>
+        do: fail
+
+  Nable_Monitoring:
+    action: core.http
+    input:
+      body: "{\"managedid\": \"<% ctx().payload['nableManagedID'] %>\",\"action\": \"<% ctx().nable_action %>\",\"from\": \"SiM\"}"
+      url: "https://apim-ethan-pmapi.azure-api.net/nablealarm/manual/paths/invoke"
+      headers:
+        Ocp-Apim-Subscription-Key: <% ctx().logic_app_key %>
+        Content-Type: application/json
+      method: POST
+      timeout: 120
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Update_IaaS_Live:
+    action: sql.update
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      table: Iaas_Live
+      update:
+        vmPowerState: <% ctx().power_state %>
+      where:
+        managedID: <% ctx().payload['managedID'] %>
+    next:
+      - when: <% failed() %>
+        do: fail
+      - when: <% succeeded() %>
+        do:
+          - End
+
+  No_Valid_Action_Found:
+    action: core.noop
+
+  End:
+    action: core.noop
+
+  Error_End:
+    action: core.noop

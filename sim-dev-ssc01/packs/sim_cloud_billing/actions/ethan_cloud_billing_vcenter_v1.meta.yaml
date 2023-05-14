@@ -1,0 +1,30 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_cloud_billing_vcenter_v1
+entry_point: workflows/ethan_cloud_billing_vcenter_v1.yaml
+description: Synchronize the data between ethan database and vcenter data
+parameters:
+  billing_db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: dev_billing
+  cmdb_db_connection:
+    type: string
+    description: CMDB Database connection to query, insert or update the records to
+    required: true
+    default: cmdb_Ethoria
+  cloud_db_connection: 
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: true
+    default: dev_cloudmanagement
+  vcenter:
+    type: "string"
+    description: Pre-Configured vsphere connection details
+    required: true
+  vcenter_id:
+    type: "string"
+    description: Custom vCenter ID from ethan
+    required: true

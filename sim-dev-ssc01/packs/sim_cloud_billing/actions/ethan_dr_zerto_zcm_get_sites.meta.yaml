@@ -1,0 +1,17 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_dr_zerto_zcm_get_sites
+entry_point: workflows/ethan_dr_zerto_zcm_get_sites.yaml
+description: Ethan DR - Zerto ZCM get sites
+parameters:
+  zcm_hosts:
+    type: array
+    description: List of ZCM hosts
+    required: true
+    default: ['210.48.215.37', '210.48.215.42']
+  zerto_port:
+    type: integer
+    description: Zerto server port
+    required: false
+    default: 443

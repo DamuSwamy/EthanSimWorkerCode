@@ -1,0 +1,38 @@
+pack: sim_o365
+enabled: true
+runner_type: orquesta
+name: one_drive_delegation_v2
+entry_point: workflows/one_drive_delegation_v2.yaml
+description: Delegate One drive from one user to another
+parameters:
+  admin_url:
+    type: string
+    description: Sharepoint admin url
+    required: true
+    default: "https://catholiccaredbb-admin.sharepoint.com"
+  username:
+    type: string
+    default: Administrator
+    required: true
+    description: username
+  password:
+    type: string
+    description: password
+    default: .JkXJ=OuK?AD@HWlMEPHwTji5t2u@*Z$
+    required: true
+    secret: true
+  user_email:
+    type: string
+    description: "User email to act as identify "
+    default: Nicholas.Kobal@etest.systems
+    required: true
+  delegate_email:
+    type: string
+    description: delegate user email
+    default: aman.mujawar@etest.systems
+    required: true
+  host:
+    type: string
+    description: Host to connect to and run commands from
+    required: true
+    default: ec2-54-252-185-237.ap-southeast-2.compute.amazonaws.com

@@ -1,0 +1,16 @@
+pack: default
+enabled: true
+runner_type: orquesta
+parameters:
+  Property:
+    type: array
+    description: Property to be allotted
+    required: true
+    default: "{\"service_offering\":\"DaaS Enhanced\"}"
+  Ticket_IDs:
+    type: array
+    description: list of ticket IDs
+    required: true
+name: Property change for SNtickets
+entry_point: workflows/Property change for SNtickets.yaml
+description: Workflow to change properties of SN tickets

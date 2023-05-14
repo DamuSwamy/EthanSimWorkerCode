@@ -1,0 +1,106 @@
+---
+smtp_accounts:
+  description: "SMTP accounts"
+  type: "array"
+  required: true
+  items:
+    type: "object"
+    required: true
+    properties:
+      name:
+        description: "Name of the account"
+        type: "string"
+        secret: false
+        required: true
+      server:
+        description: "Email server name - e.g. imap.gmail.com"
+        type: "string"
+        secret: false
+        required: true
+      username:
+        description: "Mailbox username. Should be specified when smtp_auth is true"
+        type: "string"
+      password:
+        description: "Mailbox password. Should be specified when smtp_auth is true"
+        type: "string"
+        secret: true
+      port:
+        description: "Port to connect to - e.g. 465, 587."
+        type: "integer"
+        default: 465
+        required: true
+      secure:
+        description: "Set to False to disable secure protocol. Default value is True."
+        type: "boolean"
+        default: true
+      smtp_auth:
+        description: >-
+          Authenticate username and password with SMTP server to send email.
+          Set to False if SMTP authentication is not required. Default True
+        type: "boolean"
+        default: true
+imap_accounts:
+  description: "IMAP accounts"
+  type: "array"
+  required: true
+  items:
+    type: "object"
+    required: true
+    properties:
+      name:
+        description: "Name of the account"
+        type: "string"
+        secret: false
+        required: true
+      server:
+        description: "Email server name - e.g. imap.gmail.com"
+        type: "string"
+        secret: false
+        required: true
+      username:
+        description: "Mailbox username"
+        type: "string"
+        required: true
+      password:
+        description: "Mailbox password."
+        type: "string"
+        secret: true
+        required: true
+      port:
+        description: "Port to connect to - e.g. 993, 143."
+        type: "integer"
+        default: 993
+        required: true
+      secure:
+        description: "Set to False to disable secure protocol. Default value is True."
+        type: "boolean"
+        default: true
+      download_attachments:
+        description: "Set to True to download attachments to datastore. Default False"
+        type: "boolean"
+        default: false
+      folder:
+        description: "Folder to check for email. Default INBOX"
+        type: "string"
+        required: false
+        default: "INBOX"
+max_attachment_size:
+  description: "Maxium size of downloaded attachment in bytes (default 1024)"
+  type: "integer"
+  required: false
+  default: 1024
+attachment_datastore_ttl:
+  description: "TTL in seconds to keep attachments in the datastore. Default 1800"
+  type: "integer"
+  required: false
+  default: 1800
+sensor_smtp_listen_ip:
+  description: "IP address to for SMTP sensor to listen on"
+  type: "string"
+  required: false
+  default: "127.0.0.1"
+sensor_smtp_listen_port:
+  description: "Port for SMTP sensor to listen on. Default 1025"
+  type: "integer"
+  required: false
+  default: 1025

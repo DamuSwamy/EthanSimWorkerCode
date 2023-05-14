@@ -1,0 +1,15 @@
+---
+name: retriger_action
+pack: sim_cloud_billing
+ref: sim_cloud_billing.retriger_action
+enabled: true
+tags: []
+description: Rule which will retrigger the actions which are missing to run at scheduled time
+trigger:
+  type: sim_cloud_billing.retriger
+action:
+  ref: "{{trigger.payload.name}}"
+  parameters: 
+    params: "{{trigger.payload.params}}"
+context:
+  user: st2admin

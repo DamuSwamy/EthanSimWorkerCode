@@ -1,0 +1,5 @@
+pack: sim_workflow_testing
+enabled: true
+runner_type: orquesta
+name: ph_DB_query_records
+entry_point: workflows/ph_DB_query_records.yaml

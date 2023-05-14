@@ -1,0 +1,15 @@
+pack: sim_braas_action
+enabled: true
+runner_type: "python-script"
+name: identify_valid_candidates
+entry_point: "identify_valid_candidates.py"
+description: Identify the run time of backups to decide whether backup can be retriggered
+parameters:
+  backup_report:
+    type: array
+    description: Past 2 days report 
+    required: true
+  failure_array:
+    type: array
+    description: list of failure payload objects
+    required: true

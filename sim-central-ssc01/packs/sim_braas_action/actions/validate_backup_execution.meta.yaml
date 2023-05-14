@@ -1,0 +1,10 @@
+pack: sim_braas_action
+enabled: true
+runner_type: orquesta
+name: validate_backup_execution
+entry_point: workflows/validate_backup_execution.yaml
+parameters:
+  backup_server:
+    type: "string"
+    description: Pre-Configured braas connection details
+    required: true

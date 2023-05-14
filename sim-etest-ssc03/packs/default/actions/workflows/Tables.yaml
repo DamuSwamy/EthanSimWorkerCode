@@ -1,0 +1,55 @@
+version: 1.0
+tasks:
+  # [178, 35]
+  begin:
+    action: core.noop
+    next:
+      - do:
+          - start
+        publish:
+          - m: " "
+  # [178, 145]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - calculate
+        publish:
+          - table: <% ctx().number * ctx().i %>
+        when: <% ctx().i < 11 %>
+      - do:
+          - end
+        when: <% ctx().i >= 11 %>
+  # [178, 501]
+  print_table:
+    action: core.echo
+    input:
+      message: "\" <% ctx().m %> \""
+  # [178, 269]
+  calculate:
+    action: core.noop
+    next:
+      - do:
+          - next
+        publish:
+          - m: <% concat(ctx().m,str(ctx().table))%>
+  # [178, 387]
+  next:
+    action: core.noop
+    next:
+      - do:
+          - print_table
+        when: <% ctx().i = 10 %>
+      - do:
+          - start
+        publish:
+          - i: <% ctx().i+1 %>
+  # [429, 240]
+  end:
+    action: core.noop
+input:
+  - number
+vars:
+  - i: 1
+output:
+  - table: <% ctx().m %>

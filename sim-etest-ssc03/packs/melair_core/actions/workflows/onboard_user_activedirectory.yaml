@@ -1,0 +1,60 @@
+version: 1.0
+tasks:
+  # [488, 0]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - generate_random
+  # [471, 294]
+  copy_and_create:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: New-ADUser -Name "<% ctx().first_name%> <%ctx().last_name %>" -GivenName "<% ctx().first_name %>" -Surname "<% ctx().last_name %>" -DisplayName "<% ctx().first_name%> <%ctx().last_name %>" -Department "<% ctx().department %>" -Title "<% ctx().title %>" -Office "<% ctx().location %>" -SamAccountName "<% ctx().first_name%>.<%ctx().last_name %>" -UserPrincipalName "<% ctx().first_name%>.<%ctx().last_name %>@etest.systems" -Path "OU=ETEST Systems,DC=etest,DC=systems" -AccountPassword $(ConvertTo-SecureString "Eth@nGroup123" -AsPlainText -Force) -MobilePhone "<% ctx().mobile %>" -Enabled $true
+    next:
+      - do:
+          - move_object_to_right_OU
+  # [488, 98]
+  generate_random:
+    action: core.local
+    next:
+      - do:
+          - check_if_exists
+  # [473, 418]
+  move_object_to_right_OU:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: hostname
+    next:
+      - do:
+          - Set-ADUser
+  # [475, 542]
+  Set-ADUser:
+    action: core.winrm_ps_cmd
+    next:
+      - do:
+          - Add_licence_group
+      - do:
+          - end
+  # [743, 736]
+  end:
+    action: core.noop
+  # [794, 182]
+  check_if_exists:
+    action: core.winrm_cmd
+    next:
+      - do:
+          - copy_and_create
+      - do:
+          - end
+  # [478, 671]
+  Add_licence_group:
+    action: core.winrm_ps_cmd
+    next:
+      - do:
+          - end
+    input:
+      transport: ntlm
+      cmd: Add-ADGroupMember -Identity 'License Assignment - M365 E5 - Exchange-SharePoint-Teams-OneDriv' -Members aduser

@@ -1,0 +1,12 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: Find HCF
+entry_point: workflows/Find HCF.yaml
+parameters:
+  num1:
+    type: integer
+    required: true
+  num2:
+    type: integer
+    required: true

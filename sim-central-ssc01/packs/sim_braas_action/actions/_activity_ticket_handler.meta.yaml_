@@ -1,0 +1,11 @@
+pack: sim_braas_action
+enabled: true
+runner_type: orquesta
+name: activity_ticket_handler
+entry_point: workflows/activity_ticket_handler.yaml
+parameters:
+  payload:
+    type: array
+    description: list of objects which are retriggered as part of the backup failure
+    required: true
+    default: []

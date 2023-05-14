@@ -1,0 +1,11 @@
+pack: sim_core
+enabled: true
+runner_type: orquesta
+name: ethan_online_error_handler
+entry_point: workflows/ethan_online_error_handler.yaml
+description: To handle 204 errors from ethan online
+parameters:
+  data:
+    type: object
+    description: input object
+    required: true

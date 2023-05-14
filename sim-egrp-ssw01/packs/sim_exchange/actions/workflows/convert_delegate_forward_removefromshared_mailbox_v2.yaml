@@ -1,0 +1,59 @@
+version: 1.0
+tasks:
+  # [320, 77]
+  convert_delegate_forward_removefromshared_mailbox:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "$delegateEmail=\"<% ctx().emailDelegate %>\"\n$forwardEmail=\"<% ctx().forwardDelegate %>\"\nConnect-ExchangeOnline -ShowBanner:$false -CertificateFilePath \"<% ctx().certificate_file_path %>\" -CertificatePassword (ConvertTo-SecureString -String ('.|($!l_$qP/+a^p!)}|.GF(!^P=n|i') -AsPlainText -Force) -AppID \"<% ctx().app_id %>\" -Organization \"<% ctx().organisation %>\"\n$convert_ret=$null\n$forward_ret=$null\n$delegate_ret=$null\n$remove_permission_ret=$null\n$convert_out=Set-Mailbox -Identity <% ctx().user_email %> -Type <% ctx().type %> 2>&1 | ConvertTo-Json\n$convert_ret=$?\nif($delegateEmail -eq \"Yes\")\n{$delegate_out=Add-MailboxPermission -Identity <% ctx().user_email %> -User <%ctx().emailDelegateUser%> -AccessRights FullAccess -InheritanceType All 2>&1 | ConvertTo-Json 2>&1\n$delegate_ret=$?}\nif($forwardEmail -eq \"Yes\")\n{$forward_out=Set-Mailbox -Identity <% ctx().user_email %> -DeliverToMailboxAndForward $true -ForwardingAddress <%ctx().forwardDelegateUser%> -Force 2>&1 | ConvertTo-Json\n$forward_ret=$?}"
+      host: <% ctx().host %>
+      password: <% ctx().password %>
+      username: <% ctx().username %>
+      timeout: 300
+      verify_ssl_cert: false
+      port: 5985
+    retry:
+      count: 1
+      delay: 5
+    next:
+      # #629e47
+      - do:
+          - end
+        publish:
+          - task_output: <% task().result %>
+          - task_name: <% task().task_name %>
+          - task_std_output: <% task().result.get('stdout', 'NA') %>
+          - task_std_error: <% task().result.get('stderr', 'NA') %>
+          - task_std_ret_code: <% task().result.get('return_code', 'NA') %>
+          - task_std_succeeded: <% task().result.get('succeeded', 'NA') %>
+          - task_std_failed: <% task().result.get('failed', 'NA') %>
+          - task_error: <% task().result.get('error', 'NA') %>
+          - task_error_trcbk: <% task().result.get('traceback', 'NA') %>
+  # [320, 215]
+  end:
+    action: core.echo
+    input:
+      message: " Task Name: <% ctx().task_name %> \n Exit code: <% ctx().task_output.get('return_code', 'NA') %> \n succeeded: <% ctx().task_output.get('succeeded', 'NA') %> \n Error: <%   ctx().task_output.get('error', 'NA') %>  "
+input:
+  - emailDelegate
+  - forwardDelegate
+  - certificate_file_path
+  - username
+  - password
+  - organisation
+  - host
+  - user_email
+  - type
+  - app_id
+  - forwardDelegateUser
+  - emailDelegateUser
+output:
+  - task_output: <% ctx().task_output %>
+  - task_name: <% ctx().task_name %>
+  - task_std_output: <% ctx().task_std_output %>
+  - task_std_error: <% ctx().task_std_error %>
+  - task_std_ret_code: <% ctx().task_std_ret_code %>
+  - task_std_succeeded: <% ctx().task_std_succeeded %>
+  - task_std_failed: <% ctx().task_std_failed %>
+  - task_error: <% ctx().task_error %>
+  - task_error_trcbk: <% ctx().task_error_trcbk %>

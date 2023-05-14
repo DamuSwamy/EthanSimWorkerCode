@@ -1,0 +1,18 @@
+version: 1.0
+tasks:
+  # [260, 124]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - get_output
+        publish:
+          - output_json: "{%- macro createdict(client_dict, clientIdObj) -%}\n    {%- for key, value in client_dict.items() -%}\n        {{ clientIdObj.update({key: value}) or \"\" }}\n    {%- endfor -%}\n{%- endmacro -%}\n{%- set clientObjArr = [] -%}\n{%- for client in ctx().input_json_1 -%}\n    {%- if client is mapping and client is not string %}\n        {%- set clientIdObj = {} -%}\n        {%- set combinedOut = createdict(client, clientIdObj) -%}\n        {%- for s_client in ctx().input_json_2 if client['custid'] == s_client['IaaSCode'] -%}\n            {{ clientIdObj.update({'domainName': s_client['ServiceNowAccountID']}) or \"\" }}\n        {%- endfor -%}\n        {%- if \"/\" in clientIdObj['domainName'] or clientIdObj['domainName'] is not defined  -%}\n            {{ clientIdObj.update({'domainName': 'be2657dd877e3010a7eac9570cbb35fb'}) or \"\" }}\n        {%- endif -%}\n        {{ clientObjArr.append(clientIdObj) or \"\" }}\n    {%- endif -%}\n{%- endfor -%}\n\n{%- set clientObj = {\n    \"clients\": clientObjArr\n} -%}\n{{clientObj | tojson}}"
+  # [261, 275]
+  get_output:
+    action: core.noop
+input:
+  - input_json_1
+  - input_json_2
+output:
+  - output_json: '{{ ctx().output_json | from_json_string  }}'

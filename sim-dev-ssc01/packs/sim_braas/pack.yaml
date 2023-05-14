@@ -1,0 +1,21 @@
+---
+ref: sim_braas
+name: SiM BRaaS - Core
+description: Actions for BRaaS and Reporting DPA
+keywords:
+    - sim
+    - avamar
+    - DPA
+    - backup
+version: 1.0.1
+python_versions:
+  - "2"
+  - "3"
+dependencies:
+  - core
+# Name of the pack author.
+author: Ethan Group
+# Email of the pack author.
+email: paul.hooper@ethan.com.au
+contributors:
+  - "Paul <paul.hooper@ethan.com.au>"

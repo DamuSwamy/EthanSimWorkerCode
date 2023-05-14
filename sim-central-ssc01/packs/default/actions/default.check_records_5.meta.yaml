@@ -1,0 +1,9 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: default.check_records_5
+entry_point: workflows/default.check_records_5.yaml
+parameters:
+  list:
+    type: array
+    required: true

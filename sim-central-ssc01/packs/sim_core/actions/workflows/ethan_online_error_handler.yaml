@@ -1,0 +1,21 @@
+version: 1.0
+tasks:
+  # [299, 126]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - print
+  # [316, 434]
+  end:
+    action: core.noop
+  # [302, 282]
+  print:
+    action: core.echo
+    input:
+      message: "\"<% ctx().data %>\""
+    next:
+      - do:
+          - end
+input:
+  - data

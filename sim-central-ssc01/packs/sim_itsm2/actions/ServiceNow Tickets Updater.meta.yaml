@@ -1,0 +1,14 @@
+pack: sim_itsm2
+enabled: true
+runner_type: orquesta
+name: ServiceNow Tickets Updater
+entry_point: workflows/ServiceNow Tickets Updater.yaml
+parameters:
+  Ticket_IDs:
+    description: list of ticket IDs
+    type: array
+    required: true
+  Property:
+    type: object
+    description: The properties to be allotted
+    required: true

@@ -1,0 +1,76 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - cloud_db_connection
+  - workflow_name
+  - braas_servers
+  - ignore_braas_servers
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - BraaS_Get_Valid_Servers
+      - when: <% ctx().workflow_name = 'ethan_braas_scan_live' %>
+        do:
+          - Cleanup_BRaaS_Live
+
+  Cleanup_BRaaS_Live:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "DELETE FROM Braas_Live"
+    next:
+      - when: <% succeeded() %>
+        do: noop
+      - when: <% failed() %>
+        do: fail
+
+  BraaS_Get_Valid_Servers:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - valid_servers: <% ctx(braas_servers).where(not $ in ctx().ignore_braas_servers).select($) %>
+          - servers: "{{ ctx().valid_servers | list }}"
+        do:
+          - Trigger_Dynamic_Workflow
+      - when: <% failed() %>
+        do: fail
+
+  Trigger_Dynamic_Workflow:
+    action: "sim_cloud_billing.<% ctx().workflow_name %>"
+    input:
+      billing_db_connection: <% ctx().billing_db_connection %>
+      cloud_db_connection: <% ctx().cloud_db_connection %>
+      braas_server: <% item() %>
+    with:
+      items: <% ctx(servers) %>
+      concurrency: 3
+    next:
+      - when: <% succeeded() and ctx().workflow_name != 'ethan_braas_scan_live' %>
+        do:
+          - End
+      - when: <% (succeeded() or failed()) and ctx().workflow_name = 'ethan_braas_scan_live' %>
+        do:
+          - BRaaS_Sync_Data
+      - when: <% failed() and ctx().workflow_name != 'ethan_braas_scan_live' %>
+        do: fail
+
+  BRaaS_Sync_Data:
+    action: sim_cloud_billing.ethan_braas_scan_live_sync
+    input:
+      billing_db_connection: <% ctx().billing_db_connection %>
+      cloud_db_connection: <% ctx().cloud_db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  End: 
+    action: core.noop

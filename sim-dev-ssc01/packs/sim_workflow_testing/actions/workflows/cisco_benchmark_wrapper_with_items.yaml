@@ -1,0 +1,82 @@
+---
+version: 1.0
+
+description: Cisco IOS Benchmark - Device Compliant
+
+vars:
+  - device_compliance: []
+  - process_name: "Cisco device compliant check"
+  - deviceIndex: 0
+  - notifications: []
+
+input:
+  - customer_id
+
+tasks:
+  # [192, 51]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notification: |
+              (<% ctx().process_name%>) process started
+        do:
+          - notify
+          - get_device_list
+
+
+  get_device_list:
+    action: sim_workflow_testing.get_device_list
+    input:
+      customer_id: <% ctx().customer_id %>
+    next:
+      - when: <% succeeded() and len(result().result)>0 %>
+        publish:
+          - device_list: <% result().result %>
+        do:
+          - device_compliant_check
+      - when: <% succeeded() and len(result().result)<=0 %>
+        publish:
+          - notification: |
+               No devices found for customer [<% ctx().customer_id %>]
+        do:
+          - notify
+      - when: <% failed() %>
+        do:
+          - fail
+
+  device_compliant_check:
+    action: sim_workflow_testing.device_compliance
+    input:
+      device_object: <% item(device) %>
+    with:
+      items: device in <% ctx().device_list %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notification: |
+              The device compliance check completed for customer (<% ctx().customer_id %>)
+        do:
+          - notify
+      - when: <% failed() %>
+        publish:
+          - notification: |
+               The one or more case(s) failed to create!
+        do:
+          - notify
+          - fail
+
+  notify:
+    action: core.echo
+    input:
+      message: |
+        <% ctx().notification %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - notifications: <% ctx().notifications.append(ctx().notification) %>
+
+
+output:
+  - messages: <% ctx().notifications %>

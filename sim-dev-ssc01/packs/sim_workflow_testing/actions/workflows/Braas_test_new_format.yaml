@@ -1,0 +1,42 @@
+version: 1.0
+tasks:
+  # [525, 62]
+  Start:
+    action: core.noop
+    next:
+      - do:
+          - get_report
+  # [550, 504]
+  End:
+    action: core.noop
+  # [525, 189]
+  get_report:
+    action: sim_braas.DPA_get_report_data_custom
+    input:
+      formatType: CSV
+      input_finish_date: "2022-09-08"
+      input_finish_time: "23:59:59.000"
+      input_start_date: "2022-09-07"
+      input_start_time: "09:00:00.000"
+      report_name: "Backup All Jobs"
+    next:
+      - do:
+          - format_report
+        publish:
+          - report: <% result().output.debug_report %>
+  # [530, 317]
+  format_report:
+    action: sim_braas.format_client_csv_report
+    next:
+      - do:
+          - End
+        publish:
+          - success: <% result().result[0] %>
+          - failure: <% result().result[1] %>
+    input:
+      log_level: DEBUG
+      dpa_report: <%ctx().report%>
+      report_name: Backup All Jobs
+output:
+  - debug_success: <%ctx().success%>
+  - debug_failure: <%ctx().failure%>

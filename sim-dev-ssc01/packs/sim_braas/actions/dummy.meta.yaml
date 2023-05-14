@@ -1,0 +1,6 @@
+pack: sim_braas
+enabled: true
+runner_type: orquesta
+name: dummy
+entry_point: workflows/dummy.yaml
+description: testing transform

@@ -1,0 +1,82 @@
+version: 1.0
+
+input:
+  - db_connection
+  - insert_data
+  - update_data
+  - remove_data
+  - target_table
+
+output: 
+  - data: <% dict(INSERT=>len(ctx().insert_data), UPDATE=>len(ctx().update_data), REMOVE=>len(ctx().remove_data)) %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Check_For_New_Records
+          - Check_For_Update_Records
+          - Check_For_Remove_Records
+
+  Check_For_New_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().insert_data) > 0 %>
+        do:
+          - New_Records
+
+  Check_For_Update_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().update_data) > 0 %>
+        do:
+          - Update_Records
+
+  Check_For_Remove_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().remove_data) > 0 %>
+        do:
+          - Remove_Records
+
+  New_Records:
+    delay: 10
+    action: sql.insert_bulk
+    input:
+      table: <% ctx().target_table %>
+      data: <% ctx().insert_data %>
+      connection: <% ctx().db_connection %>
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  Update_Records:
+    action: sql.update_bulk
+    input:
+      connection: <% ctx().db_connection %>
+      table: <% ctx().target_table %>
+      data: <% ctx().update_data %>
+      update_values: ['vmDiskSize', 'vmDiskTier', 'vmDiskDatastore', 'deviceID', 'lastUpdated', 'vmDiskFileName']
+      column_filter1: "ethvmid"
+      column_filter2: "vmID"
+      column_filter3: "deviceKey"
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  Remove_Records:
+    action: sql.update_bulk
+    input:
+      connection: <% ctx().db_connection %>
+      table: <% ctx().target_table %>
+      data: <% ctx().remove_data %>
+      update_values: ['lastUpdated', 'inactiveDt']
+      column_filter1: "ethvmid"
+      column_filter2: "vmID"
+      column_filter3: "deviceKey"
+      column_filter4: "inactiveDt"
+    next:
+      - when: <% failed() %>
+        do: fail

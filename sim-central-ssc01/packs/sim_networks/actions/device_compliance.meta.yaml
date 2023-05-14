@@ -1,0 +1,25 @@
+pack: sim_networks
+enabled: true
+runner_type: orquesta
+name: device_compliance
+entry_point: workflows/device_compliance.yaml
+description: device_compliance
+parameters:
+  device_object:
+    type: object
+    description: Device id to get the current config of the device
+    required: true
+  exclude_list:
+    type: array
+    description: List of device type excluded form compliance check
+    required: false
+    default: ['Firewall']
+  count:
+    type: integer
+    description: current processing device count
+    required: false
+    default: 1
+  auth_token:
+    type: string
+    description: The query params to append endpoint
+    required: false
