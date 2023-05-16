@@ -144,7 +144,7 @@ class VcenterRawData(BaseAction):
                 "vmHostName": vm.guest.hostName,
                 "vmIPAddress": self._get_vm_ipaddress(vm.guest.net),
                 "vmCPU": vm.summary.config.numCpu,
-                "vmRAM": round(vm.summary.config.memorySizeMB/1024),
+                "vmRAM": round(vm.summary.config.memorySizeMB/1024) if vm.summary.config.memorySizeMB is not None else None,
                 "vmStorageUsed": round(vm.summary.storage.committed/1073741824),
                 "vmStorageTotal": round((vm.summary.storage.committed/1073741824) + (vm.summary.storage.uncommitted/1073741824)),
                 "vmPowerState": vmPowerState,

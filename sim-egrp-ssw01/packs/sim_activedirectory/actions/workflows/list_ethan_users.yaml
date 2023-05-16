@@ -5,7 +5,7 @@ tasks:
     action: core.winrm_ps_cmd
     input:
       transport: <% ctx().data.data.transport %>
-      cmd: Get-ADUser -Properties extensionAttribute4,whenChanged -Filter *  -SearchBase "OU=ECORP EUC,DC=ecorp,DC=systems" |  where {$_.extensionAttribute4 -like "Ethan.SPBU*" -or $_.extensionAttribute4 -like "Ethan.PS*" -or $_.extensionAttribute4 -eq $null} | Select-Object @{name="First Name";expression={$_.GivenName}},@{name="Last Name";expression={$_.Surname}},@{name="BU";expression={$_.extensionAttribute4}},@{Name='AccountExpiryDate'; Expression={if($null -eq $_.AccountExpirationDate){'Never Expires'}else{$_.AccountExpirationDate.DateTime}}},UserPrincipalName,Enabled,@{name="WhenChanged";expression={$_.whenChanged.DateTime}} | ConvertTo-Json
+      cmd: Get-ADUser -Properties extensionAttribute4,whenChanged -Filter *  -SearchBase "OU=ECORP EUC,DC=ecorp,DC=systems" | Select-Object @{name="First Name";expression={$_.GivenName}},@{name="Last Name";expression={$_.Surname}},@{name="BU";expression={$_.extensionAttribute4}},@{Name='AccountExpiryDate'; Expression={if($null -eq $_.AccountExpirationDate){'Never Expires'}else{$_.AccountExpirationDate.DateTime}}},UserPrincipalName,Enabled,@{name="WhenChanged";expression={$_.whenChanged.DateTime}} | ConvertTo-Json
       host: <% ctx().data.data.ad_host %>
       username: <% ctx().data.data.username %>
       password: <% ctx().data.data.password %>
