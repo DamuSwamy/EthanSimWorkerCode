@@ -54,12 +54,12 @@ tasks:
       # #629e47
       - do:
           - get_before_status
-        when: <% str(result().output.task_output.stdout) = "1" and  result().output.task_output.succeeded = true %>
+        when: <% str(result().output.task_output.stdout) >= "1" and  result().output.task_output.succeeded = true %>
         publish:
           - user_count: <% result().output.task_output.stdout %>
       - do:
           - update_ticket_escalate
-        when: <% str(result().output.task_output.stdout) != "1"  or result().output.task_output.succeeded = false %>
+        when: <% str(result().output.task_output.stdout) < "1"  or result().output.task_output.succeeded = false %>
         publish:
           - user_count: <% result().output.task_output.stdout %>
   # [622, 473]
