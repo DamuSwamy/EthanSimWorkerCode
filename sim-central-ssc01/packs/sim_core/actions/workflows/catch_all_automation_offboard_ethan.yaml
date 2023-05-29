@@ -276,7 +276,7 @@ tasks:
         publish:
           - account: <% result().result. account.value %>
           - contact: <% result().result. contact.value %>
-  # [594, 824]
+  # [594, 823]
   escalate_ticket:
     action: sim_itsm2.update
     input:
@@ -286,6 +286,7 @@ tasks:
         comments: Sim Automation is escalating the service request to engineer as automation was not able to complete the operation as per request
         state: 10
         assigned_to: <% ctx().itsm_tick_name %>
+        assignment_group: 9a97138b1b1c595083e2993c274bcb45
       table: sn_customerservice_general_case
     next:
       # #629e47
@@ -429,6 +430,7 @@ tasks:
         comments: "When offboarding the user SiM automation could not complete following actions:\n\n <%ctx().failed_action_list%>\n\nOur engineer will review and complete these actions manually."
         state: 10
         assigned_to: <% ctx().itsm_tick_name %>
+        assignment_group: 9a97138b1b1c595083e2993c274bcb45
       table: sn_customerservice_general_case
   # [515, 697]
   sleep:

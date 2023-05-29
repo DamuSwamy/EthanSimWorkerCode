@@ -1,0 +1,54 @@
+version: 1.0
+tasks:
+  # [323, 128]
+  list_users:
+    action: core.winrm_ps_cmd
+    input:
+      transport: <% ctx().data.data.transport %>
+      cmd: Get-ADUser -Filter 'enabled -eq $true'  -Properties  DisplayName,UserPrincipalName,Title,Department,EmployeeID,EmployeeNumber,Manager, PhysicalDeliveryOfficeName,Company,AccountExpirationDate,Description,SamAccountName | Select-Object  DisplayName,UserPrincipalName,Title,Department,EmployeeID,EmployeeNumber,@{Name='Manager';Expression={if($null -eq $_.Manager){''}else{ (($_ |Get-ADUser -Properties manager).manager | Get-ADUser).Name}}}, @{Name=‘Location’; Expression={if($null -eq $_.PhysicalDeliveryOfficeName){'Not set'}else{$_.PhysicalDeliveryOfficeName}}},Company,@{Name='AccountExpiryDate'; Expression={if($null -eq $_.AccountExpirationDate){'Never Expires'}else{$_.AccountExpirationDate.DateTime}}},@{Name='Domain'; Expression={if($_.UserPrincipalName.Contains("ecorp")){'ECORP'}elseif($_.UserPrincipalName.Contains("ECORP")){'ECORP'}else{'ETHAN'}}},Description | ConvertTo-Json
+      host: <% ctx().data.data.ad_host %>
+      username: <% ctx().data.data.username %>
+      password: <% ctx().data.data.password %>
+      verify_ssl_cert: <% ctx().data.data.verify_ssl_cert %>
+      port: 5985
+    retry:
+      count: 1
+      delay: 1
+    next:
+      # #629e47
+      - do:
+          - end
+        publish:
+          - task_output: <% task().result %>
+          - task_name: <% task().task_name %>
+          - task_std_output: <% task().result.get('stdout', 'NA') %>
+          - task_std_error: <% task().result.get('stderr', 'NA') %>
+          - task_std_ret_code: <% task().result.get('return_code', -100) %>
+          - task_std_succeeded: <% task().result.get('succeeded', false) %>
+          - task_std_failed: <% task().result.get('failed', true) %>
+          - task_error: <% task().result.get('error', 'NA') %>
+          - task_error_trcbk: <% task().result.get('traceback', 'NA') %>
+  # [323, 244]
+  end:
+    action: core.echo
+    input:
+      message: " Task Name: <% ctx().task_name %> \n Exit code: <% ctx().task_output.get('return_code', 'NA') %> \n succeeded: <% ctx().task_output.get('succeeded', 'NA') %> \n Error: <%   ctx().task_output.get('error', 'NA') %>  "
+  # [323, 19]
+  start:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - list_users
+input:
+  - data
+output:
+  - task_output: <% ctx().task_output %>
+  - task_name: <% ctx().task_name %>
+  - task_std_output: <% ctx().task_std_output %>
+  - task_std_error: <% ctx().task_std_error %>
+  - task_std_ret_code: <% ctx().task_std_ret_code %>
+  - task_std_succeeded: <% ctx().task_std_succeeded %>
+  - task_std_failed: <% ctx().task_std_failed %>
+  - task_error: <% ctx().task_error %>
+  - task_error_trcbk: <% ctx().task_error_trcbk %>
