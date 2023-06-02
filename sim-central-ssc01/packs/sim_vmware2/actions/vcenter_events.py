@@ -19,19 +19,25 @@ class VcenterEvents(BaseAction):
         end_time        = end_time.astimezone(pytz.timezone('Australia/Sydney'))
         start_time      = end_time - timedelta(hours=event_period)
         start_time      = start_time.astimezone(pytz.timezone('Australia/Sydney'))
-        '''if int(vcenter_id) == 34:
+        test = False
+        if int(vcenter_id) == 30 and test:
             event_type_filters = ['VmReconfiguredEvent'] 
-            start_time = '2023-04-01 03:30:00'
-            end_time   = '2023-04-01 03:45:59'
+            start_time = '2023-05-07 22:47:00'
+            end_time   = '2023-05-07 22:50:00'
             start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
-            end_time   = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')'''
+            end_time   = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
         events = []
         if filter_by_vm_ids:
+            #event_type_filters = ['VmReconfiguredEvent']
+            #start_time = '2023-05-01 03:30:00'
+            #end_time   = '2023-05-31 03:45:59'
+            #start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+            #end_time   = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')'''
             container = self.si_content.viewManager.CreateContainerView(
                             self.si_content.rootFolder, [vim.VirtualMachine], True)
             for vm in container.view:
                 moid = int(vm._GetMoId().replace('vm-', ''))
-                if moid in filter_by_vm_ids or str(moid) == '5215':
+                if moid in filter_by_vm_ids:
                     by_entity    = vim.event.EventFilterSpec.ByEntity(entity=vm, recursion="self")
                     filter_spec = vim.event.EventFilterSpec(entity=by_entity, eventTypeId=self.creation_events)
                     event = self.event_collector(filter_spec)
@@ -46,6 +52,7 @@ class VcenterEvents(BaseAction):
         for e in events:
             if any([x in e.vm.name for x in vm_ignore_list]) or any([x in e.userName for x in exclude_user_events]):
                 continue
+            print(e)
             events_array.append(e)
         return self._add_event_properties_to_map_from_event_array(moid_to_event, events_array)
 
@@ -171,27 +178,32 @@ class VcenterEvents(BaseAction):
                                     event_map[e.key]['eventState'] = 'Unknown'
                                 if d.operation == 'add':
                                     if hasattr(device, 'key'):
-                                        if isinstance(device.key, int) and device.key < 0 and device.diskObjectId :
+                                        if isinstance(device.key, int) and device.diskObjectId :
                                             event_map[e.key]['deviceKey'] = int(device.diskObjectId.split("-")[1])
                                             event_map[e.key]['deviceID']  = device.backing.fileName.rsplit('/', 1)[-1]
-                                        elif isinstance(device.key, int) and device.key < 0 and 'diskObjectId = ' in e.fullFormattedMessage:
+                                        elif isinstance(device.key, int) and 'diskObjectId = ' in e.fullFormattedMessage:
                                             try:
                                                 objectId = re.match("[\s\S]+diskObjectId = \\\"(.*?)\\\"",e.fullFormattedMessage).group(1)
                                                 event_map[e.key]['deviceKey'] = int(objectId.split("-")[1])
                                             except Exception as e:
-                                                event_map[e.key]['deviceKey'] = None
+                                                event_map[e.key]['deviceKey'] = 'Unknown'
                                             try:
                                                 deviceId = re.match("[\s\S]+backing = \(fileName = \\\"(.*?)\\\"", e.fullFormattedMessage).group(1)
                                                 event_map[e.key]['deviceID']  = deviceId.rsplit('/', 1)[-1]
                                             except Exception as e:
-                                                event_map[e.key]['deviceID'] = None
-                                        elif isinstance(device.key, int) and device.key < 0:
+                                                event_map[e.key]['deviceID'] = 'Unknown'
+                                        elif isinstance(device.key, int):
                                             event_map[e.key]['deviceKey'] = device.key
                                             event_map[e.key]['deviceID']  = device.backing.fileName.rsplit('/', 1)[-1]
+                                        else:
+                                            event_map[e.key]['deviceKey'] = device.key
+                                            event_map[e.key]['deviceID']  = device.backing.fileName.rsplit('/', 1)[-1]
+                                    if device.capacityInKB == 0:
+                                        eventState = re.match("[\s\S]+key = {0},.*summary.+\\\"(.*)KB\\\"\)".format(event_map[e.key]['deviceKey']),e.fullFormattedMessage).group(1)
+                                        event_map[e.key]['eventState'] = int(eventState.replace(",",""))
                                 else:
                                     event_map[e.key]['deviceKey'] = device.key
                                     event_map[e.key]['deviceID']  = device.backing.fileName.rsplit('/', 1)[-1]
-
                             else:
                                 event_map[e.key]['eventState'] = 'Unknown'
                     if not e.configSpec.numCPUs and not e.configSpec.memoryMB and not len(e.configSpec.deviceChange) > 0:

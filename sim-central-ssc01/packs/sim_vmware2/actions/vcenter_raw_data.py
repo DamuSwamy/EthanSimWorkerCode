@@ -239,7 +239,7 @@ class VcenterRawData(BaseAction):
                     disk_obj['ethvmid']           = ethvmid
                     disk_obj['invVCServerID']     = self.vcenter_id
                     try:
-                        disk_obj['deviceID']      = disk.backing.fileName.split("/")[1]
+                        disk_obj['deviceID']      = disk.backing.fileName.rsplit('/', 1)[-1]
                     except Exception as e:
                         disk_obj['deviceID']      = disk.backing.fileName
                     disk_obj['vmName']            = vm_name
@@ -255,6 +255,7 @@ class VcenterRawData(BaseAction):
                     else:
                          disk_obj['vmDiskSize']   = 0
                     try:
+                        print(disk.backing.fileName)
                         disk_obj['vmDiskDatastore']   = re.match("\[(.*?)\]",disk.backing.fileName).group(1)
                     except Exception as e:
                         disk_obj['vmDiskDatastore']   = disk.backing.fileName
