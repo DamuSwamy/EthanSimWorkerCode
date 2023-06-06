@@ -24,7 +24,7 @@ tasks:
       username: <% ctx().username %>
       password: <% ctx().password %>
       verify_ssl_cert: false
-      port: 5985
+      port: 5986
   # [322, 200]
   end:
     action: core.echo

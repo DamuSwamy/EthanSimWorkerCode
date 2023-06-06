@@ -1,11 +1,11 @@
 version: 1.0
 tasks:
-  # [378, 390]
+  # [377, 373]
   create_ad_user:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: "$userInstance= Get-ADUser -Identity \"<% ctx().model_user %>\" \nNew-ADUser -Instance $userInstance -Name \"<% ctx().first_name%> <%ctx().last_name %>\" -GivenName \"<% ctx().first_name %>\" -Surname \"<% ctx().last_name %>\" -DisplayName \"<% ctx().first_name%> <%ctx().last_name %>\" -Department \"<% ctx().department %>\" -Title \"<% ctx().title %>\" -Office \"<% ctx().location %>\" -SamAccountName \"<% ctx().first_name.substring(0,1)%><%ctx().last_name %>\" -UserPrincipalName \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\" -Path \"<% ctx().target_OU %>\" -AccountPassword $(ConvertTo-SecureString \"<% ctx().random_string %>\" -AsPlainText -Force) -MobilePhone \"<% ctx().mobile %>\" -Enabled $true"
+      cmd: New-ADUser  -Name "<% ctx().first_name%> <%ctx().last_name %>" -GivenName "<% ctx().first_name %>" -Surname "<% ctx().last_name %>" -DisplayName "<% ctx().first_name%> <%ctx().last_name %>" -Department "<% ctx().department %>" -Title "<% ctx().title %>" -Office "<% ctx().location %>" -SamAccountName "<% ctx().samaccountname %>" -UserPrincipalName "<% ctx().emailaddress %>" -Path "<% ctx().target_OU %>" -AccountPassword $(ConvertTo-SecureString "<% ctx().random_string %>" -AsPlainText -Force) -MobilePhone "<% ctx().mobile %>" -Postal "<% ctx().zipcode %>" -StreetAddress "<% ctx().street %>" -State "<% ctx().state %>" -SamAccountName "<% ctx().samaccountname %>" -HomePhone "<% ctx().homephone %>" -Country "<% ctx().country %>" -Company "<% ctx().company %>" -City "<% ctx().city %>" -Enabled $true
       host: <% ctx().ad_host[0] %>
       password: <% ctx().password[0] %>
       username: <% ctx().username[0] %>
@@ -13,7 +13,7 @@ tasks:
       port: 5985
     next:
       - do:
-          - add_description
+          - add_group_membs
         when: <% succeeded() %>
         publish:
           - ad_created: Yes
@@ -26,26 +26,12 @@ tasks:
           - license_added: false
           - mailbox_created: false
           - user_count: " "
-  # [375, 528]
-  add_description:
+  # [371, 521]
+  add_group_membs:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: set-aduser -Identity "<% ctx().first_name.substring(0,1)%><%ctx().last_name %>"  -description "User Onboarded as part of <% ctx().ticketNo %>"  -Verbose
-      host: <% ctx().ad_host[0] %>
-      password: <% ctx().password[0] %>
-      username: <% ctx().username[0] %>
-      verify_ssl_cert: false
-      port: 5985
-    next:
-      - do:
-          - copy_membs
-  # [379, 650]
-  copy_membs:
-    action: core.winrm_ps_cmd
-    input:
-      transport: ntlm
-      cmd: "Get-ADUser -Identity <% ctx().model_user %> -Properties memberof | Select-Object -ExpandProperty memberof | Add-ADGroupMember -Members \"<% ctx().first_name.substring(0,1)%><%ctx().last_name %>\""
+      cmd: "$groups = <% ctx().groupslist %>\nforeach($groups in $groups.split(\";\")){\n    Add-ADGroupMember -Identity $group -Members \"<% ctx().first_name.substring(0,1)%><%ctx().last_name %>\"\n}"
       password: <% ctx().password[0] %>
       username: <% ctx().username[0] %>
       verify_ssl_cert: false
@@ -57,7 +43,7 @@ tasks:
         when: <% succeeded() %>
         publish:
           - membership_copied: Yes
-  # [701, 153]
+  # [737, 148]
   add_manager:
     action: core.winrm_ps_cmd
     input:
@@ -70,12 +56,9 @@ tasks:
       port: 5985
     next:
       - do:
-          - add_license_E5
-        when: <% ctx().mailbox_required = "Yes" %>
-      - do:
-          - ticket_update
-        when: <% ctx().mailbox_required = "No" %>
-  # [100, 0]
+          - start_delta_sync
+        when: <% 1 < 0 %>
+  # [156, 16]
   start:
     action: core.echo
     input:
@@ -105,7 +88,14 @@ tasks:
           - tenant_id: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.tenant_id)) %>
           - client_id: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.client_id)) %>
           - client_secret: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.client_secret)) %>
-  # [1002, 390]
+          - zipcode: "\"4000\""
+          - city: "\"Brisbane\""
+          - street: "\"345 Queen Street\""
+          - country: "\"Australia\""
+          - state: "\"QLD\""
+          - homephone: "\"+61 7 3222 8444\""
+          - company: "\"Pitcher Partners\""
+  # [735, 297]
   start_delta_sync:
     action: sim_activedirectory.start_delta_ad_sync
     input:
@@ -115,7 +105,7 @@ tasks:
     next:
       - do:
           - sleep_90
-  # [1009, 494]
+  # [738, 465]
   sleep_90:
     action: core.local
     input:
@@ -124,14 +114,14 @@ tasks:
     next:
       - do:
           - set_location_license
-  # [704, 1014]
+  # [730, 933]
   end:
     action: core.noop
-  # [704, 902]
+  # [732, 782]
   ticket_update:
     action: core.echo
     input:
-      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added from: <%ctx().model_user %>\nMembership groups copied: <% ctx().membership_copied %>\nAD sync: True\nLicense Added: <% ctx().license_added %>\nMailbox Created: <% ctx().mailbox_created %>"
+      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added: <%ctx().model_user %>\nAD sync: True\nLicense Added: <% ctx().license_added %>\n"
     next:
       - do:
           - end
@@ -155,24 +145,7 @@ tasks:
                   status: In Progress
                   ticket_update: Sim Automation is escalating the service request after completing AD and Exchange tasks
           - execution_log: "[{\"task_name\":\"ad_created\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().ad_created  %>},{\"task_name\":\"membership_copied\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().membership_copied  %>},{\"task_name\":\"license_added\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().license_added  %>},{\"task_name\":\"mailbox_created\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().mailbox_created  %>}]"
-  # [1014, 6]
-  add_license_E5:
-    action: core.winrm_ps_cmd
-    input:
-      transport: ntlm
-      cmd: "Add-ADGroupMember -Identity \"<% ctx().MailBoxADGroup %>\" -Members \"<% ctx().first_name.substring(0,1)%><%ctx().last_name %>\" "
-      host: <% ctx().ad_host[0] %>
-      password: <% ctx().password[0] %>
-      username: <% ctx().username[0] %>
-      verify_ssl_cert: false
-      port: 5985
-    next:
-      - do:
-          - create_mailbox
-        when: <% succeeded() %>
-        publish:
-          - license_added: Yes
-  # [378, 232]
+  # [371, 234]
   check_ad_user:
     action: sim_activedirectory.check_ad_user
     input:
@@ -180,6 +153,7 @@ tasks:
       display_name: <% ctx().display_user %>
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>
+      port: 5986
     next:
       - do:
           - create_ad_user
@@ -219,33 +193,10 @@ tasks:
                   status: In Progress
                   ticket_update: Sim Automation is escalating the service request after finding the user to be onboarded already exists
           - execution_log: "[{\"task_name\":\"check_ad_user\",\"expected_returncode\":\"1\", \"actual_returncode\":<% ctx().user_count  %>}]"
-  # [1024, 173]
-  create_mailbox:
-    action: sim_exchange.create_mailboxscript
-    input:
-      ad_host: <% ctx().ad_host[0] %>
-      exchange_username: <% ctx().username[0] %>
-      mailbox_type: User
-      exchange_password: <% ctx().password[0] %>
-      SamAccountName: <% ctx().first_name.substring(0,1)%><%ctx().last_name %>
-      exchange_host: <% ctx().ex_host[0] %>
-      email_address: <% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>
-      use_commands_instead: "\"YES\""
-    next:
-      - do:
-          - start_delta_sync
-        when: <% result().output.is_mailbox_created = 'mailbox not created' %>
-        publish:
-          - mailbox_created: false
-      - do:
-          - check
-        when: <% result().output.is_mailbox_created != 'mailbox not created' %>
-        publish:
-          - mailbox_created: true
-  # [0, 391]
+  # [0, 365]
   end_1_user_exists:
     action: core.noop
-  # [377, 778]
+  # [372, 657]
   fetch_manager_email:
     action: sim_activedirectory.fetch_email_object_ad_user
     input:
@@ -259,23 +210,17 @@ tasks:
         publish:
           - email: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
           - objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
-  # [375, 109]
+  # [373, 118]
   random:
     action: core.local
     input:
-      cmd: "cat /dev/urandom | tr -dc '~!@#$%^&*_A-Za-z0-9' | head -c${1:-18}"
+      cmd: "echo \"def@ultPassword123\""
     next:
       - do:
           - check_ad_user
         publish:
           - random_string: <% result().stdout %>
-  # [808, 328]
-  check:
-    action: core.noop
-    next:
-      - do:
-          - start_delta_sync
-  # [992, 700]
+  # [733, 639]
   set_location_license:
     action: sim_o365.set_location_license
     input:
@@ -285,23 +230,10 @@ tasks:
       client_id: <% ctx().client_id[0] %>
     next:
       - do:
-          - personal_site
+          - ticket_update
         publish:
           - state: REMEDIATION
           - info: successfully onboarded
-  # [994, 800]
-  personal_site:
-    action: sim_o365.create_personal_site
-    next:
-      - do:
-          - ticket_update
-    input:
-      admin_url: "https://etestsystems-admin.sharepoint.com"
-      host: <% ctx().ad_host[0] %>
-      username: sim.admin
-      password: Monday123!
-      delegate_email: aman.mujawar@etest.systems
-      user_email: <% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>
 input:
   - data
 output:

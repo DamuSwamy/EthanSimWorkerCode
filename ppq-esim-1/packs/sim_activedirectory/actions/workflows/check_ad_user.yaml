@@ -11,7 +11,7 @@ tasks:
       password: <% ctx().password %>
       verify_ssl_cert: false
       timeout: 150
-      port: 5985
+      port: 5986
     retry:
       count: 1
       delay: 30

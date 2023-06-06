@@ -1,6 +1,6 @@
 version: 1.0
 tasks:
-  # [182, 61]
+  # [175, 74]
   get_token:
     action: core.http
     input:
@@ -14,17 +14,17 @@ tasks:
           - update_usage_location
         publish:
           - graph_auth_token: <% result().body. access_token %>
-  # [182, 327]
+  # [175, 327]
   assign_license:
     action: core.http
     input:
       url: "https://graph.microsoft.com/v1.0/users/<% ctx().user %>/assignLicense"
-      body: "{\"addLicenses\":[{\"skuId\":\"f30db892-07e9-47e9-837c-80727f46fd3d\"},{\"skuId\":\"a403ebcc-fae0-4ca2-8c8c-7a907fd6c235\"}],\"removeLicenses\":[]}"
+      body: "{\"addLicenses\":[{\"skuId\":\"05e9a617-0261-4cee-bb44-138d3ef5d965\"},{\"skuId\":\"a403ebcc-fae0-4ca2-8c8c-7a907fd6c235\"},{\"skuId\":\"8e7a3d30-d97d-43ab-837c-d7701cef83dc\"},{\"skuId\":\"4828c8ec-dc2e-4779-b502-87ac9ce28ab7\"}],\"removeLicenses\":[]}"
       headers:
         Authorization: Bearer <% ctx().graph_auth_token %>
         Content-Type: application/json
       method: POST
-  # [185, 190]
+  # [174, 198]
   update_usage_location:
     action: core.http
     next:

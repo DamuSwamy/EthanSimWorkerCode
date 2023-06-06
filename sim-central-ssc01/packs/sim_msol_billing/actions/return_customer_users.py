@@ -44,14 +44,14 @@ class ReturnCustomerUsersAction(Action):
                 print("Num: " + str(num) +" Tenant ID: " + tenant_id+ "; status_code: " + str(response.status_code))
                 continue
             self.response_json = response.json()
-            if self.response_json['continuationToken'] == "":
-                self.user_list = self.user_list + self.construct_data(tenant_id, self.response_json)
-                print("Tenant:{}, Count:{}".format(tenant_id, len(self.user_list)))
-            else:
+            if 'continuationToken' in self.response_json and self.response_json['continuationToken']:
                 self.user_list = self.user_list + self.construct_data(tenant_id, self.response_json)
                 print("Tenant:{}, Count:{}".format(tenant_id, len(self.user_list)))
                 self.continuation_token = self.response_json['continuationToken']
                 self.more_users(tenant_id)
+            else:
+                self.user_list = self.user_list + self.construct_data(tenant_id, self.response_json)
+                print("Tenant:{}, Count:{}".format(tenant_id, len(self.user_list)))
         if not self.inserted:
             print("Category: NoMore, Inserted {} records".format(len(self.user_list)))
             self.insert_data(self.user_list)

@@ -52,7 +52,6 @@ class VcenterEvents(BaseAction):
         for e in events:
             if any([x in e.vm.name for x in vm_ignore_list]) or any([x in e.userName for x in exclude_user_events]):
                 continue
-            print(e)
             events_array.append(e)
         return self._add_event_properties_to_map_from_event_array(moid_to_event, events_array)
 
