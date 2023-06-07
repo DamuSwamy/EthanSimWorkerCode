@@ -1,11 +1,11 @@
 version: 1.0
 tasks:
-  # [377, 373]
+  # [370, 420]
   create_ad_user:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: New-ADUser  -Name "<% ctx().first_name%> <%ctx().last_name %>" -GivenName "<% ctx().first_name %>" -Surname "<% ctx().last_name %>" -DisplayName "<% ctx().first_name%> <%ctx().last_name %>" -Department "<% ctx().department %>" -Title "<% ctx().title %>" -Office "<% ctx().location %>" -SamAccountName "<% ctx().samaccountname %>" -UserPrincipalName "<% ctx().emailaddress %>" -Path "<% ctx().target_OU %>" -AccountPassword $(ConvertTo-SecureString "<% ctx().random_string %>" -AsPlainText -Force) -MobilePhone "<% ctx().mobile %>" -Postal "<% ctx().zipcode %>" -StreetAddress "<% ctx().street %>" -State "<% ctx().state %>" -SamAccountName "<% ctx().samaccountname %>" -HomePhone "<% ctx().homephone %>" -Country "<% ctx().country %>" -Company "<% ctx().company %>" -City "<% ctx().city %>" -Enabled $true
+      cmd: "  New-ADUser  -Name \"<% ctx().first_name%> <%ctx().last_name %>\" -GivenName \"<% ctx().first_name %>\" -Surname \"<% ctx().last_name %>\" -DisplayName \"<% ctx().first_name%> <%ctx().last_name %>\" -Department \"<% ctx().department %>\" -Title \"<% ctx().title %>\" -Description \"<% ctx().title %>\" -Office \"<% ctx().location %>\" -SamAccountName \"<% ctx().samaccountname %>\" -UserPrincipalName \"<% ctx().email %>\" -Path \"<% ctx().target_OU %>\" -AccountPassword $(ConvertTo-SecureString \"<% ctx().random_string %>\" -AsPlainText -Force) -MobilePhone \"<% ctx().mobile %>\" -PostalCode \"<% ctx().zipcode %>\" -StreetAddress \"<% ctx().street %>\" -State \"<% ctx().state %>\"  -HomePhone \"<% ctx().homephone %>\" -Country \"<% ctx().country %>\" -Company \"<% ctx().company %>\" -City \"<% ctx().city %>\" New-ADUser  -Name \"<% ctx().first_name%> <%ctx().last_name %>\" -GivenName \"<% ctx().first_name %>\" -Surname \"<% ctx().last_name %>\" -DisplayName \"<% ctx().first_name%> <%ctx().last_name %>\" -Department \"<% ctx().department %>\" -Title \"<% ctx().title %>\" -Description \"<% ctx().title %>\" -Office \"<% ctx().location %>\" -SamAccountName \"<% ctx().samaccountname %>\" -UserPrincipalName \"<% ctx().email %>\" -Path \"<% ctx().target_OU %>\" -AccountPassword $(ConvertTo-SecureString \"<% ctx().random_string %>\" -AsPlainText -Force) -MobilePhone \"<% ctx().mobile %>\" -PostalCode \"<% ctx().zipcode %>\" -StreetAddress \"<% ctx().street %>\" -State \"<% ctx().state %>\"  -HomePhone \"<% ctx().homephone %>\" -Country \"<% ctx().country %>\" -Company \"<% ctx().company %>\" -City \"<% ctx().city %>\" New-ADUser  -Name \"<% ctx().first_name%> <%ctx().last_name %>\" -GivenName \"<% ctx().first_name %>\" -Surname \"<% ctx().last_name %>\" -DisplayName \"<% ctx().first_name%> <%ctx().last_name %>\" -Department \"<% ctx().department %>\" -Title \"<% ctx().title %>\" -Description \"<% ctx().title %>\" -Office \"<% ctx().location %>\" -SamAccountName \"<% ctx().samaccountname %>\" -UserPrincipalName \"<% ctx().email %>\" -Path \"<% ctx().target_OU %>\" -AccountPassword $(ConvertTo-SecureString \"<% ctx().random_string %>\" -AsPlainText -Force) -MobilePhone \"<% ctx().mobile %>\" -PostalCode \"<% ctx().zipcode %>\" -StreetAddress \"<% ctx().street %>\" -State \"<% ctx().state %>\"  -HomePhone \"<% ctx().homephone %>\" -Country \"<% ctx().country %>\" -Company \"<% ctx().company %>\" -City \"<% ctx().city %>\" -ChangePasswordAtLogon $true -Enabled $true"
       host: <% ctx().ad_host[0] %>
       password: <% ctx().password[0] %>
       username: <% ctx().username[0] %>
@@ -26,12 +26,12 @@ tasks:
           - license_added: false
           - mailbox_created: false
           - user_count: " "
-  # [371, 521]
+  # [370, 526]
   add_group_membs:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: "$groups = <% ctx().groupslist %>\nforeach($groups in $groups.split(\";\")){\n    Add-ADGroupMember -Identity $group -Members \"<% ctx().first_name.substring(0,1)%><%ctx().last_name %>\"\n}"
+      cmd: "$groups = \"<% ctx().NewUserADGroups %>\"\nforeach($group in $groups.split(\";\")){\n    Add-ADGroupMember -Identity $group -Members \"<% ctx().SamAccountName %>\"\n}"
       password: <% ctx().password[0] %>
       username: <% ctx().username[0] %>
       verify_ssl_cert: false
@@ -43,7 +43,7 @@ tasks:
         when: <% succeeded() %>
         publish:
           - membership_copied: Yes
-  # [737, 148]
+  # [750, 149]
   add_manager:
     action: core.winrm_ps_cmd
     input:
@@ -58,7 +58,7 @@ tasks:
       - do:
           - start_delta_sync
         when: <% 1 < 0 %>
-  # [156, 16]
+  # [368, 96]
   start:
     action: core.echo
     input:
@@ -70,32 +70,36 @@ tasks:
           - ad_host: <% ctx().data.ci_details.where($.ci_id = 'AD01').select(str($.connections.POWERSHELL.ip_address)) %>
           - username: <% ctx().data.ci_details.where($.ci_id = 'AD01').select($.connections.POWERSHELL.username) %>
           - password: <% ctx().data.ci_details.where($.ci_id = 'AD01').select($.connections.POWERSHELL.password) %>
-          - model_user: <% ctx().data.data.custom_attributes.modeluser %>
-          - mobile: <% ctx().data.data.custom_attributes.phone_number %>
-          - location: <% ctx().data.data.custom_attributes.location %>
-          - title: <% ctx().data.data.custom_attributes.position %>
-          - department: <% ctx().data.data.custom_attributes.business_unit %>
-          - first_name: <% ctx().data.data.custom_attributes.firstname %>
-          - last_name: <% ctx().data.data.custom_attributes.lastname %>
+          - mobile: <% ctx().data.data.custom_attributes.Location %>
+          - location: <% ctx().data.data.custom_attributes.Location %>
+          - title: <% ctx().data.data.custom_attributes.Title %>
+          - department: <% ctx().data.data.custom_attributes.Department %>
+          - first_name: <% ctx().data.data.custom_attributes.FirstName %>
+          - last_name: <% ctx().data.data.custom_attributes.LastName %>
           - ticketNo: <% ctx().data.itsm.details.ticket_id %>
-          - manager: <% ctx().data.data.custom_attributes.managername %>
+          - manager: <% ctx().data.data.custom_attributes.Manager %>
           - display_user: <% ctx().first_name%> <%ctx().last_name %>
-          - MailBoxADGroup: <% ctx().data.data.custom_attributes.MailBoxADGroup %>
-          - mailbox_required: <% ctx().data.data.custom_attributes.mailbox_required %>
+          - MailBoxADGroup: false
+          - mailbox_required: false
           - ex_host: <% ctx().data.ci_details.where($.ci_id = 'EX01').select(str($.connections.POWERSHELL.ip_address)) %>
-          - target_OU: <% ctx().data.data.custom_attributes.targetoupath %>
-          - emaildomain: <% ctx().data.data.custom_attributes.emaildomain %>
+          - target_OU: <% ctx().data.data.custom_attributes.OU %>
+          - email: <% ctx().data.data.custom_attributes.Email %>
           - tenant_id: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.tenant_id)) %>
           - client_id: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.client_id)) %>
           - client_secret: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.client_secret)) %>
-          - zipcode: "\"4000\""
-          - city: "\"Brisbane\""
-          - street: "\"345 Queen Street\""
-          - country: "\"Australia\""
-          - state: "\"QLD\""
-          - homephone: "\"+61 7 3222 8444\""
-          - company: "\"Pitcher Partners\""
-  # [735, 297]
+          - zipcode: 4000
+          - city: Brisbane
+          - street: 345 Queen Street
+          - country: AU
+          - state: QLD
+          - homephone: +61 7 3222 8444
+          - company: Pitcher Partners
+          - position: <% ctx().data.data.custom_attributes.Title %>
+          - description: <% ctx().data.data.custom_attributes.Title %>
+          - samaccountname: <% ctx().data.data.custom_attributes.SamAccountName %>
+          - NewUserADGroups: <% ctx().data.data.custom_attributes.NewUserADGroups %>
+          - NewUserDistributionGroups: <% ctx().data.data.custom_attributes.NewUserDistributionGroups %>
+  # [755, 252]
   start_delta_sync:
     action: sim_activedirectory.start_delta_ad_sync
     input:
@@ -105,7 +109,7 @@ tasks:
     next:
       - do:
           - sleep_90
-  # [738, 465]
+  # [758, 368]
   sleep_90:
     action: core.local
     input:
@@ -114,14 +118,14 @@ tasks:
     next:
       - do:
           - set_location_license
-  # [730, 933]
+  # [763, 727]
   end:
     action: core.noop
-  # [732, 782]
+  # [761, 601]
   ticket_update:
     action: core.echo
     input:
-      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added: <%ctx().model_user %>\nAD sync: True\nLicense Added: <% ctx().license_added %>\n"
+      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added: True\nAD sync: True\nLicense Added: <% ctx().license_added %>\n"
     next:
       - do:
           - end
@@ -145,7 +149,7 @@ tasks:
                   status: In Progress
                   ticket_update: Sim Automation is escalating the service request after completing AD and Exchange tasks
           - execution_log: "[{\"task_name\":\"ad_created\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().ad_created  %>},{\"task_name\":\"membership_copied\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().membership_copied  %>},{\"task_name\":\"license_added\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().license_added  %>},{\"task_name\":\"mailbox_created\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().mailbox_created  %>}]"
-  # [371, 234]
+  # [371, 317]
   check_ad_user:
     action: sim_activedirectory.check_ad_user
     input:
@@ -196,7 +200,7 @@ tasks:
   # [0, 365]
   end_1_user_exists:
     action: core.noop
-  # [372, 657]
+  # [372, 623]
   fetch_manager_email:
     action: sim_activedirectory.fetch_email_object_ad_user
     input:
@@ -210,21 +214,21 @@ tasks:
         publish:
           - email: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
           - objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
-  # [373, 118]
+  # [366, 197]
   random:
     action: core.local
     input:
-      cmd: "echo \"def@ultPassword123\""
+      cmd: "echo \"Pitchers1234\""
     next:
       - do:
           - check_ad_user
         publish:
           - random_string: <% result().stdout %>
-  # [733, 639]
+  # [753, 485]
   set_location_license:
     action: sim_o365.set_location_license
     input:
-      user: <% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>
+      user: <% ctx().email %>
       tenant_id: <% ctx().tenant_id[0] %>
       client_secret: <% ctx().client_secret[0] %>
       client_id: <% ctx().client_id[0] %>
@@ -234,6 +238,14 @@ tasks:
         publish:
           - state: REMEDIATION
           - info: successfully onboarded
+  # [359, 0]
+  sleep:
+    action: core.local
+    input:
+      cmd: sleep 10
+    next:
+      - do:
+          - start
 input:
   - data
 output:
