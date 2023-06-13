@@ -5,7 +5,7 @@ tasks:
     action: core.winrm_ps_cmd
     input:
       transport: <% ctx().data.data.transport %>
-      cmd: Get-ADUser -Filter 'enabled -eq $true'  -Properties  <% ctx().data.data.properties %> | Select-Object  <% ctx().data.data.properties %> | ConvertTo-Json
+      cmd: Get-ADUser -Filter 'enabled -eq $true -and UserPrincipalName -ne "Navgagandeep.Singh1@melair.com.au" ' -Properties  <% ctx().data.data.properties %> | Select-Object  <% ctx().data.data.properties %> | ConvertTo-Json
       host: <% ctx().data.data.ad_host %>
       username: <% ctx().data.data.username %>
       password: <% ctx().data.data.password %>
