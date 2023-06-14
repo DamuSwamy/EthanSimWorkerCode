@@ -5,7 +5,7 @@ tasks:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: "  New-ADUser  -Name \"<% ctx().first_name%> <%ctx().last_name %>\" -GivenName \"<% ctx().first_name %>\" -Surname \"<% ctx().last_name %>\" -DisplayName \"<% ctx().first_name%> <%ctx().last_name %>\" -Department \"<% ctx().department %>\" -Title \"<% ctx().title %>\" -Description \"<% ctx().title %>\" -Office \"<% ctx().location %>\" -SamAccountName \"<% ctx().samaccountname %>\" -UserPrincipalName \"<% ctx().email %>\" -Path \"<% ctx().target_OU %>\" -AccountPassword $(ConvertTo-SecureString \"<% ctx().random_string %>\" -AsPlainText -Force) -MobilePhone \"<% ctx().mobile %>\" -PostalCode \"<% ctx().zipcode %>\" -StreetAddress \"<% ctx().street %>\" -State \"<% ctx().state %>\"  -HomePhone \"<% ctx().homephone %>\" -Country \"<% ctx().country %>\" -Company \"<% ctx().company %>\" -City \"<% ctx().city %>\" New-ADUser  -Name \"<% ctx().first_name%> <%ctx().last_name %>\" -GivenName \"<% ctx().first_name %>\" -Surname \"<% ctx().last_name %>\" -DisplayName \"<% ctx().first_name%> <%ctx().last_name %>\" -Department \"<% ctx().department %>\" -Title \"<% ctx().title %>\" -Description \"<% ctx().title %>\" -Office \"<% ctx().location %>\" -SamAccountName \"<% ctx().samaccountname %>\" -UserPrincipalName \"<% ctx().email %>\" -Path \"<% ctx().target_OU %>\" -AccountPassword $(ConvertTo-SecureString \"<% ctx().random_string %>\" -AsPlainText -Force) -MobilePhone \"<% ctx().mobile %>\" -PostalCode \"<% ctx().zipcode %>\" -StreetAddress \"<% ctx().street %>\" -State \"<% ctx().state %>\"  -HomePhone \"<% ctx().homephone %>\" -Country \"<% ctx().country %>\" -Company \"<% ctx().company %>\" -City \"<% ctx().city %>\" New-ADUser  -Name \"<% ctx().first_name%> <%ctx().last_name %>\" -GivenName \"<% ctx().first_name %>\" -Surname \"<% ctx().last_name %>\" -DisplayName \"<% ctx().first_name%> <%ctx().last_name %>\" -Department \"<% ctx().department %>\" -Title \"<% ctx().title %>\" -Description \"<% ctx().title %>\" -Office \"<% ctx().location %>\" -SamAccountName \"<% ctx().samaccountname %>\" -UserPrincipalName \"<% ctx().email %>\" -Path \"<% ctx().target_OU %>\" -AccountPassword $(ConvertTo-SecureString \"<% ctx().random_string %>\" -AsPlainText -Force) -MobilePhone \"<% ctx().mobile %>\" -PostalCode \"<% ctx().zipcode %>\" -StreetAddress \"<% ctx().street %>\" -State \"<% ctx().state %>\"  -HomePhone \"<% ctx().homephone %>\" -Country \"<% ctx().country %>\" -Company \"<% ctx().company %>\" -City \"<% ctx().city %>\" -ChangePasswordAtLogon $true -Enabled $true"
+      cmd: "New-ADUser  -Name \"<% ctx().first_name%> <%ctx().last_name %>\" -GivenName \"<% ctx().first_name %>\" -Surname \"<% ctx().last_name %>\" -DisplayName \"<% ctx().first_name%> <%ctx().last_name %>\" -Department \"<% ctx().department %>\" -Title \"<% ctx().title %>\" -Description \"<% ctx().title %>\" -Office \"<% ctx().location %>\" -SamAccountName \"<% ctx().samaccountname %>\" -UserPrincipalName \"<% ctx().email %>\" -Path \"<% ctx().target_OU %>\" -AccountPassword $(ConvertTo-SecureString \"<% ctx().random_string %>\" -AsPlainText -Force) -MobilePhone \"<% ctx().mobile %>\" -PostalCode \"<% ctx().zipcode %>\" -StreetAddress \"<% ctx().street %>\" -State \"<% ctx().state %>\"  -HomePhone \"<% ctx().homephone %>\" -Country \"<% ctx().country %>\" -Company \"<% ctx().company %>\" -City \"<% ctx().city %>\" -ChangePasswordAtLogon $true -Enabled $true"
       host: <% ctx().ad_host[0] %>
       password: <% ctx().password[0] %>
       username: <% ctx().username[0] %>
@@ -26,12 +26,12 @@ tasks:
           - license_added: false
           - mailbox_created: false
           - user_count: " "
-  # [370, 526]
+  # [370, 528]
   add_group_membs:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: "$groups = \"<% ctx().NewUserADGroups %>\"\nforeach($group in $groups.split(\";\")){\n    Add-ADGroupMember -Identity $group -Members \"<% ctx().SamAccountName %>\"\n}"
+      cmd: "$groups = \"<% ctx().NewUserADGroups %>\"\nforeach($group in $groups.split(\";\")){\n    Add-ADGroupMember -Identity $group -Members \"<% ctx().samaccountname%>\"\n}"
       password: <% ctx().password[0] %>
       username: <% ctx().username[0] %>
       verify_ssl_cert: false
@@ -48,7 +48,7 @@ tasks:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: "Get-ADUser -Identity \"<% ctx().first_name.substring(0,1) %><%ctx().last_name %>\" | Set-ADUser -Manager \"<% ctx().objectid %>\""
+      cmd: "Get-ADUser -Identity \"<% ctx().samaccountname%>\" | Set-ADUser -Manager \"<% ctx().objectid %>\""
       host: <% ctx().ad_host[0] %>
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>
@@ -97,7 +97,7 @@ tasks:
           - position: <% ctx().data.data.custom_attributes.Title %>
           - description: <% ctx().data.data.custom_attributes.Title %>
           - samaccountname: <% ctx().data.data.custom_attributes.SamAccountName %>
-          - NewUserADGroups: <% ctx().data.data.custom_attributes.NewUserADGroups %>
+          - NewUserADGroups: <% ctx().data.data.custom_attributes.NewUserADGroups.trimRight(";") %>
           - NewUserDistributionGroups: <% ctx().data.data.custom_attributes.NewUserDistributionGroups %>
   # [755, 252]
   start_delta_sync:

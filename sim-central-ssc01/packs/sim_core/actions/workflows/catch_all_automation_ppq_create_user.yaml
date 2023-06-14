@@ -65,7 +65,7 @@ tasks:
   # execute secondary automation which involkes target automation
   # [243, 593]
   execute_automation: 
-    action: sim_core.catch_all_automation_target_v2
+    action: sim_core.catch_all_automation_ppq_target_v2
     input: 
       name: <% ctx().robot_name %>
       type: <% ctx().robot_type %>

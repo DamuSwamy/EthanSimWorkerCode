@@ -1,0 +1,44 @@
+---
+name: http_request
+runner_type: "python-script"
+description: Http request using python
+enabled: true
+entry_point: http_request.py
+parameters:
+  action_name:
+    description: Custom actionname to be called
+    type: string
+    required: false
+    position: 4
+  input_data:
+    description: Body of the data
+    type: object
+    required: false
+    position: 5
+  body:
+    description: Body to send with the request
+    type: string
+    required: false
+    position: 3
+  url:
+    description: HTTP url to send requests
+    type: string
+    required: true
+    position: 0
+  headers:
+    description: 'HTTP headers to use with the request.'
+    type: object
+    required: false
+    position: 2
+  method:
+    description: HTTP method to use.
+    type: string
+    required: false
+    position: 1
+    default: get
+    enum:
+    - get
+    - post
+    - put
+    - delete
+    - patch
