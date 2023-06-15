@@ -198,7 +198,7 @@ tasks:
       headers:
         St2-Api-Key: <% ctx().data.destination.worker.St2ApiKey %>
       method: post
-      input_data: <% ctx().data %>
+      input_data: "{{ ctx().data | to_json_string }}"
       action_name: <% ctx().name %>
     next:
       - do:

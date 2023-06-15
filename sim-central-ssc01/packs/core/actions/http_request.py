@@ -9,21 +9,20 @@ class HttpRequestAction(Action):
     def run(self, url, headers, method, body={}, input_data=None, action_name=None):
         if body:
             json_dat = json.dumps(body)
-            body = json.loads(json_dat)
+            json_body = json.loads(json_dat)
         elif input_data and action_name:
-            input_data = json.dumps(input_data)
             body = {}
+            # input_data = input_data.replace('"', "'")
             body["action"] = action_name
             body["parameters"] = {}
-            body["parameters"]["data"] = json.dumps(input_data).replace('"', "'").replace("\\", "")
-            body["user"] = None
+            body["parameters"]["data"] = input_data
+            json_body = json.dumps(body)
 
         args = {}
         args['url']     = url
         args['method']  = method
         args['headers'] = headers
-        args['data']    = body
-        print(body)
+        args['data']    = json_body
 
         req_data = self.addArgs(**args)
         resp = self.makeRequest(**req_data)

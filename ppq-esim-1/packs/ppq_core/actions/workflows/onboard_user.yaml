@@ -1,6 +1,6 @@
 version: 1.0
 tasks:
-  # [370, 420]
+  # [370, 414]
   create_ad_user:
     action: core.winrm_ps_cmd
     input:
@@ -26,7 +26,7 @@ tasks:
           - license_added: false
           - mailbox_created: false
           - user_count: " "
-  # [370, 528]
+  # [373, 526]
   add_group_membs:
     action: core.winrm_ps_cmd
     input:
@@ -43,7 +43,7 @@ tasks:
         when: <% succeeded() %>
         publish:
           - membership_copied: Yes
-  # [750, 149]
+  # [755, 144]
   add_manager:
     action: core.winrm_ps_cmd
     input:
@@ -57,7 +57,7 @@ tasks:
     next:
       - do:
           - start_delta_sync
-        when: <% 1 < 0 %>
+        when: <% succeeded() %>
   # [368, 96]
   start:
     action: core.echo
@@ -99,7 +99,7 @@ tasks:
           - samaccountname: <% ctx().data.data.custom_attributes.SamAccountName %>
           - NewUserADGroups: <% ctx().data.data.custom_attributes.NewUserADGroups.trimRight(";") %>
           - NewUserDistributionGroups: <% ctx().data.data.custom_attributes.NewUserDistributionGroups %>
-  # [755, 252]
+  # [758, 252]
   start_delta_sync:
     action: sim_activedirectory.start_delta_ad_sync
     input:
@@ -109,7 +109,7 @@ tasks:
     next:
       - do:
           - sleep_90
-  # [758, 368]
+  # [760, 369]
   sleep_90:
     action: core.local
     input:
@@ -149,7 +149,7 @@ tasks:
                   status: In Progress
                   ticket_update: Sim Automation is escalating the service request after completing AD and Exchange tasks
           - execution_log: "[{\"task_name\":\"ad_created\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().ad_created  %>},{\"task_name\":\"membership_copied\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().membership_copied  %>},{\"task_name\":\"license_added\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().license_added  %>},{\"task_name\":\"mailbox_created\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().mailbox_created  %>}]"
-  # [371, 317]
+  # [369, 300]
   check_ad_user:
     action: sim_activedirectory.check_ad_user
     input:
@@ -200,7 +200,7 @@ tasks:
   # [0, 365]
   end_1_user_exists:
     action: core.noop
-  # [372, 623]
+  # [371, 636]
   fetch_manager_email:
     action: sim_activedirectory.fetch_email_object_ad_user
     input:
@@ -212,9 +212,9 @@ tasks:
       - do:
           - add_manager
         publish:
-          - email: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
+          - email_manager: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
           - objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
-  # [366, 197]
+  # [368, 196]
   random:
     action: core.local
     input:
@@ -224,7 +224,7 @@ tasks:
           - check_ad_user
         publish:
           - random_string: <% result().stdout %>
-  # [753, 485]
+  # [760, 486]
   set_location_license:
     action: sim_o365.set_location_license
     input:
@@ -238,7 +238,7 @@ tasks:
         publish:
           - state: REMEDIATION
           - info: successfully onboarded
-  # [359, 0]
+  # [363, 0]
   sleep:
     action: core.local
     input:

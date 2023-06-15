@@ -12,7 +12,7 @@ parameters:
     position: 4
   input_data:
     description: Body of the data
-    type: object
+    type: string
     required: false
     position: 5
   body:

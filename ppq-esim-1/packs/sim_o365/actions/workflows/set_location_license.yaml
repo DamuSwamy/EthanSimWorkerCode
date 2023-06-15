@@ -1,6 +1,6 @@
 version: 1.0
 tasks:
-  # [175, 74]
+  # [175, 75]
   get_token:
     action: core.http
     input:
@@ -8,23 +8,25 @@ tasks:
       body: client_id=<% ctx().client_id %>&scope=https%3A%2F%2Fgraph.microsoft.com%2F.default&client_secret=<% ctx().client_secret %>&grant_type=client_credentials
       headers:
         Content-Type: application/x-www-form-urlencoded
-      method: GET
+      method: POST
+      verify_ssl_cert: false
     next:
       - do:
           - update_usage_location
         publish:
           - graph_auth_token: <% result().body. access_token %>
-  # [175, 327]
+  # [174, 327]
   assign_license:
     action: core.http
     input:
       url: "https://graph.microsoft.com/v1.0/users/<% ctx().user %>/assignLicense"
-      body: "{\"addLicenses\":[{\"skuId\":\"05e9a617-0261-4cee-bb44-138d3ef5d965\"},{\"skuId\":\"a403ebcc-fae0-4ca2-8c8c-7a907fd6c235\"},{\"skuId\":\"8e7a3d30-d97d-43ab-837c-d7701cef83dc\"},{\"skuId\":\"4828c8ec-dc2e-4779-b502-87ac9ce28ab7\"}],\"removeLicenses\":[]}"
+      body: "{\"addLicenses\":[{\"skuId\":\"05e9a617-0261-4cee-bb44-138d3ef5d965\"},{\"skuId\":\"a403ebcc-fae0-4ca2-8c8c-7a907fd6c235\"},{\"skuId\":\"338148b6-1b11-4102-afb9-f92b6cdc0f8d\"},{\"skuId\":\"e43b5b99-8dfb-405f-9987-dc307f34bcbd\"}],\"removeLicenses\":[]}"
       headers:
         Authorization: Bearer <% ctx().graph_auth_token %>
         Content-Type: application/json
       method: POST
-  # [174, 198]
+      verify_ssl_cert: false
+  # [174, 199]
   update_usage_location:
     action: core.http
     next:
@@ -37,6 +39,7 @@ tasks:
         Authorization: Bearer <% ctx().graph_auth_token %>
         Content-Type: application/json
       body: "{\"usageLocation\":\"AU\"}"
+      verify_ssl_cert: false
 input:
   - tenant_id
   - client_id
