@@ -101,7 +101,7 @@ tasks:
           - NewUserDistributionGroups: <% ctx().data.data.custom_attributes.NewUserDistributionGroups %>
   # [758, 252]
   start_delta_sync:
-    action: sim_activedirectory.start_delta_ad_sync
+    action: sim_activedirectory.start_delta_ad_sync_v2
     input:
       ad_host: <% ctx().ad_host[0] %>
       username: <% ctx().username[0] %>
