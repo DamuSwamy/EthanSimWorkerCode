@@ -71,10 +71,10 @@ tasks:
     next:
       - do:
           - add_license_E5
-        when: <% ctx().mailbox_required = "Yes" %>
+        when: <% ctx().mailbox_required = "YesNO123" %>
       - do:
-          - ticket_update
-        when: <% ctx().mailbox_required = "No" %>
+          - start_delta_sync
+        when: <% ctx().mailbox_required = "YesNo" %>
   # [100, 0]
   start:
     action: core.echo
@@ -105,7 +105,7 @@ tasks:
           - tenant_id: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.tenant_id)) %>
           - client_id: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.client_id)) %>
           - client_secret: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.client_secret)) %>
-  # [1002, 390]
+  # [752, 497]
   start_delta_sync:
     action: sim_activedirectory.start_delta_ad_sync
     input:
@@ -115,7 +115,7 @@ tasks:
     next:
       - do:
           - sleep_90
-  # [1009, 494]
+  # [1013, 610]
   sleep_90:
     action: core.local
     input:
@@ -219,7 +219,7 @@ tasks:
                   status: In Progress
                   ticket_update: Sim Automation is escalating the service request after finding the user to be onboarded already exists
           - execution_log: "[{\"task_name\":\"check_ad_user\",\"expected_returncode\":\"1\", \"actual_returncode\":<% ctx().user_count  %>}]"
-  # [1024, 173]
+  # [1077, 382]
   create_mailbox:
     action: sim_exchange.create_mailboxscript
     input:
@@ -269,7 +269,7 @@ tasks:
           - check_ad_user
         publish:
           - random_string: <% result().stdout %>
-  # [808, 328]
+  # [922, 264]
   check:
     action: core.noop
     next:

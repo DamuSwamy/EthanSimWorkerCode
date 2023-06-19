@@ -28,7 +28,11 @@ class AzuewBlobMergeCsvAction(Action):
         for blob in blobs:
             if self.remote_file in blob.name or "users.csv" in blob.name or ".csv" not in blob.name or blob.size <= 0:
                 continue
-            users += self.covert_csv_to_json(self.download_blob(container_name, blob.name))
+            csv_data = self.download_blob(container_name, blob.name)
+            if csv_data:    
+                users += self.covert_csv_to_json(csv_data)
+            else:
+                continue
         self.create_csv_blob(container_name, csv_filename, users)
         temp.close()
         return users
@@ -54,8 +58,12 @@ class AzuewBlobMergeCsvAction(Action):
 
     def download_blob(self, container_name, blob):
         blob_client = self.blob_service_client.get_blob_client(container=container_name, blob=blob)
-        blob_string = blob_client.download_blob().content_as_text()
-        reader = csv.DictReader(blob_string.split('\n'))
+        #print(blob)
+        try: 
+            blob_string = blob_client.download_blob().content_as_text()
+            reader = csv.DictReader(blob_string.split('\n'))
+        except Exception as e:
+            return False
         return reader
 
     def covert_csv_to_json(self, reader):

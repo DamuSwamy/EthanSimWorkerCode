@@ -41,6 +41,7 @@ tasks:
       - when: <% failed() %>
         do: fail
 
+  # [585, 357]
   copy_data_from_prod_to_temp:
     action: sql.query
     input:
@@ -68,6 +69,7 @@ tasks:
       - when: <% failed() %>
         do: fail
 
+  # [835, 557]
   update_prod_data_fields:
     action: sql.query
     input:
@@ -81,7 +83,7 @@ tasks:
       - when: <% failed() %>
         do: fail
     
-  # [15, 512]
+  # [168, 511]
   end:
     action: core.noop
 
@@ -99,6 +101,7 @@ tasks:
       - when: <% failed() %>
         do: fail
 
+  # [535, 557]
   delete_prod_records:
     action: sql.query
     input:

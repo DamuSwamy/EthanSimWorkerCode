@@ -39,7 +39,8 @@ tasks:
     action: sql.query
     input:
       connection: <% ctx().db_connection %>
-      query: "SELECT * FROM <% ctx().user_table_name %> WHERE FirstName like '%<% ctx().first_name %>%' and LastName like '%<% ctx().last_name %>%' and Falsepositive IS NULL"
+      query: SELECT * FROM <% ctx().user_table_name %> WHERE FirstName like '%<% ctx().first_name %>%' and LastName like '%<% ctx().last_name %>%' and Enabled = 'True' and Falsepositive = 'False'
+      log_level: DEBUG
     next:
       - when: <% succeeded() %>
         publish:
