@@ -1,0 +1,21 @@
+pack: sim_core
+enabled: true
+runner_type: orquesta
+name: catch_all_automation_target_v2_uat
+entry_point: workflows/catch_all_automation_target_v2_uat.yaml
+description: catch_all_automation_target uat
+parameters:
+  name:
+    type: string
+    description: target robot
+    required: true
+  type:
+    type: string
+    description: type of robot
+    required: true
+  data:
+    type: object
+    description: Object with key value pairs of input robot data
+    required: true
+  ticket_id:
+    type: string

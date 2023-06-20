@@ -1,0 +1,123 @@
+version: 1.0
+tasks:
+  # [303, 176]
+  find_update_ticket_tasks:
+    action: core.http
+    with:
+      items: execution_id in <% ctx().execution_ids[0] %>
+      concurrency: 1
+    input:
+      url: <% ctx().instance %>/api/v1/executions/<% item(execution_id) %>?include_attributes=context.orquesta.task_name
+      verify_ssl_cert: false
+      headers:
+        St2-Api-Key: <% ctx().st2apikey %>
+    next:
+      # #629e47
+      - do:
+          - fetch_exec_id
+        when: "<% succeeded() %> "
+        publish:
+          - check_result: <% result().body %>
+          - itsm_update: NA
+  # [303, 291]
+  fetch_exec_id:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - update_found
+        publish:
+          - ticket_update_exec_id: <% ctx(check_result).where($.context.orquesta.task_name.startsWith('update_ticket', 'ticket_update')).select($.id) %>
+  # [303, 397]
+  update_found:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - loop
+        when: <% len(ctx().ticket_update_exec_id) > 0 %>
+      - do:
+          - exit
+        when: <% len(ctx().ticket_update_exec_id) <= 0 %>
+  # [514, 529]
+  exit:
+    action: core.noop
+  # [52, 604]
+  get_id:
+    action: core.echo
+    input:
+      message: "\"<%  ctx().ticket_update_exec_id[ctx().iter] %>\""
+    next:
+      # #629e47
+      - do:
+          - get_ticket_update_output
+        when: <% succeeded() %>
+  # [53, 712]
+  get_ticket_update_output:
+    action: core.http
+    input:
+      url: <% ctx().instance %>/api/v1/executions/<%  ctx().ticket_update_exec_id[ctx().iter] %>/output
+      headers:
+        St2-Api-Key: <% ctx().st2apikey %>
+      verify_ssl_cert: false
+    next:
+      # #629e47
+      - do:
+          - update_itsm
+        publish:
+          - itsm_update: <% result().body %>
+        when: "<% result().status_code = 200 %> "
+  # [511, 773]
+  ticket_update_fetched:
+    action: core.noop
+    next:
+      - do:
+          - loop
+        publish:
+          - iter: <% ctx().iter + 1 %>
+  # [301, 65]
+  parse_inputs:
+    action: core.echo
+    input:
+      message: "\"<% ctx().execution_ids[0] %>\""
+    next:
+      # #629e47
+      - do:
+          - find_update_ticket_tasks
+  # [53, 495]
+  loop:
+    action: core.noop
+    next:
+      - do:
+          - get_id
+        when: <% ctx().iter < len(ctx().ticket_update_exec_id) %>
+      - do:
+          - exit
+        when: <% ctx().iter >= len(ctx().ticket_update_exec_id) %>
+  # [54, 831]
+  update_itsm:
+    action: sim_itsm_uat.update
+    input:
+      log_level: DEBUG
+      table: sn_customerservice_general_case
+      number: <% ctx().ticket_id %>
+      payload:
+        comments: <% ctx().itsm_update %>
+    next:
+      - do:
+          - ticket_update_fetched
+        when: <% succeeded() %>
+input:
+  - execution_ids
+  - ticket_id
+  - st2apikey
+  - instance
+  - itsm_url
+  - itsm_auth_token
+  - itsm_client_id
+output:
+  - itsm_update: <% ctx().itsm_update %>
+  - ticket_update_exec_id: <% ctx().ticket_update_exec_id %>
+vars:
+  - auth_token: fd349e6df6484099934825472cdcfc92
+  - iter: 0

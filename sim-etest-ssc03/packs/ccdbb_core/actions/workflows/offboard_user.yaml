@@ -224,7 +224,7 @@ tasks:
       password: <% ctx().password[0] %>
   # [310, 394]
   get_before_status:
-    action: ccdbb_core.get_user_status
+    action: ccdbb_core.get_user_status_before
     next:
       # #629e47
       - do:
@@ -246,7 +246,7 @@ tasks:
       organisation: <% ctx().organisation[0] %>
   # [191, 1396]
   get_after_status:
-    action: ccdbb_core.get_user_status
+    action: ccdbb_core.get_user_status_after
     next:
       # #629e47
       - do:

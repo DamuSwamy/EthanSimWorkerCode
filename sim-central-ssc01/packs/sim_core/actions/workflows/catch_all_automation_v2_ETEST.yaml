@@ -30,7 +30,7 @@ output:
 tasks:
 
   # acknowledge execution request
-  # [232, 19]
+  # [243, 19]
   ack_request: 
     action: core.noop
     next:
@@ -52,13 +52,14 @@ tasks:
           - itsm_url: <% ctx().robot_data.itsm.details.url  %>
           - ticket_contactname: <% ctx().robot_data.itsm.details.ticket_contactname %>
           - ticket_initial_description: <% ctx().robot_data.itsm.details.first_update  %>
+          - close_date: "<% now().format(\"%Y-%m-%d %H:%M:%S\") %>"
         # #629e47
         do: 
           - decision_create_or_update
   # execute secondary automation which involkes target automation
-  # [232, 463]
+  # [280, 582]
   execute_automation: 
-    action: sim_core.catch_all_automation_target_v2_uat
+    action: sim_core.catch_all_automation_target_v2
     input: 
       name: <% ctx().robot_name %>
       type: <% ctx().robot_type %>
@@ -86,12 +87,12 @@ tasks:
               info: <% ctx().output.get('info', result().output) %>
         # #629e47
         do: 
-          - escalate_ticket
+          - sleep
       # #629e47
       - do:
           - create_mitel_ticket
-        when: <% 3 < 0  %>
-      - when: <% succeeded()  and   2 > 4 %>
+        when: <% len(result().output.info.info.next_action_attributes.get('create', {})) > 0  %>
+      - when: <% succeeded()  and  result().output.info.delegate_notification.get('delegate',"") = "Yes" and result().output.info.get('failed_actions', []).indexOf('delegate_onedrive') = -1 %>
         # #629e47
         do:
           - delegated_user_email
@@ -99,30 +100,96 @@ tasks:
           - display_name: <% result().output.info.delegate_notification.get('display_name', "") %>
           - one_drive_site: <% result().output.info.delegate_notification.get('one_drive_site', "") %>
           - delegated_email: <% result().output.info.delegate_notification.get('email', "") %>
-      - when: <% len(result().output.info.get('failed_actions', [])) > 0  %>
+      - do:
+          - update_failed_actions
+        when: <% len(result().output.info.get('failed_actions', [])) > 0  %>
         publish:
           - failed_action_list: <% result().output.info.get('failed_actions', []) %>
-  # [231, 362]
+  # [246, 422]
   decide_now_or_later:
     action: core.noop
     next:
       # #629e47
       - do:
           - execute_automation
-  # [231, 131]
-  decision_create_or_update:
+        when: <%  ctx().robot_data.data.custom_attributes.offboarding_type = "immediate"   %> 
+      # #aa5dd1
+      - do:
+          - update_robot_data_ticket_id
+        when: <% ctx().robot_data.data.custom_attributes.offboarding_type = "schedule" %>
+        publish:
+          - random_number: <% random(1,9999999) %>
+      - do:
+          - suspend
+        when: <%  ctx().robot_data.data.custom_attributes.offboarding_type = "suspend"  %>
+  # [838, 806]
+  schedule_later:
+    action: core.http
+    input:
+      url: <% ctx().robot_data.destination.controller.url %>/api/v1/rules
+      headers:
+        St2-Api-Key: <% ctx().robot_data.destination.controller.St2ApiKey %>
+      body: "{\"pack\":\"sim_core\",\"enabled\":true,\"trigger\":{\"type\":\"core.st2.DateTimer\",\"parameters\":{\"date\":\"<% datetime(ctx().robot_data.data.custom_attributes.final_date.trim(), \"%d/%m/%Y\") + timespan(hours => 08, minutes => 01) %>\",\"timezone\":\"UTC\"}},\"criteria\":{},\"action\":{\"ref\":\"sim_core.catch_all_automation_v2\",\"parameters\":{\"robot_data\":\"<% ctx().scheduled_robot_data %>\",\"robot_name\":\"<% ctx().robot_name %>\",\"robot_type\":\"<% ctx().robot_type %>\"}},\"name\":\"catchall_schedule_<% ctx().random_number %>\",\"description\":\"catchall_schedule_<% ctx().random_number %>\"}"
+      url_hosts_blacklist: null
+      verify_ssl_cert: false
+    next:
+      # #629e47
+      - do:
+          - Schedule_Success
+        when: <% succeeded() %>
+        publish:
+          - message: <% ctx().robot_name %> scheduled successfully with code 0
+          - output: <% switch(true => result().body, true => {}) %>
+
+  # [838, 912]
+  Schedule_Success:
     action: core.noop
     next:
       - do:
+          - build_output
+        publish:
+          - messages: <% ctx().message  %>
+  # [245, 216]
+  decision_create_or_update:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - update_ticket_scheduled
+        publish:
+          - first_sim_update: "Automation has scheduled the execution of request for ITSM ticket number - <% ctx().ticket_id%>"
+        when: <% ctx().robot_data.data.custom_attributes.offboarding_type = "schedule" %>
+      - do:
           - update_itsm_immmediate
+        when: <% not ctx().robot_data.data.custom_attributes.offboarding_type = "schedule" %>
         publish:
           - first_sim_update: Automation has started the execution of request for ITSM ticket number - <% ctx().ticket_id%>
-  # [265, 1032]
+  # [837, 580]
+  update_robot_data_ticket_id:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - update_robot_data_offboarding_type
+        when: <% succeeded() %>
+        publish:
+          - scheduled_robot_data: <% ctx().scheduled_robot_data.set(itsm, ctx().scheduled_robot_data.itsm.set(details, ctx().scheduled_robot_data.itsm.details.set(ticket_id, ctx().ticket_id ))) %>
+  # [838, 694]
+  update_robot_data_offboarding_type:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - schedule_later
+        when: <% succeeded() %>
+        publish:
+          - scheduled_robot_data: <% ctx().scheduled_robot_data.set(data,ctx().scheduled_robot_data.data.set(custom_attributes,ctx().scheduled_robot_data.data.custom_attributes.set(offboarding_type,"immediate"))) %>
+  # [271, 1057]
   complete:
     action: core.echo
     input:
       message: "<% ctx().messages %>"
-  # [263, 932]
+  # [269, 950]
   done:
     action: core.noop
     next:
@@ -131,19 +198,27 @@ tasks:
           - complete
         publish:
           - messages: <% ctx().message  %>
-  # [833, 1]
+  # [12, 541]
+  suspend:
+    action: core.noop
+    next:
+      - do:
+          - execute_automation
+  # [826, 0]
   begin:
     action: core.noop
     next:
       # #629e47
       - do:
-          - ack_request
+          - inform_team
         when: <%  ctx().robot_type = "REQUEST" %>
       - do:
           - adhoc_no_ticket
+        publish:
+          - db_to_update: <% ctx().robot_data.data.custom_attributes.database %>      
         when: <%  ctx().robot_type = "ADHOC" %>
       - when: <% failed() %>
-  # [832, 102]
+  # [798, 111]
   adhoc_no_ticket:
     action: core.noop
     next:
@@ -151,9 +226,9 @@ tasks:
           - execute_adhoc_automation
         publish:
           - ticket_id: "\"00000000\""
-  # [835, 210]
+  # [795, 215]
   execute_adhoc_automation:
-    action: sim_core.catch_all_automation_target_v2_uat
+    action: sim_core.catch_all_automation_target_v2
     input:
       name: <% ctx().robot_name %>
       type: <% ctx().robot_type %>
@@ -170,7 +245,8 @@ tasks:
               state: <% ctx().output.get('state', "FINISHED") %>
               data: null
               info: <% ctx().output.get('info', result().output) %>
-  # [835, 309]
+          - data_to_insert: <% result().output.info.task_output.stdout %>
+  # [797, 319]
   done_adhoc:
     action: core.noop
     next:
@@ -178,12 +254,38 @@ tasks:
           - complete_adhoc
         publish:
           - messages: <% ctx().message  %>
-  # [837, 418]
+  # [795, 419]
   complete_adhoc:
     action: core.echo
     input:
       message: <% ctx().messages %>
-  # [562, 790]
+    next:
+      - do:
+          - delete
+        when: <% 1 = 1 %>
+      - do:
+          - end_adhoc
+        when: <% 1 != 1 %>
+  # [352, 318]
+  update_ticket_scheduled:
+    action: sim_itsm_uat.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticket_id %>
+      payload:
+        comments: <% ctx().first_sim_update %>
+        state: 2
+        assigned_to: svc_sim_automation
+        service_offering: Managed 365
+      table: sn_customerservice_general_case
+    next:
+      # #629e47
+      - do:
+          - decide_now_or_later
+        publish:
+          - account: <% result().result. account.value %>
+          - contact: <% result().result. contact.value %>
+  # [522, 793]
   escalate_ticket:
     action: sim_itsm_uat.update
     input:
@@ -193,12 +295,13 @@ tasks:
         comments: Sim Automation is escalating the service request to engineer as automation was not able to complete the operation as per request
         state: 10
         assigned_to: <% ctx().itsm_tick_name %>
+        assignment_group: 9a97138b1b1c595083e2993c274bcb45
       table: sn_customerservice_general_case
     next:
       # #629e47
       - do:
           - done
-  # [328, 793]
+  # [289, 796]
   resolve_itsm_ticket:
     action: sim_itsm_uat.update
     next:
@@ -213,13 +316,13 @@ tasks:
         resolution_code: Completed
         close_notes: Sim Automation is resolving the service request after completion of operation as per request
         state: 3
-        cause: User onboarding request completed by SiM Automation
+        cause: User Termination request completed by SiM Automation
         assigned_to: svc_sim_automation
         closed_by: 84cf417087ff3410bd1d32e80cbb3502
-        closed_at: "2022-02-06 17:03:07"
+        closed_at: <% ctx().close_date %>
         notes_to_comments: true
       number: <% ctx().ticket_id %>
-  # [0, 803]
+  # [11, 794]
   create_mitel_ticket:
     action: sim_itsm_uat.create_record
     next:
@@ -230,7 +333,7 @@ tasks:
       log_level: DEBUG
       payload:
         description: "<% ctx().first_update %>\n\nPlease Remove the Mitel Extension Assigned to this user.\nPlease check the original ITSM request there for more details - <% ctx().ticket_id %>"
-        short_description: TEST - Remove Mitel Extension Request - <% ctx().ticket_initial_summary %>
+        short_description: Remove Mitel Extension Request - <% ctx().ticket_initial_summary %>
         state: 1
         assigned_to: <% ctx().itsm_tick_name %>
         notes_to_comments: true
@@ -241,7 +344,7 @@ tasks:
         contact: <% ctx().contact %>
         service_offering: Mitel UCaaS
       table: sn_customerservice_general_case
-  # [231, 250]
+  # [95, 319]
   update_itsm_immmediate:
     action: sim_itsm_uat.update
     input:
@@ -259,15 +362,79 @@ tasks:
         publish:
           - account: <% result().result. account.value %>
           - contact: <% result().result. contact.value %>
+  # [841, 1029]
+  build_output:
+    action: core.noop
   # [159, 720]
   delegated_user_email:
     action: core.sendmail
     input:
       from: SiM.Automation@ethan.com.au
-      to: <% ctx().delegated_email %>,aman.mujawar@ethan.com.au,paul.hooper@essist.com.au
+      to: <% ctx().delegated_email %>,jacky.brogan@catholiccaredbb.org.au
       subject: Granted access to One Drive Site  of User - <% ctx().display_name %>
       body: "Hello,<br>\nPlease note you have been granted access to one drive of user - <% ctx().display_name  %> <br><br>\nOne Drive URL - <% ctx().one_drive_site  %>   <br><br><br>\nRegards,<br>\nEthan SiM Automation<br>"
     next:
       # #629e47
       - do:
           - done
+  # [1063, 301]
+  insert_table:
+    action: sql.insert_bulk
+    input:
+      log_level: DEBUG
+      connection: productionCloudExtension
+      data: <%ctx().data_to_insert%>
+      table: <%ctx().db_to_update%>
+    next:
+      - do:
+          - end_insert_adhoc
+  # [1063, 414]
+  delete:
+    action: sql.delete
+    input:
+      log_level: DEBUG
+      connection: productionCloudExtension
+      table: <%ctx().db_to_update%>
+    next:
+      - do:
+          - insert_table
+  # [1063, 191]
+  end_insert_adhoc:
+    action: core.noop
+  # [1030, 520]
+  end_adhoc:
+    action: core.noop
+  # [647, 627]
+  update_failed_actions:
+    action: sim_itsm2.update
+    next:
+      - do:
+          - done
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticket_id %>
+      payload:
+        comments: "When offboarding the user SiM automation could not complete following actions:\n\n <%ctx().failed_action_list%>\n\nOur engineer will review and complete these actions manually."
+        state: 10
+        assigned_to: <% ctx().itsm_tick_name %>
+        assignment_group: 9a97138b1b1c595083e2993c274bcb45
+      table: sn_customerservice_general_case
+  # [455, 689]
+  sleep:
+    action: core.local
+    next:
+      - do:
+          - escalate_ticket
+    input:
+      cmd: sleep 10
+  # [534, 16]
+  inform_team:
+    action: core.sendmail
+    input:
+      to: supriya.kadam@ethan.com.au,aman.mujawar@ethan.com.au
+      from: SiM.Automation@ethan.com.au
+      subject: New execution of CCDBB offboarding
+      body: "Check new execution of CCDBB offboarding  <% ctx().robot_data.itsm.details.ticket_id %> "
+    next:
+      - do:
+          - ack_request

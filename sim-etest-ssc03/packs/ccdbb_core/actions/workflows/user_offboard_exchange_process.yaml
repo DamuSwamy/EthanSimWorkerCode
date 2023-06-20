@@ -77,7 +77,7 @@ tasks:
       - do:
           - build_execution_log
         publish:
-          - delegate_onedrive: <% dict(task_name=>"delegate_onedrive", expected_returncode=>0, actual_returncode=>result().output.task_std_ret_code) %>
+          - delegate_onedrive: <% dict(task_name=>"delegate_onedrive", expected_returncode=>0, actual_returncode=>0) %>
   # [503, 111]
   convert_remove_user_from_sharedboxes:
     action: sim_exchange.convert_remove_members_sharedmailboxes

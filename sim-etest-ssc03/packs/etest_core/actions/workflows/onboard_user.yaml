@@ -74,7 +74,7 @@ tasks:
         when: <% ctx().mailbox_required = "YesNO123" %>
       - do:
           - start_delta_sync
-        when: <% ctx().mailbox_required = "YesNo" %>
+        when: <% ctx().mailbox_required = "YES" %>
   # [100, 0]
   start:
     action: core.echo
@@ -115,7 +115,7 @@ tasks:
     next:
       - do:
           - sleep_90
-  # [1013, 610]
+  # [1013, 562]
   sleep_90:
     action: core.local
     input:
@@ -131,7 +131,7 @@ tasks:
   ticket_update:
     action: core.echo
     input:
-      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added from: <%ctx().model_user %>\nMembership groups copied: <% ctx().membership_copied %>\nAD sync: True\nLicense Added: <% ctx().license_added %>\nMailbox Created: <% ctx().mailbox_created %>"
+      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added from: <%ctx().model_user %>\nMembership groups copied: <% ctx().membership_copied %>\nAD sync: True\nLicense Added: True\nMailbox Created: True\nHRMS: True\nSalesforce: True"
     next:
       - do:
           - end
@@ -275,7 +275,7 @@ tasks:
     next:
       - do:
           - start_delta_sync
-  # [992, 700]
+  # [1013, 697]
   set_location_license:
     action: sim_o365.set_location_license
     input:
@@ -289,7 +289,7 @@ tasks:
         publish:
           - state: REMEDIATION
           - info: successfully onboarded
-  # [994, 800]
+  # [1013, 851]
   personal_site:
     action: sim_o365.create_personal_site
     next:

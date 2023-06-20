@@ -1,0 +1,223 @@
+version: 1.0
+tasks:
+  # [84, 0]
+  start:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - replace_payload
+  # [329, 216]
+  check_automation:
+    action: core.http
+    input:
+      url: "<% ctx().data.destination.worker.url %>/api/v1/executions/<% ctx().id %>?include_attributes=status%2Cresult%2Cchildren"
+      headers:
+        St2-Api-Key: <% ctx().data.destination.worker.St2ApiKey %>
+      verify_ssl_cert: false
+    next:
+      # #629e47
+      - do:
+          - delete_rule_if_any
+        when: <% result().status_code = 200 and  result().body.status = 'succeeded'  and ctx().has_running_tasks = 'no' %>
+        publish:
+          - status: <% result().body.status %>
+          - info: <% switch( ctx().status =  'succeeded' => 'succeeded' , ctx().status =  'failed' => result().body.result.stderr  , true =>result().body.result.output ) %>
+      # #d1583b
+      - do:
+          - target_failed
+        when: <% result().body.status = 'failed'  %>
+        publish:
+          - status: <% result().body.status %>
+          - info: <% switch(ctx().status =  'failed' => result().body.result.stderr  , true =>result().body.result.output ) %>
+      # #fd9d32
+      - do:
+          - abort_target
+        when: <% result().status_code = 200 and  result().body.status = 'running' and  ctx().wait_period >= ctx().hard_timeout %>
+        publish:
+          - status: <% result().body.status %>
+          - info: <% switch( ctx().status =  'succeeded' => 'succeeded' , ctx().status =  'failed' => result().body.result.stderr  , true =>result().body.result.output ) %>
+      # #1072c6
+      - do:
+          - remove_checked_ids
+        when: "<% result().status_code = 200 and  ctx().wait_period < ctx().hard_timeout  and  result().body.status.startsWith('running', 'succeeded') %> "
+        publish:
+          - status: <% result().body.status %>
+          - info: <% switch( ctx().status =  'running' => 'working' , true =>result().body.result.output ) %>
+          - children: <% result().body.get('children', []) %>
+          - has_running_tasks: <% ctx().get('has_running_tasks', 'yes') %>
+  # [0, 389]
+  target_failed:
+    action: core.noop
+  # [455, 388]
+  abort_target:
+    action: core.noop
+  # [713, 983]
+  recheck:
+    action: core.local
+    input:
+      cmd: sleep <% ctx().check_interval %>
+    next:
+      - do:
+          - check_automation
+        when: <% ctx().wait_period < ctx().hard_timeout and  ctx().status = 'running' %>
+        publish:
+          - wait_period: <% ctx().wait_period + ctx().check_interval %>
+      # #629e47
+      - do:
+          - end
+        when: "<% ctx().wait_period >= ctx().hard_timeout and  ctx().status = 'running' %> "
+      # #5b5dd0
+      - do:
+          - running_automation_ended
+        when: <% ctx().status = 'succeeded' %>
+  # [290, 1091]
+  end:
+    action: core.noop
+  # [556, 694]
+  get_running_workflow_output:
+    action: sim_core.get_execution_output_uat
+    input:
+      execution_ids:
+        - <% ctx().new_ids %>
+      ticket_id: <% ctx().ticket_id %>
+      st2apikey: <% ctx().data.destination.worker.St2ApiKey %>
+      instance: <% ctx().data.destination.worker.url %>
+      itsm_auth_token: <% ctx().data.itsm.details.auth_token  %>
+      itsm_client_id: <% ctx().data.itsm.details.client_id  %>
+      itsm_url: <% ctx().data.itsm.details.url  %>
+    next:
+      # #629e47
+      - do:
+          - set_old_ids
+  # [689, 389]
+  remove_checked_ids:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - print_newids_oldpresent
+        publish:
+          - new_ids: <%  (ctx().get('children',[]).toSet() - ctx().get('old_ids',[]).toSet()).toList() %>
+        when: <% len(ctx().get('old_ids',[])) <  len(ctx().get('children',[]))  and   len(ctx().get('old_ids',[])) != 0  %>
+      - do:
+          - print_newoids_oldnotpresent
+        when: <% len(ctx().get('old_ids',[])) =  0    and  len(ctx().get('children',[])) !=  0  %>
+        publish:
+          - new_ids: <% ctx().get('children',[])  %>
+      # #1072c6
+      - do:
+          - children_old_ids_same
+        when: <% len(ctx().get('old_ids',[])) =  len(ctx().get('children',[])) %>
+  # [555, 788]
+  set_old_ids:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - print_old_ids
+        publish:
+          - old_ids: <% (ctx().get('children',[]) + ctx().get('old_ids',[])).distinct() %>
+  # [555, 887]
+  print_old_ids:
+    action: core.echo
+    next:
+      - do:
+          - recheck
+    input:
+      message: "\"<% ctx().old_ids %>\""
+  # [612, 573]
+  print_newids_oldpresent:
+    action: core.echo
+    next:
+      # #629e47
+      - do:
+          - get_running_workflow_output
+        when: <% len(ctx().new_ids) > 0  %>
+    input:
+      message: "\"<% ctx().new_ids %>\""
+  # [374, 571]
+  print_newoids_oldnotpresent:
+    action: core.echo
+    next:
+      - do:
+          - get_running_workflow_output
+        when: <% len(ctx().new_ids) > 0  %>
+      # #aa5dd1
+      - do:
+          - end
+        when: <% len(ctx().new_ids) = 0  %>
+    input:
+      message: "\"<%  len(ctx().children)  %>\""
+  # [855, 571]
+  children_old_ids_same:
+    action: core.echo
+    input:
+      message: "\"children length and old_ids length is same, possibly due to a long running task, try again after wait period\""
+    next:
+      # #1072c6
+      - do:
+          - recheck
+  # [651, 19]
+  trigger_automation:
+    action: core.http
+    next:
+      # #629e47
+      - do:
+          - sleep
+        when: <% result().status_code = 201 %>
+        publish:
+          - id: <% result().body.id %>
+    input:
+      url: <% ctx().data.destination.worker.url %>/api/v1/executions
+      body: "{\"action\": \"<% ctx().name %>\",\"parameters\":{\"data\": \"<% ctx().data %>\"} ,\"user\":null}"
+      headers:
+        St2-Api-Key: <% ctx().data.destination.worker.St2ApiKey %>
+      verify_ssl_cert: false
+  # [714, 1107]
+  running_automation_ended:
+    action: core.noop
+  # [231, 382]
+  delete_rule_if_any:
+    action: core.http
+    input:
+      url: "<% ctx().data.destination.worker.url %>/api/v1/rules/<% rule().ref %>"
+      method: DELETE
+    next:
+      - when: <% succeeded() or failed() %>
+  # [350, 8]
+  replace_payload:
+    action: sim_passwordstate.replace_passwords_payload
+    next:
+      # #629e47
+      - do:
+          - trigger_automation
+        publish:
+          - data: <% result().output. output_data %>
+    input:
+      data: "{{ ctx().data }}"
+  # [656, 120]
+  sleep:
+    action: core.local
+    input:
+      cmd: sleep 30
+    next:
+      - do:
+          - check_automation
+vars:
+  - check_interval: 30
+  - hard_timeout: 600
+  - wait_period: 0
+  - instance: 127.0.0.1
+  - auth_token: fd349e6df6484099934825472cdcfc92
+  - has_running_tasks: no
+input:
+  - name
+  - type
+  - data
+  - ticket_id
+# automation outputs
+output:
+  - info: <% ctx().info %>
+  - id: <% ctx().id %>
+  - status: <% ctx().status %>
