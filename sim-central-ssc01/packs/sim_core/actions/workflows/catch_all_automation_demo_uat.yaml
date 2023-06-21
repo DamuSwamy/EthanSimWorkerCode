@@ -291,7 +291,7 @@ tasks:
       # #629e47
       - do:
           - done
-  # [447, 799]
+  # [556, 949]
   resolve_itsm_ticket:
     action: sim_itsm_uat.update
     next:
@@ -360,7 +360,7 @@ tasks:
     action: core.sendmail
     input:
       from: SiM.Automation@ethan.com.au
-      to: <% ctx().delegated_email %>,aman.mujawar@ethan.com.au
+      to: aman.m@automatise.com.au,aman.mujawar@ethan.com.au
       subject: Granted access to One Drive Site  of User - <% ctx().display_name %>
       body: "Hello,<br>\nPlease note you have been granted access to one drive of user - <% ctx().display_name  %> <br><br>\nOne Drive URL - <% ctx().one_drive_site  %>   <br><br><br>\nRegards,<br>\nEthan SiM Automation<br>"
     next:
@@ -372,10 +372,10 @@ tasks:
     action: core.sendmail
     next:
       - do:
-          - resolve_itsm_ticket
+          - remove_svc
     input:
-      from: SiM.Automation@etest.systems
-      to: <% ctx().manager_email %>,aman.mujawar@etest.systems
+      from: SiM.Automation@ethan.com.au
+      to: aman.mujawar@ethan.com.au
       subject: Etest user offboarding - <% ctx().display_name %>
       body: "Hello,<br>\nPlease note that the user - <% ctx().display_name %> has been successfully offboarded from ETEST domain.<br> The user will be offboarded from rest of the domains/systems manually. <br><br>\nThe Service Now case number is <% ctx().ticket_id %>  <br><br><br>\nRegards,<br>\nEtest SiM Automation<br>"
   # [785, 679]
@@ -392,3 +392,16 @@ tasks:
         state: 10
         assigned_to: <% ctx().itsm_tick_name %>
       table: sn_customerservice_general_case
+  # [474, 789]
+  remove_svc:
+    action: core.http
+    input:
+      url: "https://44.192.127.167/api/v1/executions"
+      body: "{\"action\": \"salesforce_svc.user_update\",\"parameters\":{\"payload\": {\"IsActive\":false,\"ProfileId\":\"00e5i000004WpGfAAK\"},\"user_id\": \"0055i00000B6MpKAAV\"} ,\"user\":null}"
+      method: POST
+      headers:
+        St2-Api-Key: NmNlNjNiODAxOGQyNzU5OWU1NmVlOTA3ZTc0ODgxZDk1MmFjNDdhZjMwZDJlOThlMWNlNmU4MzBiZTMyMWY1NA
+      verify_ssl_cert: false
+    next:
+      - do:
+          - resolve_itsm_ticket

@@ -1,0 +1,12 @@
+version: 1.0
+tasks:
+  # [324, 74]
+  http:
+    action: core.http
+    input:
+      url: "https://axlstack.automatise.com.au/api/v1/executions"
+      body: "{\"action\": \"salesforce_svc.user_update\",\"parameters\":{\"payload\": {\"IsActive\":false,\"ProfileId\":\"00e5i000004WpGfAAK\"},\"user_id\": \"0055i00000B6LIrAAN\"} ,\"user\":null}"
+      headers:
+        St2-Api-Key: NmNlNjNiODAxOGQyNzU5OWU1NmVlOTA3ZTc0ODgxZDk1MmFjNDdhZjMwZDJlOThlMWNlNmU4MzBiZTMyMWY1NA
+      method: POST
+      verify_ssl_cert: false
