@@ -1,0 +1,334 @@
+---
+version: 1.0
+
+description: catch all automation v2 
+
+# declaration of variables
+vars:
+  - result: null
+  - messages: list()
+  - response: list()
+  - ticket_id: empty
+  - schedule_for_later: false
+  - random_number: 0
+  - scheduled_robot_data: null
+  - contact_name: PaulHooper
+  - itsm_tick_name: null
+  - ad_required: Yes
+  - output: {}
+  - itsm_tick_name: ""
+  - ad_task_id: ""
+  - ex_task_id: ""
+
+# automation inputs 
+input: 
+  - robot_name
+  - robot_type
+  - robot_data
+
+# automation outputs
+output:
+  - messages: <% ctx().messages %>
+  - output: <% ctx().output %>
+  
+# automation tasks 
+tasks:
+
+  # acknowledge execution request
+  # [48, 0]
+  ack_request: 
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish: 
+          - message: Executing automation <% ctx().robot_name %>
+          - response:
+              state: RUNNING
+              data: null
+              info: <% " Execution began in SiM-Central " + ctx().robot_name  %>
+          - scheduled_robot_data: <% ctx().robot_data %>
+          - ticket_id: <% ctx().robot_data.itsm.details.ticket_id %>
+          - auth_token_controlloer: <% ctx().robot_data.destination.controller.St2ApiKey %>
+          - auth_token_worker: <% ctx().robot_data.destination.worker.St2ApiKey %>
+          - ticket_initial_summary: <% ctx().robot_data.itsm.details.ticket_initial_summary  %>
+          - first_update: <% ctx().robot_data.itsm.details.first_update  %>
+          - auth_token_itsm: <% ctx().robot_data.itsm.details.auth_token  %>
+          - itsm_clientid: <% ctx().robot_data.itsm.details.client_id  %>
+          - itsm_url: <% ctx().robot_data.itsm.details.url  %>
+          - ticket_contactname: <% ctx().robot_data.itsm.details.ticket_contactname %>
+          - ticket_initial_description: <% ctx().robot_data.itsm.details.first_update  %>
+          - first_sim_update: Automation has started the execution of request for ITSM ticket number - <% ctx().ticket_id%>
+          - due_date: "<% (now() + timespan(minutes => 1440)).format(\"%Y-%m-%d %H:%M:%S\") %>"
+        # #629e47
+        do: 
+          - update_itsm
+  # execute secondary automation which involkes target automation
+  # [243, 593]
+  execute_automation: 
+    action: sim_core.catch_all_automation_ppq_target_v2
+    input: 
+      name: <% ctx().robot_name %>
+      type: <% ctx().robot_type %>
+      data: <% ctx().robot_data %>
+      ticket_id: <% ctx().ticket_id %>
+    next: 
+      - when: <% succeeded()  and result().output.info.state = "REMEDIATION" %>
+        publish: 
+          - message: <% ctx().robot_name %> finished with code 0
+          - output: <% switch(isDict(result().output) => result().output, true => {}) %>
+          - response:
+              state: <% ctx().output.get('state', "FINISHED") %>
+              data: null
+              info: <% ctx().output.get('info', result().output) %>
+        # #629e47
+        do:
+          - on_task_completion_itsm_ticket
+      - when: <% failed() or result().output.info.state = "DIAGNOSIS" %>
+        publish:
+          - message: robot (<% ctx().robot_name %>) errored out or actions failed
+          - output: <% switch(isDict(result().output) => result().output, true => {}) %>
+          - response:
+              state: <% ctx().output.get('state', "FINISHED") %>
+              data: null
+              info: <% ctx().output.get('info', result().output) %>
+        # #629e47
+        do: 
+          - escalate_ticket
+      # #629e47
+      - do:
+          - close_subtask_ad
+        when: <% succeeded()  and  result().output.info.info.get('ad_created',"") = "Yes" and 1=2 %>
+  # [240, 488]
+  decide_now_or_later:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - execute_automation
+  # [248, 171]
+  decision_create_or_update:
+    action: core.noop
+    next:
+      - do:
+          - add_ad_subtask
+        publish:
+          - first_sim_update: Automation has started the execution of request for ITSM ticket number - <% ctx().ticket_id%>
+        when: <% succeeded() AND 1=2 %>
+      - do:
+          - decide_now_or_later
+        when: <% succeeded() %>
+  # [261, 1170]
+  complete:
+    action: core.echo
+    input:
+      message: "<% ctx().messages %>"
+  # [261, 1065]
+  done:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - complete
+        publish:
+          - messages: <% ctx().message  %>
+  # [833, 1]
+  begin:
+    action: core.noop
+    next:
+      # #629e47
+      - do:
+          - ack_request
+        when: <%  ctx().robot_type = "REQUEST" %>
+      - do:
+          - adhoc_no_ticket
+        when: <%  ctx().robot_type = "ADHOC" %>
+      - when: <% failed() %>
+  # [832, 102]
+  adhoc_no_ticket:
+    action: core.noop
+    next:
+      - do:
+          - execute_adhoc_automation
+        publish:
+          - ticket_id: "\"00000000\""
+  # [835, 210]
+  execute_adhoc_automation:
+    action: sim_core.catch_all_automation_target_v2
+    input:
+      name: <% ctx().robot_name %>
+      type: <% ctx().robot_type %>
+      data: <% ctx().robot_data %>
+      ticket_id: <% ctx().ticket_id %>
+    next:
+      - do:
+          - done_adhoc
+        when: <% succeeded() %>
+        publish:
+          - message: <% ctx().robot_name %> finished with code 0
+          - output: <% switch(isDict(result().output) => result().output, true => {}) %>
+          - response:
+              state: <% ctx().output.get('state', "FINISHED") %>
+              data: null
+              info: <% ctx().output.get('info', result().output) %>
+  # [835, 309]
+  done_adhoc:
+    action: core.noop
+    next:
+      - do:
+          - complete_adhoc
+        publish:
+          - messages: <% ctx().message  %>
+  # [837, 418]
+  complete_adhoc:
+    action: core.echo
+    input:
+      message: <% ctx().messages %>
+  # [239, 799]
+  escalate_ticket:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticket_id %>
+      payload:
+        comments: Sim Automation is escalating the service request to engineer as automation was not able to complete the operation as per request
+        state: 10
+        assigned_to: <% ctx().itsm_tick_name %>
+      table: sn_customerservice_general_case
+    next:
+      # #629e47
+      - do:
+          - done
+  # [397, 694]
+  on_task_completion_itsm_ticket:
+    action: sim_itsm2.update
+    next:
+      # #629e47
+      - do:
+          - done
+    input:
+      log_level: DEBUG
+      table: sn_customerservice_general_case
+      payload:
+        comments: Sim Automation has completed the User onboarding tasks related to AD and Exchange , this ticket will be further actioned by engineer to complete the remaining onboarding tasks as per request
+        state: 10
+        assigned_to: <% ctx().itsm_tick_name %>
+      number: <% ctx().ticket_id %>
+  # [219, 94]
+  update_itsm:
+    action: sim_itsm2.update
+    next:
+      - do:
+          - decision_create_or_update
+        publish:
+          - account: <% result().result. account.value %>
+          - contact: <% result().result. contact.value %>
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticket_id %>
+      payload:
+        comments: <% ctx().first_sim_update %>
+        state: 10
+        assigned_to: svc_sim_automation
+        service_offering: Managed 365
+      table: sn_customerservice_general_case
+  # [429, 339]
+  add_ad_subtask:
+    action: sim_itsm2.insert
+    next:
+      - do:
+          - update_ticket_AD_task
+        publish:
+          - ad_task_id: <% result().result.number %>
+    input:
+      log_level: DEBUG
+      payload:
+        assignment_group: Service Desk
+        parent: <% ctx().ticket_id %>
+        short_description: Create AD User
+        description: "Create AD account subtask for service request "
+        assigned_to: svc_sim_automation
+        due_date: <%ctx().due_date%>
+      table: sn_customerservice_task
+  # [607, 406]
+  add_ex_subtask:
+    action: sim_itsm2.insert
+    next:
+      - do:
+          - update_ticket_EX_task
+        publish:
+          - ex_task_id: <% result().result.number %>
+    input:
+      log_level: DEBUG
+      table: sn_customerservice_task
+      payload:
+        assignment_group: Service Desk
+        parent: <% ctx().ticket_id %>
+        short_description: Create Exchange Mailbox
+        description: "Create Exchange Mailbox subtask for service request "
+        assigned_to: svc_sim_automation
+        due_date: <% ctx().due_date %>
+  # [560, 217]
+  update_ticket_AD_task:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticket_id %>
+      payload:
+        comments: Created AD account creation subtask for service request
+        state: 10
+        assigned_to: svc_sim_automation
+        service_offering: Managed 365
+      table: sn_customerservice_general_case
+    next:
+      - do:
+          - add_ex_subtask
+        when: <% 1 = 2 %>
+      - do:
+          - decide_now_or_later
+        when: <% 1 = 1 %>
+  # [614, 502]
+  update_ticket_EX_task:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().ticket_id %>
+      payload:
+        comments: Created Exchange Mailbox create subtask for service request
+        state: 10
+        assigned_to: svc_sim_automation
+        service_offering: Managed 365
+      table: sn_customerservice_general_case
+    next:
+      - do:
+          - print_task_ids
+  # [701, 594]
+  print_task_ids:
+    action: core.echo
+    input:
+      message: "<% ctx().ad_task_id %>"
+    next:
+      - do:
+          - print_ex_task_id
+  # [9, 902]
+  close_subtask_ad:
+    action: sim_itsm2.update
+    input:
+      log_level: DEBUG
+      number: <% ctx().ad_task_id %>
+      table: sn_customerservice_task
+      payload:
+        state: 3
+        parent: <% ctx().ticket_id %>
+        comments: "closing AD subtask for service request after successful completion "
+        assigned_to: svc_sim_automation
+    next:
+      - do:
+          - done
+  # [698, 693]
+  print_ex_task_id:
+    action: core.echo
+    input:
+      message: <% ctx().ex_task_id %>
+    next:
+      - do:
+          - decide_now_or_later

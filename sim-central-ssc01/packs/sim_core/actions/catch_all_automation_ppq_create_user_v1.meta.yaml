@@ -1,8 +1,8 @@
 pack: sim_core
 enabled: true
 runner_type: orquesta
-name: catch_all_automation_ppq_create_user_v1
-entry_point: workflows/catch_all_automation_ppq_create_user_v1.yaml
+name: catch_all_automation_ppq_create_user
+entry_point: workflows/catch_all_automation_ppq_create_user.yaml
 description: Catch all automation for create user ppq
 parameters:
   robot_name:

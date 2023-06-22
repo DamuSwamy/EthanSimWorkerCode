@@ -108,13 +108,13 @@ tasks:
       password: <% ctx().password[0] %>
     next:
       - do:
-          - sleep_90
+          - sleep_180
   # [760, 369]
-  sleep_90:
+  sleep_180:
     action: core.local
     input:
-      cmd: sleep 90
-      timeout: 120
+      cmd: sleep 180
+      timeout: 240
     next:
       - do:
           - set_location_license
