@@ -74,7 +74,7 @@ tasks:
     action: sql.query
     input:
       log_level: DEBUG
-      query: UPDATE EthanCustomerUserAccounts SET EthanCustomerUserAccounts.Falsepositive = EAT.Falsepositive,EthanCustomerUserAccounts.Falsepositivereason = EAT.Falsepositivereason,EthanCustomerUserAccounts.EthanServiceAccount = EAT.EthanServiceAccount,EthanCustomerUserAccounts.EthanGenericAccount = EAT.EthanGenericAccount FROM EthanCustomerUserAccountsTmp EAT INNER JOIN EthanCustomerUserAccounts EA ON EAT.ObjectID = EA.ObjectID AND (EAT.Falsepositive IS NOT NULL OR EAT.EthanServiceAccount IS NOT NULL OR EAT.EthanGenericAccount IS NOT NULL OR EAT.Falsepositivereason IS NOT NULL)
+      query: UPDATE EthanCustomerUserAccounts SET EthanCustomerUserAccounts.Falsepositive = EAT.Falsepositive,EthanCustomerUserAccounts.Falsepositivereason = EAT.Falsepositivereason,EthanCustomerUserAccounts.EthanServiceAccount = EAT.EthanServiceAccount,EthanCustomerUserAccounts.EthanGenericAccount = EAT.EthanGenericAccount FROM EthanCustomerUserAccountsTmp EAT INNER JOIN EthanCustomerUserAccounts EA ON EAT.ObjectID = EA.ObjectID
       connection: <% ctx().db_connection %>
     next:
       - when: <% succeeded() %>
