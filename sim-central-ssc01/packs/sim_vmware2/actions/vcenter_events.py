@@ -173,8 +173,11 @@ class VcenterEvents(BaseAction):
                             if device_type == 'VirtualDisk':
                                 device  = d.device
                                 event_map[e.key]['eventState'] = device.capacityInKB
-                                if device.backing.diskMode == 'independent_nonpersistent':
-                                    event_map[e.key]['eventState'] = 'Unknown'
+                                if device.backing:
+                                    if device.backing.diskMode == 'independent_nonpersistent':
+                                        event_map[e.key]['eventState'] = 'Unknown'
+                                else:
+                                    continue
                                 if d.operation == 'add':
                                     if hasattr(device, 'key'):
                                         if isinstance(device.key, int) and device.diskObjectId :
