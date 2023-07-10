@@ -1,0 +1,11 @@
+pack: sim_sec_alerts
+enabled: true
+runner_type: python-script
+name: sec_collect_NIST_asset_data
+entry_point: sec_collect_NIST_asset_data.py
+description: contruct client list from the dpa report
+parameters:
+  asset:
+    type: array
+    description: asset data
+    required: true

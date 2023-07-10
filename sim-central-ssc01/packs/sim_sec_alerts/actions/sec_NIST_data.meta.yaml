@@ -1,0 +1,6 @@
+pack: sim_sec_alerts
+enabled: true
+runner_type: orquesta
+name: sec_NIST_data
+entry_point: workflows/sec_NIST_data.yaml
+description: Retrieve NIST security feed data
