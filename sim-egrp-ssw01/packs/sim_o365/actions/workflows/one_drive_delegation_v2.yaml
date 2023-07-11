@@ -12,7 +12,7 @@ tasks:
       verify_ssl_cert: false
       port: 5985
       scheme: http
-      cmd: "Connect-PnPOnline -url '<% ctx().personal_site %>' -ClientId 20acf5a3-610b-42ae-a6c1-60e288948d76 -CertificatePath <% ctx().certificate_file_path %> -CertificatePassword (ConvertTo-SecureString -String ('.|($!l_$qP/+a^p!)}|.GF(!^P=n|i') -AsPlainText -Force) -Tenant \"ecorpsystems.onmicrosoft.com\" \nAdd-PnPSiteCollectionAdmin -Owners Aman.Mujawar@ethan.com.au\ndisconnect-pnponline"
+      cmd: "$OutputEncoding = [System.Console]::OutputEncoding = [System.Console]::InputEncoding = [System.Text.Encoding]::UTF8\n$PSDefaultParameterValues['*:Encoding'] = 'utf8'\nConnect-PnPOnline -url '<% ctx().personal_site %>' -ClientId 20acf5a3-610b-42ae-a6c1-60e288948d76 -CertificatePath <% ctx().certificate_file_path %> -CertificatePassword (ConvertTo-SecureString -String ('.|($!l_$qP/+a^p!)}|.GF(!^P=n|i') -AsPlainText -Force) -Tenant \"ecorpsystems.onmicrosoft.com\" \nAdd-PnPSiteCollectionAdmin -Owners <% ctx().delegate_email %>\ndisconnect-pnponline"
     next:
       # #629e47
       - do:
