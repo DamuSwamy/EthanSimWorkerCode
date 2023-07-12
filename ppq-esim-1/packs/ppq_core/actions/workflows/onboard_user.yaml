@@ -31,7 +31,23 @@ tasks:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: "$groups = \"<% ctx().NewUserADGroups %>\"\nforeach($group in $groups.split(\";\")){\n    Add-ADGroupMember -Identity $group -Members \"<% ctx().samaccountname%>\"\n}"
+      cmd: |
+        $groups = "<% ctx().NewUserADGroups %>"
+        $skippedGroups = @()
+        foreach ($group in $groups.split(";")) {
+          if ($group.StartsWith("ERRROR:")) {
+            $groupName = $group.Substring(7)
+            $skippedGroups += $groupName
+            continue
+          }
+
+          Add-ADGroupMember -Identity $group -Members "<% ctx().samaccountname %>"
+        }
+
+        if ($skippedGroups.Count -gt 0) {
+          $skippedGroupsString = $skippedGroups -join ', '
+          $skippedGroupsString
+        }
       password: <% ctx().password[0] %>
       username: <% ctx().username[0] %>
       verify_ssl_cert: false
@@ -43,6 +59,8 @@ tasks:
         when: <% succeeded() %>
         publish:
           - membership_copied: Yes
+          - skipped_groups: <% result().stdout %>
+          - group_errors: <% result().stderr %>
   # [755, 144]
   add_manager:
     action: core.winrm_ps_cmd
@@ -125,7 +143,7 @@ tasks:
   ticket_update:
     action: core.echo
     input:
-      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added: True\nAD sync: True\nLicense Added: <% ctx().license_added %>\n"
+      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added: True\nAD sync: True\nLicense Added: <% ctx().license_added %>\nThe following groups have been skipped as they do not exist in AD: <% ctx().skipped_groups %>"
     next:
       - do:
           - end
@@ -149,6 +167,7 @@ tasks:
                   status: In Progress
                   ticket_update: Sim Automation is escalating the service request after completing AD and Exchange tasks
           - execution_log: "[{\"task_name\":\"ad_created\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().ad_created  %>},{\"task_name\":\"membership_copied\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().membership_copied  %>},{\"task_name\":\"license_added\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().license_added  %>},{\"task_name\":\"mailbox_created\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().mailbox_created  %>}]"
+
   # [369, 300]
   check_ad_user:
     action: sim_activedirectory.check_ad_user
@@ -238,6 +257,7 @@ tasks:
         publish:
           - state: REMEDIATION
           - info: successfully onboarded
+          - license_added: true
   # [363, 0]
   sleep:
     action: core.local
