@@ -34,20 +34,28 @@ tasks:
       cmd: |
         $groups = "<% ctx().NewUserADGroups %>"
         $skippedGroups = @()
+        $failedGroups = @()
         foreach ($group in $groups.split(";")) {
-          if ($group.StartsWith("ERRROR:")) {
-            $groupName = $group.Substring(7)
+          if ($group.StartsWith("ERROR:")) {
+            $groupName = $group.Substring(6)
             $skippedGroups += $groupName
             continue
           }
 
-          Add-ADGroupMember -Identity $group -Members "<% ctx().samaccountname %>"
+          try {
+            Add-ADGroupMember -Identity $group -Members "<% ctx().samaccountname %>"
+          } catch {
+            $failedGroups += $group
+          }
         }
 
         if ($skippedGroups.Count -gt 0) {
           $skippedGroupsString = $skippedGroups -join ', '
-          #Write-Host "The following groups have been skipped as they do not exist in AD: $skippedGroupsString"
           $skippedGroupsString
+        }
+        if ($failedGroups.Count -gt 0) {
+          $failedGroupsString = $failedGroups -join ', '
+          $failedGroupsString
         }
       password: <% ctx().password[0] %>
       username: <% ctx().username[0] %>
@@ -61,7 +69,7 @@ tasks:
         publish:
           - membership_copied: Yes
           - skipped_groups: <% result().stdout %>
-          - group_errors: <% result().stderr %>
+          - failed_groups: <% result().stderr %>
   # [755, 144]
   add_manager:
     action: core.winrm_ps_cmd
@@ -141,10 +149,12 @@ tasks:
   end:
     action: core.noop
   # [761, 601]
+  # [761, 601]
   ticket_update:
     action: core.echo
     input:
-      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added: True\nAD sync: True\nLicense Added: <% ctx().license_added %>\nThe following groups have been skipped as they do not exist in AD: <% ctx().skipped_groups %>\nErrors if any while adding the user to the groups: <% ctx().group_errors %>"
+      message: |
+       "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added: True\nAD sync: True\nLicense Added: <% ctx().license_added %>\nThe following groups have been skipped as they do not exist in AD: <% ctx().skipped_groups %>\nGroups if any we couldn't add the user to for other reasons: <% ctx().failed_groups %>\n"
     next:
       - do:
           - end
