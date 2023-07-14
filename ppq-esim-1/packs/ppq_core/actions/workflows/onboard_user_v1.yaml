@@ -36,8 +36,8 @@ tasks:
         $skippedGroups = @()
         $failedGroups = @()
         foreach ($group in $groups.split(";")) {
-          if ($group.StartsWith("ERROR:")) {
-            $groupName = $group.Substring(6)
+          if ($group.StartsWith("ERRROR:")) {
+            $groupName = $group.Substring(7)
             $skippedGroups += $groupName
             continue
           }
@@ -68,8 +68,8 @@ tasks:
         when: <% succeeded() %>
         publish:
           - membership_copied: Yes
-          - skipped_groups: <% result().stdout %>
-          - failed_groups: <% result().stderr %>
+          - skipped_groups: <% result()[0].stdout %>
+          - failed_groups: <% result()[1].stdout %>
   # [755, 144]
   add_manager:
     action: core.winrm_ps_cmd
@@ -149,12 +149,10 @@ tasks:
   end:
     action: core.noop
   # [761, 601]
-  # [761, 601]
   ticket_update:
     action: core.echo
     input:
-      message: |
-       "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added: True\nAD sync: True\nLicense Added: <% ctx().license_added %>\nThe following groups have been skipped as they do not exist in AD: <% ctx().skipped_groups %>\nGroups if any we couldn't add the user to for other reasons: <% ctx().failed_groups %>\n"
+      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added: True\nAD sync: True\nLicense Added: <% ctx().license_added %>\nThe following groups have been skipped as they do not exist in AD: <% ctx().skipped_groups %>\nWe could not add the user to these groups: <% ctx().failed_groups %>"
     next:
       - do:
           - end
