@@ -255,7 +255,6 @@ class VcenterRawData(BaseAction):
                     else:
                          disk_obj['vmDiskSize']   = 0
                     try:
-                        print(disk.backing.fileName)
                         disk_obj['vmDiskDatastore']   = re.match("\[(.*?)\]",disk.backing.fileName).group(1)
                     except Exception as e:
                         disk_obj['vmDiskDatastore']   = disk.backing.fileName
