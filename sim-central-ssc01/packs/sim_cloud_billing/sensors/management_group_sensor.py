@@ -84,8 +84,8 @@ class ManagementGroupSensor(PollingSensor):
                           and d.GroupStatus = 'Enabled'
                           and a.ManagmentGroupSIName = c.ManagementGroupSIName
                           and a.ManagmentGroupSIName = d.Name
-                          and ManagmentGroupSIName = '0d6abd5e-a56a-4b89-9be5-4029d67eae86'
-                          -- and c.Day='{self.current_day}'
+                          -- and ManagmentGroupSIName = '0d6abd5e-a56a-4b89-9be5-4029d67eae86'
+                          and c.Day='{self.current_day}'
                           and c.Day='{self.current_day}' and c.ActionTime='{self.current_time}'
                           """
             self._logger.debug(COUNT_QUERY)
@@ -116,8 +116,8 @@ class ManagementGroupSensor(PollingSensor):
                             and d.GroupStatus = 'Enabled'
                             and a.ManagmentGroupSIName = c.ManagementGroupSIName
                             and a.ManagmentGroupSIName = d.Name
-                            and a.ManagmentGroupSIName = '0d6abd5e-a56a-4b89-9be5-4029d67eae86'
-                            -- and c.Day='{self.current_day}') AS RowNumberedTable
+                            -- and a.ManagmentGroupSIName = '0d6abd5e-a56a-4b89-9be5-4029d67eae86'
+                            and c.Day='{self.current_day}') AS RowNumberedTable
                             and c.Day='{self.current_day}' and c.ActionTime='{self.current_time}') AS RowNumberedTable
                         WHERE RowNumber BETWEEN {start_row + 1} AND {start_row + batch_size}
                         """
