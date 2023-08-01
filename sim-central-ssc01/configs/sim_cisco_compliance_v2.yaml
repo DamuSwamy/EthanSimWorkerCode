@@ -39,7 +39,7 @@ compliance:
       look_for_match_yes_no: yes
     - check_name: Create access-list for use with line vty connections
       check_code: 1.2.4
-      regex_to_match: (?<!\! )dummy regex to be replaced
+      regex_to_match: (?<!\! )ip access-list standard MGMT.default
       look_for_match_yes_no: yes
     - check_name: Set access-class for use with line vty connections
       check_code: 1.2.5
@@ -116,7 +116,7 @@ compliance:
       check_code: 1.1.6
       regex_to_match: (?<!\!)login authentication for line vty
       look_for_match_yes_no: yes
-      depends_on: 1.2.9
+      related_to: 1.1.3
     - check_name: Set the banner-text for banner exec
       check_code: 1.3.1
       regex_to_match: (?<!\! )banner exec

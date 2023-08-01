@@ -33,13 +33,19 @@ tasks:
       input_folder_path: <% (now(offset=>localtz())).format("%b-%Y") %>
       sas_config: <% ctx().sas_config %>
     next:
-      - when: <% succeeded() %>
+      - when: <% succeeded() and len(result().result) > 0 %>
         publish:
           - result: <% result().result %>
         do:
           - delete_tmp_records
+      - when: <% succeeded() and len(result().result) = 0 %>
+        do:
+          - job_ends_no_live_data
       - when: <% failed() %>
         do: fail
+
+  job_ends_no_live_data:
+    action: core.noop
 
   # [585, 357]
   copy_data_from_prod_to_temp:

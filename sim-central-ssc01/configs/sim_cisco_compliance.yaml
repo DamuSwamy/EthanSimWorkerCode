@@ -53,7 +53,7 @@ compliance:
     look_for_match_yes_no: yes
   - check_name: Create access-list for use with line vty connections
     check_code: 1.2.4
-    regex_to_match: (?<!\! )dummy regex to be replaced
+    regex_to_match: (?<!\! )ip access-list standard MGMT.default
     look_for_match_yes_no: yes
   - check_name: Set exec-timeout to less than or equal to 10 minutes line console 0
     check_code: 1.2.7

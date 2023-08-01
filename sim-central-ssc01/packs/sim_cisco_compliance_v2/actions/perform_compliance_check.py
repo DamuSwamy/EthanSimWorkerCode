@@ -99,7 +99,11 @@ class GetDeviceConfigAction(BaseAction):
                 ignore_check = [item for item in ComplianceList if item.get('ControlCheck')==config["depends_on"] and item.get('ComplianceStatus')=='NOT APPLICABLE']
                 if ignore_check:
                     compliance_status = "NOT APPLICABLE"
-            if compliance_status != "NOT APPLICABLE":
+            related_to = []
+            if 'related_to' in config:
+                related_to = [item for item in ComplianceList if item.get('ControlCheck')==config["related_to"]]
+                compliance_status = related_to[0]["ComplianceStatus"]
+            if compliance_status != "NOT APPLICABLE" and len(related_to) == 0:
                 compliance_status = "FALSE"
                 regex_result = re.search(regex_to_match, config_str, re.MULTILINE)
                 regex_matched = re.findall(regex_to_match, config_str, re.MULTILINE)
