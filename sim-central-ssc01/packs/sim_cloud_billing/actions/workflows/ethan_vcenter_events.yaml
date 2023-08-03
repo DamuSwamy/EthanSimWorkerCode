@@ -8,6 +8,8 @@ input:
 
 vars:
   - valid_events: []
+  - remove_event: ['VmRemovedEvent', 'VmDecommisionedEvent']
+  - host_migrated_events: ['VmHostMigratedEvent']
 
 output:
   - events: <% ctx().valid_events %>
@@ -88,12 +90,28 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - event_result: <% switch(isList(result().result) => result().result, true => []) %>
-          - insert_events: <% ctx(event_result).where($.containsKey('ethvmid')).select($) %>
+          - valid_insert_events: <% ctx(event_result).where($.containsKey('ethvmid')).select($) %>
+          - host_migration_events: <% ctx(valid_insert_events).where($.eventType in ctx().host_migrated_events).select($) %>
+          - host_migration_event_list: <% ctx(host_migration_events).select($.eventID) %>
+          - host_migration_vmid_list: <% ctx(host_migration_events).select($.vmID).distinct() %>
+          - host_migration_remove_events: <% ctx(valid_insert_events).where($.eventType in ctx().remove_event and $.vmID in ctx().host_migration_vmid_list).select($.eventID) %>
+          - insert_events: <% ctx(valid_insert_events).where(not $.eventID in ctx().host_migration_event_list and not $.eventID in ctx().host_migration_remove_events).select($) %> 
           - valid_events: <% ctx().event_result %>
         do:
-          - Event_Insert_Records
+          - Valid_Insert_Events
       - when: <% failed() %>
         do: fail
+
+
+  Valid_Insert_Events:
+    action: core.noop
+    next:
+      - when: <% len(ctx().insert_events) > 0 %>
+        do:
+          - Event_Insert_Records
+      - when: <% len(ctx().insert_events) <= 0 %>
+        do:
+          - End
 
   Event_Insert_Records:
     action: sql.insert_bulk

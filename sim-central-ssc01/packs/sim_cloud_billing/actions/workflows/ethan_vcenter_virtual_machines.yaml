@@ -12,6 +12,7 @@ vars:
   - create_events: ['VmClonedEvent', 'VmConnectedEvent', 'VmCreatedEvent', 'VmDeployedEvent', 'VmMigratedEvent', 'VmRegisteredEvent', 'VmDiscoveredEvent']
   - remove_event: ['VmRemovedEvent', 'VmDecommisionedEvent']
   - reconfigure_event: 'VmReconfiguredEvent'
+  - host_migrated_events: ['VmHostMigratedEvent'] 
   - events: []
 
 output:
@@ -64,7 +65,7 @@ tasks:
       vsphere: <% ctx().vcenter %>
       vcenter_id: <% ctx().vcenter_id %>
       event_period: <% ctx().pull_period %>
-      #event_period: 600
+      #event_period: 24
     next:
       - when: <% succeeded() %>
         publish:
@@ -132,7 +133,8 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - events: <% switch(isList(result().output.events) => result().output.events, true => []) %>
-          - vm_uniq_remove_events: <% ctx(events).where($.eventType in ctx().remove_event and $.containsKey('ethvmid')).select($.vmID).distinct() %>
+          - uniq_host_migration_events: <% ctx(events).where($.eventType in ctx().host_migrated_events).select($.vmID).distinct() %>
+          - vm_uniq_remove_events: <% ctx(events).where($.eventType in ctx().remove_event and $.containsKey('ethvmid') and not $.vmID in ctx().uniq_host_migration_events).select($.vmID).distinct() %>
           - vm_uniq_create_events: <% ctx(events).where($.eventType in ctx().create_events and not $.vmID in ctx().vm_uniq_remove_events and not $.containsKey('ethvmid')).select($.vmID).distinct() %>
           - vm_uniq_reconfigure_events: <% ctx(events).where($.eventType = ctx().reconfigure_event and not $.vmID in ctx().vm_uniq_remove_events and not $.vmID in ctx().vm_uniq_create_events).select($.vmID).distinct() %>
           - vm_uniq_configure_event_id: "{{ ctx().vm_uniq_reconfigure_events | join(',') }}"
@@ -477,7 +479,7 @@ tasks:
 
   # [2392, 951]
   Create_End:
-    delay: 30
+    delay: 120
     action: core.noop
     next:
       - when: <% len(ctx().vm_uniq_create_events) > 0 and not len(ctx().vm_uniq_reconfigure_events) > 0 %>

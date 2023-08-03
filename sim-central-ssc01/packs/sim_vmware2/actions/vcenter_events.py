@@ -23,7 +23,7 @@ class VcenterEvents(BaseAction):
         if test:
             #event_type_filters = ['VmReconfiguredEvent'] 
             start_time = '2023-06-26 00:00:00'
-            end_time   = '2023-07-20 23:59:59'
+            end_time   = '2023-06-26 23:59:59'
             start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
             end_time   = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
             start_time = start_time.astimezone(pytz.timezone('Australia/Sydney'))
@@ -41,7 +41,7 @@ class VcenterEvents(BaseAction):
                 moid = int(vm._GetMoId().replace('vm-', ''))
                 if moid in filter_by_vm_ids:
                     by_entity    = vim.event.EventFilterSpec.ByEntity(entity=vm, recursion="self")
-                    filter_spec = vim.event.EventFilterSpec(entity=by_entity, eventTypeId=self.update_events)
+                    filter_spec = vim.event.EventFilterSpec(entity=by_entity, eventTypeId=self.creation_events)
                     event = self.event_collector(filter_spec)
                     events = events + event
         else:
@@ -108,6 +108,9 @@ class VcenterEvents(BaseAction):
                             event_map[e.key]['eventState'] = 'Migrated'
                         else:
                             event_map[e.key]['eventState'] = 'Immaculate Conception'
+                elif event_type == 'DrsVmMigratedEvent' or event_type == 'vim.event.DrsVmMigratedEvent':
+                    event_map[e.key]['eventType']  = 'VmHostMigratedEvent'
+                    event_map[e.key]['eventState'] = 'HOST_Migrated'
                 else:
                     if(e.fullFormattedMessage == 'event.VmDeployedEvent.fullFormat' or e.fullFormattedMessage == 'event.VmRegisteredEvent.fullFormat' or 'deployed' in e.fullFormattedMessage or 'Registered' in e.fullFormattedMessage):
                         event_map[e.key]['eventState'] = 'Template'

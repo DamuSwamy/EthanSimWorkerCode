@@ -39,6 +39,8 @@ parameters:
       - VmReconfiguredEvent
       - VmRemovedEvent
       - VmRenamedEvent
+      - DrsVmMigratedEvent
+      - vim.event.DrsVmMigratedEvent
   vm_ignore_list: 
     type: array
     description: List of events to be ignored based on vm names
@@ -48,7 +50,7 @@ parameters:
     type: array
     description: List of events which will be triggered as part of the creation
     required: false
-    default: ['VmClonedEvent', 'VmCreatedEvent', 'VmDeployedEvent', 'VmRegisteredEvent', 'VmConnectedEvent', 'VmDiscoveredEvent', 'com.vmware.vc.vm.SrcMigratedEvent', 'com.vmware.vc.vm.DstVmMigratedEvent', 'com.vmware.vc.vm.DstVmClonedEvent', 'VmRemovedEvent']
+    default: ['VmClonedEvent', 'VmCreatedEvent', 'VmDeployedEvent', 'VmRegisteredEvent', 'VmConnectedEvent', 'VmDiscoveredEvent', 'com.vmware.vc.vm.SrcMigratedEvent', 'com.vmware.vc.vm.DstVmMigratedEvent', 'com.vmware.vc.vm.DstVmClonedEvent', 'VmRemovedEvent', 'DrsVmMigratedEvent', 'vim.event.DrsVmMigratedEvent']
   update_events: 
     type: array
     description: List of update events
