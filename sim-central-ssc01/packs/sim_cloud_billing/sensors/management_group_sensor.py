@@ -37,13 +37,15 @@ class ManagementGroupSensor(PollingSensor):
         self.trigger_ref = '.'.join([self.trigger_pack, self.trigger_name])
         self._poll_interval = poll_interval
         self.payload = []
-        self.conn_obj = {'connection': CONN}
+        self.conn_obj = {}
 
     def setup(self):
+        self.conn_obj = {'connection': CONN}
         self._logger.debug('Setting up GroupHandlerSensor ...')
 
     def poll(self):
         self._logger.debug('Running GroupHandlerSensor ...')
+        self.conn_obj = {'connection': CONN}
         self._detect_schedules()
 
     def cleanup(self):
@@ -68,7 +70,7 @@ class ManagementGroupSensor(PollingSensor):
             current_time = '{}:0{}'.format(current_hour, current_minute)
         else:
             current_time = '{}:{}'.format(current_hour, current_minute)
-        self.current_day = current_day
+        self.current_day  = current_day
         self.current_time = current_time
         return_result = None
         with self.db_connection(self.conn_obj) as conn:
@@ -84,13 +86,13 @@ class ManagementGroupSensor(PollingSensor):
                           and d.GroupStatus = 'Enabled'
                           and a.ManagmentGroupSIName = c.ManagementGroupSIName
                           and a.ManagmentGroupSIName = d.Name
-                          -- and ManagmentGroupSIName = '0d6abd5e-a56a-4b89-9be5-4029d67eae86'
+                          and ManagmentGroupSIName = '0d6abd5e-a56a-4b89-9be5-4029d67eae86'
                           and c.Day='{self.current_day}'
-                          and c.Day='{self.current_day}' and c.ActionTime='{self.current_time}'
+                          and c.ActionTime='{self.current_time}'
                           """
             self._logger.debug(COUNT_QUERY)
             rows = conn.execute(COUNT_QUERY).fetchone()
-            self._logger.debug(f"Total Rows {rows['Count']} ...")
+            self._logger.info(f"Total Rows {rows['Count']} ...")
 
             for start_row in range(0, rows['Count'], batch_size):
                 QUERY = f"""
@@ -116,9 +118,9 @@ class ManagementGroupSensor(PollingSensor):
                             and d.GroupStatus = 'Enabled'
                             and a.ManagmentGroupSIName = c.ManagementGroupSIName
                             and a.ManagmentGroupSIName = d.Name
-                            -- and a.ManagmentGroupSIName = '0d6abd5e-a56a-4b89-9be5-4029d67eae86'
-                            and c.Day='{self.current_day}') AS RowNumberedTable
-                            and c.Day='{self.current_day}' and c.ActionTime='{self.current_time}') AS RowNumberedTable
+                            and a.ManagmentGroupSIName = '0d6abd5e-a56a-4b89-9be5-4029d67eae86'
+                            and c.Day='{self.current_day}' 
+                            and c.ActionTime='{self.current_time}') AS RowNumberedTable
                         WHERE RowNumber BETWEEN {start_row + 1} AND {start_row + batch_size}
                         """
                 self._logger.debug(QUERY)
@@ -131,7 +133,7 @@ class ManagementGroupSensor(PollingSensor):
                     all_results = query_result.fetchall()
                     for row in all_results:
                         return_result.append(self.row_to_dict(row))
-                self._logger.debug('Records found: {}'.format(len(return_result)))
+                self._logger.info('Records found: {}'.format(len(return_result)))
                 if len(return_result) > 0:
                     '''
                     groups = {}
@@ -279,6 +281,7 @@ class ManagementGroupSensor(PollingSensor):
             # remove the key from kwargs if it's still in there
             if key in kwargs_dict:
                 del kwargs_dict[key]
+            
 
         self.validate_connection(action_connection, connection_name)
 

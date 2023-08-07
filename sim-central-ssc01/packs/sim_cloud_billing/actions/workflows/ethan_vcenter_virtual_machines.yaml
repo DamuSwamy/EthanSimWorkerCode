@@ -138,7 +138,7 @@ tasks:
           - vm_uniq_create_events: <% ctx(events).where($.eventType in ctx().create_events and not $.vmID in ctx().vm_uniq_remove_events and not $.containsKey('ethvmid')).select($.vmID).distinct() %>
           - vm_uniq_reconfigure_events: <% ctx(events).where($.eventType = ctx().reconfigure_event and not $.vmID in ctx().vm_uniq_remove_events and not $.vmID in ctx().vm_uniq_create_events).select($.vmID).distinct() %>
           - vm_uniq_configure_event_id: "{{ ctx().vm_uniq_reconfigure_events | join(',') }}"
-          - vm_uniq_update_events: <% ctx(events).where(not $.eventType in ctx().create_events and not $.eventType in ctx().remove_event and $.eventType != ctx().reconfigure_event and not $.vmID in ctx().vm_uniq_remove_events and not $.vmID in ctx().vm_uniq_reconfigure_events and not $.vmID in ctx().vm_uniq_create_events).select($.vmID).distinct() %>
+          - vm_uniq_update_events: <% ctx(events).where(not $.eventType in ctx().host_migrated_events and not $.eventType in ctx().create_events and not $.eventType in ctx().remove_event and $.eventType != ctx().reconfigure_event and not $.vmID in ctx().vm_uniq_remove_events and not $.vmID in ctx().vm_uniq_reconfigure_events and not $.vmID in ctx().vm_uniq_create_events).select($.vmID).distinct() %>
           - vm_uniq_update_id: "{{ ctx().vm_uniq_update_events | join(',') }}"
         do:
           - Action_Needed_1
