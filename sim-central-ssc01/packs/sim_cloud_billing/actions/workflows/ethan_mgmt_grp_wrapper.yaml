@@ -1,0 +1,68 @@
+version: 1.0
+
+input:
+  - cloud_db_connection
+  - cmdb_db_connection
+  - billing_db_connection
+  - payload
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - SQL_Select_CMDB_vCenters
+
+  SQL_Select_CMDB_vCenters:
+    action: sql.query
+    input:
+      connection: <% ctx().cmdb_db_connection %>
+      query: "Select rtrim(invVCServerID) as invVCServerID, rtrim(vcName) as vcName, rtrim(vcIPAddress) as vcIPAddress FROM iaasVCServer WHERE vcActive = '1' ORDER BY invVCServerID"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - cmdb_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_Managed_VM
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Managed_VM:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT managedid FROM v_PortalNableDevices WHERE managedid IS NOT NULL;"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - managed_vm_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Enhance_vCenter_Data
+      - when: <% failed() %>
+        do: fail
+
+  Enhance_vCenter_Data:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - groups: "{%- set resourceArr = [] -%}{%- for vm in ctx().payload-%}{%- set vcName =  ctx().cmdb_data | selectattr('invVCServerID', 'defined') | selectattr('invVCServerID', 'equalto', vm['managedByID'])|map(attribute='vcName') | list -%}{%- set nableManagedID = ctx().managed_vm_data| selectattr('managedid', 'defined') | selectattr('managedid', 'equalto', vm['managedID'])|map(attribute='managedid') | list -%}{%- if vcName -%}  {{ vm.update({'vcName': vcName[0]}) or ''}}{%- endif -%}{%- if nableManagedID -%}{{ vm.update({'nableManagedID': nableManagedID[0]}) or ''}}{%- endif -%}{{ resourceArr.append(vm) or '' }}{%- endfor -%}{{ resourceArr | tojson }}"
+          - enhanced_payload: "{{ ctx().groups | from_json_string  }}"
+        do:
+          - Mgmt_Group_Handler
+
+  Mgmt_Group_Handler:
+    action: sim_cloud_billing.ethan_mgmt_grp_handler
+    input:
+      cloud_db_connection: <% ctx().cloud_db_connection %>
+      payload: <% ctx().enhanced_payload %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  End:
+    action: core.noop

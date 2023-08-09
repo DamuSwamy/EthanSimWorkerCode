@@ -1,0 +1,72 @@
+version: 1.0
+
+input:
+  - cloud_db_connection
+  - payload
+  - logic_app_key
+
+vars:
+  - result: {}
+
+output:
+  - data: "VM: <% ctx().payload['Name'] %>, Action: <% ctx().payload['Action'] %>"
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% ctx().payload['Action'].toLower() = 'power on' %>
+        publish:
+          - nable_action: "enable"
+          - power_state: 1
+        do:
+          - vCloud_PowerOn_Action
+      - when: <% ctx().payload['Action'].toLower() = 'power off' %>
+        publish:
+          - nable_action: "disable"
+          - power_state: 0
+        do:
+          - vCloud_PowerOff_Action
+      - when: <% ctx().payload['Action'].toLower() != 'power on' and ctx().payload['Action'].toLower() != 'power off' %>
+        do:
+          - No_Valid_Action_Found
+
+  vCloud_PowerOn_Action:
+    delay: <% ctx().payload['StartupDelay'] %>
+    action: core.http
+    input:
+      body: "{\"vmtype\": \"vcloud\",\"managedid\": \"<% ctx().payload['managedID'] %>\",\n\"action\": \"powerOn\",\"useremail\": \"cpo@ethan.com.au\"\n}"
+      url: "https://apim-ethan-pmapi.azure-api.net/sendvmaction/manual/paths/invoke"
+      headers:
+        Ocp-Apim-Subscription-Key: <% ctx().logic_app_key %>
+        Content-Type: application/json
+      method: POST
+      timeout: 120
+    next:
+      - when: <% failed() %>
+        do: noop
+      - when: <% succeeded() %>
+        do: End
+
+  vCloud_PowerOff_Action:
+    delay: <% ctx().payload['ShutdownDelay'] %>
+    action: core.http
+    input:
+      body: "{\"vmtype\": \"vcloud\",\"managedid\": \"<% ctx().payload['managedID'] %>\",\n\"action\": \"powerOff\",\"useremail\": \"cpo@ethan.com.au\"\n}"
+      url: "https://apim-ethan-pmapi.azure-api.net/sendvmaction/manual/paths/invoke"
+      headers:
+        Ocp-Apim-Subscription-Key: <% ctx().logic_app_key %>
+        Content-Type: application/json
+      method: POST
+      timeout: 120
+    next:
+      - when: <% failed() %>
+        do: noop
+      - when: <% succeeded() %>
+        do: End
+
+  End:
+    action: core.noop
+
+  No_Valid_Action_Found:
+    action: core.noop

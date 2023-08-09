@@ -8,7 +8,7 @@ import uuid
 import pytz
 from operator import itemgetter
 from itertools import groupby
-batch_size = 25
+batch_size = 100
 
 #                         (key, required, default)
 CONFIG_CONNECTION_KEYS = [('host', False, ""),
@@ -92,7 +92,6 @@ class ManagementGroupSensor(PollingSensor):
                           """
             self._logger.debug(COUNT_QUERY)
             rows = conn.execute(COUNT_QUERY).fetchone()
-            self._logger.info(f"Total Rows {rows['Count']} ...")
 
             for start_row in range(0, rows['Count'], batch_size):
                 QUERY = f"""
@@ -133,8 +132,8 @@ class ManagementGroupSensor(PollingSensor):
                     all_results = query_result.fetchall()
                     for row in all_results:
                         return_result.append(self.row_to_dict(row))
-                self._logger.info('Records found: {}'.format(len(return_result)))
                 if len(return_result) > 0:
+                    self._logger.info('Records found: {}'.format(len(return_result)))
                     '''
                     groups = {}
                     for item in return_result:

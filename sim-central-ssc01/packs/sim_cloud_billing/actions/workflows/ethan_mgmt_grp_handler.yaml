@@ -1,0 +1,125 @@
+version: 1.0
+
+input:
+  - cloud_db_connection
+  - payload
+  - logic_app_key
+
+vars:
+  - index: 0
+  - power_on: []
+  - power_off: []
+  - poweron_group: []
+  - poweroff_group: []
+  - actionIndex: 0
+
+output:
+  - power_on: <% ctx().power_on %>
+  - power_off: <% ctx().power_off %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - mgmt_grps: <% ctx(payload).select($.ManagmentGroupSIName) %>
+        do:
+          - Filter_Management_Groups
+
+  Filter_Management_Groups:
+    action: core.noop
+    next:
+      - when: <% ctx().index < len(ctx().mgmt_grps) %>
+        publish:
+          - poweron_group: <% ctx(payload).where($.Action = 'Power On' and $.ManagmentGroupSIName = ctx().mgmt_grps[ctx().index]).select($).orderBy($.StartupSequence) %>
+          - poweroff_group: <% ctx(payload).where($.Action = 'Power Off' and $.ManagmentGroupSIName = ctx().mgmt_grps[ctx().index]).select($).orderByDescending($.StartupSequence) %>
+          - index: <% ctx().index + 1 %>
+          - power_on: <% ctx().power_on + ctx().poweron_group %>
+          - power_off: <% ctx().power_off + ctx().poweroff_group %>
+        do:
+          - Filter_Management_Groups
+      - when: <% ctx().index >= len(ctx().mgmt_grps) %>
+        do:
+          - Check_Action_Items
+
+  Check_Action_Items:
+    action: core.noop
+    next:
+      - when: <% len(ctx().poweron_group) > 0 %>
+        do:
+          - PowerOn_Action
+      - when: <% len(ctx().poweroff_group) > 0 %>
+        do:
+          - PowerOff_Action
+
+  PowerOn_Action:
+    delay: 5
+    action: core.noop
+    next:
+      - when: <% ctx().actionIndex < len(ctx().poweron_group) and ctx().poweron_group[ctx().actionIndex].managedBy = 'vcenter' %>
+        publish:
+          - actionPayload: <% ctx().poweron_group[ctx().actionIndex] %>
+        do:
+          - vCenter_Action
+      - when: <% ctx().actionIndex < len(ctx().poweron_group) and ctx().poweron_group[ctx().actionIndex].managedBy = 'vcloud' %>
+        publish:
+          - actionPayload: <% ctx().poweron_group[ctx().actionIndex] %>
+        do:
+          - vCloud_Action
+      - when: <% ctx().actionIndex >= len(ctx().poweron_group) %>
+        do:
+          - End
+
+  PowerOff_Action:
+    delay: 5
+    action: core.noop
+    next:
+      - when: <% ctx().actionIndex < len(ctx().poweroff_group) and ctx().poweroff_group[ctx().actionIndex].managedBy = 'vcloud' %>
+        publish:
+          - actionPayload: <% ctx().poweroff_group[ctx().actionIndex] %>
+        do:
+          - vCloud_Action
+      - when: <% ctx().actionIndex < len(ctx().poweroff_group) and ctx().poweroff_group[ctx().actionIndex].managedBy = 'vcenter' %>
+        publish:
+          - actionPayload: <% ctx().poweroff_group[ctx().actionIndex] %>
+        do:
+          - vCenter_Action
+      - when: <% ctx().actionIndex >= len(ctx().poweroff_group) %>
+        do:
+          - End
+
+  vCenter_Action:
+    action: sim_cloud_billing.ethan_mgmt_grp_vcenter
+    input:
+      cloud_db_connection: <% ctx().cloud_db_connection %>
+      payload: <% ctx().actionPayload %>
+      logic_app_key: <% ctx().logic_app_key %>
+    next:
+      - when: <% ctx().actionPayload['Action'] = 'Power On' %>
+        publish:
+          - actionIndex: <% ctx().actionIndex + 1 %>
+        do: PowerOn_Action
+      - when: <% ctx().actionPayload['Action'] = 'Power Off' %>
+        publish:
+          - actionIndex: <% ctx().actionIndex + 1 %>
+        do: PowerOff_Action
+
+  vCloud_Action:
+    action: sim_cloud_billing.ethan_mgmt_grp_vcloud
+    input:
+      cloud_db_connection: <% ctx().cloud_db_connection %>
+      payload: <% ctx().actionPayload %>
+      logic_app_key: <% ctx().logic_app_key %>
+    next:
+      - when: <% ctx().actionPayload['Action'] = 'Power On' %>
+        publish:
+          - actionIndex: <% ctx().actionIndex + 1 %>
+        do: PowerOn_Action
+      - when: <% ctx().actionPayload['Action'] = 'Power Off' %>
+        publish:
+          - actionIndex: <% ctx().actionIndex + 1 %>
+        do: PowerOff_Action
+
+  End:
+    action: core.noop
