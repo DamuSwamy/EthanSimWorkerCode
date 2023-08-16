@@ -6,16 +6,14 @@ input:
   - logic_app_key
 
 vars:
-  - index: 0
-  - power_on: []
-  - power_off: []
   - poweron_group: []
   - poweroff_group: []
-  - actionIndex: 0
+  - vCenterSeqIndex: 0
+  - vCloudSeqIndex: 0
 
 output:
-  - power_on: <% ctx().power_on %>
-  - power_off: <% ctx().power_off %>
+  - power_on: <% ctx().poweron_group %>
+  - power_off: <% ctx().poweroff_group %>
 
 tasks:
   Start:
@@ -23,23 +21,11 @@ tasks:
     next:
       - when: <% succeeded() %>
         publish:
-          - mgmt_grps: <% ctx(payload).select($.ManagmentGroupSIName) %>
-        do:
-          - Filter_Management_Groups
-
-  Filter_Management_Groups:
-    action: core.noop
-    next:
-      - when: <% ctx().index < len(ctx().mgmt_grps) %>
-        publish:
-          - poweron_group: <% ctx(payload).where($.Action = 'Power On' and $.ManagmentGroupSIName = ctx().mgmt_grps[ctx().index]).select($).orderBy($.StartupSequence) %>
-          - poweroff_group: <% ctx(payload).where($.Action = 'Power Off' and $.ManagmentGroupSIName = ctx().mgmt_grps[ctx().index]).select($).orderByDescending($.StartupSequence) %>
-          - index: <% ctx().index + 1 %>
-          - power_on: <% ctx().power_on + ctx().poweron_group %>
-          - power_off: <% ctx().power_off + ctx().poweroff_group %>
-        do:
-          - Filter_Management_Groups
-      - when: <% ctx().index >= len(ctx().mgmt_grps) %>
+          - mgmt_grps: <% ctx(payload).select($.ManagmentGroupSIName).distinct() %>
+          - payload: "{%- set power_on = [] -%}{%- set power_off = [] -%}{%- for mgmt in ctx().mgmt_grps -%}{%- for group in ctx().payload if mgmt == group['ManagmentGroupSIName'] -%}{%- if group['Action'] == 'Power Off' -%}{{ power_off.append(group) or '' }}{%- elif group['Action'] == 'Power On' -%}{{ power_on.append(group) or '' }}{%- endif -%}{%- endfor -%}{%- endfor -%}{%- set groupObj = { 'power_on': power_on, 'power_off': power_off } -%}{{ groupObj | tojson }}"
+          - payload: "{{ ctx().payload | from_json_string  }}"
+          - poweroff_group: <% ctx().payload['power_off'] %>
+          - poweron_group: <% ctx().payload['power_on'] %>
         do:
           - Check_Action_Items
 
@@ -47,79 +33,125 @@ tasks:
     action: core.noop
     next:
       - when: <% len(ctx().poweron_group) > 0 %>
+        publish:
+          - poweron_group: <% ctx(poweron_group).select($).orderBy($.StartupSequence) %>
+          - vcenter_poweron_group: <% ctx(poweron_group).where($.managedBy = 'vcenter').select($).distinct() %>
+          - vcloud_poweron_group: <% ctx(poweron_group).where($.managedBy = 'vcloud').select($).distinct() %>
+          - available_seq: <% ctx().poweron_group.select($.StartupSequence).distinct() %>
         do:
-          - PowerOn_Action
+          - Identify_PowerOn_Dest
       - when: <% len(ctx().poweroff_group) > 0 %>
+        publish:
+          - poweroff_group: <% ctx(poweroff_group).select($).orderByDescending($.StartupSequence) %>
+          - vcenter_poweroff_group: <% ctx(poweroff_group).where($.managedBy = 'vcenter').select($).distinct() %>
+          - vcloud_poweroff_group: <% ctx(poweroff_group).where($.managedBy = 'vcloud').select($).distinct() %>
+          - available_seq: <% ctx().poweroff_group.select($.StartupSequence).distinct() %>
         do:
-          - PowerOff_Action
+          - Identify_PowerOff_Dest
 
-  PowerOn_Action:
-    delay: 5
+  Identify_PowerOn_Dest:
     action: core.noop
     next:
-      - when: <% ctx().actionIndex < len(ctx().poweron_group) and ctx().poweron_group[ctx().actionIndex].managedBy = 'vcenter' %>
-        publish:
-          - actionPayload: <% ctx().poweron_group[ctx().actionIndex] %>
+      - when: <% len(ctx().vcenter_poweron_group) > 0 %>
         do:
-          - vCenter_Action
-      - when: <% ctx().actionIndex < len(ctx().poweron_group) and ctx().poweron_group[ctx().actionIndex].managedBy = 'vcloud' %>
-        publish:
-          - actionPayload: <% ctx().poweron_group[ctx().actionIndex] %>
+          - vCenter_PowerOn_Action
+      - when: <% len(ctx().vcloud_poweron_group) > 0 %>
         do:
-          - vCloud_Action
-      - when: <% ctx().actionIndex >= len(ctx().poweron_group) %>
-        do:
-          - End
+          - vCloud_PowerOn_Action
 
-  PowerOff_Action:
-    delay: 5
+  Identify_PowerOff_Dest:
     action: core.noop
     next:
-      - when: <% ctx().actionIndex < len(ctx().poweroff_group) and ctx().poweroff_group[ctx().actionIndex].managedBy = 'vcloud' %>
-        publish:
-          - actionPayload: <% ctx().poweroff_group[ctx().actionIndex] %>
+      - when: <% len(ctx().vcenter_poweroff_group) > 0 %>
         do:
-          - vCloud_Action
-      - when: <% ctx().actionIndex < len(ctx().poweroff_group) and ctx().poweroff_group[ctx().actionIndex].managedBy = 'vcenter' %>
-        publish:
-          - actionPayload: <% ctx().poweroff_group[ctx().actionIndex] %>
+          - vCenter_PowerOff_Action
+      - when: <% len(ctx().vcloud_poweroff_group) > 0 %>
         do:
-          - vCenter_Action
-      - when: <% ctx().actionIndex >= len(ctx().poweroff_group) %>
-        do:
-          - End
+          - vCloud_PowerOff_Action
 
-  vCenter_Action:
+  vCenter_PowerOn_Action:
     action: sim_cloud_billing.ethan_mgmt_grp_vcenter
     input:
       cloud_db_connection: <% ctx().cloud_db_connection %>
-      payload: <% ctx().actionPayload %>
+      payload: <% item() %>
       logic_app_key: <% ctx().logic_app_key %>
+    with:
+      items: <% ctx(vcloud_poweron_group).where($.StartupSequence = ctx().available_seq[ctx().vCenterSeqIndex]).select($) %>
+      concurrency: <% len(ctx().vcenter_poweron_group) %>
     next:
-      - when: <% ctx().actionPayload['Action'] = 'Power On' %>
-        publish:
-          - actionIndex: <% ctx().actionIndex + 1 %>
-        do: PowerOn_Action
-      - when: <% ctx().actionPayload['Action'] = 'Power Off' %>
-        publish:
-          - actionIndex: <% ctx().actionIndex + 1 %>
-        do: PowerOff_Action
+      - when: <% succeeded() or failed() %>
+        do: Next_PowerOn_Seq
 
-  vCloud_Action:
+  Next_PowerOn_Seq:
+    action: core.noop
+    next:
+      - when: <% ctx().vCenterSeqIndex < (len(ctx().available_seq) - 1) and len(ctx().poweron_group) > 0 %>
+        publish:
+          - vCenterSeqIndex: <% ctx().vCenterSeqIndex + 1 %>
+        do:
+          - vCenter_PowerOn_Action
+      - when: <% ctx().vCloudSeqIndex < (len(ctx().available_seq) - 1) and len(ctx().poweron_group) > 0 %>
+        publish:
+          - vCloudSeqIndex: <% ctx().vCloudSeqIndex + 1 %>
+        do:
+          - vCloud_PowerOn_Action
+      - when: <% ctx().vCenterSeqIndex >= len(ctx().available_seq) or ctx().vCloudSeqIndex >= len(ctx().available_seq) %>
+        do: End
+
+  Next_PowerOff_Seq:
+    action: core.noop
+    next:
+      - when: <% ctx().vCenterSeqIndex < (len(ctx().available_seq) - 1) and len(ctx().vcenter_poweroff_group) > 0 %>
+        publish:
+          - vCenterSeqIndex: <% ctx().vCenterSeqIndex + 1 %>
+        do:
+          - vCenter_PowerOff_Action
+      - when: <% ctx().vCloudSeqIndex < (len(ctx().available_seq) - 1) and len(ctx().vcloud_poweroff_group) > 0 %>
+        publish:
+          - vCloudSeqIndex: <% ctx().vCloudSeqIndex + 1 %>
+        do:
+          - vCloud_PowerOff_Action
+      - when: <% ctx().vCenterSeqIndex >= len(ctx().available_seq) or ctx().vCloudSeqIndex >= len(ctx().available_seq) %>
+        do: End
+
+  vCloud_PowerOn_Action:
     action: sim_cloud_billing.ethan_mgmt_grp_vcloud
     input:
       cloud_db_connection: <% ctx().cloud_db_connection %>
-      payload: <% ctx().actionPayload %>
+      payload: <% item() %>
       logic_app_key: <% ctx().logic_app_key %>
+    with:
+      items: <% ctx(vcloud_poweron_group).where($.StartupSequence = ctx().available_seq[ctx().vCloudSeqIndex]).select($) %>
+      concurrency: <% len(ctx().vcloud_poweron_group) %>
     next:
-      - when: <% ctx().actionPayload['Action'] = 'Power On' %>
-        publish:
-          - actionIndex: <% ctx().actionIndex + 1 %>
-        do: PowerOn_Action
-      - when: <% ctx().actionPayload['Action'] = 'Power Off' %>
-        publish:
-          - actionIndex: <% ctx().actionIndex + 1 %>
-        do: PowerOff_Action
+      - when: <% succeeded() or failed() %>
+        do: Next_PowerOn_Seq
+
+  vCenter_PowerOff_Action:
+    action: sim_cloud_billing.ethan_mgmt_grp_vcenter
+    input:
+      cloud_db_connection: <% ctx().cloud_db_connection %>
+      payload: <% item() %>
+      logic_app_key: <% ctx().logic_app_key %>
+    with:
+      items: <% ctx(vcenter_poweroff_group).where($.StartupSequence = ctx().available_seq[ctx().vCenterSeqIndex]).select($) %>
+      concurrency: <% len(ctx().vcenter_poweroff_group) %>
+    next:
+      - when: <% succeeded() or failed() %>
+        do: Next_PowerOff_Seq
+
+  vCloud_PowerOff_Action:
+    action: sim_cloud_billing.ethan_mgmt_grp_vcloud
+    input:
+      cloud_db_connection: <% ctx().cloud_db_connection %>
+      payload: <% item() %>
+      logic_app_key: <% ctx().logic_app_key %>
+    with:
+      items: <% ctx(vcloud_poweroff_group).where($.StartupSequence = ctx().available_seq[ctx().vCloudSeqIndex]).select($) %>
+      concurrency: <% len(ctx().vcloud_poweroff_group) %>
+    next:
+      - when: <% succeeded() or failed() %>
+        do: Next_PowerOff_Seq
 
   End:
     action: core.noop
