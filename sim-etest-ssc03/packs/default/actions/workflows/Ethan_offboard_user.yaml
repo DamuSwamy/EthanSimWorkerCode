@@ -115,6 +115,7 @@ tasks:
           - execution_log: <% ctx().execution_log  +  result().output.execution_log %>
       - do:
           - task1
+        when: <% ctx().i < ctx().emailDelegateUser.len() and ctx().i < ctx().forwardDelegateUser.len() and ctx().i < ctx().oneDriveDelegateUser.len() %>
     input:
       ad_host: <% ctx().ex_host[0] %>
       app_id: <% ctx().app_id[0] %>
@@ -218,6 +219,7 @@ tasks:
         publish:
           - delegated_usr_address: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
           - delegated_user_objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
+          - x: <% concat(ctx().x,ctx().emailDelegateUser[ctx().i]) %>
     input:
       ad_host: <% ctx().ad_host[0] %>
       display_name: <% ctx().emailDelegateUser %>
@@ -387,6 +389,11 @@ tasks:
       - do:
           - check_delegation_type
         when: <% ctx().data.data.custom_attributes.emailDelegate = "Yes" or ctx().data.data.custom_attributes.forwardDelegate = "Yes" or ctx().data.data.custom_attributes.oneDriveDelegate = "Yes"%>
+        publish:
+          - i: 0
+          - x: null
+          - y: null
+          - z: null
       - do:
           - delegation_NO
         when: <% ctx().data.data.custom_attributes.emailDelegate != "Yes" and ctx().data.data.custom_attributes.forwardDelegate != "Yes" and ctx().data.data.custom_attributes.oneDriveDelegate != "Yes"%>
@@ -455,7 +462,7 @@ tasks:
     next:
       - do:
           - print_failed_actions
-  # [314, 774]
+  # [323, 791]
   check_delegation_type:
     action: core.noop
     next:
@@ -479,6 +486,7 @@ tasks:
         publish:
           - forwarded_usr_address: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
           - forwarded_usr_objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
+          - y: <% concat(ctx().y,ctx().forwardDelegateUser[ctx().i]) %>
   # [314, 1099]
   get_one_drive:
     action: sim_activedirectory.fetch_email_object_ad_user
@@ -486,6 +494,7 @@ tasks:
       - publish:
           - one_drive_usr_address: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
           - one_drive_user_objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
+          - z: <% concat(ctx().z,ctx().oneDriveDelegateUser[ctx().i]) %>
         do:
           - exchange_user_exit_del_YES
     input:
@@ -506,12 +515,14 @@ tasks:
       display_name: <% ctx().manager %>
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>
-  # [603, 1060]
+  # [354, 1313]
   task1:
     action: core.noop
     next:
       - do:
           - check_delegation_type
+        publish:
+          - i: <% ctx().i+1 %>
 
 vars:
   - log: ""
