@@ -108,14 +108,11 @@ tasks:
   exchange_user_exit_del_YES:
     action: ethan_core.user_offboard_exchange_process_v2
     next:
-      # #629e47
       - do:
-          - o365_user_exit
-        publish:
-          - execution_log: <% ctx().execution_log  +  result().output.execution_log %>
-      - do:
-          - task1
+          - i is smaller than len
         when: <% ctx().i < ctx().emailDelegateUser.len() and ctx().i < ctx().forwardDelegateUser.len() and ctx().i < ctx().oneDriveDelegateUser.len() %>
+      - do:
+          - array len reached
     input:
       ad_host: <% ctx().ex_host[0] %>
       app_id: <% ctx().app_id[0] %>
@@ -209,7 +206,7 @@ tasks:
     next:
       - do:
           - end
-  # [312, 887]
+  # [312, 889]
   get_delegate_email:
     action: sim_activedirectory.fetch_email_object_ad_user
     next:
@@ -222,7 +219,7 @@ tasks:
           - x: <% concat(ctx().x,ctx().emailDelegateUser[ctx().i]) %>
     input:
       ad_host: <% ctx().ad_host[0] %>
-      display_name: <% ctx().emailDelegateUser %>
+      display_name: <% ctx().emailDelegateUser[ctx().i] %>
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>
   # [310, 394]
@@ -249,7 +246,7 @@ tasks:
       certificate_file_path: <% ctx().certificate_file_path[0] %>
       organisation: <% ctx().organisation[0] %>
       admin_url: <% ctx().admin_url %>
-  # [187, 1424]
+  # [180, 1427]
   get_after_status:
     action: ethan_core.get_user_status
     next:
@@ -462,16 +459,16 @@ tasks:
     next:
       - do:
           - print_failed_actions
-  # [323, 791]
+  # [321, 787]
   check_delegation_type:
     action: core.noop
     next:
       - do:
           - get_delegate_email
         publish:
-          - emailDelegateUser: "{{ \"Aman Mujawar\" if not ctx().emailDelegateUser else ctx().emailDelegateUser }}"
-          - forwardDelegateUser: "{{ \"Aman Mujawar\" if not ctx().forwardDelegateUser else ctx().forwardDelegateUser }}"
-          - oneDriveDelegateUser: "{{ \"Aman Mujawar\" if not  ctx().oneDriveDelegateUser else ctx().oneDriveDelegateUser }}"
+          - emailDelegateUser: "{{ \"Aman Mujawar\" if not ctx().emailDelegateUser else ctx().emailDelegateUser[ctx().i] }}"
+          - forwardDelegateUser: "{{ \"Aman Mujawar\" if not ctx().forwardDelegateUser else ctx().forwardDelegateUser[ctx().i] }}"
+          - oneDriveDelegateUser: "{{ \"Aman Mujawar\" if not  ctx().oneDriveDelegateUser else ctx().oneDriveDelegateUser[ctx().i] }}"
   # [313, 988]
   get_forward_email:
     action: sim_activedirectory.fetch_email_object_ad_user
@@ -479,7 +476,7 @@ tasks:
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>
       ad_host: <% ctx().ad_host[0] %>
-      display_name: <%ctx().forwardDelegateUser%>
+      display_name: <%ctx().forwardDelegateUser[ctx().i]%>
     next:
       - do:
           - get_one_drive
@@ -487,7 +484,7 @@ tasks:
           - forwarded_usr_address: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
           - forwarded_usr_objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
           - y: <% concat(ctx().y,ctx().forwardDelegateUser[ctx().i]) %>
-  # [314, 1099]
+  # [313, 1100]
   get_one_drive:
     action: sim_activedirectory.fetch_email_object_ad_user
     next:
@@ -499,7 +496,7 @@ tasks:
           - exchange_user_exit_del_YES
     input:
       ad_host: <% ctx().ad_host[0] %>
-      display_name: <%ctx().oneDriveDelegateUser%>
+      display_name: <%ctx().oneDriveDelegateUser[ctx().i]%>
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>
   # [310, 519]
@@ -515,14 +512,22 @@ tasks:
       display_name: <% ctx().manager %>
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>
-  # [354, 1313]
-  task1:
+  # [302, 1314]
+  i is smaller than len:
     action: core.noop
     next:
       - do:
           - check_delegation_type
         publish:
           - i: <% ctx().i+1 %>
+  # [528, 1233]
+  array len reached:
+    action: core.noop
+    next:
+      - do:
+          - o365_user_exit
+        publish:
+          - execution_log: <% ctx().execution_log  +  result().output.execution_log %>
 
 vars:
   - log: ""
