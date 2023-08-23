@@ -30,6 +30,8 @@ class GetActivitiesAction(BaseAction):
         except ValueError:
             myresp['data'] = resp.content
 
+#        return myresp['data']
+
         if myresp['status_code'] >= 200 and myresp['status_code'] <= 299:
             ret = True
             for activity in myresp['data']['content']:
@@ -114,4 +116,6 @@ class GetActivitiesAction(BaseAction):
                         keyarrayStr    = "".join(keyarray)
                         activity['stats'+keyFirstLetter+keyarrayStr] = value
                 activity_array.append(activity)
+        else:
+            return (ret, myresp['data'])
         return (ret, activity_array)
