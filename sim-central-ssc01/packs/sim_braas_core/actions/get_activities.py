@@ -114,7 +114,10 @@ class GetActivitiesAction(BaseAction):
                         keyFirstLetter = keyarray[0].upper()
                         keyarray.pop(0)
                         keyarrayStr    = "".join(keyarray)
-                        activity['stats'+keyFirstLetter+keyarrayStr] = value
+                        if isinstance(value, int) or isinstance(value, float):
+                            activity['stats'+keyFirstLetter+keyarrayStr] = str(int(value))
+                        else:
+                            activity['stats'+keyFirstLetter+keyarrayStr] = value
                 activity_array.append(activity)
         else:
             return (ret, myresp['data'])

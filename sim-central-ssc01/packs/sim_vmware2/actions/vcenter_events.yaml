@@ -39,8 +39,8 @@ parameters:
       - VmReconfiguredEvent
       - VmRemovedEvent
       - VmRenamedEvent
-      - DrsVmMigratedEvent
-      - vim.event.DrsVmMigratedEvent
+#      - DrsVmMigratedEvent
+#      - vim.event.DrsVmMigratedEvent
   vm_ignore_list: 
     type: array
     description: List of events to be ignored based on vm names
