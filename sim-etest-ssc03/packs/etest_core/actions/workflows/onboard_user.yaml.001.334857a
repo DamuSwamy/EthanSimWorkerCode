@@ -71,10 +71,10 @@ tasks:
     next:
       - do:
           - add_license_E5
-        when: <% ctx().mailbox_required = "YesNO123" %>
+        when: <% ctx().mailbox_required = "Yes" %>
       - do:
-          - start_delta_sync
-        when: <% "YES" = "YES" %>
+          - ticket_update
+        when: <% ctx().mailbox_required = "No" %>
   # [100, 0]
   start:
     action: core.echo
@@ -105,7 +105,7 @@ tasks:
           - tenant_id: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.tenant_id)) %>
           - client_id: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.client_id)) %>
           - client_secret: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.client_secret)) %>
-  # [752, 497]
+  # [1002, 390]
   start_delta_sync:
     action: sim_activedirectory.start_delta_ad_sync
     input:
@@ -115,7 +115,7 @@ tasks:
     next:
       - do:
           - sleep_90
-  # [1013, 562]
+  # [1009, 494]
   sleep_90:
     action: core.local
     input:
@@ -131,7 +131,7 @@ tasks:
   ticket_update:
     action: core.echo
     input:
-      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added from: <%ctx().model_user %>\nMembership groups copied: <% ctx().membership_copied %>\nAD sync: True\nLicense Added: True\nMailbox Created: True"
+      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added from: <%ctx().model_user %>\nMembership groups copied: <% ctx().membership_copied %>\nAD sync: True\nLicense Added: <% ctx().license_added %>\nMailbox Created: <% ctx().mailbox_created %>"
     next:
       - do:
           - end
@@ -219,7 +219,7 @@ tasks:
                   status: In Progress
                   ticket_update: Sim Automation is escalating the service request after finding the user to be onboarded already exists
           - execution_log: "[{\"task_name\":\"check_ad_user\",\"expected_returncode\":\"1\", \"actual_returncode\":<% ctx().user_count  %>}]"
-  # [1077, 382]
+  # [1024, 173]
   create_mailbox:
     action: sim_exchange.create_mailboxscript
     input:
@@ -269,13 +269,13 @@ tasks:
           - check_ad_user
         publish:
           - random_string: <% result().stdout %>
-  # [922, 264]
+  # [808, 328]
   check:
     action: core.noop
     next:
       - do:
           - start_delta_sync
-  # [1013, 697]
+  # [992, 700]
   set_location_license:
     action: sim_o365.set_location_license
     input:
@@ -289,7 +289,7 @@ tasks:
         publish:
           - state: REMEDIATION
           - info: successfully onboarded
-  # [1013, 851]
+  # [994, 800]
   personal_site:
     action: sim_o365.create_personal_site
     next:

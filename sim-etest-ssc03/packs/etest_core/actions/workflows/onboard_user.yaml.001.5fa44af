@@ -74,7 +74,7 @@ tasks:
         when: <% ctx().mailbox_required = "YesNO123" %>
       - do:
           - start_delta_sync
-        when: <% "YES" = "YES" %>
+        when: <% ctx().mailbox_required = "YES" %>
   # [100, 0]
   start:
     action: core.echo
@@ -131,7 +131,7 @@ tasks:
   ticket_update:
     action: core.echo
     input:
-      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added from: <%ctx().model_user %>\nMembership groups copied: <% ctx().membership_copied %>\nAD sync: True\nLicense Added: True\nMailbox Created: True"
+      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added from: <%ctx().model_user %>\nMembership groups copied: <% ctx().membership_copied %>\nAD sync: True\nLicense Added: True\nMailbox Created: True\nHRMS: True\nSalesforce: True"
     next:
       - do:
           - end
