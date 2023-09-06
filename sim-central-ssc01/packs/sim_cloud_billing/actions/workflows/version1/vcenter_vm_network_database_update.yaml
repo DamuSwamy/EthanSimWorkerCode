@@ -58,10 +58,8 @@ tasks:
       table: <% ctx().target_table %>
       data: <% ctx().update_data %>
       update_values: ['network', 'macAddress', 'connected', 'ipAddress', 'lastUpdated']
-      column_filter1: "vmID"
-      column_filter2: "managedID"
-      column_filter3: "vmName"
-      column_filter4: "deviceKey"
+      column_filter1: "managedID"
+      column_filter2: "deviceKey"
     next:
       - when: <% failed() %>
         do: fail
@@ -73,10 +71,8 @@ tasks:
       table: <% ctx().target_table %>
       data: <% ctx().remove_data %>
       update_values: ['lastUpdated']
-      column_filter1: "vmID"
-      column_filter2: "managedID"
-      column_filter3: "vmName"
-      column_filter4: "deviceKey"
+      column_filter1: "managedID"
+      column_filter2: "deviceKey"
     next:
       - when: <% failed() %>
         do: fail

@@ -57,7 +57,7 @@ tasks:
       connection: <% ctx().db_connection %>
       table: <% ctx().target_table %>
       data: <% ctx().update_data %>
-      update_values: ['vmActive', 'vmName', 'vmHostName', 'vmIPAddress', 'vmCPU', 'vmRAM', 'vmStorageUsed', 'vmStorageTotal', 'vmPowerState', 'vmVersion', 'vmGuestToolsStatus', 'vmGuestToolsVersionStatus', 'vmGuestToolsRunningStatus', 'vmGuestState', 'lastUpdated']
+      update_values: ['vmActive', 'vmName', 'vmHostName', 'vmIPAddress', 'vmCPU', 'vmRAM', 'vmStorageUsed', 'vmStorageTotal', 'vmPowerState', 'vmVersion', 'vmGuestToolsStatus', 'vmGuestToolsVersionStatus', 'vmGuestToolsRunningStatus', 'vmGuestState', 'lastUpdated', 'vmConfiguredOS', 'vmGuestOSName']
       column_filter1: "ethvmid"
       column_filter2: "vmID"
     next:

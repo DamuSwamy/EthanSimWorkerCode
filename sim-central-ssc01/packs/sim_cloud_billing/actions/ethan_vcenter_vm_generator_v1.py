@@ -8,7 +8,7 @@ class InsertAndUpdateListGeneratorAction(Action):
         insert_list = []
         remove_list = []
         if data_type == 'vm':
-            required = ['_ethvmid','_vmID', 'vmID','ethvmid','vmActive', 'vmName', 'vmHostName', 'vmIPAddress', 'vmCPU', 'vmRAM', 'vmStorageUsed', 'vmStorageTotal', 'vmPowerState', 'vmVersion', 'vmGuestToolsStatus', 'vmGuestToolsVersionStatus', 'vmGuestToolsRunningStatus', 'vmGuestState', 'lastUpdated']
+            required = ['_ethvmid','_vmID', 'vmID','ethvmid','vmActive', 'vmName', 'vmHostName', 'vmIPAddress', 'vmCPU', 'vmRAM', 'vmStorageUsed', 'vmStorageTotal', 'vmPowerState', 'vmVersion', 'vmGuestToolsStatus', 'vmGuestToolsVersionStatus', 'vmGuestToolsRunningStatus', 'vmGuestState', 'lastUpdated', 'vmConfiguredOS', 'vmGuestOSName']
             vm_data = [{key : val for key, val in sub.items() if key in required} for sub in vc_data]
             for y in sorted(db_data, key=itemgetter('ethvmid', 'vmID'), reverse=True):
                 update = [sub for sub in vm_data if sub['ethvmid'] == y['ethvmid'] and int(sub['vmID']) == int(y['vmID'])]
@@ -59,6 +59,14 @@ class InsertAndUpdateListGeneratorAction(Action):
                 insert_list.append(z)
 
         if data_type == 'vm_network':
+            for y in sorted(db_data, key=itemgetter('managedID', 'deviceKey'), reverse=True):
+                update = [sub for sub in vc_data if sub['managedID'] == y['managedID'] and int(sub['deviceKey']) == int(y['deviceKey'])]
+                if len(update) <= 0:
+                    continue
+                    remove_list.append(y)
+                else:
+                    update_list = update_list + update
+
             for z in sorted(vc_data, key=itemgetter('managedID', 'deviceKey'), reverse=True):
                 exist = [sub for sub in db_data if sub['managedID'] == z['managedID'] and int(sub['deviceKey']) == int(z['deviceKey'])]
                 if len(exist) > 0:

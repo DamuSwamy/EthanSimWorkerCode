@@ -206,6 +206,8 @@ class VcenterRawData(BaseAction):
         for network in networks:
             if network.deviceConfigId > 0:
                 network_obj = {}
+                network_obj['_managedID']    = ethvmid
+                network_obj['_deviceKey']    = network.deviceConfigId
                 network_obj['managedID']     = ethvmid
                 network_obj['invVCServer']   = self.vcenter_id
                 network_obj['vmName']        = vm_name

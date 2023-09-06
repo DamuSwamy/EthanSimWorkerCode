@@ -36,8 +36,9 @@ tasks:
   Check_For_VM_Network_Records:
     action: core.noop
     next:
-      - when: <% succeeded() %>
-        do: noop
+      - when: <% len(ctx().vmnetworks) > 0 %>
+        do: 
+          - Update_VM_Network_Records
 
   Update_VM_Records:
     action: sql.update_bulk
@@ -45,7 +46,7 @@ tasks:
       connection: <% ctx().billing_db_connection %>
       table: "iaasVM"
       data: <% ctx().vms %>
-      update_values: ['vmActive', 'vmName', 'vmHostName', 'vmIPAddress', 'vmCPU', 'vmRAM', 'vmStorageUsed', 'vmStorageTotal', 'vmPowerState', 'vmVersion', 'vmGuestToolsStatus', 'vmGuestToolsVersionStatus', 'vmGuestToolsRunningStatus', 'vmGuestState', 'lastUpdated']
+      update_values: ['vmActive', 'vmName', 'vmHostName', 'vmIPAddress', 'vmCPU', 'vmRAM', 'vmStorageUsed', 'vmStorageTotal', 'vmPowerState', 'vmVersion', 'vmGuestToolsStatus', 'vmGuestToolsVersionStatus', 'vmGuestToolsRunningStatus', 'vmGuestState', 'lastUpdated', 'vmConfiguredOS', 'vmConfiguredOS']
       column_filter1: "ethvmid"
       column_filter2: "vmID"
     next:
@@ -62,6 +63,21 @@ tasks:
       column_filter1: "ethvmid"
       column_filter2: "vmID"
       column_filter3: "deviceKey"
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  Update_VM_Network_Records:
+    action: sql.update_bulk
+    input:
+      connection: "cloudmanagement"
+      table: "Iaas_Network"
+      data: <% ctx().vmnetworks %>
+      update_values: ['network', 'macAddress', 'connected', 'ipAddress', 'lastUpdated']
+      column_filter1: "vmID"
+      column_filter2: "managedID"
+      column_filter3: "vmName"
+      column_filter4: "deviceKey"
     next:
       - when: <% failed() %>
         do: fail
