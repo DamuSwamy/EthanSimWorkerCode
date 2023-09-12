@@ -156,7 +156,7 @@ class VcenterRawData(BaseAction):
                 "vmGuestToolsVersionStatus": vm.guest.toolsVersionStatus2,
                 "vmGuestToolsRunningStatus": vm.guest.toolsRunningStatus,
                 "vmGuestToolsVersion": vm.guest.toolsVersion,
-                "vmGuestOSName": vm.summary.config.guestFullName,
+                "vmGuestOSName": vm.guest.guestFullName,
                 "vmGuestState": vm.guest.guestState,
                 "vmResourcePool": vmResourcePool,
                 "vmConfigFile": vm.summary.config.vmPathName,
