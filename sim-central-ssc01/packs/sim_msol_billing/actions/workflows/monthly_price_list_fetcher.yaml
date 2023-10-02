@@ -29,7 +29,7 @@ tasks:
           - Get_Access_Token_from_Microsoft_Online_API
         publish:
           - client_id: 4bacc579-560f-4260-9d24-7eb27cb2dc36
-          - client_secret: e058Q~zTRlKzT26RDkYyNmGAVIigaCVQMQaNcbvI
+          - client_secret: RDn8Q~_sv-9gGwEqCUtNcnX5fX2RpUkM0fJsbaNE
           - refresh_token: <% st2kv('system.msol_sandbox_refresh_token', decrypt=>true) %>
           - tenant_id: 04470183-206f-4e50-a7da-f18dd8066ef9
   # [544, 552]
