@@ -50,7 +50,7 @@ parameters:
     type: array
     description: List of events which will be triggered as part of the creation
     required: false
-    default: ['VmClonedEvent', 'VmCreatedEvent', 'VmDeployedEvent', 'VmRegisteredEvent', 'VmConnectedEvent', 'VmDiscoveredEvent', 'com.vmware.vc.vm.SrcMigratedEvent', 'com.vmware.vc.vm.DstVmMigratedEvent', 'com.vmware.vc.vm.DstVmClonedEvent', 'VmRemovedEvent', 'DrsVmMigratedEvent', 'vim.event.DrsVmMigratedEvent']
+    default: ['VmClonedEvent', 'VmCreatedEvent', 'VmDeployedEvent', 'VmRegisteredEvent', 'VmConnectedEvent', 'VmDiscoveredEvent', 'com.vmware.vc.vm.SrcMigratedEvent', 'com.vmware.vc.vm.DstVmMigratedEvent', 'com.vmware.vc.vm.DstVmClonedEvent', 'VmRemovedEvent']
   update_events: 
     type: array
     description: List of update events
