@@ -1,0 +1,6 @@
+pack: sim_sec_alerts
+enabled: true
+runner_type: orquesta
+name: get_cve_insert_dv
+entry_point: workflows/get_cve_insert_dv.yaml
+description: gets the cve data from the CVE 2.0 nist api and inserts into db

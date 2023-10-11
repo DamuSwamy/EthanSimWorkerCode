@@ -1,0 +1,9 @@
+version: 1.0
+tasks:
+  # [318, 99]
+  task1:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: "SELECT distinct(cve)\nFROM  [CloudManagement].[dbo].[Sec_vulnerability_assets]"
+      connection: cloudmanagement

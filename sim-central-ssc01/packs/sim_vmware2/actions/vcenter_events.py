@@ -123,7 +123,19 @@ class VcenterEvents(BaseAction):
                     elif e.fullFormattedMessage == 'event.VmConnectedEvent.fullFormat' or 'connected' in e.fullFormattedMessage:
                         event_map[e.key]['eventState'] = 'ERROR_Connected'  
                     elif e.fullFormattedMessage == 'event.VmRemovedEvent.fullFormat' or 'Removed' in e.fullFormattedMessage:
-                        event_map[e.key]['eventState'] = 'Decommissioned'
+                        """validDecommEvent = False
+                        for x in event_map.values():
+                            if x['eventType'] == 'VmPoweredOffEvent' and int(x['vmID']) == int(str(e.vm.vm).split("vm-")[1].replace("'","")):
+                                validDecommEvent = True
+                                break
+                        if not validDecommEvent:
+                            event_map[e.key]['eventState']     = 'Invalid Decommissioned'
+                            event_map[e.key]['eventType']      = 'Invalid VmRemovedEvent'
+                            event_map[e.key]['deviceType']     = 'Invalid virtualMachine'
+                            event_map[e.key]['eventOperation'] = 'Invalid VmRemovedEvent'
+                        else:"""
+                        event_map[e.key]['eventState']     = 'Decommissioned'
+
                     else:
                         event_map[e.key]['eventState'] = 'Immaculate Conception'
             
