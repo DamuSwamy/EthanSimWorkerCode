@@ -119,7 +119,7 @@ class GetCVEDetailsAction(Action):
             print(f"error : Failed to retrieve data for CVE ID {cve_id}. Status code: {response.status_code}")
             return {
                      "id": f"{cve_id}",
-                     "description": f"Failed to retrieve data from NIST for CVE ID {cve_id}. We will try again in next sync",
+                     "description": f"Failed to retrieve data for CVE ID {cve_id}. Please try again later",
                      "tags": "",
                      "ref_url": "",
                      "ref_name": "",

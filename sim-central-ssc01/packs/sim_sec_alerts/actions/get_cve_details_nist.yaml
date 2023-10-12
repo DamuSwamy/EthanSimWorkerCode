@@ -1,0 +1,11 @@
+---
+name: get_cve_details_nist
+description: Get details for a list of CVEs from nist api
+enabled: true
+entry_point: get_cve_details_nist.py
+runner_type: python-script
+parameters:
+  cve_list:
+    type: array
+    description: List of CVE objects
+    required: true

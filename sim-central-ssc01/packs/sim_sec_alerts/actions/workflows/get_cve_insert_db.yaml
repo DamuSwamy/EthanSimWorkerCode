@@ -1,10 +1,11 @@
 version: 1.0
 tasks:
-  # [364, 61]
+  # [386, 76]
   get_cves:
     action: sql.query
     input:
       log_level: DEBUG
+      debug: false
       query: "SELECT distinct(cve)\nFROM  [CloudManagement].[dbo].[Sec_vulnerability_assets]"
       connection: cloudmanagement
     next:
@@ -13,19 +14,19 @@ tasks:
         when: <% succeeded() %>
         publish:
           - cve_list: <% result().result %>
-  # [364, 187]
+  # [385, 198]
   get_details_NIST:
     action: sim_sec_alerts.get_cve_details_nist
-    input:
-      log_level: DEBUG
-      cve_list: "{{ ctx().cve_list }}"
     next:
       - do:
           - delete_records
+        when: <% succeeded() %>
         publish:
           - cve_details: <% result().result %>
-        when: <% succeeded() %>
-  # [364, 311]
+    input:
+      log_level: DEBUG
+      cve_list: "{{ ctx().cve_list }}"
+  # [385, 317]
   delete_records:
     action: sql.delete
     input:
@@ -36,7 +37,7 @@ tasks:
       - do:
           - insert_records
         when: <% succeeded() %>
-  # [364, 444]
+  # [386, 440]
   insert_records:
     action: sql.insert_bulk
     input:
