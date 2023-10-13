@@ -1,6 +1,6 @@
 version: 1.0
 tasks:
-  # [386, 76]
+  # [385, 76]
   get_cves:
     action: sql.query
     input:
@@ -31,17 +31,17 @@ tasks:
     action: sql.delete
     input:
       log_level: DEBUG
-      table: sec_vulnerability_summary_backup
+      table: sec_vulnerability_summary
       connection: cloudmanagement
     next:
       - do:
           - insert_records
         when: <% succeeded() %>
-  # [386, 440]
+  # [385, 441]
   insert_records:
     action: sql.insert_bulk
     input:
       log_level: DEBUG
       data: "{{ctx().cve_details}}"
-      table: sec_vulnerability_summary_backup
+      table: sec_vulnerability_summary
       connection: cloudmanagement
