@@ -1,0 +1,6 @@
+---
+name: get_network_customer_site_details
+description: get details from the netdb api
+enabled: true
+entry_point: get_network_customer_site_details.py
+runner_type: python-script

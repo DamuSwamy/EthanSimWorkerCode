@@ -1,0 +1,16 @@
+version: 1.0
+tasks:
+  # [351, 54]
+  task1:
+    action: core.noop
+    next:
+      - do:
+          - task2
+  # [344, 186]
+  task2:
+    action: core.http
+    input:
+      url: "https://netdb.essist.com.au/api/v1/asset/assurancedashboard/?customer=36"
+      headers:
+        Content-Type: application/json
+        Authorization: Token 0ab414e6487e35477157f38640f58e8ae6a0df89

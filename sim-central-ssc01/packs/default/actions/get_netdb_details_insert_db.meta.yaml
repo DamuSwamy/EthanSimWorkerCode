@@ -1,0 +1,6 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: get_netdb_details_insert_db
+entry_point: workflows/get_netdb_details_insert_db.yaml
+description: get various detalis from netdb api and insert them into different databases
