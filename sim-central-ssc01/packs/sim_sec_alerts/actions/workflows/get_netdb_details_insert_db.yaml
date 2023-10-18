@@ -5,16 +5,16 @@ tasks:
     action: sim_sec_alerts.get_network_customer_site_details
     next:
       - do:
-          - insert_to_db
+          - delete_db
         when: <% succeeded() %>
         publish:
           - data: <% result().result %>
-  # [332, 316]
+  # [668, 55]
   get_network_customer_device_os_details:
     action: sim_sec_alerts.get_network_customer_device_os_details
     next:
       - do:
-          - insert_to_db3
+          - delete_db3
         when: <% succeeded() %>
         publish:
           - data3: <% result().result %>
@@ -23,11 +23,11 @@ tasks:
     action: sim_sec_alerts.get_network_customer_site_devices_details
     next:
       - do:
-          - insert_to_db2
+          - delete_db2
         when: <% succeeded() %>
         publish:
           - data2: <% result().result %>
-  # [19, 190]
+  # [19, 372]
   insert_to_db:
     action: sql.insert_bulk
     next:
@@ -39,7 +39,7 @@ tasks:
       connection: cloudmanagement
       data: "{{ctx().data}}"
       table: NetworkCustomerSitesBackup2
-  # [333, 190]
+  # [332, 373]
   insert_to_db2:
     action: sql.insert_bulk
     next:
@@ -51,7 +51,7 @@ tasks:
       connection: cloudmanagement
       data: "{{ctx().data2}}"
       table: NetworkCustomerSiteDevicesBackup2
-  # [332, 446]
+  # [668, 373]
   insert_to_db3:
     action: sql.insert_bulk
     input:
@@ -59,3 +59,36 @@ tasks:
       data: "{{ctx().data3}}"
       table: NetworkCustomerDeviceOSBackup2
       connection: cloudmanagement
+  # [19, 212]
+  delete_db:
+    action: sql.delete
+    next:
+      - do:
+          - insert_to_db
+        when: <% succeeded() %>
+    input:
+      log_level: DEBUG
+      connection: cloudmanagement
+      table: NetworkCustomerSitesBackup2
+  # [332, 216]
+  delete_db2:
+    action: sql.delete
+    next:
+      - do:
+          - insert_to_db2
+        when: <% succeeded() %>
+    input:
+      log_level: DEBUG
+      connection: cloudmanagement
+      table: NetworkCustomerSiteDevicesBackup2
+  # [668, 219]
+  delete_db3:
+    action: sql.delete
+    next:
+      - do:
+          - insert_to_db3
+        when: <% succeeded() %>
+    input:
+      log_level: DEBUG
+      connection: cloudmanagement
+      table: NetworkCustomerDeviceOSBackup2

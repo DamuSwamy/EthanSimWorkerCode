@@ -37,7 +37,7 @@ tasks:
       - do:
           - insert_records
         when: <% succeeded() %>
-  # [385, 441]
+  # [379, 441]
   insert_records:
     action: sql.insert_bulk
     input:
