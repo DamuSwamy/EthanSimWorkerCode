@@ -1,0 +1,19 @@
+version: 1.0
+tasks:
+  # [503, 149]
+  task1:
+    action: sim_sec_alerts.get_network_customer_device_assets
+    next:
+      - do:
+          - task2
+        when: <% succeeded() %>
+        publish:
+          - data: <% result().result %>
+  # [498, 300]
+  task2:
+    action: sql.insert_bulk
+    input:
+      log_level: DEBUG
+      data: "{{ctx().data}}"
+      table: NetworkCustomerDeviceAssetsBackup2
+      connection: cloudmanagement

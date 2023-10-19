@@ -1,6 +1,6 @@
 version: 1.0
 tasks:
-  # [19, 70]
+  # [19, 206]
   get_network_customer_site_details:
     action: sim_sec_alerts.get_network_customer_site_details
     next:
@@ -9,7 +9,7 @@ tasks:
         when: <% succeeded() %>
         publish:
           - data: <% result().result %>
-  # [668, 55]
+  # [737, 56]
   get_network_customer_device_os_details:
     action: sim_sec_alerts.get_network_customer_device_os_details
     next:
@@ -18,7 +18,7 @@ tasks:
         when: <% succeeded() %>
         publish:
           - data3: <% result().result %>
-  # [332, 68]
+  # [389, 68]
   get_network_customer_site_devices_details:
     action: sim_sec_alerts.get_network_customer_site_devices_details
     next:
@@ -27,31 +27,41 @@ tasks:
         when: <% succeeded() %>
         publish:
           - data2: <% result().result %>
-  # [19, 372]
+  # [19, 501]
   insert_to_db:
     action: sql.insert_bulk
-    next:
-      - do:
-          - get_network_customer_site_devices_details
-        when: <% succeeded() %>
     input:
       log_level: DEBUG
       connection: cloudmanagement
       data: "{{ctx().data}}"
       table: NetworkCustomerSitesBackup2
-  # [332, 373]
+    next:
+      - do:
+          - get_network_customer_site_devices_details
+        when: <% succeeded() %>
+      - do:
+          - failed_mail_1
+        when: <% failed() %>
+        publish:
+          - op1: <% result() %>
+  # [389, 372]
   insert_to_db2:
     action: sql.insert_bulk
     next:
       - do:
           - get_network_customer_device_os_details
         when: <% succeeded() %>
+      - do:
+          - failed_mail_2
+        when: <% failed() %>
+        publish:
+          - second_insert_output: <% result() %>
     input:
       log_level: DEBUG
       connection: cloudmanagement
       data: "{{ctx().data2}}"
       table: NetworkCustomerSiteDevicesBackup2
-  # [668, 373]
+  # [737, 371]
   insert_to_db3:
     action: sql.insert_bulk
     input:
@@ -59,7 +69,16 @@ tasks:
       data: "{{ctx().data3}}"
       table: NetworkCustomerDeviceOSBackup2
       connection: cloudmanagement
-  # [19, 212]
+    next:
+      - do:
+          - get_network_customer_device_assets_details
+        when: <% succeeded() %>
+      - do:
+          - failed_mail_3
+        when: <% failed() %>
+        publish:
+          - third_insert_output: <% result() %>
+  # [19, 346]
   delete_db:
     action: sql.delete
     next:
@@ -70,7 +89,7 @@ tasks:
       log_level: DEBUG
       connection: cloudmanagement
       table: NetworkCustomerSitesBackup2
-  # [332, 216]
+  # [389, 218]
   delete_db2:
     action: sql.delete
     next:
@@ -81,7 +100,7 @@ tasks:
       log_level: DEBUG
       connection: cloudmanagement
       table: NetworkCustomerSiteDevicesBackup2
-  # [668, 219]
+  # [737, 219]
   delete_db3:
     action: sql.delete
     next:
@@ -92,3 +111,104 @@ tasks:
       log_level: DEBUG
       connection: cloudmanagement
       table: NetworkCustomerDeviceOSBackup2
+  # [1108, 63]
+  get_network_customer_device_assets_details:
+    action: sim_sec_alerts.get_network_customer_device_assets
+    next:
+      - do:
+          - delete_db4
+        when: <% succeeded() %>
+        publish:
+          - data4: <% result().result %>
+  # [1108, 226]
+  delete_db4:
+    action: sql.delete
+    next:
+      - do:
+          - insert_to_db4
+        when: <% succeeded() %>
+    input:
+      log_level: DEBUG
+      connection: cloudmanagement
+      table: NetworkCustomerDeviceAssetsBackup2
+  # [1108, 361]
+  insert_to_db4:
+    action: sql.insert_bulk
+    input:
+      log_level: DEBUG
+      data: "{{ctx().data4}}"
+      table: NetworkCustomerDeviceAssetsBackup2
+      connection: cloudmanagement
+    next:
+      - do:
+          - end_mail
+        when: <% succeeded() %>
+      - do:
+          - failed_mail_4
+        when: <% failed() %>
+        publish:
+          - fourth_insert_output: <% result() %>
+  # [19, 65]
+  start_mail:
+    action: core.sendmail
+    next:
+      - do:
+          - get_network_customer_site_details
+        when: <% succeeded() %>
+    input:
+      from: SiM.Automation@ethan.com.au
+      to: sahil.dutta@accelnomics.com,aman.mujawar@ethan.com.au
+      subject: Started  execution for "get_netdb_details_insert_db"  workflow
+      body: The "get_netdb_details_insert_db" workflow has successfully started.
+  # [1108, 501]
+  end_mail:
+    action: core.sendmail
+    input:
+      from: SiM.Automation@ethan.com.au
+      to: sahil.dutta@accelnomics.com,aman.mujawar@ethan.com.au
+      subject: Successful execution of  "get_netdb_details_insert_db" workflow
+      body: The "get_netdb_details_insert_db" workflow has successfully completed its execution
+  # [484, 662]
+  failed_mail_2:
+    action: core.sendmail
+    input:
+      from: SiM.Automation@ethan.com.au
+      to: sahil.dutta@accelnomics.com,aman.mujawar@ethan.com.au
+      subject: Failed to insert data into NetworkCustomerSiteDevicesBackup2 table
+      body: <% ctx().second_insert_output %>
+    next:
+      - do:
+          - get_network_customer_device_os_details
+        when: <% succeeded() %>
+  # [18, 655]
+  failed_mail_1:
+    action: core.sendmail
+    input:
+      body: <% ctx().op1 %>
+      from: SiM.Automation@ethan.com.au
+      to: sahil.dutta@accelnomics.com,aman.mujawar@ethan.com.au
+      subject: Failed to insert data into NetworkCustomerSitesBackup2 table
+    next:
+      - do:
+          - get_network_customer_site_devices_details
+        when: <% succeeded() %>
+  # [857, 659]
+  failed_mail_3:
+    action: core.sendmail
+    input:
+      from: SiM.Automation@ethan.com.au
+      to: sahil.dutta@accelnomics.com,aman.mujawar@ethan.com.au
+      subject: Failed to insert data into NetworkCustomerDeviceOSBackup2 table
+      body: <% ctx().third_insert_output %>
+    next:
+      - do:
+          - get_network_customer_device_assets_details
+        when: <% succeeded() %>
+  # [1395, 457]
+  failed_mail_4:
+    action: core.sendmail
+    input:
+      from: SiM.Automation@ethan.com.au
+      to: sahil.dutta@accelnomics.com,aman.mujawar@ethan.com.au
+      subject: Failed to insert data into NetworkCustomerDeviceAssetsBackup2 table
+      body: <% ctx().fourth_insert_output %>

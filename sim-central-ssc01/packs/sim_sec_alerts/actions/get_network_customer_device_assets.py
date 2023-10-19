@@ -16,13 +16,27 @@ class GetNetDbDetails(Action):
 
             response = requests.request(method, url, headers=headers)
             response.raise_for_status()  # Raise an exception for HTTP error responses
-            
+
             data = response.json()
 
             formatted_data = []
             primary_id = 1
 
             for entry in data:  # Loop through entries in the 'body' list
+                original_modified_on = entry.get("lastupdated", "")
+                
+                # Extract the date and time part without milliseconds and time zone
+                date_time_parts = original_modified_on.split(".")[0].split("+")[0]
+                
+                # Replace 'T' with a space character
+                date_time_parts = date_time_parts.replace('T', ' ')
+
+                # Handle cases where values are None
+                warranty_date = str(entry.get("warranty_end_date", "")) if entry.get("warranty_end_date") is not None else ""
+                last_date_support = str(entry.get("eol_last_date_support", "")) if entry.get("eol_last_date_support") is not None else ""
+                #smartnet_coverage_end_date = str(entry.get("support_coverage_end_date", "")) if entry.get("support_coverage_end_date") is not None else ""
+                
+                
                 formatted_entry = {
                     "PrimaryID": str(primary_id),
                     "CustomerID": str(entry.get("customer_id", "")),
@@ -31,13 +45,13 @@ class GetNetDbDetails(Action):
                     "ProductID": str(entry.get("productcode", "")),
                     "ProductName": str(entry.get("productname", "")),
                     "Serial": str(entry.get("serial_number", "")),
-                    "WarrantyDate": str(entry.get("warranty_end_date", "")),
+                    "WarrantyDate": warranty_date,
                     "Model": str(entry.get("productname", "")),
-                    "LastDateSupport": str(entry.get("eol_last_date_support", "")),
+                    "LastDateSupport": last_date_support,
                     "Message": "",
-                    "ModifiedOn": str(entry.get("lastupdated", "")),
+                    "ModifiedOn": date_time_parts,  # Use the formatted date and time
                     "Status": str(entry.get("active", "")),
-                    "SmartNetCoverageEndDate": str(entry.get("support_coverage_end_date", "")),
+                    "SmartNetCoverageEndDate": "",
                     "SmartNetContractType": str(entry.get("support_contract_type", "")),
                     "SNAssetSysID": str(entry["servicenow"].get("ethanprod_asset", ""))
                 }
