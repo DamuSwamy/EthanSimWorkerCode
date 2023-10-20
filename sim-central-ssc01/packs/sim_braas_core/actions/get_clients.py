@@ -28,6 +28,8 @@ class GetClientsAction(BaseAction):
         except ValueError:
             myresp['data'] = resp.content
 
+        print(myresp)
+
         if myresp['status_code'] >= 200 and myresp['status_code'] <= 299:
             ret = True
             for client in myresp['data']['content']:
