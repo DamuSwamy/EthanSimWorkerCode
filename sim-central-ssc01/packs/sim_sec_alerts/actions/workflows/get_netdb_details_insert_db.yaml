@@ -34,7 +34,7 @@ tasks:
       log_level: DEBUG
       connection: cloudmanagement
       data: "{{ctx().data}}"
-      table: NetworkCustomerSitesBackup2
+      table: NetworkCustomerSites
     next:
       - do:
           - get_network_customer_site_devices_details
@@ -60,14 +60,14 @@ tasks:
       log_level: DEBUG
       connection: cloudmanagement
       data: "{{ctx().data2}}"
-      table: NetworkCustomerSiteDevicesBackup2
+      table: NetworkCustomerSiteDevices
   # [737, 371]
   insert_to_db3:
     action: sql.insert_bulk
     input:
       log_level: DEBUG
       data: "{{ctx().data3}}"
-      table: NetworkCustomerDeviceOSBackup2
+      table: NetworkCustomerDeviceOS
       connection: cloudmanagement
     next:
       - do:
@@ -88,7 +88,7 @@ tasks:
     input:
       log_level: DEBUG
       connection: cloudmanagement
-      table: NetworkCustomerSitesBackup2
+      table: NetworkCustomerSites
   # [389, 218]
   delete_db2:
     action: sql.delete
@@ -99,7 +99,7 @@ tasks:
     input:
       log_level: DEBUG
       connection: cloudmanagement
-      table: NetworkCustomerSiteDevicesBackup2
+      table: NetworkCustomerSiteDevices
   # [737, 219]
   delete_db3:
     action: sql.delete
@@ -110,7 +110,7 @@ tasks:
     input:
       log_level: DEBUG
       connection: cloudmanagement
-      table: NetworkCustomerDeviceOSBackup2
+      table: NetworkCustomerDeviceOS
   # [1108, 63]
   get_network_customer_device_assets_details:
     action: sim_sec_alerts.get_network_customer_device_assets
@@ -130,14 +130,14 @@ tasks:
     input:
       log_level: DEBUG
       connection: cloudmanagement
-      table: NetworkCustomerDeviceAssetsBackup2
+      table: NetworkCustomerDeviceAssets
   # [1108, 361]
   insert_to_db4:
     action: sql.insert_bulk
     input:
       log_level: DEBUG
       data: "{{ctx().data4}}"
-      table: NetworkCustomerDeviceAssetsBackup2
+      table: NetworkCustomerDeviceAssets
       connection: cloudmanagement
     next:
       - do:
@@ -174,7 +174,7 @@ tasks:
     input:
       from: SiM.Automation@ethan.com.au
       to: sahil.dutta@accelnomics.com,aman.mujawar@ethan.com.au
-      subject: Failed to insert data into NetworkCustomerSiteDevicesBackup2 table
+      subject: Failed to insert data into NetworkCustomerSiteDevices table
       body: <% ctx().second_insert_output %>
     next:
       - do:
@@ -187,7 +187,7 @@ tasks:
       body: <% ctx().op1 %>
       from: SiM.Automation@ethan.com.au
       to: sahil.dutta@accelnomics.com,aman.mujawar@ethan.com.au
-      subject: Failed to insert data into NetworkCustomerSitesBackup2 table
+      subject: Failed to insert data into NetworkCustomerSites table
     next:
       - do:
           - get_network_customer_site_devices_details
@@ -198,7 +198,7 @@ tasks:
     input:
       from: SiM.Automation@ethan.com.au
       to: sahil.dutta@accelnomics.com,aman.mujawar@ethan.com.au
-      subject: Failed to insert data into NetworkCustomerDeviceOSBackup2 table
+      subject: Failed to insert data into NetworkCustomerDeviceOS table
       body: <% ctx().third_insert_output %>
     next:
       - do:
@@ -210,5 +210,5 @@ tasks:
     input:
       from: SiM.Automation@ethan.com.au
       to: sahil.dutta@accelnomics.com,aman.mujawar@ethan.com.au
-      subject: Failed to insert data into NetworkCustomerDeviceAssetsBackup2 table
+      subject: Failed to insert data into NetworkCustomerDeviceAssets table
       body: <% ctx().fourth_insert_output %>
