@@ -1,0 +1,29 @@
+pack: sim_cloud_rating
+enabled: true
+runner_type: orquesta
+name: vcenter_vm_network_database_update
+entry_point: workflows/version1/vcenter_vm_network_database_update.yaml
+description: Synchronize the data between ethan database and vcenter data
+parameters:
+  db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: billing
+  insert_data:
+    type: array
+    description: VM, VMdisk, VMNetworks objects to insert
+    required: true
+  update_data:
+    type: array
+    description: VM, VMdisk, VMNetworks objects to update
+    required: true
+  remove_data:
+    type: array
+    description: VM, VMdisk, VMNetworks objects to remove
+    required: true
+  target_table:
+    type: "string"
+    description: Target table to update the records
+    required: true
+

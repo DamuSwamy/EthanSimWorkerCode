@@ -1,0 +1,15 @@
+pack: sim_cloud_rating
+enabled: true
+runner_type: "python-script"
+name: ethan_vcenter_datastore_generator
+entry_point: "ethan_vcenter_datastore_generator.py"
+description: Compare the current datastore info which is avalilable in DB with vcenter
+parameters:
+  vcenter_data:
+    type: array
+    description: List of datastores
+    required: true
+  db_data:
+    type: array
+    description: Customer information from IaasCustInfo Table
+    required: true

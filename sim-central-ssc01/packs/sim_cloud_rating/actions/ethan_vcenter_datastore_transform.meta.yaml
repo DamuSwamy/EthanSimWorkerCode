@@ -1,0 +1,23 @@
+pack: sim_cloud_rating
+enabled: true
+runner_type: "python-script"
+name: ethan_vcenter_datastore_transform
+entry_point: "ethan_vcenter_datastore_transform.py"
+description: Merge ds data with ds tag data
+parameters:
+  ds_data:
+    type: array
+    description: List of datastores from vcenters
+    required: true
+  tag_data:
+    type: array
+    description: Tags object from vcenter
+    required: true
+  vcenter:
+    type: "string"
+    description: Pre-Configured vsphere connection details
+    required: false
+  proxy_vcenters:
+    type: array
+    description: List of vcenter which are client specific and connecting through worker node
+    required: false

@@ -1,0 +1,65 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - vms
+  - vmdisks
+  - vmnetworks
+
+output:
+  - data: <% dict(VM=>len(ctx().vms), VM_DISK=>len(ctx().vmdisks), VM_NETWORK=>len(ctx().vmnetworks)) %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Check_For_VM_Records
+          - Check_For_VM_Disk_Records
+          - Check_For_VM_Network_Records
+
+  Check_For_VM_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().vms) > 0 %>
+        do:
+          - Remove_VM_Records
+
+  Check_For_VM_Disk_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().vmdisks) > 0 %>
+        do:
+          - Remove_VM_Disk_Records
+
+  Check_For_VM_Network_Records:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do: noop
+
+  Remove_VM_Records:
+    action: sql.update_bulk
+    input:
+      connection: <% ctx().billing_db_connection %>
+      table: "iaasVM"
+      data: <% ctx().vms %>
+      update_values: ['vmActive', 'vmRemovedBy', 'vmRemovedDate']
+      column_filter1: "ethvmid"
+    next:
+      - when: <% failed() %>
+        do: fail
+  
+  Remove_VM_Disk_Records:
+    action: sql.update_bulk
+    input:
+      connection: <% ctx().billing_db_connection %>
+      table: "iaasVMDisks"
+      data: <% ctx().vmdisks %>
+      update_values: ['lastUpdated', 'inactiveDt']
+      column_filter1: "ethvmid"
+      column_filter2: "inactiveDt"
+    next:
+      - when: <% failed() %>
+        do: fail

@@ -1,0 +1,130 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - vcenter_id
+  - vmevents
+  - final_action
+
+vars:
+  - valid_events: []
+  - remove_event: ['VmRemovedEvent', 'VmDecommisionedEvent']
+  - host_migrated_events: ['VmHostMigratedEvent']
+
+output:
+  - events: <% ctx().valid_events %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - eventIdx: <% ctx(vmevents).select($.evtidx) %>
+          - eventIds: "{{ ctx().eventIdx | unique | list | join(\"','\") }}"
+        do:
+          - SQL_Select_Billing_VMEvents
+
+  SQL_Select_Billing_VMEvents:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT evtidx FROM iaasVMEvents WHERE evtidx IN ('<% ctx().eventIds %>')"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - processed_events: <% switch(isList(result().result) => result().result, true => []) %>
+          - ignore_events: <% ctx(processed_events).select($.evtidx) %>
+          - valid_events: <% ctx(vmevents).where(not $.evtidx in ctx().ignore_events).select($) %>
+          - eventidx: <% ctx(valid_events).select($.evtidx) %>
+          - vmids: <% ctx(valid_events).select($.vmID) %>
+        do:
+          - Check_For_Records
+      - when: <% failed() %>
+        do: fail
+
+  Check_For_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().vmids) > 0 %>
+        publish:
+          - uniq_vmids: "{{ ctx().vmids | unique | list | join(',') }}"
+        do:
+          - SQL_Select_Billing_VM
+      - when: <% len(ctx().vmids) <= 0 %>
+        do: 
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Billing_VM:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT ethvmid, vmID FROM iaasVM WHERE invVCServerID='<% ctx().vcenter_id %>' and vmID IN (<% ctx().uniq_vmids %>)"
+    next:
+      - when: <% succeeded() and len(result().result) > 0 and not ctx().final_action %>
+        publish:
+          - billing_vm_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Transform_Events
+      - when: <% succeeded() and len(result().result) <= 0 and not ctx().final_action %>
+        do:
+          - End
+      - when: <% succeeded() and (len(result().result) <= 0 or len(result().result) > 0) and ctx().final_action %>
+        publish:
+          - billing_vm_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+          - events: "{%- set eventArr= [] -%}{%- for event in ctx().valid_events -%}{%- for key in event.copy() -%}{%- if event['ethvmid'] is not defined -%}{{ event.update({'ethvmid': None}) or '' }}{%- endif -%}{%- endfor -%}{{ eventArr.append(event) or ''}}{%- endfor -%}{{eventArr | tojson}}"
+          - valid_events: "{{ ctx().events | from_json_string  }}"
+        do:
+          - Transform_Events
+      - when: <% failed() %>
+        do: fail
+
+  Transform_Events:
+    action: sim_cloud_rating.ethan_vcenter_events_transform
+    input:
+      events: <% ctx().valid_events %>
+      data: <% ctx().billing_vm_db_data %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - event_result: <% switch(isList(result().result) => result().result, true => []) %>
+          - valid_insert_events: <% ctx(event_result).where($.containsKey('ethvmid')).select($) %>
+          - host_migration_events: <% ctx(valid_insert_events).where($.eventType in ctx().host_migrated_events).select($) %>
+          - host_migration_event_list: <% ctx(host_migration_events).select($.eventID) %>
+          - host_migration_vmid_list: <% ctx(host_migration_events).select($.vmID).distinct() %>
+          - host_migration_remove_events: <% ctx(valid_insert_events).where($.eventType in ctx().remove_event and $.vmID in ctx().host_migration_vmid_list).select($.eventID) %>
+          - insert_events: <% ctx(valid_insert_events).where(not $.eventID in ctx().host_migration_event_list and not $.eventID in ctx().host_migration_remove_events).select($) %> 
+          - valid_events: <% ctx().event_result %>
+        do:
+          - Valid_Insert_Events
+      - when: <% failed() %>
+        do: fail
+
+
+  Valid_Insert_Events:
+    action: core.noop
+    next:
+      - when: <% len(ctx().insert_events) > 0 %>
+        do:
+          - Event_Insert_Records
+      - when: <% len(ctx().insert_events) <= 0 %>
+        do:
+          - End
+
+  Event_Insert_Records:
+    action: sql.insert_bulk
+    input:
+      table: "iaasVMEvents"
+      data: <% ctx().insert_events %>
+      connection: <% ctx().billing_db_connection %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  End: 
+    action: core.noop

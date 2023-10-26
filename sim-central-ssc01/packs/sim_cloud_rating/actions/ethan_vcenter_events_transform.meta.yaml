@@ -1,0 +1,15 @@
+pack: sim_cloud_rating
+enabled: true
+runner_type: "python-script"
+name: ethan_vcenter_events_transform
+entry_point: "ethan_vcenter_events_transform.py"
+description: Merge VMs data with Events data
+parameters:
+  events:
+    type: array
+    description: List of events fetched from vCenter
+    required: true
+  data:
+    type: array
+    description: Vcenter vm db data
+    required: true

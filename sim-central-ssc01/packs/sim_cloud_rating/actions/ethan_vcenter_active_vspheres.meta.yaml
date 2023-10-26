@@ -1,0 +1,19 @@
+pack: sim_cloud_rating
+enabled: true
+runner_type: orquesta
+name: ethan_vcenter_active_vspheres
+entry_point: workflows/ethan_vcenter_active_vspheres.yaml
+description: Do login and ping against vcenter list and generate report
+parameters:
+  cmdb_db_connection:
+    type: "string"
+    description: Pre-Configured vsphere connection details
+    required: true
+    position: 0
+    default: cmdb_Ethoria
+  email_to:
+    type: "string"
+    description: Email address to receive the vcenter results
+    required: true
+    position: 1
+    default: nandhakumar.arumugam@ethan.com.au

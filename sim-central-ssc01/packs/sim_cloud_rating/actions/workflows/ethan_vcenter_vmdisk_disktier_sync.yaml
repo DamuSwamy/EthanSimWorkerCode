@@ -1,0 +1,116 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - vcenter_id
+  - vcenter
+  - proxy_vcenters
+
+vars:
+  - vmdisks: []
+
+output:
+  - result: <% ctx().vmdisks %>
+
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - client_vcenters: <% ctx(proxy_vcenters).select($.name) %>
+          - inactive_date: <% (now(offset=>localtz()) - timespan(days => 3)).format("%Y-%m-%d") %>
+        do:
+          - SQL_Select_IaasVMDisks_Null
+
+  SQL_Select_Billing_Datstores:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT dsidx, storageTier FROM iaasDatastores WHERE dsidx LIKE '<% ctx().vcenter_id %>-%'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_datastore_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Get_VMDisk_DiskTiers
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_IaasVMDisks_Null:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT vmID FROM IaasVMDisks WHERE invVCServerID='<% ctx().vcenter_id %>' AND (inactiveDt = '9999-12-31 23:59:59' OR inactiveDt >= '<% ctx().inactive_date %>') AND (vmDiskTier='' OR vmDiskTier is NULL)"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_vmdisk_empty: <% switch(isList(result().result) => result().result, true => []) %>
+          - vmID_List: <% ctx(billing_vmdisk_empty).select($.vmID).distinct() %>
+        do:
+          - Check_For_Records
+      - when: <% failed() %>
+        do: fail
+
+  Check_For_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().vmID_List) > 0 %>
+        do:
+          - SQL_Select_Billing_Datstores
+      - when: <% len(ctx().vmID_List) = 0 %>
+        do:
+          - End
+
+  Get_VMDisk_DiskTiers:
+    action: sim_vmware2.vcenter_raw_data
+    input:
+      vcenter_id: <% ctx().vcenter_id %>
+      vsphere: <% ctx().vcenter %>
+      get_vms: true
+      get_vm_disks: true
+      get_vm_networks: false
+      datastores: <% ctx().billing_datastore_db_data %>
+      ids: <% ctx().vmID_List %>
+      proxy_vcenters: <% ctx().proxy_vcenters %>
+      vm_required_field_array: ['ethvmid']
+      vmdisk_required_field_array: ['_vmID', '_ethvmid', '_deviceKey', 'vmDiskTier']
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - vm_output: <% switch(isDict(result().result) => result().result, true => {}) %>
+          - vmdisks: <% ctx().vm_output.VMDisks %>
+        do:
+          - Check_For_Update_Records
+      - when: <% failed() %>
+        do: fail
+
+  Check_For_Update_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().vmdisks) > 0 %>
+        do:
+          - Update_VM_Disk_Records
+      - when: <% len(ctx().vmdisks) = 0 %>
+        do:
+          - End
+
+  Update_VM_Disk_Records:
+    action: sql.update_bulk
+    input:
+      connection: <% ctx().billing_db_connection %>
+      table: "iaasVMDisks"
+      data: <% ctx().vmdisks %>
+      update_values: ['vmDiskTier']
+      column_filter1: "ethvmid"
+      column_filter2: "vmID"
+      column_filter3: "deviceKey"
+    next:
+      - when: <% failed() %>
+        do: fail
+      - when: <% succeeded() %>
+        do: End
+
+  End: 
+    action: core.noop

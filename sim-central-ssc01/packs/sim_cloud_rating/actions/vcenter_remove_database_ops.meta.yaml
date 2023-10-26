@@ -1,0 +1,24 @@
+pack: sim_cloud_rating
+enabled: true
+runner_type: orquesta
+name: vcenter_remove_database_ops
+entry_point: workflows/version2/vcenter_remove_database_ops.yaml
+description: Synchronize the data between ethan database and vcenter data
+parameters:
+  vms:
+    type: array
+    description: VM, VMdisk, VMNetworks objects to insert
+    required: true
+  vmdisks:
+    type: array
+    description: VM, VMdisk, VMNetworks objects to update
+    required: true
+  vmnetworks:
+    type: array
+    description: VM, VMdisk, VMNetworks objects to remove
+    required: true
+  billing_db_connection:
+    type: "string"
+    description: Target table to update the records
+    required: true
+    default: dev_billing

@@ -1,0 +1,83 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - vms
+  - vmdisks
+  - vmnetworks
+
+output:
+  - data: <% dict(VM=>len(ctx().vms), VM_DISK=>len(ctx().vmdisks), VM_NETWORK=>len(ctx().vmnetworks)) %>
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Check_For_VM_Records
+          - Check_For_VM_Disk_Records
+          - Check_For_VM_Network_Records
+
+  Check_For_VM_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().vms) > 0 %>
+        do:
+          - Update_VM_Records
+
+  Check_For_VM_Disk_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().vmdisks) > 0 %>
+        do:
+          - Update_VM_Disk_Records
+
+  Check_For_VM_Network_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().vmnetworks) > 0 %>
+        do: 
+          - Update_VM_Network_Records
+
+  Update_VM_Records:
+    action: sql.update_bulk
+    input:
+      connection: <% ctx().billing_db_connection %>
+      table: "iaasVM"
+      data: <% ctx().vms %>
+      update_values: ['vmActive', 'vmName', 'vmHostName', 'vmIPAddress', 'vmCPU', 'vmRAM', 'vmStorageUsed', 'vmStorageTotal', 'vmPowerState', 'vmVersion', 'vmGuestToolsStatus', 'vmGuestToolsVersionStatus', 'vmGuestToolsRunningStatus', 'vmGuestState', 'lastUpdated', 'vmConfiguredOS', 'vmConfiguredOS']
+      column_filter1: "ethvmid"
+      column_filter2: "vmID"
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  Update_VM_Disk_Records:
+    action: sql.update_bulk
+    input:
+      connection: <% ctx().billing_db_connection %>
+      table: "iaasVMDisks"
+      data: <% ctx().vmdisks %>
+      update_values: ['vmDiskSize', 'vmDiskTier', 'vmDiskDatastore', 'deviceID', 'lastUpdated', 'vmDiskFileName']
+      column_filter1: "ethvmid"
+      column_filter2: "vmID"
+      column_filter3: "deviceKey"
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  Update_VM_Network_Records:
+    action: sql.update_bulk
+    input:
+      connection: "cloudmanagement"
+      table: "Iaas_Network"
+      data: <% ctx().vmnetworks %>
+      update_values: ['network', 'macAddress', 'connected', 'ipAddress', 'lastUpdated']
+      column_filter1: "vmID"
+      column_filter2: "managedID"
+      column_filter3: "vmName"
+      column_filter4: "deviceKey"
+    next:
+      - when: <% failed() %>
+        do: fail
