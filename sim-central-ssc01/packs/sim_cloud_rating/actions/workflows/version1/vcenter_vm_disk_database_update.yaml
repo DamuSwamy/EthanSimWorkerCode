@@ -58,10 +58,10 @@ tasks:
       connection: <% ctx().db_connection %>
       table: <% ctx().target_table %>
       data: <% ctx().update_data %>
-      update_values: ['vmDiskSize', 'vmDiskTier', 'vmDiskDatastore', 'deviceID', 'lastUpdated', 'vmDiskFileName']
-      column_filter1: "ethvmid"
-      column_filter2: "vmID"
-      column_filter3: "deviceKey"
+      update_values: ['DiskSize', 'DiskTier', 'DiskDatastore', 'DeviceId', 'LastScanTime', 'DiskFileName']
+      column_filter1: "EthVmId"
+      column_filter2: "VmId"
+      column_filter3: "DeviceKey"
     next:
       - when: <% failed() %>
         do: fail
@@ -72,11 +72,10 @@ tasks:
       connection: <% ctx().db_connection %>
       table: <% ctx().target_table %>
       data: <% ctx().remove_data %>
-      update_values: ['lastUpdated', 'inactiveDt']
-      column_filter1: "ethvmid"
-      column_filter2: "vmID"
-      column_filter3: "deviceKey"
-      column_filter4: "inactiveDt"
+      update_values: ['LastScanTime', 'RemoveDate']
+      column_filter1: "EthVmId"
+      column_filter2: "VmId"
+      column_filter3: "DeviceKey"
     next:
       - when: <% failed() %>
         do: fail

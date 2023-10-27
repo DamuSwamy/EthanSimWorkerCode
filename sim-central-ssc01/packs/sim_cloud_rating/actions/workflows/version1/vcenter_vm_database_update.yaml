@@ -57,9 +57,9 @@ tasks:
       connection: <% ctx().db_connection %>
       table: <% ctx().target_table %>
       data: <% ctx().update_data %>
-      update_values: ['vmActive', 'vmName', 'vmHostName', 'vmIPAddress', 'vmCPU', 'vmRAM', 'vmStorageUsed', 'vmStorageTotal', 'vmPowerState', 'vmVersion', 'vmGuestToolsStatus', 'vmGuestToolsVersionStatus', 'vmGuestToolsRunningStatus', 'vmGuestState', 'lastUpdated', 'vmConfiguredOS', 'vmGuestOSName']
-      column_filter1: "ethvmid"
-      column_filter2: "vmID"
+      update_values: ['VmActive', 'VmName', 'VmHostName', 'VmIPAddress', 'VmCpu', 'VmRam', 'VmStorageUsed', 'VmStorageTotal', 'VmPowerState', 'VmVersion', 'LastScanTime']
+      column_filter1: "EthVmId"
+      column_filter2: "VmId"
     next:
       - when: <% failed() %>
         do: fail
@@ -70,9 +70,9 @@ tasks:
       connection: <% ctx().db_connection %>
       table: <% ctx().target_table %>
       data: <% ctx().remove_data %>
-      update_values: ['vmActive']
-      column_filter1: "ethvmid"
-      column_filter2: "vmID"
+      update_values: ['VmActive']
+      column_filter1: "EthVmId"
+      column_filter2: "VmId"
     next:
       - when: <% failed() %>
         do: fail

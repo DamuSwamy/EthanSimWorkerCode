@@ -18,10 +18,6 @@ parameters:
     type: array
     description: VM, VMdisk, VMNetworks objects to update
     required: true
-  vmnetworks:
-    type: array
-    description: VM, VMdisk, VMNetworks objects to remove
-    required: true
   billing_db_connection:
     type: "string"
     description: Target table to update the records

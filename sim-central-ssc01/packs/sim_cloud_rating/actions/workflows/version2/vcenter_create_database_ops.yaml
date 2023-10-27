@@ -5,7 +5,6 @@ input:
   - cloud_db_connection
   - vms
   - vmdisks
-  - vmnetworks
 
 output: 
   - data: <% dict(VM=>len(ctx().vms), VM_DISK=>len(ctx().vmdisks), VM_NETWORK=>len(ctx().vmnetworks)) %>
@@ -18,7 +17,6 @@ tasks:
         do:
           - Check_For_VM_Records
           - Check_For_VM_Disk_Records
-          - Check_For_VM_Network_Records
 
   Check_For_VM_Records:
     action: core.noop
@@ -34,17 +32,10 @@ tasks:
         do:
           - VM_Disk_Records
 
-  Check_For_VM_Network_Records:
-    action: core.noop
-    next:
-      - when: <% len(ctx().vmnetworks) > 0 %>
-        do:
-          - VM_Network_Records
-
   VM_Records:
     action: sql.insert_bulk
     input:
-      table: "iaasVM"
+      table: "EthVms"
       data: <% ctx().vms %>
       connection: <% ctx().billing_db_connection %>
     next:
@@ -54,19 +45,9 @@ tasks:
   VM_Disk_Records:
     action: sql.insert_bulk
     input:
-      table: "iaasVMDisks"
+      table: "EthVmDisk"
       data: <% ctx().vmdisks %>
       connection: <% ctx().billing_db_connection %>
-    next:
-      - when: <% failed() %>
-        do: fail
-
-  VM_Network_Records:
-    action: sql.insert_bulk
-    input:
-      table: "Iaas_Network"
-      data: <% ctx().vmnetworks %>
-      connection: <% ctx().cloud_db_connection %>
     next:
       - when: <% failed() %>
         do: fail

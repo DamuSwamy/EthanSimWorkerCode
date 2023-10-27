@@ -60,7 +60,7 @@ tasks:
 
   # [143, 200]
   Get_Vcenter_Events:
-    action: sim_vmware2.vcenter_events
+    action: sim_vsphere.vcenter_events
     input:
       vsphere: <% ctx().vcenter %>
       vcenter_id: <% ctx().vcenter_id %>
@@ -133,12 +133,12 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - events: <% switch(isList(result().output.events) => result().output.events, true => []) %>
-          - uniq_host_migration_events: <% ctx(events).where($.eventType in ctx().host_migrated_events).select($.vmID).distinct() %>
-          - vm_uniq_remove_events: <% ctx(events).where($.eventType in ctx().remove_event and $.containsKey('ethvmid') and not $.vmID in ctx().uniq_host_migration_events).select($.vmID).distinct() %>
-          - vm_uniq_create_events: <% ctx(events).where($.eventType in ctx().create_events and not $.vmID in ctx().vm_uniq_remove_events and not $.containsKey('ethvmid')).select($.vmID).distinct() %>
-          - vm_uniq_reconfigure_events: <% ctx(events).where($.eventType = ctx().reconfigure_event and not $.vmID in ctx().vm_uniq_remove_events and not $.vmID in ctx().vm_uniq_create_events).select($.vmID).distinct() %>
+          - uniq_host_migration_events: <% ctx(events).where($.Event_Type in ctx().host_migrated_events).select($.VmId).distinct() %>
+          - vm_uniq_remove_events: <% ctx(events).where($.Event_Type in ctx().remove_event and $.containsKey('EthVmId') and not $.VmId in ctx().uniq_host_migration_events).select($.VmId).distinct() %>
+          - vm_uniq_create_events: <% ctx(events).where($.Event_Type in ctx().create_events and not $.VmId in ctx().vm_uniq_remove_events and not $.containsKey('EthVmId')).select($.VmId).distinct() %>
+          - vm_uniq_reconfigure_events: <% ctx(events).where($.Event_Type = ctx().reconfigure_event and not $.VmId in ctx().vm_uniq_remove_events and not $.VmId in ctx().vm_uniq_create_events).select($.VmId).distinct() %>
           - vm_uniq_configure_event_id: "{{ ctx().vm_uniq_reconfigure_events | join(',') }}"
-          - vm_uniq_update_events: <% ctx(events).where(not $.eventType in ctx().host_migrated_events and not $.eventType in ctx().create_events and not $.eventType in ctx().remove_event and $.eventType != ctx().reconfigure_event and not $.vmID in ctx().vm_uniq_remove_events and not $.vmID in ctx().vm_uniq_reconfigure_events and not $.vmID in ctx().vm_uniq_create_events).select($.vmID).distinct() %>
+          - vm_uniq_update_events: <% ctx(events).where(not $.Event_Type in ctx().host_migrated_events and not $.Event_Type in ctx().create_events and not $.Event_Type in ctx().remove_event and $.Event_Type != ctx().reconfigure_event and not $.VmId in ctx().vm_uniq_remove_events and not $.VmId in ctx().vm_uniq_reconfigure_events and not $.VmId in ctx().vm_uniq_create_events).select($.VmId).distinct() %>
           - vm_uniq_update_id: "{{ ctx().vm_uniq_update_events | join(',') }}"
         do:
           - Action_Needed_1
@@ -181,7 +181,7 @@ tasks:
           - End
       - when: <% failed() %>
         do: 
-          - Get_Vcenter_Raw_Update_Data
+          - fail
 
   # [742, 501]
   Prepare_Vcenter_Update_Data:
@@ -196,13 +196,12 @@ tasks:
 
   # [1542, 1051]
   Get_Vcenter_Raw_Reconfigure_Data:
-    action: sim_vmware2.vcenter_raw_data
+    action: sim_vsphere.vcenter_raw_data
     input:
       vcenter_id: <% ctx().vcenter_id %>
       vsphere: <% ctx().vcenter %>
       get_vms: true
       get_vm_disks: true
-      get_vm_networks: true
       datastores: <% ctx().billing_datastore_db_data %>
       #custids: <% ctx().billing_custid_db_data %>
       ids: <% ctx().vm_uniq_reconfigure_events %>
@@ -214,7 +213,6 @@ tasks:
         do:
           - VM_Action_Generator
           - VM_Disk_Action_Generator
-          - VM_Network_Action_Generator
       - when: <% failed() %>
         do: fail
 
@@ -244,7 +242,7 @@ tasks:
       update_data: <% ctx().vm_action.update %>
       remove_data: <% ctx().vm_action.remove %>
       db_connection: <% ctx().billing_db_connection %>
-      target_table: "iaasVM"
+      target_table: "EthVms"
     next:
       - when: <% succeeded() %>
         do: Reconfigure_VM_End
@@ -275,41 +273,10 @@ tasks:
       update_data: <% ctx().vm_disk_action.update %>
       remove_data: <% ctx().vm_disk_action.remove %>
       db_connection: <% ctx().billing_db_connection %>
-      target_table: "iaasVMDisks"
+      target_table: "EthVmDisk"
     next:
       - when: <% succeeded() %>
         do: Reconfigure_VM_Disk_End
-      - when: <% failed() %>
-        do: fail
-
-  # [692, 1101]
-  VM_Network_Action_Generator:
-    action: sim_cloud_rating.ethan_vcenter_vm_generator_v1
-    input:
-      db_data: <% ctx().cloud_iaas_network_db_data %>
-      vc_data: <% ctx().reconfigure_vm_output.VMNetworks %>
-      data_type: "vm_network"
-    next:
-      - when: <% succeeded() %>
-        publish:
-          - vm_network_action: <% switch(isDict(result().result) => result().result, true => {}) %>
-        do:
-          - VM_Network_Database_Operations
-      - when: <% failed() %>
-        do: fail
-
-  # [642, 1]
-  VM_Network_Database_Operations:
-    action: sim_cloud_rating.vcenter_vm_network_database_update
-    input:
-      insert_data: <% ctx().vm_network_action.insert %>
-      update_data: <% ctx().vm_network_action.update %>
-      remove_data: <% ctx().vm_network_action.remove %>
-      db_connection: <% ctx().cloud_db_connection %>
-      target_table: "Iaas_Network"
-    next:
-      - when: <% succeeded() %>
-        do: Reconfigure_VM_Network_End
       - when: <% failed() %>
         do: fail
 
@@ -318,7 +285,7 @@ tasks:
     action: sql.query
     input:
       connection: <% ctx().billing_db_connection %>
-      query: "SELECT ethvmid,vmID FROM iaasVM WHERE invVCServerID='<% ctx().vcenter_id %>' and vmID in (<% ctx().vm_uniq_configure_event_id %>)"
+      query: "SELECT EthVmId,VmId FROM EthVms WHERE VmId in (<% ctx().vm_uniq_configure_event_id %>)"
     next:
       - when: <% succeeded() %>
         publish:
@@ -333,26 +300,11 @@ tasks:
     action: sql.query
     input:
       connection: <% ctx().billing_db_connection %>
-      query: "SELECT ethvmid,vmID,deviceKey,lastUpdated FROM iaasVMDisks WHERE invVCServerID='<% ctx().vcenter_id %>' and inactiveDt = '9999-12-31 23:59:59' and vmID in (<% ctx().vm_uniq_configure_event_id %>)"
+      query: "SELECT EthVmId,DeviceKey,LastScanTime FROM EthVmDisk WHERE VmId in (<% ctx().vm_uniq_configure_event_id %>)"
     next:
       - when: <% succeeded() %>
         publish:
           - billing_vmdisk_db_data: <% switch(isList(result().result) => result().result, true => []) %>
-        do:
-          - SQL_Select_CloudManagement_Iaas_Network
-      - when: <% failed() %>
-        do: fail
-
-  # [1392, 851]
-  SQL_Select_CloudManagement_Iaas_Network:
-    action: sql.query
-    input:
-      connection: <% ctx().cloud_db_connection %>
-      query: "SELECT managedID,vmID,deviceKey FROM Iaas_Network WHERE invVCServer='<% ctx().vcenter_id %>' and vmID in (<% ctx().vm_uniq_configure_event_id %>)"
-    next:
-      - when: <% succeeded() %>
-        publish:
-          - cloud_iaas_network_db_data: <% switch(isList(result().result) => result().result, true => []) %>
         do:
           - Get_Vcenter_Raw_Reconfigure_Data
       - when: <% failed() %>
@@ -360,13 +312,13 @@ tasks:
           
   # [1392, 401]
   Get_Vcenter_Raw_Create_Data:
-    action: sim_vmware2.vcenter_raw_data
+    action: sim_vsphere.vcenter_raw_data
     input:
       vcenter_id: <% ctx().vcenter_id %>
       vsphere: <% ctx().vcenter %>
       get_vms: true
       get_vm_disks: true
-      get_vm_networks: true
+      get_vm_networks: false
       datastores: <% ctx().billing_datastore_db_data %>
       #custids: <% ctx().billing_custid_db_data %>
       ids: <% ctx().vm_uniq_create_events %>
@@ -377,26 +329,6 @@ tasks:
           - create_vm_output: <% switch(isDict(result().result) => result().result, true => {}) %>
         do:
           - Insert_List_Generator
-      - when: <% failed() %>
-        do: fail
-
-  # [1192, 651]
-  Get_Vcenter_Raw_Update_Data:
-    action: sim_vmware2.vcenter_raw_data
-    input: 
-      vcenter_id: <% ctx().vcenter_id %>
-      vsphere: <% ctx().vcenter %>
-      get_vms: true
-      datastores: <% ctx().billing_datastore_db_data %>
-      #custids: <% ctx().billing_custid_db_data %>
-      ids: <% ctx().vm_uniq_update_events %>
-      proxy_vcenters: <% ctx().proxy_vcenters %>
-    next:
-      - when: <% succeeded() %>
-        publish:
-          - update_vm_output: <% switch(isDict(result().result) => result().result, true => {}) %>
-        do:
-          - Update_Database_Operations
       - when: <% failed() %>
         do: fail
 
@@ -440,26 +372,10 @@ tasks:
     input:
       vms: <% ctx().insert_action.vm %>
       vmdisks: <% ctx().insert_action.vmdisk %>
-      vmnetworks: <% ctx().insert_action.vmnetwork %>
       billing_db_connection: <% ctx().billing_db_connection %>
-      cloud_db_connection: <% ctx().cloud_db_connection %>
     next:
       - when: <% succeeded() %>
         do: Create_End
-      - when: <% failed() %>
-        do: fail
-
-  # [1042, 851]
-  Update_Database_Operations:
-    action: sim_cloud_rating.vcenter_update_database_ops
-    input:
-      vms: <% ctx().update_vm_output.VirtualMachines %>
-      vmdisks: <% ctx().update_vm_output.VMDisks %>
-      vmnetworks: <% ctx().update_vm_output.VMNetworks %>
-      billing_db_connection: <% ctx().billing_db_connection %>
-    next:
-      - when: <% succeeded() %>
-        do: Update_End
       - when: <% failed() %>
         do: fail
 
@@ -469,7 +385,6 @@ tasks:
     input:
       vms: <% ctx().remove_action.vm %>
       vmdisks: <% ctx().remove_action.vmdisk %>
-      vmnetworks: <% ctx().remove_action.vmnetwork %>
       billing_db_connection: <% ctx().billing_db_connection %>
     next:
       - when: <% succeeded() %>
@@ -503,13 +418,6 @@ tasks:
     
   # [1892, 601]
   Reconfigure_VM_Disk_End:
-    action: core.noop
-    next:
-      - when: <% succeeded() %>
-        do: Reconfigure_End
-
-  # [842, 151]
-  Reconfigure_VM_Network_End:
     action: core.noop
     next:
       - when: <% succeeded() %>
