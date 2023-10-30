@@ -12,7 +12,7 @@ tasks:
       verify_ssl_cert: false
       port: 5985
       scheme: http
-      cmd: "Connect-PnPOnline -url '<% ctx().personal_site %>' -ClientId 18837e26-37c6-4158-a5a7-f9dd11e5d63a -CertificatePath <% ctx().certificate_file_path %> -CertificatePassword (ConvertTo-SecureString -String ('_{' + '%qY];-Ev:v.vW(GI@%_)/L%{*!_:') -AsPlainText -Force) -Tenant \"catholiccaredbb.onmicrosoft.com\" \nAdd-PnPSiteCollectionAdmin -Owners <% ctx().delegate_email %>\ndisconnect-pnponline"
+      cmd: "$OutputEncoding = [System.Console]::OutputEncoding = [System.Console]::InputEncoding = [System.Text.Encoding]::UTF8\n$PSDefaultParameterValues['*:Encoding'] = 'utf8'\nConnect-PnPOnline -url '<% ctx().personal_site %>' -ClientId 18837e26-37c6-4158-a5a7-f9dd11e5d63a -CertificatePath <% ctx().certificate_file_path %> -CertificatePassword (ConvertTo-SecureString -String ('_{' + '%qY];-Ev:v.vW(GI@%_)/L%{*!_:') -AsPlainText -Force) -Tenant \"catholiccaredbb.onmicrosoft.com\" \nAdd-PnPSiteCollectionAdmin -Owners <% ctx().delegate_email %>\ndisconnect-pnponline"
     next:
       # #629e47
       - do:

@@ -1,0 +1,18 @@
+---
+name: webex_post_message
+pack: sim_cisco_webex
+description: Post a message to a Webex room
+runner_type: python-script
+entry_point: action.py
+enabled: true
+parameters:
+  room_id:
+    type: string
+    description: "Webex room ID"
+  text:
+    type: string
+    description: "Text of the message"
+  bearer_token:
+    type: string
+    description: "Bearer token for authentication"
+

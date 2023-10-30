@@ -1,0 +1,26 @@
+ref: sim_cisco_webex
+
+name: sim_cisco_webex
+
+description: Simple pack containing examples of sensor, rule, and action for Cisco webex.
+
+keywords:
+    - bearer_token
+    - room_id
+    - text
+
+version: 0.1.0
+
+python_versions:
+  - "3"
+
+dependencies:
+  - core
+
+author: Accelnomics Tech.
+
+email: core@accelnomics.com
+
+contributors:
+  - "John Doe1 <john.doe1@gmail.com>"
+  - "John Doe2 <john.doe2@gmail.com>"
