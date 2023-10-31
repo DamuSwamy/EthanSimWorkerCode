@@ -27,9 +27,6 @@ parameters:
     enum:
       - ethan_vcenter_virtual_machines
       - ethan_vcenter_custid_tags
-      - ethan_vcenter_datastores
-      - ethan_vcenter_active_vspheres
-      - ethan_vcenter_vm_creation_date
       - ethan_vcenter_vmdisk_disktier_sync
   proxy_vcenters:
     type: array

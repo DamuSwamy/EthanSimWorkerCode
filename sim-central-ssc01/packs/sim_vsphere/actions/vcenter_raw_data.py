@@ -245,6 +245,7 @@ class VcenterRawData(BaseAction):
                     else:
                          disk_obj['DiskSize']     = 0
                     disk_obj['DiskUsed']          = round(disk.summary.storage.committed / (1024 * 1024 * 1024))
+                    disk_obj['DiskDatastoreId']     = disk.backing.datastore._GetMoId()
                     try:
                         disk_obj['DiskDatastore'] = re.match("\[(.*?)\]",disk.backing.fileName).group(1)
                     except Exception as e:

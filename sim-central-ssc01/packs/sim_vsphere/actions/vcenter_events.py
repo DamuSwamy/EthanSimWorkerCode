@@ -88,9 +88,12 @@ class VcenterEvents(BaseAction):
             evtidx = "{}-{}".format(str(self.vcenter_id), str(e.key))
             created_time = e.createdTime.astimezone(pytz.timezone('Australia/Sydney'))
             vmId = int(str(e.vm.vm).split("vm-")[1].replace("'",""))
+            persistantId = ""
+            if hasattr(e, 'configSpec') and hasattr(e.configSpec, 'instanceUuid') and e.configSpec.instanceUuid is not None:
+                persistantId = e.configSpec.instanceUuid
             event_map[e.key] = {"VCServer": self.vcenter_id,
                                 "EventId": e.key,
-                                "EthVmId": self.vcenter_id + vmId,
+                                "EthVmId": self.vcenter_id + str(vmId) + persistantId,
                                 "Event_Date": created_time.strftime("%Y-%m-%d %H:%M:%S"),
                                 "Event_Type": event_type,
                                 "Device_Type": "virtualMachine",
@@ -107,135 +110,139 @@ class VcenterEvents(BaseAction):
                 if event_type == 'VmConnectedEvent':
                     if hasattr(e, 'chainId'):
                         if e.fullFormattedMessage == 'event.VmConnectedEvent.fullFormat' or 'connected' in e.fullFormattedMessage:
-                            event_map[e.key]['eventState'] = 'Connected'
+                            event_map[e.key]['Event_State'] = 'Connected'
                         elif e.fullFormattedMessage == 'com.vmware.vc.vm.DstVmMigratedEvent' or 'migrated' in e.fullFormattedMessage:
-                            event_map[e.key]['eventState'] = 'Migrated'
+                            event_map[e.key]['Event_State'] = 'Migrated'
                         else:
-                            event_map[e.key]['eventState'] = 'Immaculate Conception'
+                            event_map[e.key]['Event_State'] = 'Immaculate Conception'
                 elif event_type == 'DrsVmMigratedEvent' or event_type == 'vim.event.DrsVmMigratedEvent':
-                    event_map[e.key]['eventType']  = 'VmHostMigratedEvent'
-                    event_map[e.key]['eventState'] = 'HOST_Migrated'
+                    event_map[e.key]['Event_Type']  = 'VmHostMigratedEvent'
+                    event_map[e.key]['Event_State'] = 'HOST_Migrated'
                 else:
                     if(e.fullFormattedMessage == 'event.VmDeployedEvent.fullFormat' or e.fullFormattedMessage == 'event.VmRegisteredEvent.fullFormat' or 'deployed' in e.fullFormattedMessage or 'Registered' in e.fullFormattedMessage):
-                        event_map[e.key]['eventState'] = 'Template'
+                        event_map[e.key]['Event_State'] = 'Template'
                     elif e.fullFormattedMessage == 'event.VmCreatedEvent.fullFormat' or 'Created' in e.fullFormattedMessage:
-                        event_map[e.key]['eventState'] = 'Manually'
+                        event_map[e.key]['Event_State'] = 'Manually'
                     elif e.fullFormattedMessage == 'event.VmClonedEvent.fullFormat' or 'Clone' in e.fullFormattedMessage or 'was cloned from' in e.fullFormattedMessage:
-                        event_map[e.key]['eventState'] = 'Cloned'
+                        event_map[e.key]['Event_State'] = 'Cloned'
                     elif e.fullFormattedMessage == 'event.VmDiscoveredEvent.fullFormat' or 'Discovered' in e.fullFormattedMessage:
-                        event_map[e.key]['eventState'] = 'Discovered'
+                        event_map[e.key]['Event_State'] = 'Discovered'
                     elif e.fullFormattedMessage == 'event.VmConnectedEvent.fullFormat' or 'connected' in e.fullFormattedMessage:
-                        event_map[e.key]['eventState'] = 'ERROR_Connected'  
+                        event_map[e.key]['Event_State'] = 'ERROR_Connected'  
                     elif e.fullFormattedMessage == 'event.VmRemovedEvent.fullFormat' or 'Removed' in e.fullFormattedMessage:
                         """validDecommEvent = False
                         for x in event_map.values():
-                            if x['eventType'] == 'VmPoweredOffEvent' and int(x['vmID']) == int(str(e.vm.vm).split("vm-")[1].replace("'","")):
+                            if x['Event_Type'] == 'VmPoweredOffEvent' and int(x['vmID']) == int(str(e.vm.vm).split("vm-")[1].replace("'","")):
                                 validDecommEvent = True
                                 break
                         if not validDecommEvent:
-                            event_map[e.key]['eventState']     = 'Invalid Decommissioned'
-                            event_map[e.key]['eventType']      = 'Invalid VmRemovedEvent'
-                            event_map[e.key]['deviceType']     = 'Invalid virtualMachine'
-                            event_map[e.key]['eventOperation'] = 'Invalid VmRemovedEvent'
+                            event_map[e.key]['Event_State']     = 'Invalid Decommissioned'
+                            event_map[e.key]['Event_Type']      = 'Invalid VmRemovedEvent'
+                            event_map[e.key]['Device_Type']     = 'Invalid virtualMachine'
+                            event_map[e.key]['Event_Operation'] = 'Invalid VmRemovedEvent'
                         else:"""
-                        event_map[e.key]['eventState']     = 'Decommissioned'
+                        event_map[e.key]['Event_State']     = 'Decommissioned'
 
                     else:
-                        event_map[e.key]['eventState'] = 'Immaculate Conception'
+                        event_map[e.key]['Event_State'] = 'Immaculate Conception'
             
                 if e.fullFormattedMessage == 'com.vmware.vc.vm.DstVmMigratedEvent' or 'migrated' in e.fullFormattedMessage:
                     if hasattr(e, 'arguments'):
                         for arg in e.arguments:
                             if hasattr(arg, 'oldMoRef'):
-                                event_map[e.key]['vmID']   = arg['oldMoRef'].split("vm-")[1]
+                                event_map[e.key]['VmId']   = arg['oldMoRef'].split("vm-")[1]
                                 break
-                        event_map[e.key]['eventType']  = 'VmMigratedEvent'
-                        event_map[e.key]['eventState'] = 'Migrated'
+                        event_map[e.key]['Event_Type']  = 'VmMigratedEvent'
+                        event_map[e.key]['Event_State'] = 'Migrated'
                         if hasattr(e, 'chainId'):
                             event_map[e.key]['chainId']    = e.chainId
             if event_type in self.update_events:
                 if event_type == 'VmPoweredOffEvent':
-                    event_map[e.key]['eventState']     = 'powerOff'
-                    event_map[e.key]['eventOperation'] = 'powerOff'
+                    event_map[e.key]['Event_State']     = 'powerOff'
+                    event_map[e.key]['Event_Operation'] = 'powerOff'
                 if (event_type == 'VmPoweredOnEvent' and e.key == e.chainId) or event_type == 'VmStartingEvent':
-                    event_map[e.key]['eventState']     = 'powerOn'
-                    event_map[e.key]['eventOperation'] = 'powerOn'
+                    event_map[e.key]['Event_State']     = 'powerOn'
+                    event_map[e.key]['Event_Operation'] = 'powerOn'
                 if event_type == 'VmUnprotectedEvent':
                     matched = False
-                    event_map[e.key]['eventType']     = e.eventTypeId
+                    event_map[e.key]['Event_Type']     = e.eventTypeId
                     for x in event_map.values():
                         if hasattr(e, 'chainId'):
-                            if x['eventType'] == 'VmMigratedEvent' and 'chainId' in x and x['chainId'] == e.chainId:
+                            if x['Event_Type'] == 'VmMigratedEvent' and 'chainId' in x and x['chainId'] == e.chainId:
                                 matched = True
-                                event_map[e.key]['eventState']     = 'Unprotected'
-                                event_map[e.key]['eventOperation'] = 'vmMigrated'
+                                event_map[e.key]['Event_State']     = 'Unprotected'
+                                event_map[e.key]['Event_Operation'] = 'vmMigrated'
                                 break
                     if not matched:
-                        event_map[e.key]['eventState']     = 'powerOff'
-                        event_map[e.key]['eventOperation'] = 'powerOff'
+                        event_map[e.key]['Event_State']     = 'powerOff'
+                        event_map[e.key]['Event_Operation'] = 'powerOff'
                 if event_type == 'VmReconfiguredEvent':
                     if e.configSpec.numCPUs:
-                        event_map[e.key]['deviceType']     = 'numCPUs'
-                        event_map[e.key]['eventState']     = e.configSpec.numCPUs
-                        event_map[e.key]['eventOperation'] = 'change'
+                        event_map[e.key]['Device_Type']     = 'numCPUs'
+                        event_map[e.key]['Event_State']     = e.configSpec.numCPUs
+                        event_map[e.key]['Event_Operation'] = 'change'
                         event_map[str(e.key)+'_cpu']       = event_map[e.key]
                     if e.configSpec.memoryMB:
-                        event_map[e.key]['deviceType']     = 'memoryMB'
-                        event_map[e.key]['eventState']     = e.configSpec.memoryMB/1024
-                        event_map[e.key]['eventOperation'] = 'change'
+                        event_map[e.key]['Device_Type']     = 'memoryMB'
+                        event_map[e.key]['Event_State']     = e.configSpec.memoryMB/1024
+                        event_map[e.key]['Event_Operation'] = 'change'
                         event_map[str(e.key)+'_mem']       = event_map[e.key]
                     if len(e.configSpec.deviceChange) > 0:
                         device_config = []
                         for d in e.configSpec.deviceChange:
                             device_type                        = type(d.device).__name__
                             device_type                        = device_type.replace('vim.vm.device.', '')
-                            event_map[e.key]['deviceType']     = device_type
-                            event_map[e.key]['eventOperation'] = d.operation
+                            event_map[e.key]['Device_Type']     = device_type
+                            event_map[e.key]['Event_Operation'] = d.operation
                             if device_type == 'VirtualDisk':
                                 device  = d.device
-                                event_map[e.key]['eventState'] = device.capacityInKB
+                                event_map[e.key]['Event_State'] = device.capacityInKB
+                                event_map[e.key]['DiskName']    = device.deviceInfo.label if device.deviceInfo else ""
+                                event_map[e.key]['DiskSize']    = device.capacityInKB
+
                                 if device.backing:
                                     if device.backing.diskMode == 'independent_nonpersistent':
-                                        event_map[e.key]['eventState'] = 'Unknown'
+                                        event_map[e.key]['Event_State'] = 'Unknown'
                                 else:
                                     continue
                                 if d.operation == 'add':
                                     if hasattr(device, 'key'):
                                         if isinstance(device.key, int) and device.diskObjectId :
-                                            event_map[e.key]['deviceKey'] = int(device.diskObjectId.split("-")[1])
-                                            event_map[e.key]['deviceID']  = device.backing.fileName.rsplit('/', 1)[-1]
+                                            event_map[e.key]['DeviceKey'] = int(device.diskObjectId.split("-")[1])
+                                            event_map[e.key]['DeviceId']  = device.backing.fileName.rsplit('/', 1)[-1]
                                         elif isinstance(device.key, int) and 'diskObjectId = ' in e.fullFormattedMessage:
                                             try:
                                                 objectId = re.match("[\s\S]+diskObjectId = \\\"(.*?)\\\"",e.fullFormattedMessage).group(1)
-                                                event_map[e.key]['deviceKey'] = int(objectId.split("-")[1])
+                                                event_map[e.key]['DeviceKey'] = int(objectId.split("-")[1])
                                             except Exception as e:
-                                                event_map[e.key]['deviceKey'] = 'Unknown'
+                                                event_map[e.key]['DeviceKey'] = 'Unknown'
                                             try:
                                                 deviceId = re.match("[\s\S]+backing = \(fileName = \\\"(.*?)\\\"", e.fullFormattedMessage).group(1)
-                                                event_map[e.key]['deviceID']  = deviceId.rsplit('/', 1)[-1]
+                                                event_map[e.key]['DeviceId']  = deviceId.rsplit('/', 1)[-1]
                                             except Exception as e:
-                                                event_map[e.key]['deviceID'] = 'Unknown'
+                                                event_map[e.key]['DeviceId'] = 'Unknown'
                                         elif isinstance(device.key, int):
-                                            event_map[e.key]['deviceKey'] = device.key
-                                            event_map[e.key]['deviceID']  = device.backing.fileName.rsplit('/', 1)[-1]
+                                            event_map[e.key]['DeviceKey'] = device.key
+                                            event_map[e.key]['DeviceId']  = device.backing.fileName.rsplit('/', 1)[-1]
                                         else:
-                                            event_map[e.key]['deviceKey'] = device.key
-                                            event_map[e.key]['deviceID']  = device.backing.fileName.rsplit('/', 1)[-1]
+                                            event_map[e.key]['DeviceKey'] = device.key
+                                            event_map[e.key]['DeviceId']  = device.backing.fileName.rsplit('/', 1)[-1]
                                     if device.capacityInKB == 0:
-                                        eventState = re.match("[\s\S]+key = {0},.*summary.+\\\"(.*)KB\\\"\)".format(event_map[e.key]['deviceKey']),e.fullFormattedMessage).group(1)
-                                        event_map[e.key]['eventState'] = int(eventState.replace(",",""))
+                                        Event_State = re.match("[\s\S]+key = {0},.*summary.+\\\"(.*)KB\\\"\)".format(event_map[e.key]['DeviceKey']),e.fullFormattedMessage).group(1)
+                                        event_map[e.key]['Event_State'] = int(Event_State.replace(",",""))
+                                        event_map[e.key]['DiskSize']    = int(Event_State.replace(",",""))
                                 else:
-                                    event_map[e.key]['deviceKey'] = device.key
-                                    event_map[e.key]['deviceID']  = device.backing.fileName.rsplit('/', 1)[-1]
+                                    event_map[e.key]['DeviceKey'] = device.key
+                                    event_map[e.key]['DeviceId']  = device.backing.fileName.rsplit('/', 1)[-1]
                             else:
-                                event_map[e.key]['eventState'] = 'Unknown'
+                                event_map[e.key]['Event_State'] = 'Unknown'
                     if not e.configSpec.numCPUs and not e.configSpec.memoryMB and not len(e.configSpec.deviceChange) > 0:
-                        event_map[e.key]['eventState'] = 'Unknown'
+                        event_map[e.key]['Event_State'] = 'Unknown'
                 if event_type == 'VmRenamedEvent':
-                    event_map[e.key]['deviceID']       = e.oldName
-                    event_map[e.key]['eventState']     = 'vmRename'
-                    event_map[e.key]['eventOperation'] = 'vmRename'                   
-                if event_map[e.key]['eventState'] == 'Unknown':
+                    event_map[e.key]['DeviceId']       = e.oldName
+                    event_map[e.key]['Event_State']     = 'vmRename'
+                    event_map[e.key]['Event_Operation'] = 'vmRename'                   
+                if event_map[e.key]['Event_State'] == 'Unknown':
                     del event_map[e.key]
         event_list = list(event_map.values())
         final_list = [i for n, i in enumerate(event_list) if i not in event_list[n + 1:]]

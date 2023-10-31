@@ -8,14 +8,14 @@ class TransformCustomerDataAction(Action):
         virtualDisks    = vc_data['VMDisks']
         attributes      = vc_data['Categories']
         dsCustTag = vmCustTag = ""
-        for vm in sorted(virtualMachines, key=itemgetter('vmID'), reverse=True):
-            vmID = vm['vmID']
+        for vm in sorted(virtualMachines, key=itemgetter('VmId'), reverse=True):
+            vmID = vm['VmId']
             vm_id = 'vm-{}'.format(str(vmID))
-            vmCustAnno = vm['_custAnno']
-            datastore_id = [vd['vmDatastoreID'] for vd in virtualDisks if vm['_ethvmid'] == vd['_ethvmid'] and int(vd['_deviceKey']) == 2000]
+            vmCustAnno = vm['_CustAnno']
+            datastore_id = [vd['DiskDataStoreId'] for vd in virtualDisks if vm['_EthVmId'] == vd['_EthVmId'] and int(vd['_DeviceKey']) == 2000]
             if not datastore_id:
                 if len(virtualDisks) > 0:
-                    datastore_id = virtualDisks[0]['vmDatastoreID']
+                    datastore_id = virtualDisks[0]['DiskDataStoreId']
                 else:
                     datastore_id = None
             else:
@@ -35,10 +35,10 @@ class TransformCustomerDataAction(Action):
                         vmCustTag = None
                     break
              
-            result[vmID] = {"ethvmid": vm['_ethvmid'],
-                            "_ethvmid": vm['_ethvmid'],
+            result[vmID] = {"ethvmid": vm['_EthVmId'],
+                            "_ethvmid": vm['_EthVmId'],
                             "vmID": vmID,
-                            "vmName": vm['vmName'],
+                            "vmName": vm['VmName'],
                             "vmCustTag": vmCustTag[0] if vmCustTag else "",
                             "vmCustAnno": vmCustAnno, 
                             "dsCustTag": dsCustTag[0] if dsCustTag else "",

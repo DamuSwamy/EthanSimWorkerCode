@@ -42,7 +42,7 @@ tasks:
     action: sql.query
     input:
       connection: <% ctx().billing_db_connection %>
-      query: "SELECT vmID FROM IaasVMDisks WHERE invVCServerID='<% ctx().vcenter_id %>' AND (inactiveDt = '9999-12-31 23:59:59' OR inactiveDt >= '<% ctx().inactive_date %>') AND (vmDiskTier='' OR vmDiskTier is NULL)"
+      query: "SELECT VmId FROM EthVmDisk WHERE EthVmId LIKE '<% ctx().vcenter_id %>%' AND RemoveDate IS NOT NULL AND (DiskTier='' OR DiskTier IS NULL)"
     next:
       - when: <% succeeded() %>
         publish:
@@ -64,7 +64,7 @@ tasks:
           - End
 
   Get_VMDisk_DiskTiers:
-    action: sim_vmware2.vcenter_raw_data
+    action: sim_vsphere.vcenter_raw_data
     input:
       vcenter_id: <% ctx().vcenter_id %>
       vsphere: <% ctx().vcenter %>
@@ -74,8 +74,8 @@ tasks:
       datastores: <% ctx().billing_datastore_db_data %>
       ids: <% ctx().vmID_List %>
       proxy_vcenters: <% ctx().proxy_vcenters %>
-      vm_required_field_array: ['ethvmid']
-      vmdisk_required_field_array: ['_vmID', '_ethvmid', '_deviceKey', 'vmDiskTier']
+      vm_required_field_array: ['EthVmId']
+      vmdisk_required_field_array: ['_VmId', '_EthVmId', '_DeviceKey', 'DiskTier']
     next:
       - when: <% succeeded() %>
         publish:
@@ -100,12 +100,12 @@ tasks:
     action: sql.update_bulk
     input:
       connection: <% ctx().billing_db_connection %>
-      table: "iaasVMDisks"
+      table: "EthVmDisk"
       data: <% ctx().vmdisks %>
-      update_values: ['vmDiskTier']
-      column_filter1: "ethvmid"
-      column_filter2: "vmID"
-      column_filter3: "deviceKey"
+      update_values: ['DiskTier']
+      column_filter1: "EthVmId"
+      column_filter2: "VmId"
+      column_filter3: "DeviceKey"
     next:
       - when: <% failed() %>
         do: fail

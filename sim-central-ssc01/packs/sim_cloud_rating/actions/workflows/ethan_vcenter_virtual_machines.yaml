@@ -83,10 +83,7 @@ tasks:
         do:
           - Billing_VcEvents_Operations
       - when: <% len(ctx().orig_events) = 0 %>
-        publish:
-          - scan_log: <% dict(system_id=>ctx().vcenter_id, system_type=>'vCenter', system_name=>ctx().vcenter, num_of_records=>len(ctx().orig_events)) %>
         do:
-          - Insert_Scanned_Data
           - End
 
   # [342, 701]
@@ -96,31 +93,14 @@ tasks:
       - when: <% len(ctx().events) > 0 %>
         publish:
           - last_event_date: <% (now(offset=>localtz())).format("%Y-%m-%d %H:%M:%S") %>
-          - scan_log: <% dict(system_id=>ctx().vcenter_id, system_type=>'vCenter', system_name=>ctx().vcenter, num_of_records=>len(ctx().events), last_event_at=>ctx().last_event_date) %>
         do:
           - SQL_Select_Billing_Datstores
-          - Insert_Scanned_Data
       - when: <% 1 != 1 %>
         do:
           - SQL_Select_Billing_CustIDs
       - when: <% len(ctx().events) = 0 %>
-        publish:
-          - scan_log: <% dict(system_id=>ctx().vcenter_id, system_type=>'vCenter', system_name=>ctx().vcenter, num_of_records=>len(ctx().events)) %>
         do:
-          - Insert_Scanned_Data
           - End
-
-  # [142, 501]
-  Insert_Scanned_Data:
-    action: sql.insert_bulk
-    input:
-      table: "IaaSScanLog"
-      data: <% list(ctx().scan_log) %>
-      connection: <% ctx().billing_db_connection %>
-    next:
-      - when: <% failed() %>
-        do: noop
- 
 
   # [442, 551]
   Billing_VcEvents_Operations:
@@ -400,10 +380,6 @@ tasks:
       - when: <% len(ctx().vm_uniq_create_events) > 0 and not len(ctx().vm_uniq_reconfigure_events) > 0 %>
         do: 
           - Billing_VcEvents_Insert
-
-  # [1192, 1001]
-  Update_End:
-    action: core.noop
 
   # [2092, 901]
   Remove_End:

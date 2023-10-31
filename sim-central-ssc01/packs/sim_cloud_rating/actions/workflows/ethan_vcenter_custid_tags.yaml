@@ -30,7 +30,7 @@ tasks:
     action: sql.query
     input:
       connection: <% ctx().billing_db_connection %>
-      query: "SELECT ethvmid,vmID FROM iaasVM WHERE invVCServerID='<% ctx().vcenter_id %>' and vmActive='true' and (custidx = '' OR custidx IS NULL OR custidx ='99999')"
+      query: "SELECT EthVmId,VmId FROM EthVms WHERE VCServer='<% ctx().vcenter_id %>' and VmActive='true' and (Custidx = '' OR Custidx IS NULL OR Custidx ='99999')"
     next:
       - when: <% succeeded() %>
         publish:
@@ -64,10 +64,7 @@ tasks:
         do:
           - SQL_Select_CMDB_Customers
       - when: <% len(ctx().vm_list) = 0 and len(ctx().undefined_vms) = 0 %>
-        publish:
-          - scan_log: <% dict(system_id=>ctx().vcenter_id, system_type=>'vcenter_custid_tags', system_name=>ctx().vcenter, additional_info=>'CUSTID') %>
         do:
-          - Insert_Scanned_Data
           - End
 
   SQL_Select_CMDB_Customers:
@@ -99,7 +96,7 @@ tasks:
           - Get_Vcenter_Raw_Data
 
   Get_Vcenter_Raw_Data:
-    action: sim_vmware2.vcenter_raw_data
+    action: sim_vsphere.vcenter_raw_data
     input:
       vcenter_id: <% ctx().vcenter_id %>
       vsphere: <% ctx().vcenter %>
@@ -107,8 +104,8 @@ tasks:
       get_vm_disks: true
       get_tags: <% ctx().get_tags %>
       ids: <% ctx().vm_list + ctx().undefined_vms %>
-      vm_required_field_array: ['_custAnno', '_ethvmid','vmID', 'vmName']
-      vmdisk_required_field_array: ['_ethvmid','_deviceKey', 'vmID', 'vmDatastoreID']
+      vm_required_field_array: ['_CustAnno', '_EthVmId','VmId', 'VmName']
+      vmdisk_required_field_array: ['_EthVmId','_DeviceKey', 'VmId', 'DiskDataStoreId']
       proxy_vcenters: <% ctx().proxy_vcenters %>
     next:
       - when: <% succeeded() %>
@@ -145,22 +142,10 @@ tasks:
         publish:
           - result: <% switch(isDict(result().result) => result().result, true => {}) %>
           - last_event_date: <% (now(offset=>localtz())).format("%Y-%m-%d %H:%M:%S") %>
-          - scan_log: <% dict(system_id=>ctx().vcenter_id, system_type=>'vcenter_custid_tags', system_name=>ctx().vcenter, num_of_records=>len(ctx().result.update) + len(ctx().result.insert), additional_info=>'CUSTID', last_event_at=>ctx().last_event_date) %>
         do:
           - Check_For_Records
-          - Insert_Scanned_Data
       - when: <% failed() %>
         do: fail
-
-  Insert_Scanned_Data:
-    action: sql.insert_bulk
-    input:
-      table: "IaaSScanLog"
-      data: <% list(ctx().scan_log) %>
-      connection: <% ctx().billing_db_connection %>
-    next:
-      - when: <% failed() %>
-        do: noop
 
   Check_For_Records:
     action: core.noop
@@ -181,10 +166,10 @@ tasks:
     action: sql.update_bulk
     input:
       connection: <% ctx().billing_db_connection %>
-      table: "iaasVM"
+      table: "EthVms"
       data: <% ctx().result.vm_update %>
-      update_values: ['custidx']
-      column_filter1: "ethvmid"
+      update_values: ['Custidx']
+      column_filter1: "EthVmId"
     next:
       - when: <% succeeded() %>
         do: VM_Update_End

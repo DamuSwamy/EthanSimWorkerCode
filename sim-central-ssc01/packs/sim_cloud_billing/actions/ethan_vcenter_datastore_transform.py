@@ -14,7 +14,10 @@ class TransformDSDataAction(Action):
             result[datastore_id] = ds
             result[datastore_id]['storageRole'] = dsSTRoleTag[0] if dsSTRoleTag else None
             result[datastore_id]['storageTier'] = dsSTierTag[0] if dsSTierTag else None
-            result[datastore_id]['custid']      = dsCustTag[0] if dsCustTag else None
+            CustID = dsCustTag[0] if dsCustTag else None
+            if CustID and len(CustID) > 4:
+                CustID = CustID[:4]
+            result[datastore_id]['custid']      = CustID
             result[datastore_id]['_dsidx']      = ds['dsidx']
             proxy = [vsphere for vsphere in proxy_vcenters if vcenter is not None and vsphere['name'] == vcenter]
             if proxy:
