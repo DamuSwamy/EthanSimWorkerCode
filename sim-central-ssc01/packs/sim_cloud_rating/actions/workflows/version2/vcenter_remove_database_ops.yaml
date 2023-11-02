@@ -6,7 +6,7 @@ input:
   - vmdisks
 
 output:
-  - data: <% dict(VM=>len(ctx().vms), VM_DISK=>len(ctx().vmdisks), VM_NETWORK=>len(ctx().vmnetworks)) %>
+  - data: <% dict(VM=>len(ctx().vms), VM_DISK=>len(ctx().vmdisks)) %>
 
 tasks:
   Start:

@@ -35,7 +35,7 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - billing_vm_db_data: <% switch(isList(result().result) => result().result, true => []) %>
-          - vms: <% ctx(billing_vm_db_data).select($.vmID) %>
+          - vms: <% ctx(billing_vm_db_data).select($.VmId) %>
           - vm_list: "{{ ctx().vms | list }}"
         do:
           - SQL_Select_Billing_CustIDs

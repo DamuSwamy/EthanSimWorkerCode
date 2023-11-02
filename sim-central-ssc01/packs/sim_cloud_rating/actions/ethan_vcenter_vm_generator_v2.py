@@ -7,7 +7,7 @@ class InsertAndUpdateListGeneratorV2Action(Action):
         vm_disk_list = []
         if action == 'insert':
             for sub in sorted(data['VirtualMachines'], key=itemgetter('VmID'), reverse=True):
-                insert = [dict(sub) if int(event['VmId']) == int(sub['VmId']) and event['Event_Type'] in create_events for event in events]
+                insert = [sub for sub in event_list if int(event['VmId']) == int(sub['VmId']) and event['Event_Type'] in create_events for event in events]
                 if len(insert) > 1:
                     insert = [insert[0]]
                 vm_list += insert
@@ -23,13 +23,14 @@ class InsertAndUpdateListGeneratorV2Action(Action):
             for event in events:
                 if 'EthVmId' in event.keys() and event['Event_Type'] in ['VmRemovedEvent', 'VmDecommisionedEvent']:
                     EthVmId = event['EthVmId']
-                    vm_obj[EthVmId] = {"_EthVmId": EthVmId,
-                                       "_VmId": event['VmId'],
-                                       "VmActive": False,
-                                       "DecommDate": event['Event_Date'],
-                                       "DecommBy": event['Event_User']
-                    vm_disk_obj[EthVmId+"_disk"] = {"_EthVmId": EthVmId,
-                                                    "RemoveDate": event['Event_Date'],
+                    if EthVmId:
+                        vm_obj[EthVmId] = {"_EthVmId": EthVmId,
+                                           "_VmId": event['VmId'],
+                                           "VmActive": False,
+                                           "DecommDate": event['Event_Date'],
+                                           "DecommBy": event['Event_User']}
+                        vm_disk_obj[EthVmId+"_disk"] = {"_EthVmId": EthVmId,
+                                                        "RemoveDate": event['Event_Date']}
 
             vm_disk_list = list(vm_disk_obj.values())
             vm_list = list(vm_obj.values())

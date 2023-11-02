@@ -88,12 +88,14 @@ class VcenterEvents(BaseAction):
             evtidx = "{}-{}".format(str(self.vcenter_id), str(e.key))
             created_time = e.createdTime.astimezone(pytz.timezone('Australia/Sydney'))
             vmId = int(str(e.vm.vm).split("vm-")[1].replace("'",""))
-            persistantId = ""
+            ethvmId = None
             if hasattr(e, 'configSpec') and hasattr(e.configSpec, 'instanceUuid') and e.configSpec.instanceUuid is not None:
-                persistantId = e.configSpec.instanceUuid
-            event_map[e.key] = {"VCServer": self.vcenter_id,
+                 ethvmId = str(self.vcenter_id) + str(self.vcenter_id) + e.configSpec.instanceUuid
+
+            event_map[e.key] = {"VCServer": int(self.vcenter_id),
                                 "EventId": e.key,
-                                "EthVmId": self.vcenter_id + str(vmId) + persistantId,
+                                "EthVmId": ethvmId,
+                                "VmId": vmId,
                                 "Event_Date": created_time.strftime("%Y-%m-%d %H:%M:%S"),
                                 "Event_Type": event_type,
                                 "Device_Type": "virtualMachine",

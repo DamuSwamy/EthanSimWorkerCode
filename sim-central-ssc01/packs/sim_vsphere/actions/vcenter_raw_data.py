@@ -228,6 +228,7 @@ class VcenterRawData(BaseAction):
                     disk_obj['_EthVmId']          = ethvmid
                     disk_obj['_VmId']             = vm_id
                     disk_obj['_DeviceKey']        = disk.key
+                    disk_obj['VmId']              = vm_id
                     disk_obj['EthVmId']           = ethvmid
                     try:
                         disk_obj['DeviceId']      = disk.backing.fileName.rsplit('/', 1)[-1]
@@ -244,7 +245,7 @@ class VcenterRawData(BaseAction):
                          disk_obj['DiskSize']     = round(disk.capacityInKB/1048576)
                     else:
                          disk_obj['DiskSize']     = 0
-                    disk_obj['DiskUsed']          = round(disk.summary.storage.committed / (1024 * 1024 * 1024))
+                    disk_obj['DiskUsed']          = 0 
                     disk_obj['DiskDatastoreId']     = disk.backing.datastore._GetMoId()
                     try:
                         disk_obj['DiskDatastore'] = re.match("\[(.*?)\]",disk.backing.fileName).group(1)
