@@ -234,8 +234,9 @@ tasks:
     action: sim_cloud_rating.ethan_vcenter_vm_generator_v1
     input:
       db_data: <% ctx().billing_vmdisk_db_data %>
-      vc_data: <% ctx().reconfigure_vm_output.VMDisks %>
+      vc_data: <% ctx().reconfigure_vm_output.VmDisks %>
       data_type: "vm_disk"
+      events: <% ctx().events %>
     next:
       - when: <% succeeded() %>
         publish:

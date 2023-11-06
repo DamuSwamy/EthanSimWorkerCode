@@ -38,7 +38,7 @@ class InsertAndUpdateListGeneratorAction(Action):
             for y in sorted(db_data, key=itemgetter('EthVmId', 'VmId', 'DeviceKey'), reverse=True):
                 update = [sub for sub in disk_data if sub['EthVmId'] == y['EthVmId'] and int(sub['VmId']) == int(y['VmId']) and  int(sub['DeviceKey']) == int(y['DeviceKey'])]
                 if len(update) <= 0:
-                    scan_date = [event['Event_Date'] for event in events if event['EthVmId'] == y['EthVmId'] and event['DeviceKey'] == y['DeviceKey']]
+                    scan_date = [event['Event_Date'] for event in events if event['VmId'] == y['VmId'] and event['DeviceKey'] == y['DeviceKey']]
                     if scan_date:
                         last_scan = scan_date[0]
                     else:
@@ -53,11 +53,21 @@ class InsertAndUpdateListGeneratorAction(Action):
                     update_list = update_list + update
 
             for z in sorted(vc_data, key=itemgetter('EthVmId', 'DeviceKey'), reverse=True):
-                exist = [sub for sub in db_data if sub['EthVmId'] == z['EthVmId'] and int(sub['DeviceKey']) == int(z['DeviceKey'])]
-                if len(exist) > 0:
-                    continue
-                z['DiskInitial'] = z['DiskSize']
-                z['CreateDate']  = z['LastScanTime']
-                insert_list.append(z)
+                remove_event = [event for event in events if event['VmId'] == z['VmId'] and event['Event_Operation'] == "remove"]
+                if remove_event:
+                    z['RemoveDate']   = remove_event[0]['Event_Date']
+                    z['LastScanTime'] = remove_event[0]['Event_Date']
+                    remove_list.append(z)
+                else:
+                    exist = [sub for sub in db_data if sub['EthVmId'] == z['EthVmId'] and int(sub['DeviceKey']) == int(z['DeviceKey'])]
+                    if len(exist) > 0:
+                        continue
+                    create_date = [event['Event_Date'] for event in events if event['VmId'] == y['VmId'] and event['DeviceKey'] == y['DeviceKey']]
+                    create_scan_date = None
+                    if create_date:
+                        create_scan_date = create_date[0]
+                    z['DiskInitial'] = z['DiskSize']
+                    z['CreateDate']  = create_scan_date
+                    insert_list.append(z)
 
         return {"insert": insert_list, "update": update_list, "remove": remove_list}

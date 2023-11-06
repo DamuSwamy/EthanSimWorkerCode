@@ -23,10 +23,10 @@ class VcenterRawData(BaseAction):
                 for sub in vms:
                     d_found = n_found = False
                     for key, val in sub.items():
-                        if key == 'vmDisks':
+                        if key == 'VmDisks':
                             d_found = True
                             vm_disks = vm_disks + [disk for disk in val]
-                        if key == 'vmNetworks':
+                        if key == 'VmNetworks':
                             n_found = True
                             vm_networks = vm_networks + [network for network in val]
                         if d_found and n_found:
@@ -35,17 +35,17 @@ class VcenterRawData(BaseAction):
             if get_vm_disks and not get_vm_networks:
                 for sub in vms:
                     for key, val in sub.items():
-                        if key == 'vmDisks':
+                        if key == 'VmDisks':
                             vm_disks = vm_disks + [disk for disk in val]
                             break
             if get_vm_networks and not get_vm_disks:
                 for sub in vms:
                     for key, val in sub.items():
-                        if key == 'vmNetworks':
+                        if key == 'VmNetworks':
                             vm_networks = vm_networks + [network for network in val]
                             break
             else:
-                vms = [{key : val for key, val in sub.items() if key != 'vmDisks' and key != 'vmNetworks'} for sub in vms]
+                vms = [{key : val for key, val in sub.items() if key != 'VmDisks' and key != 'VmNetworks'} for sub in vms]
 
             if vm_required_field_array:
                 vms = [{key : val for key, val in sub.items() if key in vm_required_field_array} for sub in vms]
@@ -62,8 +62,8 @@ class VcenterRawData(BaseAction):
             tags          = self.get_all_tags(tag_filter)
 
         return  {"VirtualMachines": vms,
-                 "VMDisks": vm_disks,
-                 "VMNetworks": vm_networks,
+                 "VmDisks": vm_disks,
+                 "VmNetworks": vm_networks,
                  "Hosts": hosts,
                  "ResourcePools": resouce_pools,
                  "Folders": folders,

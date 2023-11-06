@@ -11,7 +11,7 @@ class InsertAndUpdateListGeneratorV2Action(Action):
                 if len(insert) > 1:
                     insert = [insert[0]]
                 vm_list += insert
-            for sub in sorted(data['VMDisks'], key=itemgetter('EthVmId'), reverse=True):
+            for sub in sorted(data['VmDisks'], key=itemgetter('EthVmId'), reverse=True):
                 insert = [dict(sub, DiskInitial=sub['DiskSize'], CreatedDate=event['Event_Date']) for event in events if int(event['EthVmId']) == int(sub['EthVmId']) and event['DeviceKey'] == sub['DeviceKey']]
                 if len(insert) > 1:
                     insert = [insert[0]]
