@@ -1,0 +1,12 @@
+ref: stackstorm_monitor
+name : stackstorm_monitor
+description : sends the tasks detail to slack which are failed in last one hour
+keywords:
+  - stackstorm
+  - slack
+version: 2.0.2
+author : ankush
+email : ankush.chouhan@accelnomics.com
+python_versions:
+  - "3"
+

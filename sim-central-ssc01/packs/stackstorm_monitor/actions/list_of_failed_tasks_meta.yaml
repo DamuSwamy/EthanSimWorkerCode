@@ -1,0 +1,16 @@
+pack: stackstorm_monitor
+enabled: true
+runner_type: orquesta
+name: list_of_failed_tasks
+entry_point: workflows/list_of_failed_tasks.yaml
+description: "last 1 hour"
+parameters:
+  List_of_actions_to_ignore:
+    type: array
+    description: List of names
+  StackStorm_instance_detail:
+    type: object
+    description: list of stackstorm server
+    required: true
+    secret: true
+    default: "{\"axlstack.accelnomics.com\": \"MGRjNGVjOTM2NmZiMTQzMDg2YzIwOGFkZWE4ZGZhZjJmZTllNjEyNmU1ZjY2OTEzMTZjNmViNjAxYTZmMDliYw\"}"

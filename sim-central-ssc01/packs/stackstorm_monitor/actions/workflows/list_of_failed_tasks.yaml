@@ -1,0 +1,26 @@
+version: 1.0
+tasks:
+  # [461, 94]
+  Fetch_and_process_failed_tasks:
+    action: stackstorm_monitor.find_failures
+    next:
+      - do:
+          - Send_webex_message
+        publish:
+          - data2: <% result().stdout %>
+        when: <<% succeeded %>>
+    input:
+      log_level: DEBUG
+      StackStorm_instance_detail: "{{ ctx().StackStorm_instance_detail }}"
+      List_of_actions_to_ignore: "{{ ctx().List_of_actions_to_ignore }}"
+  # [465, 251]
+  Send_webex_message:
+    action: cisco_webex.webex_post_message
+    input:
+      log_level: DEBUG
+      text: <% ctx().data2 %>
+      room_id: Y2lzY29zcGFyazovL3VzL1JPT00vYWQ3ZWE5MzAtNzZlZC0xMWVlLTlkMjQtY2JiOTMyNmY4MDJm
+      bearer_token: N2U5NzA4NmYtYjM3OC00MGRjLWE2NDItYWQwMmRjMWUwNWY0N2IzMWIxM2YtNWMx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
+input:
+  - List_of_actions_to_ignore
+  - StackStorm_instance_detail

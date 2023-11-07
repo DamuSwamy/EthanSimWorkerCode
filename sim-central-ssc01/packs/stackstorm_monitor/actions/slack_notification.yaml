@@ -1,0 +1,10 @@
+name: slack_notification
+entry_point: /opt/stackstorm/packs/stackstorm_monitor/actions/slack_notification.py  # Replace with the actual path
+description: Send a message to Slack
+runner_type: python-script
+parameters:
+  message:
+    type: string
+  webhook_url:
+    type: string
+

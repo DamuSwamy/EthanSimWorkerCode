@@ -1,0 +1,13 @@
+name: find_failures
+description: Collect and process failed task details  
+runner_type: python-script
+entry_point: find_failures.py
+parameters:
+  List_of_actions_to_ignore:
+    type: "array"
+    description: "List of names"
+  StackStorm_instance_detail:
+    type: "object"
+    description: "list of stackstorm server"
+    required: true
+    secret: true
