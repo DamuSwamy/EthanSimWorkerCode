@@ -15,7 +15,7 @@ class PostMessageToWebexRoom(Action):
 
         body = {
             "roomId": room_id,
-            "markdown": text
+            "text": text
         }
 
         response = requests.post(api_url, json=body, headers=headers)

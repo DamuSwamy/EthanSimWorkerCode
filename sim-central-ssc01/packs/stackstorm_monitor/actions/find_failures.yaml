@@ -1,13 +1,16 @@
 name: find_failures
-description: Collect and process failed task details  
+description: Collect and process failed task details
 runner_type: python-script
 entry_point: find_failures.py
 parameters:
   List_of_actions_to_ignore:
     type: "array"
     description: "List of names"
+    default: []
+ 
   StackStorm_instance_detail:
     type: "object"
     description: "list of stackstorm server"
-    required: true
+    #required: true
     secret: true
+    default: {"axlstack.accelnomics.com":"MGRjNGVjOTM2NmZiMTQzMDg2YzIwOGFkZWE4ZGZhZjJmZTllNjEyNmU1ZjY2OTEzMTZjNmViNjAxYTZmMDliYw"}
