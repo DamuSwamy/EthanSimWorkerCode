@@ -5,7 +5,7 @@ class TransformCustomerDataAction(Action):
     def run(self, db_data, vc_data, proxy_vcenters, vcenter=None):
         result = {}
         virtualMachines = vc_data['VirtualMachines']
-        virtualDisks    = vc_data['VMDisks']
+        virtualDisks    = vc_data['VmDisks']
         attributes      = vc_data['Categories']
         dsCustTag = vmCustTag = ""
         for vm in sorted(virtualMachines, key=itemgetter('VmId'), reverse=True):

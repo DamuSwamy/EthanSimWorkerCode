@@ -62,7 +62,7 @@ class InsertAndUpdateListGeneratorAction(Action):
                     exist = [sub for sub in db_data if sub['EthVmId'] == z['EthVmId'] and int(sub['DeviceKey']) == int(z['DeviceKey'])]
                     if len(exist) > 0:
                         continue
-                    create_date = [event['Event_Date'] for event in events if event['VmId'] == y['VmId'] and event['DeviceKey'] == y['DeviceKey']]
+                    create_date = [event['Event_Date'] for event in events if event['VmId'] == z['VmId'] and event['DeviceKey'] == z['DeviceKey']]
                     create_scan_date = None
                     if create_date:
                         create_scan_date = create_date[0]

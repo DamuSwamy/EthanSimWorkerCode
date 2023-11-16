@@ -222,7 +222,7 @@ tasks:
         Domain: "{{ ctx().data.data.DOMAIN }}"
     next:
       - do:
-          - insert_into_db
+          - delete_ECORP
   # [1080, 1266]
   insert_into_db:
     action: sql.insert_bulk
@@ -241,6 +241,18 @@ tasks:
   # [394, 1244]
   temp:
     action: core.noop
+  # [980, 1151]
+  delete_ECORP:
+    action: sql.delete
+    input:
+      log_level: DEBUG
+      table: EthanAllUserAccounts
+      connection: productionCloudExtension
+      where:
+        Domain: ECORP
+    next:
+      - do:
+          - insert_into_db
 vars:
   - check_interval: 30
   - hard_timeout: 600
