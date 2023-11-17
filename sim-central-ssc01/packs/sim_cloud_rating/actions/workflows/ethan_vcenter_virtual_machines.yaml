@@ -281,7 +281,7 @@ tasks:
     action: sql.query
     input:
       connection: <% ctx().billing_db_connection %>
-      query: "SELECT EthVmId,DeviceKey,LastScanTime FROM EthVmDisk WHERE VmId in (<% ctx().vm_uniq_configure_event_id %>)"
+      query: "SELECT EthVmId,VmId,DeviceKey,LastScanTime FROM EthVmDisk WHERE VmId in (<% ctx().vm_uniq_configure_event_id %>)"
     next:
       - when: <% succeeded() %>
         publish:

@@ -1,7 +1,7 @@
 pack: sim_cloud_rating
 enabled: true
 runner_type: orquesta
-name: ethan_cloud_billing_vcenter_wrapper
+name: ethan_cloud_rating_vcenter_wrapper
 entry_point: workflows/ethan_cloud_billing_vcenter_wrapper.yaml
 description: Synchronize the data between ethan database and vcenter data
 parameters:
