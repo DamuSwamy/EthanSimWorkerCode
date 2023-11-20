@@ -35,6 +35,7 @@ tasks:
           - start_time: "<% ctx().start_time %>:00:00"
           - start_date_time: "<% ctx().start_date %> <% ctx().start_time %>"
           - end_date: <% (now(offset=>localtz())).format("%Y-%m-%d") %>
+          #- end_date: "2023-11-19"
         do:
           - Get_Live_ZertVMResources
       - when: <% succeeded() and len(result().result) = 0 %>

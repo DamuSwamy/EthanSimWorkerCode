@@ -19,11 +19,11 @@ class VcenterEvents(BaseAction):
         end_time        = end_time.astimezone(pytz.timezone('Australia/Sydney'))
         start_time      = end_time - timedelta(hours=event_period)
         start_time      = start_time.astimezone(pytz.timezone('Australia/Sydney'))
-        test = False
+        test = True
         if test:
             #event_type_filters = ['VmReconfiguredEvent'] 
-            start_time = '2023-10-29 00:00:00'
-            end_time   = '2023-10-31 23:59:59'
+            start_time = '2023-11-19 06:00:00'
+            end_time   = '2023-11-20 23:59:59'
             start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
             end_time   = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
             start_time = start_time.astimezone(pytz.timezone('Australia/Sydney'))

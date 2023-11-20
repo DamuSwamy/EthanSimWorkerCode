@@ -216,14 +216,53 @@ class VcenterRawData(BaseAction):
     def _get_vm_disks(self, vm, vm_id, vm_name, ethvmid, last_updated):
         disk_array = []
         devices = vm.config.hardware.device
+        disk_objs = vm.layoutEx.disk
         diskGuestingo = vm.guest.disk
+        report = []
         for disk in devices:
             device_type = type(disk).__name__
             if (disk.backing is None and device_type != 'vim.vm.device.VirtualDisk'):
                 continue
+            """if isinstance(disk, vim.VirtualDisk):
+                this_virtual_disk = disk
+                layout_ex_disk = next((layout for layout in vm.layoutEx.disk if layout.key == this_virtual_disk.key), None)
+
+                if layout_ex_disk:
+                    layout_ex_disk_file_keys = [chain for chain in layout_ex_disk.chain if isinstance(chain, vim.VirtualMachineFileLayoutExDiskUnit)]
+
+                    provisioned_size_gb = round(this_virtual_disk.capacityInKB / (1024 * 1024), 1)
+
+                    size_on_datastore_gb = 0
+                    for file_key in layout_ex_disk_file_keys:
+                        file_key_value = file_key.fileKey
+                        layout_files = [layout_file for layout_file in vm.layoutEx.file if layout_file.key in file_key_value and layout_file.type == "diskExtent"]
+                        size_on_datastore_gb += sum(layout_file.size for layout_file in layout_files) / (1024 * 1024 * 1024)
+
+                        disk_info = {
+                            "VMName": vm.name,
+                            "DiskLabel": this_virtual_disk.deviceInfo.label,
+                            "DatastorePath": this_virtual_disk.backing.fileName,
+                            "ProvisionedSizeGB": provisioned_size_gb,
+                            "SizeOnDatastoreGB": round(size_on_datastore_gb, 1)
+                        }
+                        print(disk_info)
+            """     
             disk_obj = {}
             if hasattr(disk.backing, 'fileName'):
                 datastore = disk.backing.datastore
+                real_file_name = disk.backing.fileName.replace(".vmdk", "-flat.vmdk")
+                layout_ex_disk = next((layout for layout in vm.layoutEx.disk if layout.key == disk.key), None)
+                if layout_ex_disk:
+                    layout_ex_disk_file_keys = [chain for chain in layout_ex_disk.chain if isinstance(chain, vim.VirtualMachineFileLayoutExDiskUnit)]
+                    disk_used = 0
+                    for disk_file_key in layout_ex_disk_file_keys:
+                        file_key_value = disk_file_key.fileKey
+                        for file_key in file_key_value:
+                            this_disk_file = next((layout_file for layout_file in vm.layoutEx.file if layout_file.key == file_key), None)
+                            if this_disk_file:
+                                if "-flat" in this_disk_file.name:
+                                    disk_used = round(this_disk_file.size / (1024 * 1024 * 1024), 2)
+
                 if datastore and disk.key < 3000:
                     disk_obj['_EthVmId']          = ethvmid
                     disk_obj['_VmId']             = vm_id
@@ -246,8 +285,8 @@ class VcenterRawData(BaseAction):
                          disk_obj['DiskSize']     = round(disk.capacityInKB/1048576)
                     else:
                          disk_obj['DiskSize']     = 0
-                    disk_obj['DiskUsed']          = 0 
-                    disk_obj['DiskDataStoreId']     = disk.backing.datastore._GetMoId()
+                    disk_obj["DiskUsed"]          = disk_used
+                    disk_obj['DiskDataStoreId']   = disk.backing.datastore._GetMoId()
                     try:
                         disk_obj['DiskDatastore'] = re.match("\[(.*?)\]",disk.backing.fileName).group(1)
                     except Exception as e:

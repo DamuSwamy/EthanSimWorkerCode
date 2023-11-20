@@ -33,7 +33,7 @@ class InsertAndUpdateListGeneratorAction(Action):
                 insert_list.append(z)
 
         if data_type == 'vm_disk':
-            required = ['_EthVmId','_DeviceKey','EthVmId','DeviceId','DeviceKey','DiskName','DiskTier','DiskSize','DiskUsed', 'DiskDatastore', 'DiskFileName','LastScanTime']
+            required = ['_EthVmId','_DeviceKey','VmId','EthVmId','DeviceId','DeviceKey','DiskName','DiskTier','DiskSize','DiskUsed', 'DiskDatastore', 'DiskFileName','LastScanTime']
             disk_data = [{key : val for key, val in sub.items() if key in required} for sub in vc_data]
             for y in sorted(db_data, key=itemgetter('EthVmId', 'VmId', 'DeviceKey'), reverse=True):
                 update = [sub for sub in disk_data if sub['EthVmId'] == y['EthVmId'] and int(sub['VmId']) == int(y['VmId']) and  int(sub['DeviceKey']) == int(y['DeviceKey'])]
