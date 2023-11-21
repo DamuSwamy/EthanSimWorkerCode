@@ -288,9 +288,9 @@ class VcenterRawData(BaseAction):
                     disk_obj["DiskUsed"]          = disk_used
                     disk_obj['DiskDataStoreId']   = disk.backing.datastore._GetMoId()
                     try:
-                        disk_obj['DiskDatastore'] = re.match("\[(.*?)\]",disk.backing.fileName).group(1)
+                        disk_obj['DiskDataStore'] = re.match("\[(.*?)\]",disk.backing.fileName).group(1)
                     except Exception as e:
-                        disk_obj['DiskDatastore'] = disk.backing.fileName
+                        disk_obj['DiskDataStore'] = disk.backing.fileName
                     disk_obj['DiskFileName']      = disk.backing.fileName
                     disk_obj['CreateDate']        = None
                     disk_obj['RemoveDate']        = None

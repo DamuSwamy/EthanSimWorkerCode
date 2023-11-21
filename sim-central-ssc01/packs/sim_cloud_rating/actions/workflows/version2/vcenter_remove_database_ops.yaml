@@ -47,11 +47,10 @@ tasks:
     action: sql.update_bulk
     input:
       connection: <% ctx().billing_db_connection %>
-      table: ""
+      table: "EthVmDisk"
       data: <% ctx().vmdisks %>
       update_values: ['LastScanTime', 'RemoveDate']
       column_filter1: "EthVmId"
-      column_filter2: "DeviceKey"
     next:
       - when: <% failed() %>
         do: fail

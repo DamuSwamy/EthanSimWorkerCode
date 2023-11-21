@@ -30,7 +30,7 @@ tasks:
     action: sql.query
     input:
       connection: <% ctx().billing_db_connection %>
-      query: "SELECT EthVmId,VmId FROM EthVms WHERE VCServer='<% ctx().vcenter_id %>' and VmActive='true' and (Custidx = '' OR Custidx IS NULL OR Custidx ='99999')"
+      query: "SELECT EthVmId,VmId FROM EthVms WHERE VCServer='<% ctx().vcenter_id %>' AND (Custidx = '' OR Custidx IS NULL OR Custidx ='99999') AND DecommDate > DATEADD(month, DATEDIFF(month, 0, GETDATE()), 0) OR DecommDate IS NULL"
     next:
       - when: <% succeeded() %>
         publish:
@@ -104,8 +104,8 @@ tasks:
       get_vm_disks: true
       get_tags: <% ctx().get_tags %>
       ids: <% ctx().vm_list + ctx().undefined_vms %>
-      vm_required_field_array: ['_CustAnno', '_EthVmId','VmId', 'VmName']
-      vmdisk_required_field_array: ['_EthVmId','_DeviceKey', 'VmId', 'DiskDataStoreId']
+      vm_required_field_array: ['_CustAnno', '_EthVmId','VmId', 'VmName', 'LastScanTime']
+      vmdisk_required_field_array: ['_EthVmId','_DeviceKey', 'VmId', 'DiskDataStoreId', 'LastScanTime']
       proxy_vcenters: <% ctx().proxy_vcenters %>
     next:
       - when: <% succeeded() %>
@@ -168,7 +168,7 @@ tasks:
       connection: <% ctx().billing_db_connection %>
       table: "EthVms"
       data: <% ctx().result.vm_update %>
-      update_values: ['Custidx']
+      update_values: ['Custidx', 'LastScanTime']
       column_filter1: "EthVmId"
     next:
       - when: <% succeeded() %>

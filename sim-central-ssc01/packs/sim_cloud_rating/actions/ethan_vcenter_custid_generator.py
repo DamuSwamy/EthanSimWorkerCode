@@ -11,6 +11,7 @@ class InsertAndUpdateListGeneratorCustomerDataAction(Action):
             if not exist:
                 vm_cust_insert_list.append(y)
             vm_update[y['_ethvmid']] = {"_EthVmId": y['_ethvmid'],
-                                        "Custidx": y['custidx'] if y['custidx'] != '99999' and y['custidx'] else ""}
+                                        "Custidx": y['custidx'] if y['custidx'] != '99999' and y['custidx'] else "",
+                                        "LastScanTime": y['LastScanTime']}
 
         return {"insert": vm_cust_insert_list, "update": vm_cust_update_list, "vm_update": list(vm_update.values())}

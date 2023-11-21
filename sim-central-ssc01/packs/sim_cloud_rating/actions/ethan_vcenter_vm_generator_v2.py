@@ -28,8 +28,11 @@ class InsertAndUpdateListGeneratorV2Action(Action):
                                            "_VmId": event['VmId'],
                                            "VmActive": False,
                                            "DecommDate": event['Event_Date'],
-                                           "DecommBy": event['Event_User']}
+                                           "DecommBy": event['Event_User'],
+                                           "LastScanTime": event['Event_Date']}
                         vm_disk_obj[EthVmId+"_disk"] = {"_EthVmId": EthVmId,
+                                                        "_VmId": event['VmId'],
+                                                        "LastScanTime": event['Event_Date'],
                                                         "RemoveDate": event['Event_Date']}
 
             vm_disk_list = list(vm_disk_obj.values())

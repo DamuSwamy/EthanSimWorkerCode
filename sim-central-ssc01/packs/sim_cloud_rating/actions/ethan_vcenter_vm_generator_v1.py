@@ -23,6 +23,7 @@ class InsertAndUpdateListGeneratorAction(Action):
                     y['_VmId'] = y['VmId']
                     y['VmActive'] = False
                     y['DecommDate'] = last_scan
+                    y['LastScanTime'] = last_scan
                     remove_list.append(y)
                 else:
                     update_list = update_list + update
@@ -33,7 +34,7 @@ class InsertAndUpdateListGeneratorAction(Action):
                 insert_list.append(z)
 
         if data_type == 'vm_disk':
-            required = ['_EthVmId','_DeviceKey','VmId','EthVmId','DeviceId','DeviceKey','DiskName','DiskTier','DiskSize','DiskUsed', 'DiskDatastore', 'DiskFileName','LastScanTime']
+            required = ['_EthVmId','_DeviceKey','_VmId','VmId','EthVmId','DeviceId','DeviceKey','DiskName','DiskTier','DiskSize','DiskUsed', 'DiskDataStore', 'DiskFileName','LastScanTime']
             disk_data = [{key : val for key, val in sub.items() if key in required} for sub in vc_data]
             for y in sorted(db_data, key=itemgetter('EthVmId', 'VmId', 'DeviceKey'), reverse=True):
                 update = [sub for sub in disk_data if sub['EthVmId'] == y['EthVmId'] and int(sub['VmId']) == int(y['VmId']) and  int(sub['DeviceKey']) == int(y['DeviceKey'])]
@@ -52,14 +53,14 @@ class InsertAndUpdateListGeneratorAction(Action):
                 else:
                     update_list = update_list + update
 
-            for z in sorted(vc_data, key=itemgetter('EthVmId', 'DeviceKey'), reverse=True):
+            for z in sorted(vc_data, key=itemgetter('EthVmId', 'VmId' ,'DeviceKey'), reverse=True):
                 remove_event = [event for event in events if event['VmId'] == z['VmId'] and event['Event_Operation'] == "remove"]
                 if remove_event:
                     z['RemoveDate']   = remove_event[0]['Event_Date']
                     z['LastScanTime'] = remove_event[0]['Event_Date']
                     remove_list.append(z)
                 else:
-                    exist = [sub for sub in db_data if sub['EthVmId'] == z['EthVmId'] and int(sub['DeviceKey']) == int(z['DeviceKey'])]
+                    exist = [sub for sub in db_data if sub['EthVmId'] == z['EthVmId'] and int(sub['VmId']) == int(z['VmId']) and int(sub['DeviceKey']) == int(z['DeviceKey'])]
                     if len(exist) > 0:
                         continue
                     create_date = [event['Event_Date'] for event in events if event['VmId'] == z['VmId'] and event['DeviceKey'] == z['DeviceKey']]

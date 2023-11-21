@@ -225,7 +225,7 @@ tasks:
     action: sim_activedirectory.check_ad_user
     input:
       ad_host: <% ctx().ad_host[0] %>
-      display_name: <% ctx().display_user %>
+      display_name: <% ctx().first_name%> <%ctx().last_name%>_Admin
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>
     next:

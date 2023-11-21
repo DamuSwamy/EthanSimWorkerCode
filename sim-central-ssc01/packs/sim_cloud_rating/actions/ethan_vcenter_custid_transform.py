@@ -42,7 +42,8 @@ class TransformCustomerDataAction(Action):
                             "vmCustTag": vmCustTag[0] if vmCustTag else "",
                             "vmCustAnno": vmCustAnno, 
                             "dsCustTag": dsCustTag[0] if dsCustTag else "",
-                            "custSelectMethod": "AUTO"}
+                            "custSelectMethod": "AUTO",
+                            "LastScanTime": vm['LastScanTime']}
             found = True
             if vmCustTag:
                 cust_list = [cust for cust in db_data if cust['custid'] == vmCustTag[0]]

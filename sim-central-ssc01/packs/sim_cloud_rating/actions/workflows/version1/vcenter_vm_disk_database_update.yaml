@@ -58,7 +58,7 @@ tasks:
       connection: <% ctx().db_connection %>
       table: <% ctx().target_table %>
       data: <% ctx().update_data %>
-      update_values: ['DiskSize', 'DiskTier', 'DiskDatastore', 'DeviceId', 'LastScanTime', 'DiskFileName']
+      update_values: ['DiskSize', 'DiskTier', 'DiskDataStore', 'DeviceId', 'LastScanTime', 'DiskFileName']
       column_filter1: "EthVmId"
       column_filter2: "VmId"
       column_filter3: "DeviceKey"
