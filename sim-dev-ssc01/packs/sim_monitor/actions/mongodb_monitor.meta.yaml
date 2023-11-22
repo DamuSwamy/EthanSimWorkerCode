@@ -1,0 +1,23 @@
+pack: sim_monitor
+enabled: true
+runner_type: orquesta
+name: mongodb_monitor
+entry_point: workflows/mongodb_monitor.yaml
+description: mongodb monitor
+parameters:
+  username:
+    type: string
+    description: username
+    required: true
+  password:
+    type: string
+    description: password for server
+    required: true
+  server:
+    type: string
+    description: server address to monitor
+    required: true
+  service:
+    type: string
+    description: service
+    required: true

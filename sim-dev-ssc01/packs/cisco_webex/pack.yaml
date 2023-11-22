@@ -1,0 +1,26 @@
+ref: cisco_webex
+
+name: cisco_webex
+
+description: Simple pack containing examples of sensor, rule, and action.
+
+keywords:
+    - bearer_token
+    - room_id
+    - text
+
+version: 0.1.0
+
+python_versions:
+  - "3"
+
+dependencies:
+  - core
+
+author: StackStorm, Inc.
+
+email: info@stackstorm.com
+
+contributors:
+  - "John Doe1 <john.doe1@gmail.com>"
+  - "John Doe2 <john.doe2@gmail.com>"

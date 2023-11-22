@@ -1,0 +1,17 @@
+---
+  server:
+    description: "server or ip address"
+    type: "string"
+    required: true
+  username:
+    description: "Authentication username"
+    type: "string"
+    required: true
+  password:
+    description: "Authentication password"
+    type: "string"
+    required: true
+  service_name:
+    description: "Enter a service name to monitor on server"
+    type: "string"
+    required: true

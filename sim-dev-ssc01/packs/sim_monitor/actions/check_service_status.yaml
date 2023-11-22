@@ -1,0 +1,24 @@
+---
+name: check_service_status
+pack: sim_monitor
+description: Check if  service is running on the remote server.
+enabled: true
+runner_type: python-script
+entry_point: check_service_status.py
+
+parameters:
+  remote_server:
+    type: "string"
+    description: Remote server IP or hostname.
+    required: true
+  username:
+    type: "string"
+    description: SSH username for remote server login.
+    required: true
+  password:
+    type: "string"
+    description: SSH password for remote server login.
+  service_name:
+    type: "string"
+    description: enter name of the service required.  
+

@@ -1,0 +1,18 @@
+class_name: "StatusSensor"
+entry_point: "monitor_service.py"
+description: "Sensor that emits triggers when e-mail message is received via IMAP"
+trigger_types:
+  -
+    name: sim_monitor
+    description: "Monitor service"
+    payload_schema:
+        type: "object"
+        properties:
+          server:
+            type: "string"
+          username:
+            type: "string"
+          password:
+            type: "string"
+          service_name:
+            type: "string"

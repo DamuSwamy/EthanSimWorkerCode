@@ -1,0 +1,73 @@
+version: 1.0
+tasks:
+  # [275, 103]
+  result_of_service_monitoring:
+    action: core.echo
+    input:
+      message: <%ctx().output%>
+    next:
+      - do:
+          - update_message_cisco
+        when: "<%regex(ctx().output).matches(\"true\")%>"
+      - do:
+          - cisco_webex_message
+        when: "<%not regex(ctx().output).matches(\"true\")%>"
+  # [275, 0]
+  check_service_status:
+    action: sim_monitor.check_service_status
+    next:
+      - do:
+          - result_of_service_monitoring
+        publish:
+          - output: <% str(result().result)%>
+        when: <%succeeded()%>
+    input:
+      log_level: DEBUG
+      remote_server: <%ctx().server%>
+      username: <%ctx().username%>
+      service_name: <%ctx().service%>
+      password: <%ctx().password%>
+  # [445, 209]
+  cisco_webex_message:
+    action: cisco_webex.webex_post_message
+    input:
+      log_level: DEBUG
+      room_id: Y2lzY29zcGFyazovL3VzL1JPT00vYWQ3ZWE5MzAtNzZlZC0xMWVlLTlkMjQtY2JiOTMyNmY4MDJm
+      bearer_token: N2U5NzA4NmYtYjM3OC00MGRjLWE2NDItYWQwMmRjMWUwNWY0N2IzMWIxM2YtNWMx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
+      text: "CRITICAL:SIM-CENTRAL : \"<%ctx().service%> service is DOWN\""
+    next:
+      - do:
+          - restart_service
+  # [445, 323]
+  restart_service:
+    action: core.remote_sudo
+    input:
+      cmd: systemctl start <%ctx().service%>
+      hosts: <%ctx().server%>
+      sudo_password: <%ctx().password%>
+      password: <%ctx().password%>
+      username: <%ctx().username%>
+    next:
+      - do:
+          - restart_message_cisco
+  # [447, 445]
+  restart_message_cisco:
+    action: cisco_webex.webex_post_message
+    input:
+      log_level: DEBUG
+      bearer_token: N2U5NzA4NmYtYjM3OC00MGRjLWE2NDItYWQwMmRjMWUwNWY0N2IzMWIxM2YtNWMx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
+      room_id: Y2lzY29zcGFyazovL3VzL1JPT00vYWQ3ZWE5MzAtNzZlZC0xMWVlLTlkMjQtY2JiOTMyNmY4MDJm
+      text: "OK:SIM-CENTRAL:<%ctx().service%> service is successfully restarted"
+  # [74, 226]
+  update_message_cisco:
+    action: cisco_webex.webex_post_message
+    input:
+      log_level: DEBUG
+      bearer_token: N2U5NzA4NmYtYjM3OC00MGRjLWE2NDItYWQwMmRjMWUwNWY0N2IzMWIxM2YtNWMx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
+      room_id: Y2lzY29zcGFyazovL3VzL1JPT00vYWQ3ZWE5MzAtNzZlZC0xMWVlLTlkMjQtY2JiOTMyNmY4MDJm
+      text: "OK:SIM-CENTRAL: <%ctx().service%> service is running"
+input:
+  - username
+  - password
+  - server
+  - service

@@ -1,0 +1,24 @@
+---
+ref: sim_monitor
+name: check_service_status
+description: Mointoring the service in remote server
+# Keywords which are used when searching for packs.
+keywords:
+    - remote_server
+    - username
+    - password
+    - service_name
+version: "0.1.0"
+# A list of major Python versions pack is tested with and works with.
+python_versions: 
+  - "3"
+dependencies:
+  - core
+# Name of the pack author.
+author: Accelnomics.
+# Email of the pack author.
+email: core@accelnomics.com
+# Optional list of additional contributors to the pack.
+contributors:
+  - "John Doe1 <john.doe1@gmail.com>"
+  - "John Doe2 <john.doe2@gmail.com>"
