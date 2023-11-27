@@ -47,7 +47,7 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - billing_vmdisk_empty: <% switch(isList(result().result) => result().result, true => []) %>
-          - vmID_List: <% ctx(billing_vmdisk_empty).select($.vmID).distinct() %>
+          - vmID_List: <% ctx(billing_vmdisk_empty).select($.VmId).distinct() %>
         do:
           - Check_For_Records
       - when: <% failed() %>
@@ -80,7 +80,7 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - vm_output: <% switch(isDict(result().result) => result().result, true => {}) %>
-          - vmdisks: <% ctx().vm_output.VMDisks %>
+          - vmdisks: <% ctx().vm_output.VmDisks %>
         do:
           - Check_For_Update_Records
       - when: <% failed() %>

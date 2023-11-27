@@ -34,7 +34,7 @@ class ReturnAssetVulDetails(Action):
                         'Content-Type': 'application/json'
                 }
                 response = requests.request('get', endpoint, headers=headers, data={})
-#               print("Endpoint: "+ endpoint + ", status_code: "+ str(response.status_code))
+                print("Endpoint: "+ endpoint + ", status_code: "+ str(response.status_code))
                 response_json = response.json()
                 for cve in response_json['result']['CVE_Items']:
 #                   print("cve: "+ str(cve['cve']['CVE_data_meta']['ID']))
