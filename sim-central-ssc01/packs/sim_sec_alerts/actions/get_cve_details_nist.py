@@ -19,7 +19,7 @@ class GetCVEDetailsAction(Action):
          api_url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={cve_id}"
 
          # Make the API request with the API key in the headers
-         headers = {"apiKey":"9d39d350-29e7-4e25-a0b8-fc74bd97c5ee"}
+         headers = {"apiKey":"afce07e1-68c2-4c6d-9ed8-75b075d508e8"}
          response = requests.get(api_url, headers=headers)
 
          if response.status_code == 200:
