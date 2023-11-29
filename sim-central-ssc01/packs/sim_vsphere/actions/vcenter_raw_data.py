@@ -148,6 +148,7 @@ class VcenterRawData(BaseAction):
                 "VmIPAddress": self._get_vm_ipaddress(vm.guest.net),
                 "VmResourcePool": vmResourcePool,
                 "VmEnvironment": "".join([x.value for x in vm.customValue if x.key == environment_id]),
+                "VmConfiguration": vm.summary.config.guestFullName,
                 "VmActive": True,
                 "VmPowerState": vmPowerState,
                 "VmCpu": vm.summary.config.numCpu,

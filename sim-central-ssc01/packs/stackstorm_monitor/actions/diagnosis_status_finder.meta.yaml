@@ -1,0 +1,18 @@
+pack: stackstorm_monitor
+enabled: true
+runner_type: orquesta
+name: diagnosis_status_finder
+entry_point: workflows/diagnosis_status_finder.yaml
+description: This automation will fetch the diagnosis report of last 24 hours and send a report to cisco webex
+parameters:
+  server_name:
+    type: string
+    description: server address
+    required: true
+    default: sim-central.sim.esecure.systems
+  st2_apikey:
+    type: string
+    description: api key for address
+    required: true
+    default: MjAwYmYyZWM4ZDRlY2RkMWY5MWY1YzQ0M2QyMzVmNDQ4OGZlZWFkNzA1ZTk0MDUzNjRkODA0ZTg2ZTA2OGU3YQ
+    secret: true 

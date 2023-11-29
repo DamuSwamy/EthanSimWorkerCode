@@ -1,0 +1,20 @@
+---
+name: diagnosis_checker
+description: Run inline Python code
+runner_type: python-script
+entry_point: diagnosis_checker.py
+parameters:
+  server_name:
+    type: string
+    required: true
+    description: "server address"
+  st2_api_key:
+    type: string
+    required: true
+    description: "api key"
+    secret: true
+
+
+
+
+
