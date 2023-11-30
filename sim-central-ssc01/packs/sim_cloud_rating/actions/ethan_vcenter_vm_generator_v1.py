@@ -8,7 +8,7 @@ class InsertAndUpdateListGeneratorAction(Action):
         insert_list = []
         remove_list = []
         if data_type == 'vm':
-            required = ['_EthVmId','_VmId', 'VmId','EthVmId','VmActive', 'VmName', 'VmHostName', 'VmIPAddress', 'VmCpu', 'VmRam', 'VmStorageUsed', 'VmStorageTotal', 'VmPowerState', 'VmVersion', 'LastScanTime']
+            required = ['_EthVmId','_VmId', 'VmId','EthVmId','VmActive', 'VmName', 'VmHostName', 'VmIPAddress', 'VmCpu', 'VmRam', 'VmStorageUsed', 'VmStorageTotal', 'VmPowerState', 'VmVersion', 'VmConfiguration', 'LastScanTime']
             vm_data = [{key : val for key, val in sub.items() if key in required} for sub in vc_data]
             for y in sorted(db_data, key=itemgetter('EthVmId', 'VmId'), reverse=True):
                 update = [sub for sub in vm_data if sub['EthVmId'] == y['EthVmId'] and int(sub['VmId']) == int(y['VmId'])]

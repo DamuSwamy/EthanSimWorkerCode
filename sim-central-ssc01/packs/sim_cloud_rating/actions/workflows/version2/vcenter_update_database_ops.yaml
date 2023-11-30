@@ -37,7 +37,7 @@ tasks:
       connection: <% ctx().billing_db_connection %>
       table: "EthVms"
       data: <% ctx().vms %>
-      update_values: ['VmActive', 'VmName', 'VmHostName', 'VmIPAddress', 'VmCpu', 'VmRam', 'VmStorageUsed', 'VmStorageTotal', 'VmPowerState', 'VmVersion', 'LastScanTime']
+      update_values: ['VmActive', 'VmName', 'VmHostName', 'VmIPAddress', 'VmCpu', 'VmRam', 'VmStorageUsed', 'VmStorageTotal', 'VmPowerState', 'VmVersion','VmConfiguration', 'LastScanTime']
       column_filter1: "EthVmId"
       column_filter2: "VmId"
     next:

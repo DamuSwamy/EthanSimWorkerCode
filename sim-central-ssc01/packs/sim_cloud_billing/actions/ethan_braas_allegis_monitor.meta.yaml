@@ -1,0 +1,26 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_braas_allegis_monitor
+entry_point: workflows/ethan_braas_allegis_monitor.yaml
+description: Monitor the backup count in ethan online for allegis(11)
+parameters:
+  email_to:
+    type: string
+    description: Email address
+    required: true
+    default: nandhakumar.arumugam@ethan.com.au
+    position: 0
+  billing_db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: cloud_billing
+    position: 1
+  cloud_db_connection: 
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: true
+    default: cloudmanagement
+    position: 2
+

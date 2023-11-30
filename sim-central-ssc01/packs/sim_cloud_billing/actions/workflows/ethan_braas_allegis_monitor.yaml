@@ -1,0 +1,66 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - cloud_db_connection
+  - email_to
+
+output:
+  - result: <% ctx().final_result %>
+
+
+tasks:
+  # [192, 51]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - SQL_Select_Billing_VM
+
+  SQL_Select_Billing_VM:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT [vmName],[vmPersistentID] FROM [Billing].[dbo].[iaasVM] WHERE custidx=11 AND vmActive=1;"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_Cloud_BraaS_VM
+      - when: <% failed() %>
+        do: fail
+
+  # [892, 651]
+  SQL_Select_Cloud_BraaS_VM:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "SELECT DISTINCT [persistantID] FROM [CloudManagement].[dbo].[Braas_Live] WHERE GroupDomain LIKE '%ALEG%' AND clientType='VMACHINE';"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - backup_data: <% switch(isList(result().result) => result().result, true => []) %>
+          - final_result: "{%- set result_found = namespace(found=false) -%}{%- set matched_records = [] -%}{%- set unmatched_records = [] -%}{%- for billing_record in ctx().billing_data -%}{%- set result_found.found = false -%}{%- for backup_record in ctx().backup_data if backup_record['persistantID']|string == billing_record['vmPersistentID']|string -%}{{ matched_records.append(billing_record) or '' }}{%- set result_found.found = true -%}{%- endfor -%}{%- if not result_found.found -%}{{ unmatched_records.append(billing_record) or '' }}{%- endif -%}{%- endfor -%}{{ {'matched_objects': matched_records, 'unmatched_objects': unmatched_records} | tojson }}"
+          - final_result: "{{ ctx().final_result | from_json_string  }}" 
+        do:
+          - Send_Email
+      - when: <% failed() %>
+        do: fail
+
+  Send_Email:
+    action: core.sendmail
+    input:
+      from: SiM.Automation@ethan.com.au
+      to: <% ctx().email_to %>
+      send_empty_body: false
+      subject: "Allegis backup count: <% len(ctx().final_result['matched_objects']) %>"
+      body: "Hello,<br> Backup VM count: <% len(ctx().final_result['matched_objects']) %><br> Non-Backup VM count: <% len(ctx().final_result['unmatched_objects']) %>.<br><br><br>\nRegards,<br>\nEthan SiM Automation<br>"
+    next:
+      - when: <% failed() %>
+        do: noop
+      - when: <% succeeded() %>
+        do: End
+  End: 
+    action: core.noop
