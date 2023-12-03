@@ -294,7 +294,7 @@ tasks:
     action: sim_o365.create_personal_site
     next:
       - do:
-          - ticket_update
+          - create_salesforce_user
     input:
       admin_url: "https://etestsystems-admin.sharepoint.com"
       host: <% ctx().ad_host[0] %>
@@ -302,6 +302,18 @@ tasks:
       password: Monday123!
       delegate_email: aman.mujawar@etest.systems
       user_email: <% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>
+  # [1014, 955]
+  create_salesforce_user:
+    action: core.http
+    input:
+      url: "https://axl.accelnomics.com/api/v1/executions"
+      body: "{\"action\":\"axl_salesforce.create_user\",\"parameters\":{\"password\":\"Friday123!\",\"username\":\"aman@accelnomics.sandbox\",\"securitytoken\":\"LwrcOnqHeY9HR8es5JRIpGhs\",\"user_details\":{\"Username\":\"<% ctx().first_name%>@<% ctx().emaildomain %>\",\"Alias\":\"<% ctx().first_name%>\",\"Email\":\"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\",\"LastName\":\"<% ctx().last_name%>\",\"FirstName\":\"<% ctx().first_name%>\",\"CommunityNickname\":\"<% ctx().first_name%>\",\"TimeZoneSidKey\":\"America/Los_Angeles\",\"LocaleSidKey\":\"en_US\",\"EmailEncodingKey\":\"ISO-8859-1\",\"ProfileId\":\"00e5i000004WpGfAAK\",\"LanguageLocaleKey\":\"en_US\"}}}"
+      method: POST
+      headers:
+        St2-Api-Key: MGRjNGVjOTM2NmZiMTQzMDg2YzIwOGFkZWE4ZGZhZjJmZTllNjEyNmU1ZjY2OTEzMTZjNmViNjAxYTZmMDliYw
+    next:
+      - do:
+          - ticket_update
 input:
   - data
 output:

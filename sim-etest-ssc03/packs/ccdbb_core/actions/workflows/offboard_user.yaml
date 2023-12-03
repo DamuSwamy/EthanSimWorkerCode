@@ -167,7 +167,7 @@ tasks:
       - do:
           - user_offboard_suspend_process
         when: <% ctx().data.data.custom_attributes.offboarding_type = "suspend" %>
-  # [193, 1491]
+  # [252, 1513]
   ticket_update_final:
     action: core.echo
     input:
@@ -250,7 +250,7 @@ tasks:
     next:
       # #629e47
       - do:
-          - ticket_update_final
+          - disable_salesforce
         publish:
           - after_status: "<% regex(\" +:\").replace(result().output.complete_user_status, \":\") %>"
         when: <% succeeded() %>
@@ -451,6 +451,18 @@ tasks:
     next:
       - do:
           - print_failed_actions
+  # [0, 1483]
+  disable_salesforce:
+    action: core.http
+    input:
+      url: "https://axl.accelnomics.com/api/v1/executions"
+      body: "{\"action\":\"axl_salesforce.deactivate_user_by_name\",\"parameters\":{\"password\":\"Friday123!\",\"username\":\"aman@accelnomics.sandbox\",\"security_token\":\"LwrcOnqHeY9HR8es5JRIpGhs\",\"user_full_name\":\"<%ctx().display_user%>\"}}"
+      headers:
+        St2-Api-Key: MGRjNGVjOTM2NmZiMTQzMDg2YzIwOGFkZWE4ZGZhZjJmZTllNjEyNmU1ZjY2OTEzMTZjNmViNjAxYTZmMDliYw
+      method: POST
+    next:
+      - do:
+          - ticket_update_final
 
 vars:
   - log: ""
