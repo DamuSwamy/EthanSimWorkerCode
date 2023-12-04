@@ -190,7 +190,7 @@ tasks:
     action: core.echo
     input:
       message: "<% ctx().messages %>"
-  # [365, 954]
+  # [269, 950]
   done:
     action: core.noop
     next:
@@ -355,7 +355,7 @@ tasks:
   # [841, 1029]
   build_output:
     action: core.noop
-  # [171, 767]
+  # [145, 735]
   delegated_user_email:
     action: core.sendmail
     input:
@@ -392,13 +392,11 @@ tasks:
         state: 10
         assigned_to: <% ctx().itsm_tick_name %>
       table: sn_customerservice_general_case
-  # [212, 657]
+  # [206, 640]
   check_onedrivedelegate_failure:
     action: core.noop
     next:
       - do:
           - delegated_user_email
-        when: <% ctx().result().output.info.failed_actions.indexOf('delegate_onedrive') = -1 %>
       - do:
           - done
-        when: <% ctx().result().output.info.failed_actions.indexOf('delegate_onedrive') != -1 %>

@@ -6,7 +6,7 @@ input:
   - email_to
 
 output:
-  - result: <% ctx().final_result %>
+  - result: <% ctx().backup_count %>
 
 
 tasks:
@@ -16,34 +16,20 @@ tasks:
     next:
       - when: <% succeeded() %>
         do:
-          - SQL_Select_Billing_VM
-
-  SQL_Select_Billing_VM:
-    action: sql.query
-    input:
-      connection: <% ctx().billing_db_connection %>
-      query: "SELECT [vmName],[vmPersistentID] FROM [Billing].[dbo].[iaasVM] WHERE custidx=11 AND vmActive=1;"
-    next:
-      - when: <% succeeded() %>
-        publish:
-          - billing_data: <% switch(isList(result().result) => result().result, true => []) %>
-        do:
-          - SQL_Select_Cloud_BraaS_VM
-      - when: <% failed() %>
-        do: fail
+          - SQL_vPortalServer
 
   # [892, 651]
-  SQL_Select_Cloud_BraaS_VM:
+  SQL_vPortalServer:
     action: sql.query
     input:
       connection: <% ctx().cloud_db_connection %>
-      query: "SELECT DISTINCT [persistantID] FROM [CloudManagement].[dbo].[Braas_Live] WHERE GroupDomain LIKE '%ALEG%' AND clientType='VMACHINE';"
+      query: "SELECT COUNT(*) AS TotalBackup FROM v_PortalServers S LEFT JOIN ( SELECT DISTINCT EthanVMID FROM v_PortalServerDRs ) D ON D.EthanVMID = S.EthanVMID LEFT JOIN ( SELECT DISTINCT EthanVMID FROM v_PortalServerBackups) B ON B.EthanVMID = S.EthanVMID
+LEFT JOIN ( SELECT DISTINCT EthanVMID FROM v_PortalManagementGroupMember) M ON M.EthanVMID = S.EthanVMID WHERE 1 = 1 AND CustomerName LIKE '%Alegis Group%' AND (B.EthanVMID IS NOT NULL AND B.EthanVMID != '' )"
     next:
       - when: <% succeeded() %>
         publish:
-          - backup_data: <% switch(isList(result().result) => result().result, true => []) %>
-          - final_result: "{%- set result_found = namespace(found=false) -%}{%- set matched_records = [] -%}{%- set unmatched_records = [] -%}{%- for billing_record in ctx().billing_data -%}{%- set result_found.found = false -%}{%- for backup_record in ctx().backup_data if backup_record['persistantID']|string == billing_record['vmPersistentID']|string -%}{{ matched_records.append(billing_record) or '' }}{%- set result_found.found = true -%}{%- endfor -%}{%- if not result_found.found -%}{{ unmatched_records.append(billing_record) or '' }}{%- endif -%}{%- endfor -%}{{ {'matched_objects': matched_records, 'unmatched_objects': unmatched_records} | tojson }}"
-          - final_result: "{{ ctx().final_result | from_json_string  }}" 
+          - backup_count: <% switch(isList(result().result) => result().result, true => []) %>
+          - backup_count: <% ctx().backup_count[0].TotalBackup %>
         do:
           - Send_Email
       - when: <% failed() %>
@@ -54,9 +40,9 @@ tasks:
     input:
       from: SiM.Automation@ethan.com.au
       to: <% ctx().email_to %>
-      send_empty_body: false
-      subject: "Allegis backup count: <% len(ctx().final_result['matched_objects']) %>"
-      body: "Hello,<br> Backup VM count: <% len(ctx().final_result['matched_objects']) %><br> Non-Backup VM count: <% len(ctx().final_result['unmatched_objects']) %>.<br><br><br>\nRegards,<br>\nEthan SiM Automation<br>"
+      send_empty_body: true
+      subject: "Allegis backup count: <% ctx().backup_count %>"
+      body: ""
     next:
       - when: <% failed() %>
         do: noop
