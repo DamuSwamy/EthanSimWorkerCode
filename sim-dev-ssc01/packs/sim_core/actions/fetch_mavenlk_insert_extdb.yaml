@@ -1,0 +1,7 @@
+---
+name: fetch_mavenlk_insert_extdb
+pack: sim_core
+description: Perform Mavenlink integration tasks
+enabled: true
+entry_point: fetch_mavenlk_insert_extdb.py
+runner_type: python-script

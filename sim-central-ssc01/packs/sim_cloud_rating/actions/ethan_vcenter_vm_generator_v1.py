@@ -53,6 +53,17 @@ class InsertAndUpdateListGeneratorAction(Action):
                 else:
                     update_list = update_list + update
 
+            unique_devices = []
+            seen_device_keys = set()
+
+            for item in update_list:
+                device_key = item['DeviceKey']
+                if device_key not in seen_device_keys:
+                    seen_device_keys.add(device_key)
+                    unique_devices.append(item)
+
+            update_list = unique_devices
+
             for z in sorted(vc_data, key=itemgetter('EthVmId', 'VmId' ,'DeviceKey'), reverse=True):
                 remove_event = [event for event in events if event['VmId'] == z['VmId'] and event['Event_Operation'] == "remove"]
                 if remove_event:
