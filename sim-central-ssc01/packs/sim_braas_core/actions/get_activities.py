@@ -35,6 +35,7 @@ class GetActivitiesAction(BaseAction):
         if myresp['status_code'] >= 200 and myresp['status_code'] <= 299:
             ret = True
             for activity in myresp['data']['content']:
+                activity['backupServer'] = braas
                 activity['id'] = '{}{}'.format(braas_id, activity['id'])
                 groupId = activity.pop('groupId')
                 scheduleDate = activity.pop('scheduledDate')

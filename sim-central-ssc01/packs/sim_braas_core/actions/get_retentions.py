@@ -29,6 +29,7 @@ class GetRetentionsAction(BaseAction):
         if myresp['status_code'] >= 200 and myresp['status_code'] <= 299:
             ret = True
             for retention in myresp['data']['content']:
+                retention['backupServer'] = braas
                 result.append(retention)
 
         return (ret, result)

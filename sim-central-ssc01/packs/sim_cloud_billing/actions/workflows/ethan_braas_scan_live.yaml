@@ -44,8 +44,70 @@ tasks:
           - instanceUuids: <% ctx(clients).where($.containsKey('instanceUuid') and $.instanceUuid).select($.instanceUuid) %>
           - persistentIDs: "{{ ctx().instanceUuids | unique | list | join(\"','\") }}"
         do:
-          - Get_Schedules
+          - Cleanup_BRaaS_Clients
+      - when: <% failed() %>
+        do: fail
+
+  Cleanup_BRaaS_Clients:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "DELETE FROM Braas_Clients WHERE backupServer='<% ctx().braas_server %>'"
+    next:
+      - when: <% succeeded() %>
+        do: 
           - Insert_Client_Records
+          - Get_Schedules
+      - when: <% failed() %>
+        do: fail
+
+  Cleanup_BRaaS_Groups:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "DELETE FROM Braas_Groups WHERE backupServer='<% ctx().braas_server %>'"
+    next:
+      - when: <% succeeded() %>
+        do: 
+          - Get_Group_Members
+          - Insert_Group_Records
+      - when: <% failed() %>
+        do: fail
+
+  Cleanup_BRaaS_Retentions:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "DELETE FROM Braas_Retentions WHERE backupServer='<% ctx().braas_server %>'"
+    next:
+      - when: <% succeeded() %>
+        do: 
+          - Insert_Retention_Records
+          - Get_Groups
+      - when: <% failed() %>
+        do: fail
+
+  Cleanup_BRaaS_Schedules:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "DELETE FROM Braas_Schedules WHERE backupServer='<% ctx().braas_server %>'"
+    next:
+      - when: <% succeeded() %>
+        do: 
+          - Insert_Schedule_Records
+          - Get_Retentions
+      - when: <% failed() %>
+        do: fail
+
+  Cleanup_BRaaS_Live:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "DELETE FROM Braas_Live WHERE backupServer='<% ctx().braas_server %>'"
+    next:
+      - when: <% succeeded() %>
+        do: Insert_Into_BRaaS_Live
       - when: <% failed() %>
         do: fail
 
@@ -69,8 +131,7 @@ tasks:
         publish:
           - schedules: <% result().result %>
         do:
-          - Insert_Schedule_Records
-          - Get_Retentions
+          - Cleanup_BRaaS_Schedules
       - when: <% failed() %>
         do: fail
 
@@ -94,8 +155,7 @@ tasks:
         publish:
           - retentions: <% result().result %>
         do:
-          - Insert_Retention_Records
-          - Get_Groups
+          - Cleanup_BRaaS_Retentions
       - when: <% failed() %>
         do: fail
 
@@ -120,8 +180,7 @@ tasks:
           - groups: <% result().result %>
           - group_id: <% ctx(groups).select($.gid) %>
         do:
-          - Get_Group_Members
-          - Insert_Group_Records
+          - Cleanup_BRaaS_Groups
       - when: <% failed() %>
         do: fail
 
@@ -169,7 +228,7 @@ tasks:
     next:
       - when: <% succeeded() %>
         publish:
-          - result: "{%- set accumulator = namespace(scheduleId='', groupName='', retentionId='', persistantID='') -%}{%- set resourceArr = [] -%}{%- for mem in ctx().members -%}{%- set member_obj = {'managedID': '', 'clientType': '', 'persistantID': '', 'vmName': '', 'vmIP': '', 'vmDatacenter': '', 'RetentionName': '', 'RetentionType': '', 'RetentionDuration': '0', 'RetentionUnit': '','GroupMethod': '', 'GroupName': '', 'RetentionID': '', 'ScheduleRecurrence': '', 'ScheduleName': '', 'ScheduleID': '', 'ScheduleStart': '', 'ScheduleDuration': '0', 'ScheduleNextRun': '', 'ScheduleDaily': '', 'ScheduleWeekly': '', 'ScheduleMonthly': ''} %}{{ member_obj.update({'client': mem['name']}) or ''}}{{ member_obj.update({'braascid': mem['cid']}) or ''}}{{ member_obj.update({'GroupID': mem['gid']}) or ''}}{{ member_obj.update({'GroupDomain': mem['domain']}) or ''}}{%- for group in ctx().groups if group['gid']|string == mem['gid']|string -%}{%- set accumulator.scheduleId = group['scheduleId'] -%}{%- set accumulator.retentionId = group['retentionId'] -%}{%- set accumulator.groupName = group['name'] -%}{{ member_obj.update({'GroupMethod': group['rule']}) or ''}}{{ member_obj.update({'GroupName': group['name']}) or ''}}{{ member_obj.update({'RetentionID': accumulator.retentionId}) or ''}}{%- endfor -%}{%- for schedule in ctx().schedules if schedule['id']|string == accumulator.scheduleId|string -%}{%- set recurrenceEnum = schedule['recurrenceEnum'] -%}{%- if recurrenceEnum == 'Weekly' -%}{{ member_obj.update({'ScheduleRecurrence': 'Weekly: ' + schedule['daysOfWeek']|join(' ')}) or ''}}{%- elif recurrenceEnum == 'Daily' -%}{{ member_obj.update({'ScheduleRecurrence': 'Daily: ' + schedule['timesOfDay']| join(' ')}) or '' }}{%- else -%}{{ member_obj.update({'ScheduleRecurrence': recurrenceEnum}) or ''}}{%- endif -%}{{ member_obj.update({'ScheduleName': schedule['name']}) or '' }}{{ member_obj.update({'ScheduleID': schedule['id']}) or '' }}{{ member_obj.update({'ScheduleStart': schedule['startTime']}) or '' }}{{ member_obj.update({'ScheduleDuration': schedule['duration']}) or '' }}{{ member_obj.update({'ScheduleNextRun': schedule['nextRunTime']}) or '' }}{%- endfor -%}{%- for retention in ctx().retentions if retention['id'] == accumulator.retentionId -%}{%- set duration = retention['duration'] -%}{%- if retention['duration'] is not defined or retention['duration'] is none -%}{%- set duration = '0' -%}{%- endif -%}{{ member_obj.update({'RetentionName': retention['name']}) or '' }}{{ member_obj.update({'RetentionType': retention['basicRetentionType']}) or '' }}{{ member_obj.update({'RetentionDuration': duration}) or '' }}{{ member_obj.update({'RetentionUnit': retention['durationUnit']}) or '' }}{%- endfor -%}{%- for client in ctx().clients if client['cid'] == mem['cid'] -%}{{ member_obj.update({'clientType': client['clientType']}) or '' }}{%- if client['instanceUuid'] is defined -%}{%- set accumulator.persistantID = client['instanceUuid'] -%}{{ member_obj.update({'persistantID': accumulator.persistantID}) or '' }}{%- endif -%}{%- if client['vmName'] is defined -%}{{ member_obj.update({'vmName': client['vmName']}) or '' }}{%- endif -%}{%- if client['pagingAddress'] is defined -%}{{ member_obj.update({'vmIP': client['pagingAddress']}) or '' }}{%- endif -%}{%- if client['datacenter'] is defined -%}{{ member_obj.update({'vmDatacenter': client['datacenter']}) or '' }}{%- endif -%}{%- endfor -%}{%- if 'Default' not in accumulator.groupName -%}{%- for vm in ctx().active_vms if vm['vmPersistentID'] == accumulator.persistantID -%}{{ member_obj.update({'managedID': vm['ethvmID']}) or ''}}{%- endfor -%}{%- endif -%}{{ resourceArr.append(member_obj) or '' }}{%- endfor -%}{{ resourceArr | tojson }}"
+          - result: "{%- set accumulator = namespace(scheduleId='', groupName='', retentionId='', persistantID='') -%}{%- set resourceArr = [] -%}{%- for mem in ctx().members -%}{%- set member_obj = {'backupServer': ctx().braas_server, 'managedID': '', 'clientType': '', 'persistantID': '', 'vmName': '', 'vmIP': '', 'vmDatacenter': '', 'RetentionName': '', 'RetentionType': '', 'RetentionDuration': '0', 'RetentionUnit': '','GroupMethod': '', 'GroupName': '', 'RetentionID': '', 'ScheduleRecurrence': '', 'ScheduleName': '', 'ScheduleID': '', 'ScheduleStart': '', 'ScheduleDuration': '0', 'ScheduleNextRun': '', 'ScheduleDaily': '', 'ScheduleWeekly': '', 'ScheduleMonthly': ''} %}{{ member_obj.update({'client': mem['name']}) or ''}}{{ member_obj.update({'braascid': mem['cid']}) or ''}}{{ member_obj.update({'GroupID': mem['gid']}) or ''}}{{ member_obj.update({'GroupDomain': mem['domain']}) or ''}}{%- for group in ctx().groups if group['gid']|string == mem['gid']|string -%}{%- set accumulator.scheduleId = group['scheduleId'] -%}{%- set accumulator.retentionId = group['retentionId'] -%}{%- set accumulator.groupName = group['name'] -%}{{ member_obj.update({'GroupMethod': group['rule']}) or ''}}{{ member_obj.update({'GroupName': group['name']}) or ''}}{{ member_obj.update({'RetentionID': accumulator.retentionId}) or ''}}{%- endfor -%}{%- for schedule in ctx().schedules if schedule['id']|string == accumulator.scheduleId|string -%}{%- set recurrenceEnum = schedule['recurrenceEnum'] -%}{%- if recurrenceEnum == 'Weekly' -%}{{ member_obj.update({'ScheduleRecurrence': 'Weekly: ' + schedule['daysOfWeek']|join(' ')}) or ''}}{%- elif recurrenceEnum == 'Daily' -%}{{ member_obj.update({'ScheduleRecurrence': 'Daily: ' + schedule['timesOfDay']| join(' ')}) or '' }}{%- else -%}{{ member_obj.update({'ScheduleRecurrence': recurrenceEnum}) or ''}}{%- endif -%}{{ member_obj.update({'ScheduleName': schedule['name']}) or '' }}{{ member_obj.update({'ScheduleID': schedule['id']}) or '' }}{{ member_obj.update({'ScheduleStart': schedule['startTime']}) or '' }}{{ member_obj.update({'ScheduleDuration': schedule['duration']}) or '' }}{{ member_obj.update({'ScheduleNextRun': schedule['nextRunTime']}) or '' }}{%- endfor -%}{%- for retention in ctx().retentions if retention['id'] == accumulator.retentionId -%}{%- set duration = retention['duration'] -%}{%- if retention['duration'] is not defined or retention['duration'] is none -%}{%- set duration = '0' -%}{%- endif -%}{{ member_obj.update({'RetentionName': retention['name']}) or '' }}{{ member_obj.update({'RetentionType': retention['basicRetentionType']}) or '' }}{{ member_obj.update({'RetentionDuration': duration}) or '' }}{{ member_obj.update({'RetentionUnit': retention['durationUnit']}) or '' }}{%- endfor -%}{%- for client in ctx().clients if client['cid'] == mem['cid'] -%}{{ member_obj.update({'clientType': client['clientType']}) or '' }}{%- if client['instanceUuid'] is defined -%}{%- set accumulator.persistantID = client['instanceUuid'] -%}{{ member_obj.update({'persistantID': accumulator.persistantID}) or '' }}{%- endif -%}{%- if client['vmName'] is defined -%}{{ member_obj.update({'vmName': client['vmName']}) or '' }}{%- endif -%}{%- if client['pagingAddress'] is defined -%}{{ member_obj.update({'vmIP': client['pagingAddress']}) or '' }}{%- endif -%}{%- if client['datacenter'] is defined -%}{{ member_obj.update({'vmDatacenter': client['datacenter']}) or '' }}{%- endif -%}{%- endfor -%}{%- if 'Default' not in accumulator.groupName -%}{%- for vm in ctx().active_vms if vm['vmPersistentID'] == accumulator.persistantID -%}{{ member_obj.update({'managedID': vm['ethvmID']}) or ''}}{%- endfor -%}{%- endif -%}{{ resourceArr.append(member_obj) or '' }}{%- endfor -%}{{ resourceArr | tojson }}"
           - result: "{{ ctx().result | from_json_string }}"
         do:
           - Check_For_Records
@@ -182,7 +241,7 @@ tasks:
           - last_event_date: <% (now(offset=>localtz())).format("%Y-%m-%d %H:%M:%S") %>
           - scan_log: <% dict(system_id=>0, system_type=>'BRaaS', system_name=>ctx().braas_server, num_of_records=>len(ctx().result), last_event_at=>ctx().last_event_date, additional_info=>'LIVE') %>
         do:
-          - Insert_Into_BRaaS_Live
+          - Cleanup_BRaaS_Live
           - Insert_Scanned_Data
       - when: <% len(ctx().result) = 0 %>
         publish:

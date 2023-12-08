@@ -28,11 +28,14 @@ class GetClientsAction(BaseAction):
         except ValueError:
             myresp['data'] = resp.content
 
-        print(myresp)
+        #print(myresp)
+        if myresp['status_code'] >= 300:
+            print(myresp)
 
         if myresp['status_code'] >= 200 and myresp['status_code'] <= 299:
             ret = True
             for client in myresp['data']['content']:
+                client['backupServer'] = braas
                 if 'vcCids' in client:
                     vcCids = client.pop('vcCids')
                     client.pop('biosUuid')

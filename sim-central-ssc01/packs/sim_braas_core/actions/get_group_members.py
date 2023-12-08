@@ -10,10 +10,10 @@ class GetGroupMembersAction(BaseAction):
         self.access_token = access_token
         self.result = []
         for gid in group_ids:
-            self.result = self.result + self.get_members(gid)
+            self.result = self.result + self.get_members(gid, braas)
         return self.result
 
-    def get_members(self, gid):
+    def get_members(self, gid, braas):
         result = []
         args = {}
         args['access_token'] = self.access_token
@@ -34,6 +34,7 @@ class GetGroupMembersAction(BaseAction):
         if myresp['status_code'] >= 200 and myresp['status_code'] <= 299:
             for group in myresp['data']['content']:
                 group_mem = {}
+                group_mem['backupServer'] = braas
                 group_mem['cid'] = group['cid']
                 group_mem['gid'] = group['gid']
                 group_mem['domain'] = group['domain']

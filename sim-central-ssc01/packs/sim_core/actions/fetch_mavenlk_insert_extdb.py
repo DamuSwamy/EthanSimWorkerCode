@@ -5,22 +5,18 @@ from st2client.client import Client
 from st2client.models import LiveAction
 
 class MavenlinkIntegrationAction(Action):
-    def chunk_list(self, lst, chunk_size):
-        """Yield successive n-sized chunks from lst."""
-        for i in range(0, len(lst), chunk_size):
-            yield lst[i:i + chunk_size]
-
-    def flatten_json(self, json_obj, parent_key='', separator='_'):
-        flattened = {}
-        for key, value in json_obj.items():
-            new_key = f"{parent_key}{separator}{key}" if parent_key else key
-            if isinstance(value, dict):
-                flattened.update(self.flatten_json(value, new_key, separator))
-            else:
-                flattened[new_key] = value
-        return flattened
-
     def run(self):
+        # JSON Flattening Function
+        def flatten_json(json_obj, parent_key='', separator='_'):
+            flattened = {}
+            for key, value in json_obj.items():
+                new_key = f"{parent_key}{separator}{key}" if parent_key else key
+                if isinstance(value, dict):
+                    flattened.update(flatten_json(value, new_key, separator))
+                else:
+                    flattened[new_key] = value
+            return flattened
+
         # APIS
         support_detail_api_url = "https://api.mavenlink.com/api/v1/workspaces?include=custom_field_values&by_custom_choice_value=691435:3305075&per_page=100"
         wsp_id = 0
@@ -48,7 +44,7 @@ class MavenlinkIntegrationAction(Action):
 
         for wsp in workspaces:
             workspace_ids.append(wsp)
-            flattened_dict = self.flatten_json(workspaces[wsp])
+            flattened_dict = flatten_json(workspaces[wsp])
             title = str(flattened_dict['title']).replace("'", "''")
             client_role_name = str(flattened_dict['client_role_name']).replace("'", "''")
             values = {
@@ -112,36 +108,38 @@ class MavenlinkIntegrationAction(Action):
                     "Workspace": workspace
                 }
                 time_entries_json_data.append(values)
-                self.logger.info(values)
+            
 
-        # Initialize ActionManager
-        am = ActionManager()
+        # Batch size for processing data
+        batch_size = 500
 
-        am.execute(
-            "127.0.0.1",
-            "sql.insert_bulk",
-            {"connection": "productionCloudExtension", "data": support_details_json_data, "table": "[dbo].[Bkp_ML_Support_Detail]"}
-        )
-        self.logger.info(f"Total Time Entries: {len(time_entries_json_data)}")
+        # Insert data into [dbo].[ML_Support_Detail] table
+        self.insert_data_batched(support_details_json_data, "ML_Support_Detail", batch_size)
 
-        # Chunk size for batch processing
-        chunk_size = 500
+        # Insert data into [dbo].[ML_Time_Entries] table
+        self.insert_data_batched(time_entries_json_data, "ML_Time_Entries", batch_size)
 
-        # Split the time_entries_json_data into chunks of 500
-        time_entries_chunks = list(self.chunk_list(time_entries_json_data, chunk_size))
-
-        
         return {
             'result': 'success',
             'message': 'Mavenlink integration completed successfully.'
         }
 
+    def insert_data_batched(self, data, table, batch_size):
+        am = ActionManager()
+
+        # Split the data into batches
+        for i in range(0, len(data), batch_size):
+            batch = data[i:i + batch_size]
+
+            # Execute the SQL insert action for each batch
+            am.execute(
+                "127.0.0.1",
+                "sql.insert_bulk",
+                {"connection": "productionCloudExtension", "data": batch, "table": table}
+            )
+
 class ActionManager(object):
     def execute(self, server, action, params):
         client = Client(base_url="https://{}/".format(server))
         client.liveactions.create(LiveAction(action=action, parameters=params))
-
-# Instantiate and run the MavenlinkIntegrationAction
-action = MavenlinkIntegrationAction()
-action.run()
 

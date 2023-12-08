@@ -13,71 +13,9 @@ tasks:
     next:
       - when: <% succeeded() %>
         publish:
-          - concurrency: "{{ 3 if ctx().workflow_name != 'ethan_braas_scan_live' else 3 }}"
+          - concurrency: 3
         do:
           - BraaS_Get_Valid_Servers
-      - when: <% ctx().workflow_name = 'ethan_braas_scan_live' %>
-        do:
-          - Cleanup_BRaaS_Live
-          - Cleanup_BRaaS_Clients
-          - Cleanup_BRaaS_Groups
-          - Cleanup_BRaaS_Retentions
-          - Cleanup_BRaaS_Schedules
-
-  Cleanup_BRaaS_Clients:
-    action: sql.query
-    input:
-      connection: <% ctx().cloud_db_connection %>
-      query: "DELETE FROM Braas_Clients"
-    next:
-      - when: <% succeeded() %>
-        do: noop
-      - when: <% failed() %>
-        do: fail
-
-  Cleanup_BRaaS_Groups:
-    action: sql.query
-    input:
-      connection: <% ctx().cloud_db_connection %>
-      query: "DELETE FROM Braas_Groups"
-    next:
-      - when: <% succeeded() %>
-        do: noop
-      - when: <% failed() %>
-        do: fail
-
-  Cleanup_BRaaS_Retentions:
-    action: sql.query
-    input:
-      connection: <% ctx().cloud_db_connection %>
-      query: "DELETE FROM Braas_Retentions"
-    next:
-      - when: <% succeeded() %>
-        do: noop
-      - when: <% failed() %>
-        do: fail
-
-  Cleanup_BRaaS_Schedules:
-    action: sql.query
-    input:
-      connection: <% ctx().cloud_db_connection %>
-      query: "DELETE FROM Braas_Schedules"
-    next:
-      - when: <% succeeded() %>
-        do: noop
-      - when: <% failed() %>
-        do: fail
-
-  Cleanup_BRaaS_Live:
-    action: sql.query
-    input:
-      connection: <% ctx().cloud_db_connection %>
-      query: "DELETE FROM Braas_Live"
-    next:
-      - when: <% succeeded() %>
-        do: noop
-      - when: <% failed() %>
-        do: fail
 
   BraaS_Get_Valid_Servers:
     action: core.noop

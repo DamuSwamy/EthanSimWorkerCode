@@ -29,6 +29,7 @@ class GetSchedulesAction(BaseAction):
         if myresp['status_code'] >= 200 and myresp['status_code'] <= 299:
             ret = True
             for schedule in myresp['data']['content']:
+                schedule['backupServer'] = braas
                 if schedule['dailyData'] is not None:
                     schedule['timesOfDay'] = schedule['dailyData']['timesOfDay']
                     schedule['dailyData'] = json.dumps(schedule['dailyData'])

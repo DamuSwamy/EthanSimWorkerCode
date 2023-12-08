@@ -29,6 +29,7 @@ class GetGroupsAction(BaseAction):
         if myresp['status_code'] >= 200 and myresp['status_code'] <= 299:
             ret = True
             for group in myresp['data']['content']:
+                group['backupServer'] = braas
                 group_id = group.pop('id')
                 group.pop('proxyIds')
                 group['gid'] = group_id
