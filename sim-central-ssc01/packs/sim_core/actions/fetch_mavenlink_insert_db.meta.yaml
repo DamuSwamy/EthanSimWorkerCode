@@ -1,0 +1,6 @@
+pack: sim_core
+enabled: true
+runner_type: orquesta
+name: fetch_mavenlink_insert_db
+entry_point: workflows/fetch_mavenlink_insert_db.yaml
+description: "This workflow will move the data from Main to BKP and delete the data in main and it will fetch the data from mavenlink and insert into main "

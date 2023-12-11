@@ -22,7 +22,7 @@ tasks:
     action: sql.query
     input:
       connection: <% ctx().cloud_db_connection %>
-      query: "SELECT braascid,vmIP,managedID FROM Braas_Live WHERE clientType = 'VREGULAR'"
+      query: "SELECT braascid,vmIP,managedID FROM Braas_Live_Temp WHERE clientType = 'VREGULAR'"
     next:
       - when: <% succeeded() %>
         publish:
@@ -60,7 +60,7 @@ tasks:
     action: sql.update_bulk
     input:
       connection: <% ctx().cloud_db_connection %>
-      table: "Braas_Live"
+      table: "Braas_Live_Temp"
       data: <% ctx().braas_list %>
       update_values: ['vmNATIP']
       column_filter1: "braascid"
@@ -72,7 +72,7 @@ tasks:
     action: sql.query
     input:
       connection: <% ctx().cloud_db_connection %>
-      query: "SELECT braascid,vmIP,managedID FROM Braas_Live"
+      query: "SELECT braascid,vmIP,managedID FROM Braas_Live_Temp"
     next:
       - when: <% succeeded() %>
         publish:
@@ -110,7 +110,7 @@ tasks:
     action: sql.update_bulk
     input:
       connection: <% ctx().cloud_db_connection %>
-      table: "Braas_Live"
+      table: "Braas_Live_Temp"
       data: <% ctx().braas_list %>
       update_values: ['managedID']
       column_filter1: "braascid"
@@ -122,7 +122,7 @@ tasks:
     action: sql.query
     input:
       connection: <% ctx().cloud_db_connection %>
-      query: "SELECT braascid,managedID,vmNATIP,vmIP FROM Braas_Live WHERE clientType = 'VREGULAR' and managedID = '' or managedID is NULL"
+      query: "SELECT braascid,managedID,vmNATIP,vmIP FROM Braas_Live_Temp WHERE clientType = 'VREGULAR' and managedID = '' or managedID is NULL"
     next:
       - when: <% succeeded() %>
         publish:
@@ -182,11 +182,36 @@ tasks:
     action: sql.update_bulk
     input:
       connection: <% ctx().cloud_db_connection %>
-      table: "Braas_Live"
+      table: "Braas_Live_Temp"
       data: <% ctx().result %>
       update_values: ['managedID']
       column_filter1: "braascid"
     next:
+      - when: <% failed() %>
+        do: fail
+      - when: <% succeeded() %>
+        do: Cleanup_BRaaS_Live
+
+  Cleanup_BRaaS_Live:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "DELETE FROM Braas_Live"
+    next:
+      - when: <% succeeded() %>
+        do: Insert_Into_BRaaS_Live
+      - when: <% failed() %>
+        do: fail
+
+  Insert_Into_BRaaS_Live:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "INSERT INTO Braas_Live SELECT * FROM Braas_Live_Temp"
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
       - when: <% failed() %>
         do: fail
 

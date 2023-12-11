@@ -1,0 +1,83 @@
+version: 1.0
+tasks:
+  # [496, 40]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - SD_Main_Data_Count
+        when: Succeeded
+  # [496, 145]
+  SD_Main_Data_Count:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: select count(*) from [dbo].[ML_Support_Detail]
+      connection: productionCloudExtension
+    next:
+      - do:
+          - SD_Insert_data_Main_to_BKP
+        when: Succeeded
+  # [496, 454]
+  TE_Main_Data_Count:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      connection: productionCloudExtension
+      query: select count(*) from [dbo].[ML_Time_Entries]
+    next:
+      - do:
+          - TE_insert_data_Main_to_BKP
+        when: Succeeded
+  # [496, 255]
+  SD_Insert_data_Main_to_BKP:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: "INSERT INTO [dbo].[Bkp_ML_Support_Detail] \n           ([title]\n           ,[workspaceid]\n           ,[status]\n           ,[total_expenses_in_cents]\n           ,[price_in_cents]\n           ,[price]\n           ,[percent_budget_used]\n           ,[budget_used]\n           ,[budget_used_in_cents]\n           ,[budget_remaining]\n           ,[group]\n           ,[client_role_name])\nSELECT [title]\n      ,[workspaceid]\n      ,[status]\n      ,[total_expenses_in_cents]\n      ,[price_in_cents]\n      ,[price]\n      ,[percent_budget_used]\n      ,[budget_used]\n      ,[budget_used_in_cents]\n      ,[budget_remaining]\n      ,[group]\n      ,[client_role_name]\nFROM [dbo].[ML_Support_Detail]"
+      connection: productionCloudExtension
+    next:
+      - do:
+          - SD_Delete_Main_Data
+        when: Succeeded
+  # [495, 564]
+  TE_insert_data_Main_to_BKP:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      connection: productionCloudExtension
+      query: "INSERT INTO [dbo].[Bkp_ML_Time_Entries] \n       ([Date]\n       ,[Person]\n       ,[Project]\n       ,[Task]\n       ,[Time_in_hrs]\n       ,[Role]\n       ,[Rate]\n       ,[Subtotal]\n       ,[Workspace])\nSELECT TOP (4000)\n       [Date]\n      ,[Person]\n      ,[Project]\n      ,[Task]\n      ,[Time_in_hrs]\n      ,[Role]\n      ,[Rate]\n      ,[Subtotal]\n      ,[Workspace]\nFROM [dbo].[ML_Time_Entries];"
+    next:
+      - do:
+          - TE_Delete_Main_Data
+  # [496, 355]
+  SD_Delete_Main_Data:
+    action: sql.query
+    next:
+      - do:
+          - TE_Main_Data_Count
+        when: Succeeded
+    input:
+      log_level: DEBUG
+      query: delete from [dbo].[ML_Support_Detail]
+      connection: productionCloudExtension
+  # [812, 590]
+  TE_Delete_Main_Data:
+    action: sql.query
+    next:
+      - do:
+          - Fetch_Data_from_MavenLink
+        when: Succeeded
+    input:
+      log_level: DEBUG
+      query: delete from [dbo].[ML_Time_Entries]
+      connection: productionCloudExtension
+  # [1019, 347]
+  End:
+    action: core.noop
+  # [1096, 583]
+  Fetch_Data_from_MavenLink:
+    action: sim_core.fetch_mavenlk_insert_extdb
+    next:
+      - do:
+          - End

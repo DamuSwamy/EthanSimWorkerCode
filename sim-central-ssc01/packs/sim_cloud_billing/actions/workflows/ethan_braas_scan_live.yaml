@@ -100,14 +100,14 @@ tasks:
       - when: <% failed() %>
         do: fail
 
-  Cleanup_BRaaS_Live:
+  Cleanup_BRaaS_Live_Temp:
     action: sql.query
     input:
       connection: <% ctx().cloud_db_connection %>
-      query: "DELETE FROM Braas_Live WHERE backupServer='<% ctx().braas_server %>'"
+      query: "DELETE FROM Braas_Live_Temp WHERE backupServer='<% ctx().braas_server %>'"
     next:
       - when: <% succeeded() %>
-        do: Insert_Into_BRaaS_Live
+        do: Insert_Into_BRaaS_Live_Temp
       - when: <% failed() %>
         do: fail
 
@@ -241,7 +241,7 @@ tasks:
           - last_event_date: <% (now(offset=>localtz())).format("%Y-%m-%d %H:%M:%S") %>
           - scan_log: <% dict(system_id=>0, system_type=>'BRaaS', system_name=>ctx().braas_server, num_of_records=>len(ctx().result), last_event_at=>ctx().last_event_date, additional_info=>'LIVE') %>
         do:
-          - Cleanup_BRaaS_Live
+          - Cleanup_BRaaS_Live_Temp
           - Insert_Scanned_Data
       - when: <% len(ctx().result) = 0 %>
         publish:
@@ -250,10 +250,10 @@ tasks:
           - Insert_Scanned_Data
           - End
 
-  Insert_Into_BRaaS_Live:
+  Insert_Into_BRaaS_Live_Temp:
     action: sql.insert_bulk
     input:
-      table: "Braas_Live"
+      table: "Braas_Live_Temp"
       data: <% ctx().result %>
       connection: <% ctx().cloud_db_connection %>
     next:

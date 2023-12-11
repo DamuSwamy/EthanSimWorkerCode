@@ -1,0 +1,16 @@
+---
+name: collect_nist_asset_data_2.0
+description: Collect data from nist api 2.0
+enabled: true
+entry_point: collect_NIST_asset_data_2.0.py
+runner_type: python-script
+parameters:
+  asset:
+    type: array
+    description: List of CVE objects
+    required: true
+  apiKey:
+    type: string
+    description: NIST NVD api key
+    secret: true
+    required: true
