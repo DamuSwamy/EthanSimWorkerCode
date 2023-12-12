@@ -1,0 +1,196 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - cloud_db_connection
+
+vars:
+  - result: []
+
+output:
+  - data: "Updated <% len(ctx().result) %> records"
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - SQL_Select_Cloud_BRaaS_Live_VREGULAR
+
+  SQL_Select_Cloud_BRaaS_Live_VREGULAR:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "SELECT braascid,vmIP,managedID FROM Braas_Live WHERE clientType = 'VREGULAR'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - braas_live_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_Cloud_Fusion_IP
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Cloud_Fusion_IP:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "SELECT internalip,fusionip FROM Fusion_IP_NAT WHERE active = 'true'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - fusion_ips: <% switch(isList(result().result) => result().result, true => []) %>
+          - braas_fusion: "{%- set accumulator = namespace(found='no') -%}{%- set resourceArr = [] -%}{%- for braas in ctx().braas_live_data -%}{%- set accumulator.found = 'no' -%} {{ braas.update({'_braascid': braas['braascid']}) or ''}}{%- for fusion in ctx().fusion_ips -%}{%- set fusion_ip = fusion['fusionip'] -%}{%- set fusion_ip = fusion_ip.split('/')[0] -%}{%- if fusion_ip  == braas['vmIP'] -%}{{ braas.update({'vmNATIP': fusion['internalip']}) or ''}}{%- set accumulator.found = 'yes' -%}{%- endif -%}{%- endfor -%}{%- if accumulator.found == 'yes' -%}{{ resourceArr.append(braas) or '' }}{%- endif -%}{%- endfor -%}{{ resourceArr | tojson }}"
+          - braas_list: "{{ ctx().braas_fusion | from_json_string  }}"
+        do:
+          - Check_For_Records
+          - SQL_Select_Cloud_BRaaS_Live
+      - when: <% failed() %>
+        do: fail
+
+  Check_For_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().braas_list) > 0 %>
+        do:
+          - Update_BRaaS_Live_NATIP
+
+  Update_BRaaS_Live_NATIP:
+    action: sql.update_bulk
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      table: "Braas_Live"
+      data: <% ctx().braas_list %>
+      update_values: ['vmNATIP']
+      column_filter1: "braascid"
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Cloud_BRaaS_Live:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "SELECT braascid,vmIP,managedID FROM Braas_Live"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - braas_live: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_Cloud_Iaas_vCloud
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Cloud_Iaas_vCloud:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "SELECT ethvmid,ethvCloudID FROM Iaas_vCloud"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - vcloud_data: <% switch(isList(result().result) => result().result, true => []) %>
+          - braas_list_vcloud: "{%- set accumulator = namespace(found='no') -%}{%- set resourceArr = [] -%}{%- for braas in ctx().braas_live -%}{%- set accumulator.found = 'no' -%}{{ braas.update({'_braascid': braas['braascid']}) or ''}}{%- for vcloud in ctx().vcloud_data if vcloud['ethvmid'] == braas['managedID'] -%}   {{ braas.update({'managedID': vcloud['ethvCloudID']}) or ''}}{%- set accumulator.found='yes' -%}{%- endfor -%}{%- if accumulator.found== 'yes' -%}{{ resourceArr.append(braas) or '' }}{%- endif -%}{%- endfor -%}{{ resourceArr | tojson }}"
+          - braas_list: "{{ ctx().braas_list_vcloud | from_json_string  }}"
+        do:
+          - Check_For_vCloud_Records
+          - SQL_Select_Cloud_BRaaS_Live_Updated
+      - when: <% failed() %>
+        do: fail
+
+  Check_For_vCloud_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().braas_list) > 0 %>
+        do:
+          - Update_BRaaS_Live_vCloud_ManagedID
+
+  Update_BRaaS_Live_vCloud_ManagedID:
+    action: sql.update_bulk
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      table: "Braas_Live"
+      data: <% ctx().braas_list %>
+      update_values: ['managedID']
+      column_filter1: "braascid"
+    next:
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Cloud_BRaaS_Live_Updated:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "SELECT braascid,managedID,vmNATIP,vmIP FROM Braas_Live WHERE clientType = 'VREGULAR' and managedID = '' or managedID is NULL"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - braas_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_Billing_VM
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Billing_VM:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT ethvmid FROM IaasVM WHERE vmActive = '1'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - vm_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_Cloud_Network
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Cloud_Network:
+    action: sql.query
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      query: "SELECT managedID, ipAddress FROM Iaas_Network WHERE ipAddress != ''"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - nw_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - Enhance_Data
+      - when: <% failed() %>
+        do: fail
+
+  Enhance_Data:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - output: "{%- set accumulator = namespace(found='no') -%}{%- set resourceArr = [] -%}{%- for braas in ctx().braas_data -%}{%- set accumulator.found = 'no' -%}{{ braas.update({'_braascid': braas['braascid']}) or ''}}{%- set managedID =  ctx().nw_data | selectattr('managedID', 'defined') | selectattr('ipAddress', 'equalto', braas['vmNATIP'])|map(attribute='managedID') | list -%}{%- if not managedID -%}{%- set managedID =  ctx().nw_data | selectattr('managedID', 'defined') | selectattr('ipAddress', 'equalto', braas['vmIP'])|map(attribute='managedID') | list -%}{%- endif -%}{%- if managedID -%}{%- set accumulator.found = 'yes' -%}{% set managedId = ctx().vcloud_data | selectattr('ethvmid', 'defined') | selectattr('ethvmid', 'equalto', managedID[0])|map(attribute='ethvCloudID')|list -%}{%- if not managedId -%}{% set managedId = ctx().vm_data  | selectattr('ethvmid', 'defined') | selectattr('ethvmid', 'equalto', managedID[0])|map(attribute='ethvmid')|list -%}{%- if not managedId -%}{%- set accumulator.found = 'no' -%}{%- else -%}{{ braas.update({'managedID': managedId[0]}) or ''}}{%- endif -%}{%- else -%}{{ braas.update({'managedID': managedId[0]}) or ''}}{%- endif -%}{%- endif -%}{%- if accumulator.found == 'yes' -%}{{ resourceArr.append(braas) or '' }}{%- endif -%}{%- endfor -%}{{ resourceArr | tojson }}"
+          - result: "{{ ctx().output | from_json_string }}"
+        do:
+          - Check_For_vRegular_Records
+          - End
+
+  Check_For_vRegular_Records:
+    action: core.noop
+    next:
+      - when: <% len(ctx().result) > 0 %>
+        do:
+          - Update_BRaaS_Live_vRegular_ManagedID
+
+  Update_BRaaS_Live_vRegular_ManagedID:
+    action: sql.update_bulk
+    input:
+      connection: <% ctx().cloud_db_connection %>
+      table: "Braas_Live"
+      data: <% ctx().result %>
+      update_values: ['managedID']
+      column_filter1: "braascid"
+    next:
+      - when: <% failed() %>
+        do: fail
+      - when: <% succeeded() %>
+        do: End
+
+  End:
+    action: core.noop
