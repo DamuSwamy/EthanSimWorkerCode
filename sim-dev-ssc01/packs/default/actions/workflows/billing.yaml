@@ -1,0 +1,15 @@
+version: 1.0
+tasks:
+  # [191, 108]
+  task1:
+    action: ethanbilling.Get VM Details
+    next:
+      - do:
+          - task2
+  # [189, 225]
+  task2:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: SELECT vs.ethZenossID,vs.Billable,vs.ethBackupAgent,vs.ethStorageTier ,vs.ConsoleURL ,vs.Moref ,vs.NAME ,vs.FriendlyName ,vs.GuestOperatingSystemFamily ,vs.VMType ,vs.VDCSIName ,vs.PowerState ,vs.CustomerNetworkName ,vs.CustomerNetworkSIName ,vs.PlatformElementID ,vs.VMFullPath ,vs.PrimaryIPAddress ,sis.ServiceItemTypeName ,CAST(datediff(ss, 'Jan 01 1970', lt.LeaseExpirationDate) AS BIGINT)*1000 as RunTimeLeaseExpirationDate ,ac.NAME AS Tenant ,dir.NAME AS organizationalUnitName ,p.FirstName + ' ' + p.LastName AS customerName ,CAST(datediff(ss, 'Jan 01 1970', sis.SubmittedDate) AS BIGINT)*1000 as SubmittedDate ,CAST(datediff(ss, 'Jan 01 1970', sis.AssignedDate) AS BIGINT)*1000 as AssignedDate ,pod.Type AS podType ,sis.ServiceItemTypeID ,sis.ServiceItemID ,vs.ComputerName ,vs.GuestOperatingSystem ,vs.VMTemplateName ,vs.ServerSize ,vs.vCPUs ,vs.vRAMGB ,CASE WHEN vs.TotalStorageGB IS NOT NULL AND vs.TotalStorageGB > 0 THEN vs.TotalStorageGB ELSE vs.IncludedStorage END AS TotalDiskSizeGB ,NULL AS NumberCores ,NULL AS NumberCPUs ,NULL AS TotalMemory ,NULL AS OSDiskSizeGB ,vs.STATUS ,vs.FSMStatus ,CAST(datediff(ss, 'Jan 01 1970', lt.StorageExpirationDate) AS BIGINT)*1000 as StorageExpirationDate ,vs.ManagementIPAddress ,vs.ManagementNetworkName ,vs.TotalDisk AS NumHDs ,vs.VMName ,vs.ethEnvironmentType ,vs.ethCostCentre, vs.ethInternalOrderNumber, sps.PlanOrScriptType AS PlanOrScriptType ,CASE WHEN alc.AlarmCount IS NOT NULL THEN alc.AlarmCount ELSE 0 END as AlarmCount FROM SiVirtualServer vs INNER JOIN SiServiceItemSubscription sis ON vs.PrimaryID = sis.ServiceItemID AND sis.ServiceItemTypeID = ( SELECT DataTypeID FROM MdrDataType WHERE LogicName = 'SiVirtualServer' ) LEFT JOIN Acaccount ac ON sis.AccountID = ac.PrimaryID LEFT JOIN DirOrganizationalUnit dir ON dir.OrganizationalUnitID = sis.OrganizationalUnitID LEFT JOIN SiSiTenantVirtualDataCenter vdc ON lower(vdc.FSMStatus) = 'active' AND vs.VDCSIName = vdc.VDCName LEFT JOIN SiPOD pod ON vdc.PODSIName = pod.NAME LEFT JOIN DirPerson p ON p.PersonID = sis.CustomerID LEFT JOIN SiPlanOrScriptOnVM sps ON sps.VMSIName=vs.NAME LEFT JOIN (select Server, StorageExpirationDate, LeaseExpirationDate, ROW_NUMBER() OVER(PARTITION BY Server ORDER BY LeaseExpirationDate DESC) as r from SiManagedLeaseInstance) lt ON lt.Server = vs.Name and lt.r=1 LEFT JOIN (SELECT count(*) as AlarmCount, ad.InstanceId as InstanceId FROM SiAlarmDefinition ad INNER JOIN SiAlarmOccurences ao on ao.AlarmDefinitionID = ad.AlarmName  WHERE lower(ad.FSMStatus) = 'active' AND ao.Status = 'Active' group by ad.InstanceId ) alc on vs.Name = alc.InstanceId WHERE (vs.FSMStatus = 'Registered' OR vs.FSMStatus = 'NotFound') AND (lower(vs.STATUS) = 'active' OR lower(vs.STATUS) = 'inactive')
+      connection: billing
