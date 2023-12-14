@@ -1,0 +1,11 @@
+pack: sim_sec_alerts
+enabled: true
+runner_type: orquesta
+name: collect_NIST_data
+entry_point: workflows/collect_NIST_data.yaml
+description: NIST Data
+parameters:
+  asset_list:
+    type: array
+    description: get asset_list as input
+    required: true

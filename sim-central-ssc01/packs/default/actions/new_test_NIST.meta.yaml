@@ -1,0 +1,5 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: new_test_NIST
+entry_point: workflows/new_test_NIST.yaml

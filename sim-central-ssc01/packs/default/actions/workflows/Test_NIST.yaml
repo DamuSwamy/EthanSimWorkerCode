@@ -1,0 +1,79 @@
+version: 1.0
+tasks:
+  # [378, 107]
+  task1:
+    action: sim_sec_alerts.collect_NIST_data_workflow
+    input:
+      asset_list:
+        - AssetID: 1938
+          cpeID: "cpe:2.3:h:cisco:4331_integrated_services_router:-:*:*:*:*:*:*:*"
+          MatchingVendor: cisco
+          MatchingModel: 4331_integrated_services_router
+          MatchingOSVersion: 16.12.5
+          MatchingOSType: ios_xe
+          IOSVersion: 16.12.5, RELEASE SOFTWARE (fc3)
+          OSType: iosxe
+          DeviceName: AUN1RT02
+          Manufacturer: Cisco Systems
+          Model: Cisco 4331 Integrated Services Router
+        - AssetID: 1938
+          cpeID: "cpe:2.3:h:cisco:4331_integrated_services_router:-:*:*:*:*:*:*:*"
+          MatchingVendor: cisco
+          MatchingModel: 4331_integrated_services_router
+          MatchingOSVersion: 16.12.5
+          MatchingOSType: ios_xe
+          IOSVersion: 16.12.5, RELEASE SOFTWARE (fc3)
+          OSType: iosxe
+          DeviceName: AUN1RT02
+          Manufacturer: Cisco Systems
+          Model: Cisco 4331 Integrated Services Router
+        - AssetID: 1938
+          cpeID: "cpe:2.3:h:cisco:integrated_services_router_4331:-:*:*:*:*:*:*:*"
+          MatchingVendor: cisco
+          MatchingModel: integrated_services_router_4331
+          MatchingOSVersion: 16.12.5
+          MatchingOSType: ios_xe
+          IOSVersion: 16.12.5, RELEASE SOFTWARE (fc3)
+          OSType: iosxe
+          DeviceName: AUN1RT02
+          Manufacturer: Cisco Systems
+          Model: Cisco 4331 Integrated Services Router
+        - AssetID: 1938
+          cpeID: "cpe:2.3:h:cisco:integrated_services_router_4331:-:*:*:*:*:*:*:*"
+          MatchingVendor: cisco
+          MatchingModel: integrated_services_router_4331
+          MatchingOSVersion: 16.12.5
+          MatchingOSType: ios_xe
+          IOSVersion: 16.12.5, RELEASE SOFTWARE (fc3)
+          OSType: iosxe
+          DeviceName: AUN1RT02
+          Manufacturer: Cisco Systems
+          Model: Cisco 4331 Integrated Services Router
+        - AssetID: 1938
+          cpeID: "cpe:2.3:h:cisco:isr_4331:-:*:*:*:*:*:*:*"
+          MatchingVendor: cisco
+          MatchingModel: isr_4331
+          MatchingOSVersion: 16.12.5
+          MatchingOSType: ios_xe
+          IOSVersion: 16.12.5, RELEASE SOFTWARE (fc3)
+          OSType: iosxe
+          DeviceName: AUN1RT02
+          Manufacturer: Cisco Systems
+          Model: Cisco 4331 Integrated Services Router
+        - AssetID: 1938
+          cpeID: "cpe:2.3:h:cisco:isr_4331:-:*:*:*:*:*:*:*"
+          MatchingVendor: cisco
+          MatchingModel: isr_4331
+          MatchingOSVersion: 16.12.5
+          MatchingOSType: ios_xe
+          IOSVersion: 16.12.5, RELEASE SOFTWARE (fc3)
+          OSType: iosxe
+          DeviceName: AUN1RT02
+          Manufacturer: Cisco Systems
+          Model: Cisco 4331 Integrated Services Router
+    next:
+      - do:
+          - task2
+  # [401, 222]
+  task2:
+    action: core.noop

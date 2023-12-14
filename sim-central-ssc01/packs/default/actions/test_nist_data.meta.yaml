@@ -1,0 +1,11 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: test_nist_data
+entry_point: workflows/test_nist_data.yaml
+description: Testing NIST Data
+parameters:
+  asset_list:
+    type: array
+    description: get asset_list as input
+    required: true

@@ -1,0 +1,6 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: NIST_test
+entry_point: workflows/NIST_test.yaml
+description: Testing NIST Data

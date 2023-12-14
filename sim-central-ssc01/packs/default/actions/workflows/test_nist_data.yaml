@@ -1,0 +1,26 @@
+version: 1.0
+tasks:
+  # [364, 87]
+  collectfrom_NIST:
+    action: sim_sec_alerts.collect_nist_asset_data_2.0
+    input:
+      log_level: DEBUG
+      apiKey: afce07e1-68c2-4c6d-9ed8-75b075d508e8
+      asset: "{{ ctx().asset_link }}"
+      timeout: 12000
+    next:
+      - do:
+          - end
+        publish:
+          - cves: <% result().result%>
+    retry:
+      when: <% failed() %>
+      count: 3
+      delay: 30
+  # [374, 218]
+  end:
+    action: core.noop
+input:
+  - asset_list
+output:
+  - cves: <% ctx().cves %>

@@ -28,7 +28,7 @@ class ReturnAssetVulDetails(Action):
         #             Start collection of asset vulnerabilities
                         
                 cpe_id = asset_json['cpeID']
-                api_url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName={cpe_id}"
+                api_url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?virtualMatchString={cpe_id}"
 
 
                 headers = {
@@ -37,6 +37,9 @@ class ReturnAssetVulDetails(Action):
         #        print(response.text)
                 response_json = response.json()
                 for cve in response_json["vulnerabilities"]:
+                    if (cve['cve']['id'] == 'CVE-2023-20186'):
+                        print("found cve having issues")
+                    
         #                   
                     asset_cve = {}
                     asset_cve['id']                    = cve['cve']['id']+ '|' +asset_json['cpeID']
@@ -58,10 +61,9 @@ class ReturnAssetVulDetails(Action):
                     elif "cvssMetricV2" in cve["cve"]["metrics"]:
                         asset_cve['impactBaseScore']       = "v2|" + str(cve["cve"]["metrics"]["cvssMetricV2"][0]["cvssData"]["baseScore"])
                         asset_cve['impactBaseSeverity']    = "v2|" + cve["cve"]["metrics"]["cvssMetricV2"][0]["baseSeverity"]
-                    #else:
-                        #asset_cve['impactBaseScore']       = "v2|" + str(cve['impact']['baseMetricV2']['cvssV2']['baseScore'])
-                        #asset_cve['impactBaseSeverity']    = "v2|" + cve['impact']['baseMetricV2']['severity']
-                    for config in cve['cve']['configurations'][0]['nodes']:
+                    
+                    #updated
+                    '''for config in cve['cve']['configurations'][0]['nodes']:
                         pair = (asset_cve['AssetID'], asset_cve['cve'])
                         if config['operator'] == 'AND':
         #                         print (len([x for x in config['children'][0]['cpeMatch'] if str(asset_cve['osType']) in x['criteria'] and str(asset_cve['osVersion']) in x['criteria']]))
@@ -76,16 +78,44 @@ class ReturnAssetVulDetails(Action):
                                 if pair not in unique_pairs:
         #                                 print("WE GOT OR")
                                     assets_cve.append(asset_cve)
-                                    unique_pairs.add(pair)
+                                    unique_pairs.add(pair)'''
+                    for configuration in cve['cve']['configurations']:
+                        for config in configuration['nodes']:
+                            pair = (asset_cve['AssetID'], asset_cve['cve'])
+                            
+                            # Check if the operator is 'AND'
+                            if config['operator'] == 'AND':
+                                
+                                # Check if there is a CPE match for the given asset's OS type and version
+                                if (
+                                    len([x for x in config['children'][0]['cpeMatch'] if str(asset_cve['osType']) in x['criteria'] and str(asset_cve['osVersion']) in x['criteria']]) > 0
+                                    or len([y for y in config['children'][0]['cpeMatch'] if str(asset_cve['osType']+':*:*:*:*:*:*:*:*') in y['criteria'] and (not 'versionEndIncluding' in y and not 'versionEndExcluding' in y)]) > 0
+                                ):
+                                    # Check if the asset's CPE ID matches any in the configuration
+                                    if len([y for x in config['children'] for y in x['cpeMatch'] if y['criteria'] == str(asset_cve['cpeID'])]) > 0:
+                                        # Add the asset_cve to the list if the conditions are met and the pair is unique
+                                        if pair not in unique_pairs:
+                                            assets_cve.append(asset_cve)
+                                            unique_pairs.add(pair)
+                                            
+                            # Check if the operator is 'OR'
+                            elif config['operator'] == 'OR':
+                                # Check if there is a CPE match for the given asset's OS type and version
+                                if len([x for x in config['cpeMatch'] if str(asset_cve['osType']) in x['criteria'] and str(asset_cve['osVersion']) in x['criteria']]) > 0:
+                                    # Add the asset_cve to the list if the conditions are met and the pair is unique
+                                    if pair not in unique_pairs:
+                                        assets_cve.append(asset_cve)
+                                        unique_pairs.add(pair)
+
+                    
+                    
 
         print("Asset vulnerabilities scanned: "+ str(len(assets_cve)))
         # Collect OS vulnerabilities from NIST
         print("Starting OS vulnverabilites scan")
         for os in assets_os:
             cpe_id = os['oscpe']
-            api_url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName={cpe_id}"
-
-            apiKey = "afce07e1-68c2-4c6d-9ed8-75b075d508e8"
+            api_url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?virtualMatchString={cpe_id}"
 
             headers = {
                 "apiKey":apiKey}
@@ -108,11 +138,23 @@ class ReturnAssetVulDetails(Action):
                         os_cve['impactBaseScore']       = "v2|" + str(resp_cve["cve"]["metrics"]["cvssMetricV2"][0]["cvssData"]["baseScore"])
                         os_cve['impactBaseSeverity']    = "v2|" + resp_cve["cve"]["metrics"]["cvssMetricV2"][0]["baseSeverity"]
                     
-                    for config in resp_cve['cve']['configurations'][0]['nodes']:
+
+                    '''for config in resp_cve['cve']['configurations'][0]['nodes']:
                         if config['operator'] == 'OR':
                             if ((len([x for x in config['cpeMatch'] if str(os['oscpe']) in x['criteria']]) > 0) or (len([y for y in config['cpeMatch'] if str(os['MatchingOSType']+':*:*:*:*:*:*:*:*') in y['criteria'] and (not 'versionEndIncluding' in y and not 'versionEndExcluding' in y)]) >0)):
                                 os_cves.append(os_cve)
-        #             print("os_cves: "+ str(os_cves))
+        #             print("os_cves: "+ str(os_cves))'''
+                    
+                    for configuration in resp_cve['cve']['configurations']:
+                        for config in configuration['nodes']:
+                            if config['operator'] == 'OR':
+                                if (
+                                    (len([x for x in config['cpeMatch'] if str(os['oscpe']) in x['criteria']]) > 0)
+                                    or (len([y for y in config['cpeMatch'] if str(os['MatchingOSType']+':*:*:*:*:*:*:*:*') in y['criteria'] and (not 'versionEndIncluding' in y and not 'versionEndExcluding' in y)]) > 0)
+                                ):
+                                    os_cves.append(os_cve)
+
+                    
 
         print("Add OS cves to collection")
         # Link the assets back up with the OS scan records

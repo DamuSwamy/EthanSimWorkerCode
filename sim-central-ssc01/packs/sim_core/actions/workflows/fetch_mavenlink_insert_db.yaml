@@ -16,7 +16,7 @@ tasks:
       connection: productionCloudExtension
     next:
       - do:
-          - SD_Insert_data_Main_to_BKP
+          - delete_data_SD_BKP
         when: Succeeded
   # [496, 454]
   TE_Main_Data_Count:
@@ -27,7 +27,7 @@ tasks:
       query: select count(*) from [dbo].[ML_Time_Entries]
     next:
       - do:
-          - TE_insert_data_Main_to_BKP
+          - delete_data_TE_BKP
         when: Succeeded
   # [496, 255]
   SD_Insert_data_Main_to_BKP:
@@ -81,3 +81,23 @@ tasks:
     next:
       - do:
           - End
+  # [223, 210]
+  delete_data_SD_BKP:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: delete from [dbo].[Bkp_ML_Support_Detail]
+      connection: productionCloudExtension
+    next:
+      - do:
+          - SD_Insert_data_Main_to_BKP
+  # [206, 528]
+  delete_data_TE_BKP:
+    action: sql.query
+    next:
+      - do:
+          - TE_insert_data_Main_to_BKP
+    input:
+      log_level: DEBUG
+      query: delete from [dbo].[Bkp_ML_Time_Entries]
+      connection: productionCloudExtension
