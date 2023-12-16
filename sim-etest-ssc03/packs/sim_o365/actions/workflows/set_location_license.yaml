@@ -19,7 +19,7 @@ tasks:
     action: core.http
     input:
       url: "https://graph.microsoft.com/v1.0/users/<% ctx().user %>/assignLicense"
-      body: "{\"addLicenses\":[{\"skuId\":\"c7df2760-2c81-4ef7-b578-5b5392b571df\"},{\"skuId\":\"f30db892-07e9-47e9-837c-80727f46fd3d\"},{\"skuId\":\"a403ebcc-fae0-4ca2-8c8c-7a907fd6c235\"}],\"removeLicenses\":[]}"
+      body: "{\"addLicenses\":[{\"skuId\":\"06ebc4ee-1bb5-47dd-8120-11324bc54e06\"},{\"skuId\":\"f30db892-07e9-47e9-837c-80727f46fd3d\"},{\"skuId\":\"a403ebcc-fae0-4ca2-8c8c-7a907fd6c235\"}],\"removeLicenses\":[]}"
       headers:
         Authorization: Bearer <% ctx().graph_auth_token %>
         Content-Type: application/json
