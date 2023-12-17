@@ -6,7 +6,7 @@ tasks:
     input:
       transport: ntlm
       cmd: "Connect-ExchangeOnline -ShowBanner:$false -CertificateFilePath \"<% ctx().certificate_file_path %>\"  -AppID \"<% ctx().app_id %>\" -Organization \"<% ctx().organisation %>\"\n$convert_out=Set-Mailbox -Identity <% ctx().user_email %> -Type <% ctx().type %> 2>&1 | ConvertTo-Json\n$convert_ret=$?\n$delegate_out=Add-MailboxPermission -Identity <% ctx().user_email %> -User <% ctx().delegate_forward_email %> -AccessRights FullAccess -InheritanceType All 2>&1 | ConvertTo-Json 2>&1\n$delegate_ret=$?\n$forward_ret=$?\n$user = \"<% ctx().user_email %>\"\n$sharedmbxs = Get-EXOMailbox -RecipientTypeDetails SharedMailbox | Get-MailboxPermission -User <% ctx().user_email %>  | Select-Object Identity,User,AccessRights,DisplayName\nforeach ($mbx in $sharedmbxs) {\nRemove-MailboxPermission -Identity $mbx.Identity -User $user -AccessRights FullAccess -InheritanceType All -Confirm:$false\nRemove-RecipientPermission -Identity $mbx.Identity -Trustee $user -AccessRights SendAs -Confirm:$false\n}\n$remove_permission_ret=$?\n(-join('{\"convert_ret\":\"',$convert_ret,'\",\"delegate_ret\":\"',$delegate_ret,'\",\"forward_ret\":\"',$forward_ret,'\",\"remove_permission_ret\":\"',$remove_permission_ret,'\"}')) | Convertfrom-Json | ConvertTo-Json\nDisconnect-ExchangeOnline -Confirm:$false -InformationAction Ignore -ErrorAction SilentlyContinue"
-      host: <% ctx().host %>
+      host: 10.234.17.24
       password: <% ctx().password %>
       username: <% ctx().username %>
       timeout: 300
