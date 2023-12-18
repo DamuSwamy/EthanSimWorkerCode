@@ -1,0 +1,19 @@
+---
+name: generates_dev42_token 
+runner_type: python-script
+description: "generates authentication token"
+enabled: true
+entry_point: 'generate_dev42_token.py'
+parameters:
+  username:
+    type: 'string'
+    description: 'username of dev42 '
+    required: True
+    secret: True
+    #default: "97565142771042ccb0b928ae3e658e26"
+  password:
+    type: 'string'
+    description: 'password of dev42 '
+    required: True
+    secret: True
+    #default: "4591cf9619384bb1bab1d5a40a4b6aee_4f2f174fe5db47bcbe4b0a21380fe455"

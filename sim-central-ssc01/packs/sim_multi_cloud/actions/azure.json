@@ -1,0 +1,346 @@
+{
+  "value": [
+    {
+      "name": "VM-ETHAN-DAPI-NVA-AE-1",
+      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-DAPI-AE-1/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-DAPI-NVA-AE-1",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_DS1_v2"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "e0fb4655-7f6f-4b8d-9be8-78cb81bbe453",
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "canonical",
+            "offer": "0001-com-ubuntu-server-jammy",
+            "sku": "22_04-lts-gen2",
+            "version": "latest",
+            "exactVersion": "22.04.202311010"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "name": "VM-ETHAN-DAPI-NVA-AE-1_OsDisk_1_516a6449d9584ace88377ba2a35a3c25",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS",
+              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-DAPI-AE-1/providers/Microsoft.Compute/disks/VM-ETHAN-DAPI-NVA-AE-1_OsDisk_1_516a6449d9584ace88377ba2a35a3c25"
+            },
+            "deleteOption": "Delete",
+            "diskSizeGB": 30
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "VM-ETHAN-DAPI-NVA-AE-1",
+          "adminUsername": "Admiral",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": false,
+            "provisionVMAgent": true,
+            "patchSettings": {
+              "patchMode": "ImageDefault",
+              "assessmentMode": "ImageDefault"
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "securityProfile": {
+          "uefiSettings": {
+            "secureBootEnabled": true,
+            "vTpmEnabled": true
+          },
+          "securityType": "TrustedLaunch"
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-DAPI-AE-1/providers/Microsoft.Network/networkInterfaces/vm-ethan-dapi-nva-ae-1885","properties":{"primary":true,"deleteOption":"Detach"}},{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-DAPI-AE-1/providers/Microsoft.Network/networkInterfaces/nic-private","properties":{"primary":false}}]}
+      }
+    },
+    {
+      "name": "VM-ETHAN-EWSPRD-AE-1",
+      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-EWSPRD-AE-1",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "ethan.owner.department": "ethanweb"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_F16s_v2"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "d1cb02c0-9079-4907-89eb-f48add12a0a0",
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2022-datacenter",
+            "version": "latest",
+            "exactVersion": "20348.350.2111030009"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "VM-ETHAN-EWSPRD-AE-1_OsDisk_1_83459fa3ecf6456ebd7e309371e57f86",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS",
+              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/disks/VM-ETHAN-EWSPRD-AE-1_OsDisk_1_83459fa3ecf6456ebd7e309371e57f86"
+            },
+            "deleteOption": "Detach",
+            "diskSizeGB": 127
+          },
+          "dataDisks": [
+            {
+              "lun": 0,
+              "name": "VM-ETHAN-EWSPRD-AE-1_DataDisk_0",
+              "createOption": "Attach",
+              "caching": "None",
+              "writeAcceleratorEnabled": false,
+              "managedDisk": {
+                "storageAccountType": "Premium_LRS",
+                "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/disks/VM-ETHAN-EWSPRD-AE-1_DataDisk_0"
+              },
+              "deleteOption": "Detach",
+              "diskSizeGB": 128,
+              "toBeDetached": false
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "VM-ETHAN-EWSPRD",
+          "adminUsername": "svc_ewsadmin",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": false,
+            "patchSettings": {
+              "patchMode": "Manual",
+              "assessmentMode": "ImageDefault",
+              "enableHotpatching": false
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Network/networkInterfaces/vm-ethan-ewsprd-ae-1797"}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      },
+      "resources": [
+        {
+          "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-EWSPRD-AE-1/extensions/MicrosoftMonitoringAgent"
+        },
+        {
+          "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-EWSPRD-AE-1/extensions/SqlIaasExtension"
+        }
+      ]
+    },
+    {
+      "name": "vm-uacrm-gateway-ea",
+      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Compute/virtualMachines/vm-uacrm-gateway-ea",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "ethan.owner.department": "itt"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2s_v3"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "1571a235-91da-43e8-871a-ffb4957c2b94",
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-datacenter-gensecond",
+            "version": "latest",
+            "exactVersion": "14393.4770.2111050154"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "vm-uacrm-gateway-ea_OsDisk_1_8a34399d2a48452db0784154ecc14f9b",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Compute/disks/vm-uacrm-gateway-ea_OsDisk_1_8a34399d2a48452db0784154ecc14f9b"
+            },
+            "deleteOption": "Detach"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "vm-uacrm-gatewa",
+          "adminUsername": "adminuser",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": false,
+            "patchSettings": {
+              "patchMode": "Manual",
+              "assessmentMode": "ImageDefault",
+              "enableHotpatching": false
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Network/networkInterfaces/vm-uacrm-gateway-ea627"}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        },
+        "licenseType": "Windows_Server",
+        "priority": "Spot",
+        "evictionPolicy": "Deallocate",
+        "billingProfile": {
+          "maxPrice": -1.0
+        }
+      }
+    },
+    {
+      "name": "vm-ethan-uacrmprd-ae-1",
+      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UACRMPRD-AE/providers/Microsoft.Compute/virtualMachines/vm-ethan-uacrmprd-ae-1",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "ethan.owner.department": "itt"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2s_v3"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "3e817baa-64e2-489a-bd67-5af0d16d72af",
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2019-datacenter-gensecond",
+            "version": "latest",
+            "exactVersion": "17763.3127.220119"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "vm-ethan-uacrmprd-ae-1_disk1_d5a422cebfc046b3a28633e487b56a73",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS",
+              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UACRMPRD-AE/providers/Microsoft.Compute/disks/vm-ethan-uacrmprd-ae-1_disk1_d5a422cebfc046b3a28633e487b56a73"
+            },
+            "deleteOption": "Delete",
+            "diskSizeGB": 127
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "vm-ethan-uacrmp",
+          "adminUsername": "svc_uacrmprd_1",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": true,
+            "patchSettings": {
+              "patchMode": "AutomaticByOS",
+              "assessmentMode": "ImageDefault",
+              "enableHotpatching": false
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UACRMPRD-AE/providers/Microsoft.Network/networkInterfaces/vm-ethan-uacrmprd890","properties":{"deleteOption":"Detach"}}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      }
+    },
+    {
+      "name": "VM-USMPRD-SENSOR-AE-1",
+      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-USMPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-USMPRD-SENSOR-AE-1",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "ethan.owner.department": "security"
+      },
+      "plan": {
+        "name": "unified-security-management-anywhere",
+        "publisher": "alienvault",
+        "product": "unified-security-management-anywhere"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2_v2"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "c7773c2a-9fa9-4fe9-8632-5b1003fc07f6",
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "alienvault",
+            "offer": "unified-security-management-anywhere",
+            "sku": "unified-security-management-anywhere",
+            "version": "latest",
+            "exactVersion": "7.0.725"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "name": "VM-USMPRD-SENSOR-AE-1_OsDisk_1_bbf7b7afa00a4923895b7e23140ebc6e",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS",
+              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-USMPRD-AE/providers/Microsoft.Compute/disks/VM-USMPRD-SENSOR-AE-1_OsDisk_1_bbf7b7afa00a4923895b7e23140ebc6e"
+            },
+            "deleteOption": "Delete",
+            "diskSizeGB": 30
+          },
+          "dataDisks": [
+            {
+              "lun": 0,
+              "name": "VM-USMPRD-SENSOR-AE-1_lun_0_2_3e1aa47fff6743bc8ebaea11915f4c28",
+              "createOption": "FromImage",
+              "caching": "None",
+              "writeAcceleratorEnabled": false,
+              "managedDisk": {
+                "storageAccountType": "StandardSSD_LRS",
+                "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-USMPRD-AE/providers/Microsoft.Compute/disks/VM-USMPRD-SENSOR-AE-1_lun_0_2_3e1aa47fff6743bc8ebaea11915f4c28"
+              },
+              "deleteOption": "Detach",
+              "diskSizeGB": 128,
+              "toBeDetached": false
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "VM-USMPRD-SENSOR-AE-1",
+          "adminUsername": "USMManager",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": false,
+            "provisionVMAgent": true,
+            "patchSettings": {
+              "patchMode": "ImageDefault",
+              "assessmentMode": "ImageDefault"
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-USMPRD-AE/providers/Microsoft.Network/networkInterfaces/vm-usmprd-sensor-554","properties":{"deleteOption":"Detach"}}]}
+      }
+    }
+  ]
+}

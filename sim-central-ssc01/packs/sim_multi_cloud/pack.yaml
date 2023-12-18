@@ -1,0 +1,9 @@
+---
+ref: sim_multi_cloud
+name: sim_multi_cloud
+description: actions for different cloud automation
+version: 1.0.0
+author: Accelnomics
+email: ankush.chouhan@accelnomics.com
+python_versions:
+  - "3"

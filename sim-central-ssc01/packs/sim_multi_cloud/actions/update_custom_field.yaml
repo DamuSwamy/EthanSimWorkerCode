@@ -1,0 +1,22 @@
+---
+name: update_custom_field
+runner_type: python-script
+description: "Adds unique id from azure to devices"
+enabled: true
+entry_point: 'update_custom_field.py'
+parameters:
+  token:
+    type: 'string'
+    description: 'bearer token '
+    required: True
+    secret: True
+  vm_data_file:
+    type: 'string'
+    description: 'details of vm from azure '
+    required: false
+    default: "/opt/stackstorm/packs/device42/actions/azure.json"
+  dev_42_file:
+    type: 'string'
+    description: 'device 42 details'
+    required: false
+    default: "/opt/stackstorm/packs/device42/actions/dev42"

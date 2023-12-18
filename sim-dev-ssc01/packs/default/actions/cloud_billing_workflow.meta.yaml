@@ -1,0 +1,5 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: cloud_billing_workflow
+entry_point: workflows/cloud_billing_workflow.yaml

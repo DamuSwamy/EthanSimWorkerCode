@@ -1,0 +1,19 @@
+---
+name: get_D42_devices
+runner_type: python-script
+description: "finds vm-id and device-id"
+enabled: true
+entry_point: 'get_D42_devices.py'
+parameters:
+  bearer_token:
+    type: 'string'
+    description: 'bearer token '
+    required: True
+    secret: True
+    #identifier_type:
+    #type: 'string'
+    #description: 'designates the type of identifier used to call D42 API.  Can be name, serial, asset, or device_id.  '
+    #required: false
+
+
+

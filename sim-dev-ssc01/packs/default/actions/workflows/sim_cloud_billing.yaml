@@ -1,0 +1,15 @@
+version: 1.0
+tasks:
+  # [170, 189]
+  task1:
+    action: sim_cloud_billing.get_iaas_vcloud_data
+  # [170, 74]
+  task2:
+    action: sql.delete
+    next:
+      - do:
+          - task1
+    input:
+      log_level: DEBUG
+      table: Iaas_vCloud_Temp
+      connection: cloudmanagement

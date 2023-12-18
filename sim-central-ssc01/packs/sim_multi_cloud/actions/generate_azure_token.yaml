@@ -1,0 +1,19 @@
+---
+name: generates_azure_token
+runner_type: python-script
+description: "generates authentication token"
+enabled: true
+entry_point: 'generate_azure_token.py'
+parameters:
+  clieent_id:
+    type: 'string'
+    description: 'username of dev42 '
+    required: True
+    secret: True
+    #default: "724835d5-ee48-42d4-bd17-9b75ee411461"
+  clieent_secret:
+    type: 'string'
+    description: 'password of dev42 '
+    required: True
+    secret: True
+    #default: "ct58Q~C1XNrLvNrORh6EU4rZB7VFGHbZ.8ZWZaTq"

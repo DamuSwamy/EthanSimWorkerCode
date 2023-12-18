@@ -1,0 +1,5 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: sim_cloud_billing
+entry_point: workflows/sim_cloud_billing.yaml
