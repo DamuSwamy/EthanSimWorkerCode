@@ -1,31 +1,30 @@
 version: 1.0
 tasks:
-  # [170, 189]
-  task1:
+  # [206, 140]
+  get_iaas_vcloud_data:
     action: sim_cloud_billing.get_iaas_vcloud_data
     next:
       - do:
-          - task4
+          - insert_into_iaas_vcloud_temp
         when: <% succeeded() %>
         publish:
           - data: <% result().result.output_vms %>
-  # [170, 74]
-  remove_data_iaas_vcloud_temp:
+  # [202, 38]
+  delete_from_iaas_vcloud_temp:
     action: sql.delete
     next:
       - do:
-          - task1
+          - get_iaas_vcloud_data
         when: <% succeeded() %>
     input:
       log_level: DEBUG
       table: Iaas_vCloud_Temp
       connection: cloudmanagement
-  # [165, 305]
-  task4:
+  # [204, 237]
+  insert_into_iaas_vcloud_temp:
     action: sql.insert_bulk
     input:
       log_level: DEBUG
       data: "{{ ctx().data }}"
       table: Iaas_vCloud_Temp
       connection: cloudmanagement
-    next

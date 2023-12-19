@@ -307,7 +307,7 @@ tasks:
   random:
     action: core.local
     input:
-      cmd: "cat /dev/urandom | tr -dc '~!@#$%^&*_A-Za-z0-9' | head -c${1:-24}"
+      cmd: "cat /dev/urandom | tr -dc '~!@#$%^&*_A-Za-z0-9' | head -c${1:-35}"
     next:
       - do:
           - check_ad_user

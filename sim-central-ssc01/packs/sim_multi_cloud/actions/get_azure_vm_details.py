@@ -16,7 +16,7 @@ class get_vm_details_azure(Action):
                 'Authorization': f'Bearer {bearer_token}'
                 }
                 all_vm=requests.get(url,headers=headers,verify=False)
-                with  open("/opt/stackstorm/packs/device42/actions/azure.json", "wb") as filee:
+                with  open("/opt/stackstorm/packs/sim_multi_cloud/actions/azure.json", "wb") as filee:
         # Write the response content to the file
                     filee.write(all_vm.content)
 

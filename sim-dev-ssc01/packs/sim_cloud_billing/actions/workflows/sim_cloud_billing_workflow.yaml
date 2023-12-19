@@ -28,4 +28,3 @@ tasks:
       data: "{{ ctx().data }}"
       table: Iaas_vCloud_Temp
       connection: cloudmanagement
-    next

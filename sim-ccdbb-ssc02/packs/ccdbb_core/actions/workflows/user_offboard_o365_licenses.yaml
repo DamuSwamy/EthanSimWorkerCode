@@ -7,8 +7,8 @@ tasks:
       - do:
           - print_execution_log
         publish:
-          - execution_log: <% ctx().get('execution_log' , []).append(ctx().get_licenses_log, ctx().get('remove_licenses_log',{}), ctx().block_signin_log) %>
-  # [312, 211]
+          - execution_log: <% ctx().get('execution_log' , []).append(ctx().get_licenses_log, ctx().get('remove_licenses_log',{}), ctx().block_signin_log, ctx().remove_ADgroups_log) %>
+  # [304, 144]
   get_user_licenses:
     action: sim_o365.get_user_licenses
     next:
@@ -82,13 +82,13 @@ tasks:
     input:
       graph_auth_token: <% ctx().graph_api_token %>
       user_email: <% ctx().user_email %>
-  # [311, 105]
+  # [332, 0]
   graph_api_token:
     action: sim_o365.get_graphapi_token
     next:
       # #629e47
       - do:
-          - get_user_licenses
+          - remove_azure_AD_groups
         publish:
           - graph_api_token: <% result().output.graph_auth_token %>
         when: <% succeeded() %>
@@ -107,6 +107,31 @@ tasks:
     next:
       - do:
           - block_signin
+  # [26, 16]
+  remove_azure_AD_groups:
+    action: sim_o365.remove_user_AD_groups
+    next:
+      - do:
+          - sleep_30
+        publish:
+          - remove_ADgroups_log:
+              task_name: remove_ADgroup
+              expected_returncode: 0
+              actual_returncode: 0
+    input:
+      log_level: DEBUG
+      client_id: <% ctx().client_id %>
+      client_secret: <% ctx().client_secret %>
+      tenant_id: <% ctx().tenant_id %>
+      user_email: <% ctx().user_email %>
+  # [32, 137]
+  sleep_30:
+    action: core.local
+    next:
+      - do:
+          - get_user_licenses
+    input:
+      cmd: sleep 60
 input:
   - user_email
   - client_id

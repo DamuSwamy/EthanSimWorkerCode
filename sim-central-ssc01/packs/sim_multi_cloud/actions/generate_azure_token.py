@@ -11,7 +11,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 class GenerateAzureToken(Action):
     def run(self,clieent_id, clieent_secret):
 
-        url="https://login.microsoftonline.com/455ac8b0-5713-4dd7-be28-3898e9505f7e/oauth2/token"
+        url="https://login.microsoftonline.com/d0aaafc0-4f56-478a-b986-fd9eb70046d6/oauth2/token"
         #credentials = base64.b64encode(f'{username}:{password}'.encode()).decode()
         #print(credentials)
         headers = {

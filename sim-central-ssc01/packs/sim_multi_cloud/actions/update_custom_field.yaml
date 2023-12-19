@@ -14,9 +14,9 @@ parameters:
     type: 'string'
     description: 'details of vm from azure '
     required: false
-    default: "/opt/stackstorm/packs/device42/actions/azure.json"
+    default: "/opt/stackstorm/packs/sim_multi_cloud/actions/azure.json"
   dev_42_file:
     type: 'string'
     description: 'device 42 details'
     required: false
-    default: "/opt/stackstorm/packs/device42/actions/dev42"
+    default: "/opt/stackstorm/packs/sim_multi_cloud/actions/dev42"
