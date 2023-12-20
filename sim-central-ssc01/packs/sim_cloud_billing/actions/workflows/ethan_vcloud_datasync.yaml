@@ -1,0 +1,82 @@
+version: 1.0
+tasks:
+  # [212, 140]
+  get_iaas_vcloud_data:
+    action: sim_cloud_billing.get_iaas_vcloud_data
+    next:
+      - do:
+          - insert_into_iaas_vcloud_temp
+        when: <% succeeded() %>
+        publish:
+          - data: <% result().result.output_vms %>
+    input:
+      log_level: DEBUG
+      password: "{{ ctx().password }}"
+      username: "{{ ctx().username }}"
+  # [202, 38]
+  delete_from_iaas_vcloud_temp:
+    action: sql.delete
+    next:
+      - do:
+          - get_iaas_vcloud_data
+        when: <% succeeded() %>
+    input:
+      log_level: DEBUG
+      table: Iaas_vCloud_Temp
+      connection: "{{ ctx().connection }}"
+  # [204, 237]
+  insert_into_iaas_vcloud_temp:
+    action: sql.insert_bulk
+    input:
+      log_level: DEBUG
+      data: "{{ ctx().data }}"
+      table: Iaas_vCloud_Temp
+      connection: "{{ ctx().connection }}"
+    next:
+      - do:
+          - delete_from_iaas_vcloud
+        when: <% succeeded() %>
+  # [199, 338]
+  delete_from_iaas_vcloud:
+    action: sql.delete
+    input:
+      log_level: DEBUG
+      table: Iaas_vCloud
+      connection: "{{ ctx().connection }}"
+    next:
+      - do:
+          - insert_data_into_iaas_vcloud
+        when: <% succeeded() %>
+  # [202, 449]
+  insert_data_into_iaas_vcloud:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: INSERT INTO [CloudManagement_Dev].[dbo].[Iaas_vCloud] SELECT [ethvCloudID] ,[vCloudID] ,[vCloudvAppID] ,[vCloudvApp] ,[vDCS] ,[ethvmid] ,[custidx] ,[CustomerName] ,[vmID] ,[vmUuid] ,[vmName] ,[vmHostName] ,[vmIPAddress] ,[vmCPU] ,[vmRAM] ,[vmStorageUsed] ,[vmStorageTotal] ,[vmPowerState] ,[vmHost] ,[vmBootTime] ,[vmSystemType] ,[vmGuestToolsStatus] ,[vmGuestToolsVersion] ,[vmGuestOSName] ,[vmOrg] ,[vmCreatedDate] ,[vmRemovedDate] ,[vmActive] ,[vmStorageSnapshotSize] ,[vmStorageSnapshot] ,[CPUHotadd] ,[MemoryHotadd] ,[lastUpdated] FROM [CloudManagement_Dev].[dbo].[Iaas_vCloud_Temp]
+      connection: "{{ ctx().connection }}"
+    next:
+      - do:
+          - task1
+        when: <% succeeded() %>
+  # [191, 554]
+  task1:
+    action: mssql.execute.query
+    input:
+      log_level: DEBUG
+      database: "{{ ctx().connection }}"
+      query_string: exec usp_loaddatavcenter
+    next:
+      - do:
+          - task2
+        when: <% succeeded() %>
+  # [190, 672]
+  task2:
+    action: mssql.execute.query
+    input:
+      log_level: DEBUG
+      query_string: exec usp_loaddatavcloud
+      database: "{{ ctx().connection }}"
+input:
+  - connection
+  - username
+  - password

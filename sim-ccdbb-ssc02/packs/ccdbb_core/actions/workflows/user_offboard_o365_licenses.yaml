@@ -132,6 +132,7 @@ tasks:
           - get_user_licenses
     input:
       cmd: sleep 60
+      timeout: 100
 input:
   - user_email
   - client_id

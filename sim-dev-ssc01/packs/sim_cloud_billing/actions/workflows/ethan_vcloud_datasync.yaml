@@ -28,3 +28,25 @@ tasks:
       data: "{{ ctx().data }}"
       table: Iaas_vCloud_Temp
       connection: cloudmanagement
+    next:
+      - do:
+          - delete from iaas_vcloud
+        when: <% succeeded() %>
+  # [199, 338]
+  delete from iaas_vcloud:
+    action: sql.delete
+    input:
+      log_level: DEBUG
+      table: Iaas_vCloud
+      connection: cloudmanagement
+    next:
+      - do:
+          - insert_data_into_iaas_vcloud
+        when: <% succeeded() %>
+  # [202, 449]
+  insert_data_into_iaas_vcloud:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: INSERT INTO Iaas_vCloud SELECT * FROM Iaas_vCloud_Temp
+      connection: cloudmanagement

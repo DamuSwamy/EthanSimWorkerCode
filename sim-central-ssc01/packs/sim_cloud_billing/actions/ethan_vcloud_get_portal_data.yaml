@@ -1,0 +1,17 @@
+---
+name: get_iaas_vcloud_data
+pack: sim_cloud_billing
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: ethan_vcloud_get_portal_data.py
+parameters:
+  username:
+    type: string
+    description: Enter username
+    required: true
+  password:
+    type: string
+    description: Enter password
+    required: true
+  

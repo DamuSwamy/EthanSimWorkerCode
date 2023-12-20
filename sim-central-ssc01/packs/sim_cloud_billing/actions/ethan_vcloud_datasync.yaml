@@ -1,0 +1,16 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_vcloud_datasync
+entry_point: workflows/ethan_vcloud_datasync.yaml
+parameters:
+  connection:
+    type: string
+    required: true
+  username:
+    type: string
+    required: true
+  password:
+    type: string
+    secret: true
+    required: true

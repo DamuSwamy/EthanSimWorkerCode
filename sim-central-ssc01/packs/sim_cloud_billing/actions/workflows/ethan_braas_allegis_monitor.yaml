@@ -35,6 +35,7 @@ LEFT JOIN ( SELECT DISTINCT EthanVMID FROM v_PortalManagementGroupMember) M ON M
       - when: <% failed() %>
         do: fail
 
+  # [442, 251]
   Send_Email:
     action: core.sendmail
     input:
@@ -48,5 +49,6 @@ LEFT JOIN ( SELECT DISTINCT EthanVMID FROM v_PortalManagementGroupMember) M ON M
         do: noop
       - when: <% succeeded() %>
         do: End
+  # [242, 401]
   End: 
     action: core.noop

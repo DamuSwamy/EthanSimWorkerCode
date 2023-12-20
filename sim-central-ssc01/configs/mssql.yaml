@@ -17,6 +17,11 @@ connections:
     database: "billing"
     user: "billingsvr"
     password: Pr0visi0n
+  dev_cloudmanagement:
+    server: 192.168.66.8
+    database: cloudmanagement_dev
+    user: "svc-simauto-ess-sql01"
+    password: "strands-yTuMvNaB/HGPVF"
 
 output_csv:
   file_prefix: "mssql-query"
