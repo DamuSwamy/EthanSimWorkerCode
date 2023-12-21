@@ -1,6 +1,6 @@
 version: 1.0
 tasks:
-  # [115, 37]
+  # [92, 0]
   generates_device_42_token:
     action: sim_multi_cloud.generates_dev42_token
     next:
@@ -13,30 +13,40 @@ tasks:
       log_level: DEBUG
       username: "{{ ctx().Device42_username }}"
       password: "{{ ctx().Device42_password }}"
-  # [256, 189]
+  # [230, 135]
   get_d42_devices:
     action: sim_multi_cloud.get_D42_devices
     next:
       - do:
-          - generates_azure_token
+          - generate_azure_token
     input:
       log_level: DEBUG
       bearer_token: "{{ ctx().token1 }}"
-  # [323, 341]
-  generates_azure_token:
-    action: sim_multi_cloud.generates_azure_token
-    next:
-      - do:
-          - get_vm_from_azure
-        when: <% succeeded %>
-        publish:
-          - token2: <% result().stdout %>
+  # [811, 649]
+  update_identifier_in_D42:
+    action: sim_multi_cloud.update_custom_field
     input:
       log_level: DEBUG
-      clieent_id: "{{ ctx().Azure_client_id }}"
-      clieent_secret: "{{ ctx().Azure_client_secret }}"
-  # [440, 501]
-  get_vm_from_azure:
+      token: "{{ ctx().token1 }}"
+  # [341, 271]
+  generate_azure_token:
+    action: sim_multi_cloud.generate_azure_token
+    next:
+      - do:
+          - get_subscription_details
+        publish:
+          - token2: <% result().stdout %>
+  # [471, 389]
+  get_subscription_details:
+    action: sim_multi_cloud.get_subscription_details_azure
+    next:
+      - do:
+          - get_azure_vm_details
+    input:
+      log_level: DEBUG
+      bearer_token: "{{ ctx().token2 }}"
+  # [621, 531]
+  get_azure_vm_details:
     action: sim_multi_cloud.get_azure_vm_details
     next:
       - do:
@@ -44,12 +54,6 @@ tasks:
     input:
       log_level: DEBUG
       bearer_token: "{{ ctx().token2 }}"
-  # [577, 644]
-  update_identifier_in_D42:
-    action: sim_multi_cloud.update_custom_field
-    input:
-      log_level: DEBUG
-      token: "{{ ctx().token1 }}"
 input:
   - Device42_username
   - Device42_password

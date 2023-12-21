@@ -1,19 +1,26 @@
 ---
-name: generates_azure_token
+name: generate_azure_token
 runner_type: python-script
-description: "generates authentication token"
+description: "generates authentication token for subscription details"
 enabled: true
 entry_point: 'generate_azure_token.py'
 parameters:
   clieent_id:
     type: 'string'
-    description: 'username of dev42 '
-    required: True
+    description: 'Enter App id  '
+    required: false
     secret: True
-    #default: "724835d5-ee48-42d4-bd17-9b75ee411461"
+    default: "0f672189-c469-4858-aa5c-772e5a478cdd"
   clieent_secret:
     type: 'string'
-    description: 'password of dev42 '
-    required: True
+    description: 'Enter secret '
+    required: false
     secret: True
-    #default: "ct58Q~C1XNrLvNrORh6EU4rZB7VFGHbZ.8ZWZaTq"
+    default: "dKu8Q~5yS0NWT1OkjCiLTEWOo-HJ5lt-mTOd9aMN"
+  Tenant_id:
+    type: 'string'
+    description: 'Enter tenant id'
+    required: false
+    secret: True
+    default: "d0aaafc0-4f56-478a-b986-fd9eb70046d6"
+

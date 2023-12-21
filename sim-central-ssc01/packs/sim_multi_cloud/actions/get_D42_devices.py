@@ -26,4 +26,5 @@ SELECT device_pk,cid.instance_id as cid_instance_id , cf.identifier , virtualsub
                 data = requests.post(url, headers=headers, data=payload, verify=False)
                 with open("/opt/stackstorm/packs/sim_multi_cloud/actions/dev42","wb") as filee:
                     filee.write(data.content)
-                print(data)
+                #print(data)
+                print("Device details are successfully stored in dev42 file")

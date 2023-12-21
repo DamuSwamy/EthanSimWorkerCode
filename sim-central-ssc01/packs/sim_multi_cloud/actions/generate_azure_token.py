@@ -9,17 +9,17 @@ from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 class GenerateAzureToken(Action):
-    def run(self,clieent_id, clieent_secret):
+    def run(self,clieent_id, clieent_secret,Tenant_id):
 
-        url="https://login.microsoftonline.com/d0aaafc0-4f56-478a-b986-fd9eb70046d6/oauth2/token"
+        url=f'https://login.microsoftonline.com/{Tenant_id}/oauth2/token'
         #credentials = base64.b64encode(f'{username}:{password}'.encode()).decode()
         #print(credentials)
         headers = {
         #'Authorization': f'Basic {credentials}',
         'Content-Type': 'application/x-www-form-urlencoded',  # Adjust content type based on your API requirements
-        'Cookie': 'fpc=AlsdMDjJnHVIqHQE5gnRa_tkMWjLAQAAAFrSC90OAAAA; stsservicecookie=estsfd; x-ms-gateway-slice=estsfd'
+        #'Cookie': 'fpc=AlsdMDjJnHVIqHQE5gnRa_tkMWjLAQAAAFrSC90OAAAA; stsservicecookie=estsfd; x-ms-gateway-slice=estsfd'
         }
-        data1={  
+        data1={
                 "grant_type": "client_credentials",
                 "client_id": f'{clieent_id}',
                 "client_secret": f'{clieent_secret}',

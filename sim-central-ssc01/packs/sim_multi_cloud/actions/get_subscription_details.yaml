@@ -1,0 +1,17 @@
+---
+name: get_subscription_details_azure
+runner_type: python-script
+description: "All the vm details"
+enabled: true
+entry_point: 'get_subscription_details.py'
+parameters:
+  bearer_token:
+    type: 'string'
+    description: 'bearer token '
+    required: true
+    secret: true
+    # identifier_type:
+    #type: 'string'
+    #description: 'designates the type of identifier used to call D42 API.  Can be name, serial, asset, or device_id.  '
+    #required: false
+

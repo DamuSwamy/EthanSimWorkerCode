@@ -14,11 +14,11 @@ parameters:
   Azure_client_id:
     type: string
     secret: true
-    default: 0f672189-c469-4858-aa5c-772e5a478cdd
+    default: 724835d5-ee48-42d4-bd17-9b75ee411461
   Azure_client_secret:
     type: string
     secret: true
-    default: dKu8Q~5yS0NWT1OkjCiLTEWOo-HJ5lt-mTOd9aMN
+    default: ct58Q~C1XNrLvNrORh6EU4rZB7VFGHbZ.8ZWZaTq
 name: update_identifier_in_d42
 entry_point: workflows/update_identifier_in_d42.yaml
 description: add indentifier as custom field in d42
