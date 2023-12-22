@@ -44,6 +44,7 @@ class InsertAndUpdateListGeneratorAction(Action):
                         last_scan = scan_date[0]
                     else:
                         last_scan = y['LastScanTime']
+                    last_scan         = datetime.now().astimezone(pytz.timezone('Australia/Sydney')).strftime("%Y-%m-%d %H:%M:%S")
                     y['_EthVmId']     = y['EthVmId']
                     y['_VmId']        = y['VmId']
                     y['_DeviceKey']   = y['DeviceKey']

@@ -155,7 +155,8 @@ class GetDeviceConfigAction(BaseAction):
                     compliance_status = "TRUE"
             check_status["ControlCheck"] = check_name
             check_status["ComplianceStatus"] = compliance_status
-            check_status["DeviceCheckInformation"] = regex_matched_final
+            #check_status["DeviceCheckInformation"] = regex_matched_final
+            check_status["DeviceCheckInformation"] = ""
             ComplianceList.append(check_status)
         return ComplianceList
 

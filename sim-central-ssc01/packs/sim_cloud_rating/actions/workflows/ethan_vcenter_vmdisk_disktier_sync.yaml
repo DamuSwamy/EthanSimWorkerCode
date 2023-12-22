@@ -75,7 +75,7 @@ tasks:
       ids: <% ctx().vmID_List %>
       proxy_vcenters: <% ctx().proxy_vcenters %>
       vm_required_field_array: ['EthVmId']
-      vmdisk_required_field_array: ['_VmId', '_EthVmId', '_DeviceKey', 'DiskTier']
+      vmdisk_required_field_array: ['_VmId', '_EthVmId', '_DeviceKey', 'DiskTier', 'LastScanTime']
     next:
       - when: <% succeeded() %>
         publish:
@@ -102,7 +102,7 @@ tasks:
       connection: <% ctx().billing_db_connection %>
       table: "EthVmDisk"
       data: <% ctx().vmdisks %>
-      update_values: ['DiskTier']
+      update_values: ['DiskTier', 'LastScanTime']
       column_filter1: "EthVmId"
       column_filter2: "VmId"
       column_filter3: "DeviceKey"
