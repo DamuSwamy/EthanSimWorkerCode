@@ -1,76 +1,70 @@
-import json
 import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-import datetime
+import json
+from datetime import datetime, timezone, timedelta
 from st2common.runners.base_action import Action
 
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+class MyCustomStackStormAction(Action):
+    def run(self):
+        today_date = datetime.now()
+        today_date_str = today_date.strftime("%Y-%m-%d")
+        ist_offset = timedelta(hours=5, minutes=30)
+        start_time = f"{today_date_str}T00:00:00"
+        end_time = f"{today_date_str}T23:59:59"
 
-class PythonActionProcessData(Action):
-    def run(self, server_name, st2_api_key):
-        # Use the provided server_name and st2_api_key
-        url = f'https://{server_name}/api/v1/executions?status=succeeded'
-
-        custom_headers = {
-            "St2-Api-Key": st2_api_key
-        }
-
-        # Instead of reading from file, directly set the action name
-        action_names_to_fetch = ["catch_all_automation_create_user","catch_all_automation_v2"]
-
-        one_hour_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=240)
-        timestamp = one_hour_ago.strftime('%Y-%m-%dT%H:%M:%SZ')
-
-        response = requests.get(url, headers=custom_headers, verify=False)
-        data_list = []
-        if response.status_code == 200:
-            data_list = response.json()
-
-        # Counter for DIAGNOSIS executions
         diagnosis_count = 0
 
-        for entry in data_list:
-            action = entry.get("action")
-            if action and action.get("name") in action_names_to_fetch:
-                execution_id = entry.get("id")
-                execution_url = f'https://{server_name}/api/v1/executions/{execution_id}'
+        start_time_utc = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc) - ist_offset
+        end_time_utc = datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc) - ist_offset
 
-                execution_response = requests.get(execution_url, headers=custom_headers, verify=False)
-                execution_data = execution_response.json()
+        action_names_to_fetch = ["sim_core.catch_all_automation_create_user", "sim_core.catch_all_automation_v2"]
 
-                # Extract relevant information
-                action_name = execution_data.get("action").get("name")
-                status = execution_data.get("status")
-                start_time = execution_data.get("start_timestamp")
-                end_time = execution_data.get("end_timestamp")
-                output = execution_data.get("result")
+        base_url = "https://sim-central.sim.esecure.systems/api/v1/executions?"
+        
+        headers = {
+            "content_type": "application/json",
+            "st2-api-key": "MTc3MjBjODg1YjUwZDM2NzM2OGFkNjBkMjE0NWIxOWVkYTBmMThlZWY0ODUwMTcwYzQzNzJlZDcwYTIzYzAwYQ",
+        }
 
-                # Additional code to extract and print the "state" value
-                try:
-                    state_value = output.get("output", {}).get("output", {}).get("info", {}).get("state", {})
-                    ticket_number = output.get("output", {}).get("output", {}).get("info", {}).get("info", {}).get("ticket", {})
+        try:
+            for action_name in action_names_to_fetch:
+                url = base_url + f"action={action_name}"
 
-                    # Case-insensitive comparison for "DIAGNOSIS"
-                    if state_value.lower() == "diagnosis":
-                        # Increment the counter
-                        diagnosis_count += 1
+                response = requests.get(url, headers=headers)
+                if response.status_code == 200:
+                    data = json.loads(response.text)
 
-                        print("Action Name: {}".format(action_name))
-                        print("Status: {}".format(status))
-                        print("Start_time: {}".format(start_time))
-                        print("End_time: {}".format(end_time))
-                        print("State value:", state_value)
-                        print("Ticket_Number: {}".format(ticket_number))
-                        print("-----------------------------------------------------------------------------------------------------------------------------")
+                    for execution in data:
+                        start_timestamp_str = execution.get("start_timestamp", "")
+                        start_timestamp = datetime.strptime(start_timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+                        start_timestamp_ist = start_timestamp + ist_offset
 
-                except json.JSONDecodeError as e:
-                    print("Error decoding JSON:", e)
-                except KeyError as e:
-                    print("KeyError:", e)
-                except Exception as e:
-                    print("An unexpected error occurred:", e)
+                        if start_time_utc <= start_timestamp <= end_time_utc:
+                            id = execution["id"]
+                            status = execution.get("status")
+                            start_time = execution.get("start_timestamp")
+                            end_time = execution.get("end_timestamp")
+                            state = execution.get("result", {}).get("output", {}).get("output", {}).get("info", {}).get("state", "N/A")
+                            ticket_number = execution.get("result", {}).get("output", {}).get("output", {}).get("info", {}).get("info", {}).get("ticket", "N/A")
+                            
+                            if state.lower() == "diagnosis":
+                                diagnosis_count += 1
+                                print("Execution_id:", id)
+                                print("Action Name:", action_name)
+                                print("Execution start time(UTC):", start_time)
+                                print("Execution End time(UTC):", end_time)
+                                print("Ticket Number", ticket_number)
+                else:
+                    self.logger.error(f"Request for action {action_name} failed with status code {response.status_code}")
+                    self.logger.error("Response content:", response.text)
 
-        # Print "No diagnosis found" if diagnosis_count is 0
-        print("Total DIAGNOSIS Status Executions:", diagnosis_count)
-        if diagnosis_count == 0:
-            print("No diagnosis found")
+                if diagnosis_count != 0:
+                    self.logger.info("Diagnosis Count: %d", diagnosis_count)
+                else:
+                    self.logger.info(f"No diagnosis found for {today_date}")
+
+        except Exception as e:
+            self.logger.error(f"An error occurred: {e}")
+
+if __name__ == '__main__':
+    MyCustomStackStormAction().run()
+
