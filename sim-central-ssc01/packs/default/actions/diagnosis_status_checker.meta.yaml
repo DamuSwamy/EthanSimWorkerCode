@@ -1,7 +1,6 @@
-pack: stackstorm_monitor
+pack: default
 enabled: true
 runner_type: orquesta
-name: diagnosis_status_finder
-entry_point: workflows/diagnosis_status_finder.yaml
+name: diagnosis_status_checker
+entry_point: workflows/diagnosis_status_checker.yaml
 description: This automation will fetch the diagnosis report of last 24 hours and send a report to cisco webex
-parameters 

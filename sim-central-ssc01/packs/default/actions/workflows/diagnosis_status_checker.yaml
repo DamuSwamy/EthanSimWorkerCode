@@ -1,24 +1,19 @@
 version: 1.0
 tasks:
-  # [579, 132]
-  task1:
+  # [333, 50]
+  diagnosis_checker:
     action: stackstorm_monitor.diagnosis_checker
     next:
       - do:
-          - task2
-        when: <% succeeded() %>
+          - Webex_daily_update
         publish:
-          - Output: <% str(result().stdout)%>
-    input:
-      log_level: DEBUG
-      server_name: <%ctx().server_name%>
-      st2_api_key: <%ctx().st2_apikey%>
-  # [578, 265]
-  task2:
+          - update: <% str(result().stdout)%>
+        when: <% succeeded() %>
+  # [332, 209]
+  Webex_daily_update:
     action: cisco_webex.webex_post_message
     input:
       log_level: DEBUG
+      text: <%ctx().update%>
       bearer_token: N2U5NzA4NmYtYjM3OC00MGRjLWE2NDItYWQwMmRjMWUwNWY0N2IzMWIxM2YtNWMx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
       room_id: Y2lzY29zcGFyazovL3VzL1JPT00vYWQ3ZWE5MzAtNzZlZC0xMWVlLTlkMjQtY2JiOTMyNmY4MDJm
-      text: <%ctx().Output%>
-input
