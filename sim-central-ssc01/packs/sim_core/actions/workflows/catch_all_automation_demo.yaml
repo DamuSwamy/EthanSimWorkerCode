@@ -185,12 +185,12 @@ tasks:
         when: <% succeeded() %>
         publish:
           - scheduled_robot_data: <% ctx().scheduled_robot_data.set(data,ctx().scheduled_robot_data.data.set(custom_attributes,ctx().scheduled_robot_data.data.custom_attributes.set(offboarding_type,"immediate"))) %>
-  # [271, 1057]
+  # [270, 1106]
   complete:
     action: core.echo
     input:
       message: "<% ctx().messages %>"
-  # [269, 950]
+  # [272, 1000]
   done:
     action: core.noop
     next:
@@ -291,7 +291,7 @@ tasks:
       # #629e47
       - do:
           - done
-  # [484, 807]
+  # [466, 835]
   resolve_itsm_ticket:
     action: sim_itsm2.update
     next:

@@ -215,6 +215,10 @@ tasks:
               membership_copied: <% ctx().ad_created %>
               license_added: <% ctx().license_added %>
               mailbox_created: <% ctx().mailbox_created %>
+              user_email: <% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>
+              DisplayName: <% ctx().first_name %> <% ctx().last_name %>
+              EmployeeNumber: <% ctx().mobile %>
+              Department: <% ctx().department %>
               next_action_attributes:
                 escalate:
                   resolution_flag: false
@@ -317,21 +321,7 @@ tasks:
         St2-Api-Key: MGRjNGVjOTM2NmZiMTQzMDg2YzIwOGFkZWE4ZGZhZjJmZTllNjEyNmU1ZjY2OTEzMTZjNmViNjAxYTZmMDliYw
     next:
       - do:
-          - SQL_Insert_Record
-  # [1018, 1070]
-  SQL_Insert_Record:
-    action: core.http
-    next:
-      - do:
           - ticket_update
-    input:
-      url: "https://sim-central.sim.esecure.systems/api/v1/executions"
-      body: "{\"action\":\"sql.query\",\"parameters\":{\"query\":\"INSERT INTO [dbo].[eTestUserAccount3] ([UserPrincipalName], [DisplayName], [EmployeeNumber], [Department], [EmployeeID]) VALUES ('<% ctx().first_name %>.<% ctx().last_name %>@<% ctx().emaildomain %>', '<% ctx().first_name %> <% ctx().last_name %>', '<% ctx().mobile %>', '<% ctx().department %>', LEFT(CONVERT(VARCHAR(5), NEWID()), 5));\",\"connection\":\"productionCloudExtension\"}}"
-      headers:
-        Content-Type: application/json
-        St2-Api-Key: MTc3MjBjODg1YjUwZDM2NzM2OGFkNjBkMjE0NWIxOWVkYTBmMThlZWY0ODUwMTcwYzQzNzJlZDcwYTIzYzAwYQ
-      method: POST
-      timeout: 120
 input:
   - data
 output:

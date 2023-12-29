@@ -73,6 +73,10 @@ tasks:
               state: <% ctx().output.get('state', "FINISHED") %>
               data: null
               info: <% ctx().output.get('info', result().output) %>
+          - UserPrincipalName: <% result().output.info.info.user_email %>
+          - DisplayName: <% result().output.info.info.DisplayName %>
+          - EmployeeNumber: <% result().output.info.info.EmployeeNumber %>
+          - Department: <% result().output.info.info.Department %>
         # #629e47
         do:
           - resolve_itsm_ticket
@@ -183,7 +187,7 @@ tasks:
     action: core.echo
     input:
       message: <% ctx().messages %>
-  # [562, 790]
+  # [689, 695]
   escalate_ticket:
     action: sim_itsm2.update
     input:
@@ -198,13 +202,13 @@ tasks:
       # #629e47
       - do:
           - done
-  # [328, 793]
+  # [382, 643]
   resolve_itsm_ticket:
     action: sim_itsm2.update
     next:
       # #629e47
       - do:
-          - done
+          - Insert_record_DB
     input:
       log_level: DEBUG
       table: sn_customerservice_general_case
@@ -259,7 +263,7 @@ tasks:
         publish:
           - account: <% result().result. account.value %>
           - contact: <% result().result. contact.value %>
-  # [159, 720]
+  # [128, 663]
   delegated_user_email:
     action: core.sendmail
     input:
@@ -271,3 +275,14 @@ tasks:
       # #629e47
       - do:
           - done
+  # [383, 767]
+  Insert_record_DB:
+    action: sql.query
+    next:
+      # #629e47
+      - do:
+          - done
+    input:
+      log_level: DEBUG
+      query: "INSERT INTO [dbo].[eTestUserAccount3] \n    ([UserPrincipalName], [DisplayName], [EmployeeNumber], [Department], [EmployeeID])\nVALUES \n    ('<% ctx().UserPrincipalName %>', '<% ctx().DisplayName %>', '<% ctx().EmployeeNumber %>', '<% ctx().Department %>', LEFT(CONVERT(VARCHAR(5), NEWID()), 5));\n"
+      connection: productionCloudExtension
