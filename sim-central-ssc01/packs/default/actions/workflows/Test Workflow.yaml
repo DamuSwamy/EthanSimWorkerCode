@@ -1,0 +1,16 @@
+version: 1.0
+tasks:
+  # [237, 203]
+  task1:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: "{{ ctx().query }}"
+      database: ServiceCatalog
+      drivername: mssql
+      password: Admin123!
+      username: SimUser
+      port: 1433
+      host: 10.126.2.171
+input:
+  - query

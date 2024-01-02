@@ -42,3 +42,10 @@ connections:
     database: DB-ECSPPRD-CSPExtension
     port: 1433
     drivername: mssql
+  service_catalog:
+    host: "10.126.2.171"
+    username: "SimUser"
+    password: "Admin123!"
+    database: ServiceCatalog
+    port: 1433
+    drivername: mssql  

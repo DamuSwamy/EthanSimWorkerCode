@@ -1,0 +1,9 @@
+pack: default
+enabled: true
+runner_type: orquesta
+parameters:
+  query:
+    type: string
+    required: true
+name: Test Workflow
+entry_point: workflows/Test Workflow.yaml
