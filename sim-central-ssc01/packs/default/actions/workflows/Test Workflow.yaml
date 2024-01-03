@@ -12,5 +12,16 @@ tasks:
       username: SimUser
       port: 1433
       host: 10.126.2.171
+    next:
+      - do:
+          - task2
+        when: <% succeeded() %>
+        publish:
+          - val: <% result().stdout %>
+  # [232, 310]
+  task2:
+    action: core.echo
+    input:
+      message: "{{ ctx().val }}"
 input:
   - query
