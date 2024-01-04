@@ -1,0 +1,17 @@
+version: 1.0
+tasks:
+  # [321, 195]
+  task2:
+    action: core.echo
+    input:
+      message: <%ctx().secret_id%>
+  # [100, 99]
+  task3:
+    action: core.local_sudo
+    next:
+      - do:
+          - task2
+        publish:
+          - secret_id: <% result()%>
+    input:
+      cmd: "st2 key get password_demo "

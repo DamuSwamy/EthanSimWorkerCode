@@ -17,7 +17,7 @@ tasks:
           - task2
         when: <% succeeded() %>
         publish:
-          - val: <% result().stdout %>
+          - val: <% result().result %>
   # [232, 310]
   task2:
     action: core.echo

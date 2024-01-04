@@ -1,0 +1,6 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: device42_psswd_demo
+entry_point: workflows/device42_psswd_demo.yaml
+description: demo workflow
