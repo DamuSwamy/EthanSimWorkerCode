@@ -49,7 +49,7 @@
 843,1571A235-91DA-43E8-871A-FFB4957C2B94,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Compute/virtualMachines/vm-uacrm-gateway-ea,Azure Virtual Machine
 844,3E817BAA-64E2-489A-BD67-5AF0D16D72AF,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UACRMPRD-AE/providers/Microsoft.Compute/virtualMachines/vm-ethan-uacrmprd-ae-1,Azure Virtual Machine
 842,D1CB02C0-9079-4907-89EB-F48ADD12A0A0,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-EWSPRD-AE-1,Azure Virtual Machine
-3918,CD3C4D95-F9A0-4598-BB84-8930FF92ADF1,,Azure Virtual Machine
+3918,CD3C4D95-F9A0-4598-BB84-8930FF92ADF1,/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-FW-AE-1/providers/Microsoft.Compute/virtualMachines/VM-WES-FW-AE-1,Azure Virtual Machine
 840,4F6142C1-4C85-4417-AE42-A1215D492BB2,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPDEV-EA/providers/Microsoft.Compute/virtualMachines/VM-TestVM-1-EA,Azure Virtual Machine
 845,C7773C2A-9FA9-4FE9-8632-5B1003FC07F6,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-USMPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-USMPRD-SENSOR-AE-1,Azure Virtual Machine
 865,1E763E83-2922-4DC9-9C88-ADB5FB1D2C43,/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-13,Azure Virtual Machine

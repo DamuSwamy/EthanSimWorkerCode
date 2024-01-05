@@ -1,6 +1,6 @@
 version: 1.0
 tasks:
-  # [16, 0]
+  # [0, 0]
   generates_device_42_token:
     action: sim_multi_cloud.generates_dev42_token
     next:
@@ -13,22 +13,22 @@ tasks:
       log_level: DEBUG
       username: "{{ ctx().Device42_username }}"
       password: "{{ ctx().Device42_password }}"
-  # [167, 107]
+  # [130, 97]
   get_d42_devices:
     action: sim_multi_cloud.get_D42_devices
-    next:
-      - do:
-          - passwordstate_get_secret_id
     input:
       log_level: DEBUG
       bearer_token: "{{ ctx().token1 }}"
-  # [935, 704]
+    next:
+      - do:
+          - get_password_from_pwdstate
+  # [754, 574]
   update_identifier_in_D42:
     action: sim_multi_cloud.update_custom_field
     input:
       log_level: DEBUG
       token: "{{ ctx().token1 }}"
-  # [391, 352]
+  # [411, 294]
   generate_azure_token:
     action: sim_multi_cloud.generate_azure_token
     next:
@@ -39,7 +39,7 @@ tasks:
     input:
       log_level: DEBUG
       clieent_secret: <%ctx().secret_id%>
-  # [538, 464]
+  # [517, 392]
   get_subscription_details:
     action: sim_multi_cloud.get_subscription_details_azure
     next:
@@ -48,7 +48,7 @@ tasks:
     input:
       log_level: DEBUG
       bearer_token: "{{ ctx().token2 }}"
-  # [763, 573]
+  # [637, 484]
   get_azure_vm_details:
     action: sim_multi_cloud.get_azure_vm_details
     next:
@@ -57,16 +57,14 @@ tasks:
     input:
       log_level: DEBUG
       bearer_token: "{{ ctx().token2 }}"
-  # [257, 234]
-  passwordstate_get_secret_id:
-    action: core.local
+  # [289, 195]
+  get_password_from_pwdstate:
+    action: sim_core.fetch_password_from_pwdstate
     next:
       - do:
           - generate_azure_token
         publish:
-          - secret_id: <% result().stdout[0].Password%>
-    input:
-      cmd: "curl --location --request GET \"https://pwd.ecorp.systems//api/passwords/35423\" --header 'APIKey: b5fe43a237c896d62bf47d98ae35c32b'"
+          - secret_id: <% result().output.password %>
 
 input:
   - Device42_username

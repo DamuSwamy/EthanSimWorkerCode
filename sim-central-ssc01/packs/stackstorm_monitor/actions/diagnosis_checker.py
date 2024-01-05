@@ -31,29 +31,31 @@ class MyCustomStackStormAction(Action):
 
                     for execution in data:
                         start_timestamp_str = execution.get("start_timestamp", "")
-                        start_timestamp = datetime.strptime(start_timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
-                        start_timestamp_ist = start_timestamp + timedelta(hours=5, minutes=30)
+                        end_timestamp_str = execution.get("end_timestamp", "")
 
-                        if yesterday_9_30_am_ist <= start_timestamp_ist <= today_9_30_am_ist:
-                            id = execution["id"]
-                            status = execution.get("status")
-                            start_time = start_timestamp_ist.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+                        if start_timestamp_str and end_timestamp_str:
+                            start_timestamp = datetime.strptime(start_timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+                            start_timestamp_ist = start_timestamp + timedelta(hours=5, minutes=30)
 
-                            end_timestamp_str = execution.get("end_timestamp", "")
                             end_timestamp = datetime.strptime(end_timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
                             end_timestamp_ist = end_timestamp + timedelta(hours=5, minutes=30)
-                            end_time = end_timestamp_ist.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
-                            state = execution.get("result", {}).get("output", {}).get("output", {}).get("info", {}).get("state", "N/A")
-                            ticket_number = execution.get("result", {}).get("output", {}).get("output", {}).get("info", {}).get("info", {}).get("ticket", "N/A")
+                            if yesterday_9_30_am_ist <= start_timestamp_ist <= today_9_30_am_ist:
+                                id = execution["id"]
+                                status = execution.get("status")
+                                start_time = start_timestamp_ist.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+                                end_time = end_timestamp_ist.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
-                            if state.lower() == "diagnosis":
-                                diagnosis_count += 1
-                                print("Execution_id:", id)
-                                print("Action Name:", action_name)
-                                print("Execution start time(IST):", start_time)
-                                print("Execution End time(IST):", end_time)
-                                print("Ticket Number", ticket_number)
+                                state = execution.get("result", {}).get("output", {}).get("output", {}).get("info", {}).get("state", "N/A")
+                                ticket_number = execution.get("result", {}).get("output", {}).get("output", {}).get("info", {}).get("info", {}).get("ticket", "N/A")
+
+                                if state.lower() == "diagnosis":
+                                    diagnosis_count += 1
+                                    print("Execution_id:", id)
+                                    print("Action Name:", action_name)
+                                    print("Execution start time(IST):", start_time)
+                                    print("Execution End time(IST):", end_time)
+                                    print("Ticket Number", ticket_number)
                 else:
                     print(f"Request for action {action_name} failed with status code {response.status_code}")
                     print("Response content:", response.text)
