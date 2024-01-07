@@ -114,6 +114,7 @@ fi
   cat <<EOF
 ${BODY}
 ${LINE_BREAK}
+${FOOTER}
 
 EOF
 
