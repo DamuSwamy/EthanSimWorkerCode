@@ -1,0 +1,7 @@
+---
+name: get_unique_orgs
+pack: graincorp
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: uniqueorgs.py

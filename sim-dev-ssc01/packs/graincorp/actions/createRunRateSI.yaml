@@ -1,0 +1,7 @@
+---
+name: create_RunRate_SI
+pack: graincorp
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: createRunRateSI.py

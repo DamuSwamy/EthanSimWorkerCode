@@ -1,0 +1,7 @@
+---
+name: fixvcd
+pack: graincorp
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: fixvcd.py

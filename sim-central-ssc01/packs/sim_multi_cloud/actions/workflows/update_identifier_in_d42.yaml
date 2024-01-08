@@ -21,7 +21,7 @@ tasks:
       bearer_token: "{{ ctx().token1 }}"
     next:
       - do:
-          - get_password_from_pwdstate
+          - get_password
   # [754, 574]
   update_identifier_in_D42:
     action: sim_multi_cloud.update_custom_field
@@ -57,14 +57,18 @@ tasks:
     input:
       log_level: DEBUG
       bearer_token: "{{ ctx().token2 }}"
-  # [289, 195]
-  get_password_from_pwdstate:
-    action: sim_core.fetch_password_from_pwdstate
+  # [310, 192]
+  get_password:
+    action: sim_passwordstate.get_password_from_password_id
     next:
       - do:
           - generate_azure_token
         publish:
-          - secret_id: <% result().output.password %>
+          - secret_id: <% result().result %>
+    input:
+      log_level: DEBUG
+      api_key: b5fe43a237c896d62bf47d98ae35c32b
+      password_id: 35423
 
 input:
   - Device42_username

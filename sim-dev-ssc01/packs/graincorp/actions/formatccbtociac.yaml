@@ -1,0 +1,7 @@
+---
+name: format_ccb_to_ciac
+pack: graincorp
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: formatccbtociac.py

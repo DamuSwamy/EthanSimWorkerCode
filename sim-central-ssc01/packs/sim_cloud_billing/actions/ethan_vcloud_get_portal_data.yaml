@@ -14,4 +14,5 @@ parameters:
     type: string
     description: Enter password
     required: true
+    secret: true
   

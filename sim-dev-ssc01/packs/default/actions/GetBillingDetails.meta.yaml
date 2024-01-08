@@ -1,0 +1,5 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: GetBillingDetails
+entry_point: workflows/GetBillingDetails.yaml

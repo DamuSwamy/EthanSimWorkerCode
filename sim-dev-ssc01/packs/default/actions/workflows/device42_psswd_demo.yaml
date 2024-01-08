@@ -11,7 +11,7 @@ tasks:
       - do:
           - task2
         publish:
-          - output: <% result().result.password%>
+          - output: <% result().result%>
   # [243, 195]
   task2:
     action: core.echo

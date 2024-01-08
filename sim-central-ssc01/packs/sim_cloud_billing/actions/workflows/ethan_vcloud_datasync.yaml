@@ -52,30 +52,32 @@ tasks:
     action: sql.query
     input:
       log_level: DEBUG
-      query: INSERT INTO [CloudManagement_Dev].[dbo].[Iaas_vCloud] SELECT [ethvCloudID] ,[vCloudID] ,[vCloudvAppID] ,[vCloudvApp] ,[vDCS] ,[ethvmid] ,[custidx] ,[CustomerName] ,[vmID] ,[vmUuid] ,[vmName] ,[vmHostName] ,[vmIPAddress] ,[vmCPU] ,[vmRAM] ,[vmStorageUsed] ,[vmStorageTotal] ,[vmPowerState] ,[vmHost] ,[vmBootTime] ,[vmSystemType] ,[vmGuestToolsStatus] ,[vmGuestToolsVersion] ,[vmGuestOSName] ,[vmOrg] ,[vmCreatedDate] ,[vmRemovedDate] ,[vmActive] ,[vmStorageSnapshotSize] ,[vmStorageSnapshot] ,[CPUHotadd] ,[MemoryHotadd] ,[lastUpdated] FROM [CloudManagement_Dev].[dbo].[Iaas_vCloud_Temp]
+      query: INSERT INTO Iaas_vCloud SELECT [ethvCloudID] ,[vCloudID] ,[vCloudvAppID] ,[vCloudvApp] ,[vDCS] ,[ethvmid] ,[custidx] ,[CustomerName] ,[vmID] ,[vmUuid] ,[vmName] ,[vmHostName] ,[vmIPAddress] ,[vmCPU] ,[vmRAM] ,[vmStorageUsed] ,[vmStorageTotal] ,[vmPowerState] ,[vmHost] ,[vmBootTime] ,[vmSystemType] ,[vmGuestToolsStatus] ,[vmGuestToolsVersion] ,[vmGuestOSName] ,[vmOrg] ,[vmCreatedDate] ,[vmRemovedDate] ,[vmActive] ,[vmStorageSnapshotSize] ,[vmStorageSnapshot] ,[CPUHotadd] ,[MemoryHotadd] ,[lastUpdated] FROM Iaas_vCloud_Temp
       connection: "{{ ctx().connection }}"
     next:
       - do:
-          - task1
+          - exec_usp_loaddatavcenter
         when: <% succeeded() %>
   # [191, 554]
-  task1:
+  exec_usp_loaddatavcenter:
     action: mssql.execute.query
     input:
       log_level: DEBUG
       database: "{{ ctx().connection }}"
-      query_string: exec usp_loaddatavcenter
+      query_string: "exec usp_loaddatavcenter"
     next:
       - do:
-          - task2
+          - exec_usp_loaddatavcloud
         when: <% succeeded() %>
   # [190, 672]
-  task2:
+  exec_usp_loaddatavcloud:
     action: mssql.execute.query
     input:
       log_level: DEBUG
-      query_string: exec usp_loaddatavcloud
+      query_string: "exec usp_loaddatavcloud"
       database: "{{ ctx().connection }}"
+
+    
 input:
   - connection
   - username

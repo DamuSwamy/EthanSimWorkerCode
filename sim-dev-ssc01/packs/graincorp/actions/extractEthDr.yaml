@@ -1,0 +1,7 @@
+---
+name: extract_EthDr
+pack: graincorp
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: extractEthDr.py
