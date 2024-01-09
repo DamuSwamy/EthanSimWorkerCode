@@ -32,5 +32,5 @@ class GenerateAzureToken(Action):
         access_token = response_json.get('access_token')
         #print("hello")
         access_token=access_token.rstrip()
-        print(access_token)
+        return access_token
 

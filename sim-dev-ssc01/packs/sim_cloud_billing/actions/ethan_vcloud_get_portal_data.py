@@ -132,7 +132,7 @@ class DataSync(Action):
                         vmRecord['vDCS']= vCloudvdc
                         vmRecord['ethvmid']= ethvCloudID
                         vmRecord['vmID']= moref.split('vm-')[-1]
-                        vmRecord['vmName']= vmName.text
+                        vmName  = xml_vm_body.find('.', namespaces=namespace).get('name')
                         vmRecord['vmCPU']= admin_vm_record.get('numberOfCpus')
                         vmRecord['vmRAM']= vmRam
                         vmRecord['vmStorageTotal']= int(total_virtual_quantity / 1073741824)

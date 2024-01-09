@@ -82,6 +82,11 @@ class JoinCCBToCIAC(Action):
 
             join_ccb_to_ciac.append(modified_obj)
 
+      txt_file_output = "/opt/stackstorm/packs/graincorp/joinccbtociacoutput.txt"
+
+      with open(txt_file_output, 'w') as txt_file:
+          json.dump(join_ccb_to_ciac, txt_file) 
+
       return {
             'data': join_ccb_to_ciac
       }

@@ -88,12 +88,14 @@ class DataSync(Action):
                     vm_response_body = vm_response.text
                     xml_vm_body = ET.fromstring(vm_response_body)
                     vmName = xml_vm_body.find('.//ns0:ComputerName', namespaces=namespace)
+                    #vmName  = xml_vm_body.find('.', namespaces=namespace).get('name')
                     if vmName is not None and vmName.text:
                 
                         ethvCloudID = xml_vm_body.find('.', namespaces=namespace).get('id')
                         vCloudvAppID = 'urn:vcloud:vapp:' + xml_vm_body.find('.//ns0:Link[@rel="up"]', namespaces=namespace).get('href').split('vapp-')[-1]
                         vCloudvdc = 'urn:vcloud:vdc:' + admin_vm_record.get('vdc').split('/')[-1]
-                        vmName = xml_vm_body.find('.//ns0:ComputerName', namespaces=namespace)
+                        #vmName = xml_vm_body.find('.//ns0:ComputerName', namespaces=namespace)
+                        vmName  = xml_vm_body.find('.', namespaces=namespace).get('name')
                         moref = admin_vm_record.get('moref')
                         vmRam = int(int(admin_vm_record.get('memoryMB')) / 1024)
                         for item in xml_vm_body.findall('.//ns2:Item', namespaces=namespace):
@@ -132,7 +134,7 @@ class DataSync(Action):
                         vmRecord['vDCS']= vCloudvdc
                         vmRecord['ethvmid']= ethvCloudID
                         vmRecord['vmID']= moref.split('vm-')[-1]
-                        vmRecord['vmName']= vmName.text
+                        vmRecord['vmName']= vmName
                         vmRecord['vmCPU']= admin_vm_record.get('numberOfCpus')
                         vmRecord['vmRAM']= vmRam
                         vmRecord['vmStorageTotal']= int(total_virtual_quantity / 1073741824)

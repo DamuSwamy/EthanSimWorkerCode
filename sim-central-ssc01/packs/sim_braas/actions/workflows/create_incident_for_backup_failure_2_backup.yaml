@@ -27,7 +27,7 @@ tasks:
           - notify
           - format_user_input
 
-  # [79, 201]
+  # [92, 251]
   format_user_input:
     action: sim_braas.extract_data_from_json_2
     input:
@@ -45,14 +45,14 @@ tasks:
         do:
           - fail
 
-  # [79, 371]
+  # [192, 401]
   get_customer_account_name:
     action: sim_itsm2.get
     input:
       log_level: DEBUG
       table: customer_account
       query:
-        sys_id: "{{ ctx().account_sysids | join('^ORsys_id=') }}"
+        sys_id: "{{ ctx().account_sysids | unique | list | join('^ORsys_id=') }}"
     next:
       - when: <% succeeded() %>
         publish:
@@ -63,7 +63,7 @@ tasks:
         do:
           - fail
   
-  # [78, 515]
+  # [142, 551]
   construct_client_sysid_mapping:
     action: core.noop
     next:
@@ -73,14 +73,15 @@ tasks:
         do:
           - validate_and_create
 
-  # [80, 652]
+  # [292, 751]
   validate_and_create:
     action: sim_braas.case_validation_and_creation
     input:
       account_id: <% ctx().generated_output[item(client)].account_sysid %>
       client_name: <% item(client) %>
       account_name: <% ctx().client_sysid_map.output[ctx().generated_output[item(client)].account_sysid] %>
-      failure_info: <% str(ctx().generated_output[item(client)].failure_info) %>
+      failure_info: <% str(ctx().generated_output[item(client)].failures) %>
+      exception_info: <% str(ctx().generated_output[item(client)].exceptions) %>
     with:
       items: client in <% ctx().clients %>
     next:
@@ -98,12 +99,14 @@ tasks:
           - notify
           - fail
   
-  # [458, 669]
+  # [92, 951]
   notify:
     action: core.echo
     input:
-      message: <% ctx().notification %>
+      message: |
+        <% ctx().notification %>
     next:
       - when: <% succeeded() %>
         publish:
           - notifications: <% ctx().notifications.append(ctx().notification) %>
+

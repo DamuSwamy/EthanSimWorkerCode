@@ -4,6 +4,9 @@ runner_type: python-script
 description: "generates authentication token for subscription details"
 enabled: true
 entry_point: 'generate_azure_token.py'
+output_schema:
+  type: string
+  secret: true
 parameters:
   clieent_id:
     type: 'string'

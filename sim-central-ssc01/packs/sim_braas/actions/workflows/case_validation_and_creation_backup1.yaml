@@ -92,7 +92,6 @@ tasks:
       log_level: DEBUG
       payload:
         contact: "{{ ctx().account_name if ctx().account_name != 'Allegis Group' else 'Allegis' }} Guest Contact"
-        contact_type: proactive
         category: Incident
         subcategory: Functionality
         notes_to_comments: true

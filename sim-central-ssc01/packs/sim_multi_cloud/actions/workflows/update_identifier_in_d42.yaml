@@ -35,7 +35,7 @@ tasks:
       - do:
           - get_subscription_details
         publish:
-          - token2: <% result().stdout %>
+          - token2: <% result().result %>
     input:
       log_level: DEBUG
       clieent_secret: <%ctx().secret_id%>
