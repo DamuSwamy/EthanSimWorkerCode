@@ -1151,6 +1151,80 @@
           }
         }
       }
+    },
+    {
+      "name": "testlifecycle-vm",
+      "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/TESTLIFECYCLE-VM_GROUP/providers/Microsoft.Compute/virtualMachines/testlifecycle-vm",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "testlifecycle-vm": "",
+        "ethan.sn.id": "acb9ad8d87c7b810bd1d32e80cbb35ee"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D4s_v3"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "d517092a-6fa5-4c24-99c9-0a261de6b76e",
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "canonical",
+            "offer": "0001-com-ubuntu-server-focal",
+            "sku": "20_04-lts-gen2",
+            "version": "latest",
+            "exactVersion": "20.04.202312080"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "name": "testlifecycle-vm_OsDisk_1_f9b5922be32c431b9f0e2c1ac38eccc0",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS",
+              "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/testlifecycle-vm_group/providers/Microsoft.Compute/disks/testlifecycle-vm_OsDisk_1_f9b5922be32c431b9f0e2c1ac38eccc0"
+            },
+            "deleteOption": "Delete",
+            "diskSizeGB": 30
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "testlifecycle-vm",
+          "adminUsername": "azureuser",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "/home/azureuser/.ssh/authorized_keys",
+                  "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDVZbaRPTBynyyhWA5OoJgq1qn71OGPO4l4WwvH4vdGyw35WXDRFObFNlCNz54z9CVEqULugW2xp8fDNBPeRPsHdkYsePveZP4UqHtTcTKGRK3/TJVGlAVZpdFmDugddGqvlId+o9pVRQWf2gEztW+v90PGDpP0FnibOP1Q3Ow9kw8C3yyozSgwj1zm0lJRtJks15F+4DSNlygDsrLpE1aEo39L0dfk/Ovg+eKRgbIXVfqZgfycxbqLJFhPEnQcSfEwDgKYTR6zGjG1QdqYI0t/9PkkHmKYTlyrY0a75ytH7GhVUF6vbGU+30szUVTo7BsO6nIev4wJRAZZeBeiahFfi2vd6X7k35kFbX4Y06HCDBv/zX0NXIcSKQMwgmMRiTCjth7Ncbnm362JL/dJ+GbZVVlBTNW1iX+txcIxYvryfRnhRpXY15z4DSnEc07r3mD/VIdTn120CON2ShWmtKefFSSawK4+Zvyk0RIWFA2+CWifVOFzb20mY7r3jI1DyGE= generated-by-azure"
+                }
+              ]
+            },
+            "provisionVMAgent": true,
+            "patchSettings": {
+              "patchMode": "ImageDefault",
+              "assessmentMode": "ImageDefault"
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/testlifecycle-vm_group/providers/Microsoft.Network/networkInterfaces/testlifecycle-vm198_z1","properties":{"deleteOption":"Detach"}}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      },
+      "zones": [
+        "1"
+      ]
     }
   ]
 },{
@@ -2827,7 +2901,7 @@
       },
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_D8s_v4"
+          "vmSize": "Standard_D8s_v5"
         },
         "provisioningState": "Succeeded",
         "vmId": "996dcf8b-2ff7-47ef-905b-7bf784bad988",
@@ -3263,7 +3337,7 @@
             "caching": "ReadWrite",
             "managedDisk": {
               "storageAccountType": "Premium_LRS",
-              "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/VM-MAR-SQL1_GROUP/providers/Microsoft.Compute/disks/VM-MAR-SQL1_OsDisk_1_bcbe19c2e2e54423ae6bb7e7b5753efb"
+              "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-INFRA-1/providers/Microsoft.Compute/disks/VM-MAR-SQL1_OsDisk_1_bcbe19c2e2e54423ae6bb7e7b5753efb"
             },
             "deleteOption": "Delete",
             "diskSizeGB": 127
@@ -3308,7 +3382,7 @@
           },
           "securityType": "TrustedLaunch"
         },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/VM-MAR-SQL1_group/providers/Microsoft.Network/networkInterfaces/vm-mar-sql1241_z1","properties":{"deleteOption":"Detach"}}]},
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-INFRA-1/providers/Microsoft.Network/networkInterfaces/vm-mar-sql1241_z1"}]},
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": true,

@@ -50,7 +50,7 @@ class UniqueVMs(Action):
             
             billing_details.append(billing_object)
 
-      unique_vm_names = set(item["vmName"].lower() for item in billing_details)
+      unique_vm_names = set(item["vmName"] for item in billing_details)
       vmName_object = {
             "vms": {
                 "vmName": [

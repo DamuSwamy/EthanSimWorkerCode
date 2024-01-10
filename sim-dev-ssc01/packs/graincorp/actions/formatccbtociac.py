@@ -76,24 +76,26 @@ class FormatCCBToCIAC(Action):
             cpuTotal=0
             memTotal=0
             storTotal=0
-            cpuHoursvolume=1
-            cpuHoursduration=1
-            memHoursVolume=1
-            memHoursDuration=1
+            cpuHoursvolume=0
+            cpuHoursduration=0
+            memHoursVolume=0
+            memHoursDuration=0
+            storHoursVolume=0
+            storHoursDuration=0
             chargeAmtForBackupEnabled=0
             SIFriendlyName=""
             ethvmid=""
             
             for obj in billing_data:
-                if vms == obj["vmName"].lower():
+                if vms == obj["vmName"]:
                     SIFriendlyName=obj["vmName"]
                     ethvmid=obj["ethvmid"]
-                    if obj["Resource"]=="BackupLicensing" and obj["Volume"]==1:
-                        backupBase=obj["Charge_Amt"]
-                    if obj["Resource"]=="Backup" and obj["Volume"]!=1:
+                    if obj["Resource"]=="BackupLicensing" and obj["Volume"]=="1":
+                        backupBase=float(obj["Charge_Amt"])
+                    if obj["Resource"]=="Backup" and obj["Volume"]!="1":
                         backupProt+=float(obj["Charge_Amt"])
-                    if obj["Resource"]=="Backup" and obj["Volume"]==1:
-                        chargeAmtForBackupEnabled=obj["Charge_Amt"]
+                    if obj["Resource"]=="Backup" and obj["Volume"]=="1":
+                        chargeAmtForBackupEnabled=float(obj["Charge_Amt"])
                     if obj["Resource"]=="drLicensing":
                         drLicensing=obj["Charge_Amt"]  
                     if obj["Resource"]=="drDisk":   
@@ -107,28 +109,30 @@ class FormatCCBToCIAC(Action):
                         cpuHoursduration=obj["Duration"]
                         cpuTotal+=float(obj["Charge_Amt"])
                     if obj["Resource"]=="memoryMB":
-                        memHoursVolume=obj["Volume"]
-                        memHoursDuration=obj["Duration"]
+                        memHoursVolume=float(obj["Volume"])
+                        memHoursDuration=float(obj["Duration"])
                         memTotal+=float(obj["Charge_Amt"])
                     if obj["Resource"]=="VirtualDisk":
+                        storHoursVolume+=float(obj["Volume"])
+                        storHoursDuration=max(float(storHoursDuration),float(obj["Duration"]))
                         storTotal+=float(obj["Charge_Amt"])
 
                     
-            backupTotal=float(backupBase)+float(backupProt)
-            drTotal=float(drCPU)+float(drRam)+float(drDisk)+float(drLicensing)
-            subTotal=float(cpuTotal)+float(memTotal)+float(storTotal)
-            vmTotal = float(subTotal)+float(backupTotal)+float(drTotal)
-            CurrentRate = vmTotal
-            vCPUHours=float(cpuHoursvolume)*float(cpuHoursduration)
-            MemHours=float(memHoursVolume)*float(memHoursDuration)
-            ChargevCPU=cpuTotal
-            ChargeMem=memTotal
-            ChargeStorage=storTotal
+            backupTotal=round(float(backupBase)+float(backupProt),6)
+            drTotal=round(float(drCPU)+float(drRam)+float(drDisk)+float(drLicensing),6)
+            subTotal=round(float(cpuTotal)+float(memTotal)+float(storTotal),6)
+            vmTotal = round(float(subTotal)+float(backupTotal)+float(drTotal),6)
+            CurrentRate = round(float(vmTotal),6)
+            vCPUHours=round(float(cpuHoursvolume)*float(cpuHoursduration),6)
+            MemHours=round(float(memHoursVolume)*float(memHoursDuration),6)
+            ChargevCPU=round(float(cpuTotal),6)
+            ChargeMem=round(float(memTotal),6)
+            ChargeStorage=round(float(storTotal),6)
             Subtotal=subTotal
-            BackupBase=backupBase
-            BackupProtected=backupProt
+            BackupBase=float(backupBase)
+            BackupProtected=round(float(backupProt),2)
             BackupAgentProtected=0
-            ethDR=drTotal
+            ethDR=round(float(drTotal),6)
             BackupEnabled="no"
 
             if chargeAmtForBackupEnabled>0:
@@ -155,6 +159,7 @@ class FormatCCBToCIAC(Action):
             vm_object["LastUpdate"]=formatted_last_update
             vm_object["vCPUHours"]=vCPUHours
             vm_object["MemHours"]=MemHours
+            vm_object["StorHours"]=round(float(storHoursVolume)*float(storHoursDuration),6)
             vm_object["ChargevCPU"]=ChargevCPU
             vm_object["ChargeMem"]=ChargeMem
             vm_object["ChargeStorage"]=ChargeStorage

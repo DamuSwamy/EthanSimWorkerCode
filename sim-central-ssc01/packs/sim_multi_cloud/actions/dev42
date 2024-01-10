@@ -1,5 +1,4 @@
 866,454C6330-268A-46B0-93F3-6A593FEB9117,/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-WES-AVD-UTIL-3,Azure Virtual Machine
-837,76604496-A366-439C-A326-58911ADA0942,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/virtualMachines/vm-cyrisk-1,Azure Virtual Machine
 869,96CEEBDB-51B8-41DF-9E8C-425B131E20DB,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/SOLOTEL-MERAKI-VMX5LEGCBDKPZIX2/providers/Microsoft.Compute/virtualMachines/Solotel-Meraki-VMX,Azure Virtual Machine
 849,16A3DE03-7AAF-4087-BA6B-79206E2CD749,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-INFRA-AE/providers/Microsoft.Compute/virtualMachines/DNAAPPBI001,Azure Virtual Machine
 851,84D6CEAE-3F21-4DC5-8374-299214BE4BBA,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-INFRA-AE/providers/Microsoft.Compute/virtualMachines/DNADCSYDP001,Azure Virtual Machine
@@ -8,6 +7,7 @@
 857,A64AC432-B590-4D0D-B310-26779C67128B,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-INFRA-AE/providers/Microsoft.Compute/virtualMachines/DNAPPMQT001,Azure Virtual Machine
 859,32F238F3-3D12-40A1-9E8A-6D1EFF978521,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-INFRA-AE/providers/Microsoft.Compute/virtualMachines/DNASCCMSYDP001,Azure Virtual Machine
 862,FDD19A3F-2CBC-423A-9119-13388873F9F1,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-VMX-AE-20201105161216/providers/Microsoft.Compute/virtualMachines/hub-vMX-AE,Azure Virtual Machine
+837,76604496-A366-439C-A326-58911ADA0942,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/virtualMachines/vm-cyrisk-1,Azure Virtual Machine
 871,BC510095-0B61-4C86-8CFC-FF390A31989B,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/SOLOTELAZURE/providers/Microsoft.Compute/virtualMachines/AzDBServer01,Azure Virtual Machine
 879,29901766-6270-4DF6-BE95-2368CD5BEC5A,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/IHG-RG-INFRA-AEA/providers/Microsoft.Compute/virtualMachines/ihgvmjump1,Azure Virtual Machine
 838,09C1591C-93D8-48A6-A950-4D455CE99C9C,,Azure Virtual Machine
@@ -49,6 +49,7 @@
 844,3E817BAA-64E2-489A-BD67-5AF0D16D72AF,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UACRMPRD-AE/providers/Microsoft.Compute/virtualMachines/vm-ethan-uacrmprd-ae-1,Azure Virtual Machine
 841,E0FB4655-7F6F-4B8D-9BE8-78CB81BBE453,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-DAPI-AE-1/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-DAPI-NVA-AE-1,Azure Virtual Machine
 842,D1CB02C0-9079-4907-89EB-F48ADD12A0A0,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-EWSPRD-AE-1,Azure Virtual Machine
+4272,D517092A-6FA5-4C24-99C9-0A261DE6B76E,,Azure Virtual Machine
 3918,CD3C4D95-F9A0-4598-BB84-8930FF92ADF1,/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-FW-AE-1/providers/Microsoft.Compute/virtualMachines/VM-WES-FW-AE-1,Azure Virtual Machine
 840,4F6142C1-4C85-4417-AE42-A1215D492BB2,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPDEV-EA/providers/Microsoft.Compute/virtualMachines/VM-TestVM-1-EA,Azure Virtual Machine
 845,C7773C2A-9FA9-4FE9-8632-5B1003FC07F6,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-USMPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-USMPRD-SENSOR-AE-1,Azure Virtual Machine
