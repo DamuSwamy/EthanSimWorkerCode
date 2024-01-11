@@ -1,0 +1,21 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: Ecorp_guest_account_creation
+entry_point: workflows/Ecorp_guest_account_creation.yaml
+description: Adding external user to AzureAD and update extension and send an invitation
+parameters:
+  Given_Name:
+    type: string
+    description: External user name
+    required: true
+  Sponsor:
+    type: string
+    description: Sponsor Name
+  Sponsor_Email:
+    type: string
+    required: true
+  External_user_email:
+    type: string
+    description: External user email id
+    required: true

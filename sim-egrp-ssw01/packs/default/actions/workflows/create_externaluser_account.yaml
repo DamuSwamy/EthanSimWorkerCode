@@ -1,0 +1,29 @@
+version: 1.0
+tasks:
+  # [34, 29]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - Add_user_AzureAD
+  # [123, 124]
+  Add_user_AzureAD:
+    action: core.noop
+    next:
+      - do:
+          - send_invitation_external_user
+  # [241, 220]
+  send_invitation_external_user:
+    action: core.noop
+    next:
+      - do:
+          - update_helpdesk
+  # [363, 306]
+  update_helpdesk:
+    action: core.noop
+    next:
+      - do:
+          - End
+  # [491, 403]
+  End:
+    action: core.noop

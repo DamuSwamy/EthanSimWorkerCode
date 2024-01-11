@@ -1,0 +1,55 @@
+version: 1.0
+tasks:
+  # [67, 37]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - create_user_account
+  # [194, 141]
+  create_user_account:
+    action: sim_o365.add_guest_user
+    input:
+      log_level: DEBUG
+      given_name: <%ctx().Given_Name%>
+    next:
+      - do:
+          - send_invitation
+  # [297, 236]
+  send_invitation:
+    action: sim_o365.send_invitation_user
+    input:
+      log_level: DEBUG
+      external_email: <%ctx().External_user_email%>
+      invite_display_name: <%ctx().Given_Name%>
+      sponsor_name: <%ctx().Sponsor%>
+    next:
+      - do:
+          - update_Extensions
+  # [421, 325]
+  update_Extensions:
+    action: core.local
+    input:
+      cwd: null
+      cmd: sleep 5
+    next:
+      - do:
+          - send_welcome_letter
+  # [604, 517]
+  End:
+    action: core.noop
+  # [475, 423]
+  send_welcome_letter:
+    action: sim_o365.send_welcome_email
+    next:
+      - do:
+          - End
+    input:
+      log_level: DEBUG
+      email: <%ctx().External_user_email%>
+      name: <%ctx().Sponsor%>
+input:
+  - Given_Name
+  - Sponsor
+  - Sponsor_Email
+  - External_user_email
