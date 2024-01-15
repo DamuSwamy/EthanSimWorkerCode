@@ -575,7 +575,7 @@
       "location": "australiaeast",
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_D2s_v3"
+          "vmSize": "Standard_D8s_v3"
         },
         "provisioningState": "Succeeded",
         "vmId": "ba9e15ab-7c75-45f4-b264-b1027da0c94f",
