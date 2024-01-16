@@ -1,0 +1,5 @@
+pack: graincorp
+enabled: true
+runner_type: orquesta
+name: GrainCorpRunRate
+entry_point: workflows/GrainCorpRunRate.yaml

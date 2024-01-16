@@ -630,6 +630,20 @@
               "deleteOption": "Detach",
               "diskSizeGB": 256,
               "toBeDetached": false
+            },
+            {
+              "lun": 2,
+              "name": "temp",
+              "createOption": "Attach",
+              "caching": "ReadOnly",
+              "writeAcceleratorEnabled": false,
+              "managedDisk": {
+                "storageAccountType": "Premium_LRS",
+                "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Compute/disks/temp"
+              },
+              "deleteOption": "Detach",
+              "diskSizeGB": 800,
+              "toBeDetached": false
             }
           ]
         },
@@ -1120,9 +1134,11 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
+              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/disks/vm-cyrisk-1_OsDisk_1_9090c6b7f5e64b4aaaa19749f0ad9909"
             },
-            "deleteOption": "Delete"
+            "deleteOption": "Delete",
+            "diskSizeGB": 127
           },
           "dataDisks": []
         },

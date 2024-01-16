@@ -1,0 +1,5 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: Graincorprunrate
+entry_point: workflows/Graincorprunrate.yaml

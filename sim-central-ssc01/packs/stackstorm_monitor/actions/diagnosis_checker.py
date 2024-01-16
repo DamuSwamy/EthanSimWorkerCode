@@ -56,6 +56,7 @@ class MyCustomStackStormAction(Action):
                                     print("Execution start time(IST):", start_time)
                                     print("Execution End time(IST):", end_time)
                                     print("Ticket Number", ticket_number)
+                                    print("----------------------------------")
                 else:
                     print(f"Request for action {action_name} failed with status code {response.status_code}")
                     print("Response content:", response.text)
