@@ -16,7 +16,7 @@ class FixVCD(Action):
           csv_reader = csv.reader(file)
 
           # Specify the starting row number (0-based index)
-          starting_row = 34
+          starting_row = 9
 
           # Process rows starting from the specified row
           for line_number, row in enumerate(csv_reader):

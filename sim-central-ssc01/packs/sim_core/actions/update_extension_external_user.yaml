@@ -1,0 +1,30 @@
+---
+name: update_extension_external_user
+description: Add extension to an external user in Azure AD
+
+runner_type: python-script
+enabled: true
+entry_point: update_extension_external_user.py
+parameters:
+  object_id:
+    type: string
+    description: 'The object ID of the external user'
+  ext15:
+    type: string
+    description: 'Extension attribute 15 name'
+  ext16:
+    type: string
+    description: 'Extension attribute 16 name'
+  sponsor:
+    type: string
+    description: 'Sponsor information'
+  ticket:
+    type: string
+    description: 'Ticket information'
+  creation_date:
+    type: string
+    description: 'Start date for the extension'
+  notes:
+    type: string
+    description: 'Notes for extension attribute 16'
+

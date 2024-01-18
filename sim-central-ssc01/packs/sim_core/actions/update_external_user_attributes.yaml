@@ -1,0 +1,27 @@
+---
+name: update_external_user_attributes
+description: Update external user information using Microsoft Graph API
+
+enabled: true
+entry_point: update_external_user_attributes.py
+runner_type: python-script
+parameters:
+  user_object_id:
+    type: string
+    description: Object ID of the user to update
+  company:
+    type: string
+    description: Company name
+  given_name:
+    type: string
+    description: Given name
+  surname:
+    type: string
+    description: Surname
+  sponsor:
+    type: string
+    description: Department/sponsor
+  ticket:
+    type: string
+    description: Job title/ticket
+

@@ -112,7 +112,7 @@ tasks:
     action: sim_o365.remove_user_AD_groups
     next:
       - do:
-          - sleep_30
+          - sleep_90
         publish:
           - remove_ADgroups_log:
               task_name: remove_ADgroup
@@ -125,13 +125,13 @@ tasks:
       tenant_id: <% ctx().tenant_id %>
       user_email: <% ctx().user_email %>
   # [32, 137]
-  sleep_30:
+  sleep_90:
     action: core.local
     next:
       - do:
           - get_user_licenses
     input:
-      cmd: sleep 60
+      cmd: sleep 90
       timeout: 100
 input:
   - user_email
