@@ -1,14 +1,12 @@
-from st2common.runners.base_action import Action
+import json
 import requests
+from st2common.runners.base_action import Action
 
-class InviteExternalUser(Action):
-    def run(self, external_email, sponsor_email):
+class InviteExternalUserAction(Action):
+    def run(self, external_email, sponsor_email, given_name, surname, company, client_id, client_secret, tenant_id):
         # Hardcoded values
-        client_id = '0ce270d2-c253-454e-bc7f-a95877f54c9f'
-        tenant_id = 'b02e50ac-20e5-4c60-bcd4-8454b3201fd1'
-        client_secret = 'bku8Q~Xaqm_47Gf1tBBOrBzW1VlQliLZc_hMnalM'
-        expiration_period_months = 6 
-        invite_redirect_url = 'https://portal.office.com'  
+        expiration_period_months = 6
+        invite_redirect_url = 'https://portal.office.com'
 
         try:
             # Obtain the access token using client credentials flow
@@ -24,9 +22,10 @@ class InviteExternalUser(Action):
             access_token = token_response.json().get('access_token')
         except Exception as e:
             print(f"Failed to obtain access token: {e}")
-	       
+            raise
 
         # Set the invitation message body
+        display_name = f"{given_name} {surname} ({company})"
         customized_message_body = f"""
         Welcome to Ethan External Access
 
@@ -43,7 +42,6 @@ class InviteExternalUser(Action):
         # Set the Graph API endpoint
         graph_api_endpoint = "https://graph.microsoft.com/v1.0/invitations"
 
-       
         headers = {
             'Content-Type': 'application/json',
             'Authorization': f'Bearer {access_token}'
@@ -51,6 +49,7 @@ class InviteExternalUser(Action):
 
         # Set the Graph API request payload
         graph_api_payload = {
+            'invitedUserDisplayName': display_name,
             'invitedUserEmailAddress': external_email,
             'inviteRedirectUrl': invite_redirect_url,
             'sendInvitationMessage': True,
@@ -69,6 +68,5 @@ class InviteExternalUser(Action):
             raise
 
         # Output the Graph API response
-        return graph_api_response.json()
+        return (graph_api_response.status_code, graph_api_response.text)
 
-                                                                                                       

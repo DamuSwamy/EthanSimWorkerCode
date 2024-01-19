@@ -2,11 +2,8 @@ import requests
 from st2common.runners.base_action import Action
 
 class UpdateUserProperties(Action):
-    def run(self, user_object_id, company, given_name, surname, sponsor, ticket):
-       
-        tenant_id = 'b02e50ac-20e5-4c60-bcd4-8454b3201fd1'
-        client_id = '0ce270d2-c253-454e-bc7f-a95877f54c9f'
-        client_secret = 'bku8Q~Xaqm_47Gf1tBBOrBzW1VlQliLZc_hMnalM'
+    def run(self, user_object_id, company, given_name, surname, sponsor, ticket, client_id, client_secret, tenant_id):
+
         graph_url = 'https://graph.microsoft.com/v1.0'
 
         # Get an access token
@@ -32,16 +29,13 @@ class UpdateUserProperties(Action):
         # Build the URL for updating user properties
         update_url = f'{graph_url}/users/{user_object_id}'
 
-        #
         headers = {
             'Authorization': f'Bearer {access_token}',
             'Content-Type': 'application/json'
         }
 
-      
         update_response = requests.patch(update_url, json=update_data, headers=headers)
 
-        
         if update_response.status_code == 204:
             # Get updated user details
             user_details_url = f'{graph_url}/users/{user_object_id}?$select=id,companyName,givenName,surname,department,jobTitle'
@@ -51,6 +45,4 @@ class UpdateUserProperties(Action):
             return True, 'User properties updated successfully', user_details
         else:
             return False, f'Error updating user properties: {update_response.text}', None
-
-	    
 

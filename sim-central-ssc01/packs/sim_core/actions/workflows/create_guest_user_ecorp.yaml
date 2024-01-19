@@ -1,0 +1,35 @@
+version: 1.0
+tasks:
+  # [15, 4]
+  start:
+    action: core.noop
+    next
+      - do:
+          - task7
+  # [195, 183]
+  task3:
+    action: sim_core.update_external_user_attributes
+    next:
+      - do:
+          - task4
+  # [256, 275]
+  task4:
+    action: sim_core.update_extension_external_user
+    next:
+      - do:
+          - task5
+  # [347, 363]
+  task5:
+    action: core.sendmail
+    next:
+      - do:
+          - task6
+  # [472, 448]
+  task6:
+    action: core.noop
+  # [126, 79]
+  task7:
+    action: sim_core.create and invite external user
+    next:
+      - do:
+          - task3

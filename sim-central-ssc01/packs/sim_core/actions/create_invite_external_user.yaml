@@ -1,5 +1,5 @@
 ---
-name: create and invite external user
+name: create_and_invite_external_user
 description: Action to create a user as guest and send an invitation to an external user in Azure AD
 
 runner_type: python-script
@@ -14,4 +14,21 @@ parameters:
     type: string
     required: true
     description: Sponsor's Email
-
+  company:
+    type: string
+    description: Company name
+  given_name:
+    type: string
+    description: Given name
+  surname:
+    type: string
+    description: Surname
+  client_id:
+    type: string
+    description: 'Client ID for Microsoft Graph API'
+  client_secret:
+    type: string
+    description: 'Client Secret for Microsoft Graph API'
+  tenant_id:
+    type: string
+    description: 'Tenant ID for Microsoft Graph API'

@@ -1,0 +1,6 @@
+pack: sim_core
+enabled: true
+runner_type: orquesta
+name: create_guest_user_ecorp
+entry_point: workflows/create_guest_user_ecorp.yaml
+description: adding guest user account into azure

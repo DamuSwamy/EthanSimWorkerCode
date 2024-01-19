@@ -1,0 +1,19 @@
+version: 1.0
+tasks:
+  # [569, 320]
+  task1:
+    action: sim_o365.send_invitation_user
+    input:
+      log_level: DEBUG
+      external_email: saiyagneswar.reddy@accelnomics.com
+      sponsor_email: demo
+    next:
+      - do:
+          - task2
+        publish:
+          - object_id: <% result().result.invitedUser.id %>
+  # [576, 432]
+  task2:
+    action: core.echo
+    input:
+      message: <%ctx().object_id%>

@@ -1,0 +1,96 @@
+version: 1.0
+tasks:
+  # [122, 12]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - password_from_pwdstate
+  # [162, 125]
+  password_from_pwdstate:
+    action: sim_passwordstate.get_details_from_password_id
+    next:
+      - do:
+          - create_invite_external_user
+        publish:
+          - client_id: <% result().result.json_response.[0].Username %>
+          - client_secret: <% result().result.json_response.[0].Password%>
+    input:
+      log_level: DEBUG
+      password_id: 27535
+      api_key: b75264dfca3983e52d4cab368e93f768
+  # [531, 184]
+  create_invite_external_user:
+    action: sim_core.create_and_invite_external_user
+    next:
+      - do:
+          - update_external_user_details
+        publish:
+          - object_id: <% result().result.invitedUser.id %>
+          - display_name: <% result().result.invitedUserDisplayName %>
+    input:
+      log_level: DEBUG
+      external_email: <%ctx().external_email%>
+      sponsor_email: <%ctx().sponsor%>
+      client_id: <%ctx().client_id%>
+      client_secret: <%ctx().client_secret%>
+      tenant_id: <%ctx().tenant_id%>
+      surname: <%ctx().surname%>
+      given_name: <%ctx().given_name%>
+      company: <%ctx().company%>
+  # [529, 308]
+  update_external_user_details:
+    action: sim_core.update_external_user_attributes
+    next:
+      - do:
+          - update_extension_external_user
+    input:
+      log_level: DEBUG
+      sponsor: <%ctx().sponsor%>
+      client_id: <%ctx().client_id%>
+      client_secret: <%ctx().client_secret%>
+      company: <%ctx().company%>
+      given_name: <%ctx().given_name%>
+      surname: <%ctx().surname%>
+      tenant_id: <%ctx().tenant_id%>
+      ticket: <%ctx().ticket%>
+      user_object_id: <%ctx().object_id%>
+  # [323, 450]
+  update_extension_external_user:
+    action: sim_core.update_extension_external_user
+    next:
+      - do:
+          - send_email_helpdesk
+    input:
+      log_level: DEBUG
+      sponsor: <%ctx().sponsor%>
+      client_id: <%ctx().client_id%>
+      client_secret: <%ctx().client_secret%>
+      tenant_id: <%ctx().tenant_id%>
+      ticket: <%ctx().ticket%>
+      object_id: <%ctx().object_id%>
+      ext15: extension_22a751116fa241d98073c47baeb4b562_msDS_cloudExtensionAttribute15
+      ext16: extension_22a751116fa241d98073c47baeb4b562_msDS_cloudExtensionAttribute16
+      notes: demo notes <%ctx().ticket%>
+  # [462, 548]
+  send_email_helpdesk:
+    action: core.sendmail
+    next:
+      - do:
+          - End
+    input:
+      from: SiM.Automation@ethan.com.au
+      to: sai.yagneswarreddy@ethan.com.au
+      subject: New external user <%ctx().display_name%>
+      body: "<div>New external user <%ctx().display_name%> (<%ctx().sponsor%>) has been created in Ethan.</div>\n<div></div>\n<div>Please review this page for information: https://ecorpsystems.sharepoint.com/:w:/s/ogrp-ethan-ecorpbuild/ESxBexJO3C9CugLa3_IPQPwBUrf9vJws0NgMQbuTsK23og?e=AnnW2l</div>\n<div></div>\n<div>If further assistance is required, please create a helpdesk ticket on behalf of the external user. Ensure that you include their contact details.</div>\n<div></div>\n<div>Note that the account will be automatically disabled in 6 months </div>"
+  # [601, 664]
+  End:
+    action: core.noop
+input:
+  - external_email
+  - sponsor
+  - company
+  - given_name
+  - surname
+  - ticket
+  - tenant_id

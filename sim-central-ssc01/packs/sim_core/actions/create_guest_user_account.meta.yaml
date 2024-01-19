@@ -1,0 +1,29 @@
+pack: sim_core
+enabled: true
+runner_type: orquesta
+name: create_guest_user_account
+entry_point: workflows/create_guest_user_account.yaml
+description: add an external user into azure
+parameters:
+  external_email:
+    type: string
+    description: External user email address
+  sponsor:
+    type: string
+    description: sponsor email address
+  given_name:
+    type: string
+    description: External user given name
+  surname:
+    type: string
+    description: external user surname
+  ticket:
+    type: string
+    description: SN ticket Number
+  company:
+    type: string
+    description: External user company name
+  tenant_id:
+    type: string
+    description: tenant_id for graph api
+    default: b02e50ac-20e5-4c60-bcd4-8454b3201fd1

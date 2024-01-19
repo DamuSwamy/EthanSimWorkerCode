@@ -1,0 +1,6 @@
+pack: sim_core
+enabled: true
+runner_type: orquesta
+name: guest_user_account_creation
+entry_point: workflows/guest_user_account_creation.yaml
+description: adding guest user account into azure

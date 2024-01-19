@@ -1,0 +1,5 @@
+version: 1.0
+tasks:
+  # [427, 167]
+  task1:
+    action: core.noop

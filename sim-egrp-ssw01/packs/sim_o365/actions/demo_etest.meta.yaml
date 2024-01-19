@@ -1,0 +1,6 @@
+pack: sim_o365
+enabled: true
+runner_type: orquesta
+name: demo_etest
+entry_point: workflows/demo_etest.yaml
+description: demo
