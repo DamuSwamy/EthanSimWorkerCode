@@ -1,12 +1,11 @@
-import json
-import requests
 from st2common.runners.base_action import Action
+import requests
 
-class InviteExternalUserAction(Action):
-    def run(self, external_email, sponsor_email, given_name, surname, company, client_id, client_secret, tenant_id):
+class InviteExternalUser(Action):
+    def run(self, external_email, sponsor_email, client_id, client_secret, tenant_id, given_name, surname, company):
         # Hardcoded values
-        expiration_period_months = 6
-        invite_redirect_url = 'https://portal.office.com'
+        expiration_period_months = 6  # replace with actual value
+        invite_redirect_url = 'https://portal.office.com'  # Hardcoded value
 
         try:
             # Obtain the access token using client credentials flow
@@ -21,11 +20,14 @@ class InviteExternalUserAction(Action):
             token_response = requests.post(token_url, data=token_data)
             access_token = token_response.json().get('access_token')
         except Exception as e:
+            # Handle the exception, log it, or raise it depending on your needs
             print(f"Failed to obtain access token: {e}")
             raise
 
-        # Set the invitation message body
+        # Construct InvitedUserDisplayName
         display_name = f"{given_name} {surname} ({company})"
+
+        # Set the invitation message body
         customized_message_body = f"""
         Welcome to Ethan External Access
 
@@ -42,6 +44,7 @@ class InviteExternalUserAction(Action):
         # Set the Graph API endpoint
         graph_api_endpoint = "https://graph.microsoft.com/v1.0/invitations"
 
+        # Set the Graph API request headers
         headers = {
             'Content-Type': 'application/json',
             'Authorization': f'Bearer {access_token}'
@@ -68,5 +71,5 @@ class InviteExternalUserAction(Action):
             raise
 
         # Output the Graph API response
-        return (graph_api_response.status_code, graph_api_response.text)
+        return graph_api_response.json()
 
