@@ -65,7 +65,8 @@ class UpdateUserExtensionsAction(Action):
         # Check the responses
         result = {
             "response_15": {"status_code": response_15.status_code, "text": response_15.text},
-            "response_16": {"status_code": response_16.status_code, "text": response_16.text}
+            "response_16": {"status_code": response_16.status_code, "text": response_16.text},
+            "end_date": end_date
         }
 
         return result
