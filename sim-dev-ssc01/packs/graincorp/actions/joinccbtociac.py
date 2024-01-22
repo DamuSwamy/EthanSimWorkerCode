@@ -15,14 +15,6 @@ class JoinCCBToCIAC(Action):
 
       vm_details_vcd_bracket_fixed=fixvcdout
 
-      #txt_file_path = '/opt/stackstorm/packs/graincorp/unique_vms.txt'
-
-        # Open the text file in read mode
-      #with open(txt_file_path, 'r') as txt_file:
-          #json_data = json.load(txt_file)
-
-      #unique_vms_list= json_data['vms']['vmName']
-
       txt_file_path = '/opt/stackstorm/packs/graincorp/formatccbtociacoutput.txt'
 
       with open(txt_file_path, 'r') as txt_file:
@@ -45,13 +37,12 @@ class JoinCCBToCIAC(Action):
 
             modified_obj = obj.copy()
             for vm_detail in vm_details_vcd_bracket_fixed:
-                if obj["SIFriendlyName"].lower()==vm_detail["VMName"].lower():
+                if obj["SIFriendlyName"]==vm_detail["VMName"]:
                     modified_obj["ethEnvironmentType"]=vm_detail["ethEnvironmentType"]
                     modified_obj["ethCostCentre"]=vm_detail["ethCostCentre"]
                     modified_obj["vCPU"]=vm_detail["vCPUs"]
                     modified_obj["vRAM"]=vm_detail["vRAMGB"]
                     modified_obj["ethStorageTier"]=vm_detail["ethStorageTier"]
-                    modified_obj["Moref"]=vm_detail["Moref"]
 
                     modified_obj["ethInternalOrderNumber"]=vm_detail["ethInternalOrderNumber"]
                     if vm_detail["STATUS"].upper()=="ACTIVE" and vm_detail["FSMStatus"].upper()=="REGISTERED":

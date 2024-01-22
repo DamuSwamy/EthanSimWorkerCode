@@ -1,0 +1,26 @@
+pack: sim_core
+enabled: true
+runner_type: orquesta
+name: guest_user_creation_automation
+entry_point: workflows/guest_user_creation_automation.yaml
+description: eCorp - Guest User Creation Automated Process
+parameters:
+  external_user_email:
+    type: string
+    description: external user email
+  sponsor:
+    type: string
+    description: sponsor email address
+  given_name:
+    type: string
+    description: external user given name
+  surname:
+    type: string
+    description: External user surname
+  company:
+    type: string
+    description: external user company name
+  ticket_id:
+    type: string
+    description: SN ticket number
+    default: null

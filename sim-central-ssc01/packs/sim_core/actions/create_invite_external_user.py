@@ -2,7 +2,7 @@ from st2common.runners.base_action import Action
 import requests
 
 class InviteExternalUser(Action):
-    def run(self, external_email, sponsor_email, client_id, client_secret, tenant_id, given_name, surname, company):
+    def run(self, external_user_email, sponsor_email, client_id, client_secret, tenant_id, given_name, surname, company):
         # Hardcoded values
         expiration_period_months = 6  # replace with actual value
         invite_redirect_url = 'https://portal.office.com'  # Hardcoded value
@@ -53,7 +53,7 @@ class InviteExternalUser(Action):
         # Set the Graph API request payload
         graph_api_payload = {
             'invitedUserDisplayName': display_name,
-            'invitedUserEmailAddress': external_email,
+            'invitedUserEmailAddress': external_user_email,
             'inviteRedirectUrl': invite_redirect_url,
             'sendInvitationMessage': True,
             'invitedUserMessageInfo': {

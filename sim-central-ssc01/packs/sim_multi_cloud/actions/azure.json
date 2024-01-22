@@ -656,7 +656,7 @@
       "location": "australiaeast",
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_D8s_v3"
+          "vmSize": "Standard_D16as_v4"
         },
         "provisioningState": "Succeeded",
         "vmId": "ba9e15ab-7c75-45f4-b264-b1027da0c94f",
@@ -1880,9 +1880,11 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
+              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/disks/vm-cyrisk-1_OsDisk_1_9090c6b7f5e64b4aaaa19749f0ad9909"
             },
-            "deleteOption": "Delete"
+            "deleteOption": "Delete",
+            "diskSizeGB": 127
           },
           "dataDisks": []
         },

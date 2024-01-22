@@ -6,7 +6,7 @@ runner_type: python-script
 enabled: true
 entry_point: create_invite_external_user.py
 parameters:
-  external_email:
+  external_user_email:
     type: string
     required: true
     description: User's external email address
