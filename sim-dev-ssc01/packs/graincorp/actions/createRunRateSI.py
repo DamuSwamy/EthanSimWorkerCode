@@ -39,16 +39,16 @@ class CreateRunRateSI(Action):
                 modified_obj["Project"]=obj["ethInternalOrderNumber"]
             else:
                 modified_obj["Project"]=""
-            if "vCPUHours" in obj:
-                modified_obj["vCPU"]=obj["vCPUHours"]
+            if "vCPU" in obj:
+                modified_obj["vCPU"]=obj["vCPU"]
             else:
                 modified_obj["vCPU"]=""
             if "vRAM" in obj:    
                 modified_obj["VRAM"]=obj["vRAM"]
             else:
                 modified_obj["VRAM"]=""
-            if "vDisk" in  obj:    
-                modified_obj["vDisk"]=""
+            if "TotalStorageGB" in  obj and len(obj['TotalStorageGB'])>0:    
+                modified_obj["vDisk"]=float(obj['TotalStorageGB'])
             else:
                 modified_obj["vDisk"]=""
             if "vCPUHours" in obj:
@@ -59,7 +59,9 @@ class CreateRunRateSI(Action):
                 modified_obj["GBMemHours"]=obj["MemHours"]
             else:
                 modified_obj["GBMemHours"]=""
-            if "GBStorHours" in obj:  
+            if "StorHours" in obj:  
+                modified_obj["GBStorHours"]=obj['StorHours']
+            else:
                 modified_obj["GBStorHours"]=""
             if "ethDR" in obj:
                 modified_obj["DR"]=obj["ethDR"]

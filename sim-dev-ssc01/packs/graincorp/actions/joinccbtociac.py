@@ -1,5 +1,7 @@
 from st2common.runners.base_action import Action
 import json
+from datetime import datetime
+import uuid
 
 class JoinCCBToCIAC(Action):
     def __init__(self, config=None, action_service=None):
@@ -7,7 +9,17 @@ class JoinCCBToCIAC(Action):
 
     def run(self):
       
+      def generate_random_id():
+        random_id = str(uuid.uuid4())
+        # Format the UUID to match the specified pattern
+        formatted_id = f"{random_id[:8]}-{random_id[9:13]}-{random_id[14:18]}-{random_id[19:23]}-{random_id[24:]}"
+
+        return formatted_id
+      
+      
       txt_file_path = "/opt/stackstorm/packs/graincorp/fixvcdoutput.txt"
+
+      current_datetime = datetime.now()
 
       # Open the text file in read mode
       with open(txt_file_path, 'r') as txt_file:
@@ -43,17 +55,19 @@ class JoinCCBToCIAC(Action):
                     modified_obj["vCPU"]=vm_detail["vCPUs"]
                     modified_obj["vRAM"]=vm_detail["vRAMGB"]
                     modified_obj["ethStorageTier"]=vm_detail["ethStorageTier"]
+                    modified_obj["Moref"]=vm_detail["Moref"]
+                    modified_obj['TotalStorageGB']=vm_detail['TotalStorageGB']
 
                     modified_obj["ethInternalOrderNumber"]=vm_detail["ethInternalOrderNumber"]
                     if vm_detail["STATUS"].upper()=="ACTIVE" and vm_detail["FSMStatus"].upper()=="REGISTERED":
                         organizationalUnitNameForActiveAndRegistered=vm_detail["organizationalUnitName"]
-                        nameForActiveAndRegistered=vm_detail["NAME"]+"202310"
+                        nameForActiveAndRegistered=vm_detail["NAME"]+current_datetime.strftime("%Y%m")
                         serviceItemNameForActiveAndRegistered=vm_detail["NAME"]
                         countActiveandRegistered+=1
 
                     if vm_detail["STATUS"].upper()=="ACTIVE" and vm_detail["FSMStatus"].upper()=="NOTFOUND":
                         organizationalUnitNameForActiveAndNotFound=vm_detail["organizationalUnitName"]
-                        nameForActiveAndNotFound=vm_detail["NAME"]+"202310"
+                        nameForActiveAndNotFound=vm_detail["NAME"]+current_datetime.strftime("%Y%m")
                         serviceItemNameForActiveAndNotFound=vm_detail["NAME"]
                         countActiveandNotfound+=1
 
@@ -69,7 +83,7 @@ class JoinCCBToCIAC(Action):
 
             else:
                 modified_obj["Org"]="GrainCorp"
-                modified_obj["Name"]="dummyValue"
+                modified_obj["Name"]= generate_random_id()
 
             join_ccb_to_ciac.append(modified_obj)
 

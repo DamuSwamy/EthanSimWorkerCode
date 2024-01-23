@@ -763,6 +763,9 @@
       ],
       "resources": [
         {
+          "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Compute/virtualMachines/TCS-SQL-AZ/extensions/AzureMonitorWindowsAgent"
+        },
+        {
           "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Compute/virtualMachines/TCS-SQL-AZ/extensions/MDE.Windows"
         },
         {

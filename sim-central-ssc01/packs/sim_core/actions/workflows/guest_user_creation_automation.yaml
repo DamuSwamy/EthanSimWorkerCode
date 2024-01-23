@@ -1,40 +1,38 @@
 version: 1.0
 tasks:
-  # [59, 21]
+  # [36, 42]
   start:
     action: core.noop
     next:
       - do:
-          - update_itsm
+          - webex_update
         publish:
           - first_sim_update: Automation has started the execution of request for ITSM ticket number - <% ctx().ticket_id%>
           - close_date: "<% now().format(\"%Y-%m-%d %H:%M:%S\") %>"
-  # [57, 234]
+  # [38, 361]
   password_from_pwdstate:
     action: sim_passwordstate.get_details_from_password_id
     input:
       log_level: DEBUG
-      api_key: b75264dfca3983e52d4cab368e93f768
-      password_id: 27535
+      api_key: 578abdf3e64c392e4cb8d3f65a7923d6
+      password_id: 30399
     next:
       - do:
-          - create_invite_external_user
+          - access_token
         publish:
           - client_id: <% result().result.json_response[0].UserName %>
           - client_secret: <% result().result.json_response[0].Password%>
-  # [59, 342]
+  # [157, 580]
   create_invite_external_user:
     action: sim_core.create_and_invite_external_user
     input:
       log_level: DEBUG
       external_user_email: <%ctx().external_user_email%>
       sponsor_email: <%ctx().sponsor%>
-      client_id: <%ctx().client_id%>
-      client_secret: <%ctx().client_secret%>
       company: <%ctx().company%>
       given_name: <%ctx().given_name%>
       surname: <%ctx().surname%>
-      tenant_id: b02e50ac-20e5-4c60-bcd4-8454b3201fd1
+      access_token: <%ctx().access_token%>
     next:
       - do:
           - update_external_user_details
@@ -45,20 +43,18 @@ tasks:
           - invitedUserEmailAddress: <% result().result.invitedUserEmailAddress%>
           - sendInvitationMessage: <% result().result.sendInvitationMessage%>
           - inviteRedirectUrl: <% result().result.inviteRedirectUrl%>
-  # [327, 160]
+  # [351, 277]
   update_external_user_details:
     action: sim_core.update_external_user_attributes
     input:
       log_level: DEBUG
       sponsor: <%ctx().sponsor%>
-      client_secret: <%ctx().client_secret%>
-      client_id: <%ctx().client_id%>
       company: <%ctx().company%>
       given_name: <%ctx().given_name%>
       surname: <%ctx().surname%>
-      tenant_id: b02e50ac-20e5-4c60-bcd4-8454b3201fd1
       ticket: <%ctx().ticket_id%>
       user_object_id: <%ctx().object_id%>
+      access_token: <%ctx().access_token%>
     next:
       - do:
           - update_extension_external_user
@@ -67,20 +63,19 @@ tasks:
     action: sim_core.update_extension_external_user
     input:
       log_level: DEBUG
-      client_id: <%ctx().client_id%>
-      client_secret: <%ctx().client_secret%>
-      ext15: extension_22a751116fa241d98073c47baeb4b562_msDS_cloudExtensionAttribute15
-      ext16: extension_22a751116fa241d98073c47baeb4b562_msDS_cloudExtensionAttribute16
+      ext15: extension_ee0e615249074199abbe00d591a8e582_msDS_cloudExtensionAttribute15
+      ext16: extension_ee0e615249074199abbe00d591a8e582_msDS_cloudExtensionAttribute16
       object_id: <%ctx().object_id%>
-      tenant_id: b02e50ac-20e5-4c60-bcd4-8454b3201fd1
       ticket: <%ctx().ticket_id%>
       sponsor: <%ctx().sponsor%>
-      notes: demo test on <%ctx().ticket_id%>
+      notes: Created with Ethan CSP Ticket <%ctx().ticket_id%>
+      token: <%ctx().access_token%>
     next:
       - do:
           - send_email_sponsor
         publish:
           - end_date: <% result().result.end_date %>
+        when: i
   # [693, 199]
   send_email_sponsor:
     action: core.sendmail
@@ -92,10 +87,10 @@ tasks:
     next:
       - do:
           - resolve_ticket
-  # [698, 484]
+  # [441, 505]
   end:
     action: core.noop
-  # [58, 132]
+  # [38, 250]
   update_itsm:
     action: sim_itsm2.update
     input:
@@ -115,7 +110,7 @@ tasks:
     action: sim_itsm2.update
     next:
       - do:
-          - end
+          - result_update_webex
     input:
       log_level: DEBUG
       number: <% ctx().ticket_id %>
@@ -130,6 +125,40 @@ tasks:
         closed_at: <% ctx().close_date %>
         notes_to_comments: true
       table: sn_customerservice_general_case
+  # [38, 473]
+  access_token:
+    action: sim_o365.get_graphapi_token
+    next:
+      - do:
+          - create_invite_external_user
+        publish:
+          - access_token: <% result().output.graph_auth_token %>
+    input:
+      client_id: <%ctx().client_id%>
+      client_secret: <%ctx().client_secret%>
+      tenant_id: 455ac8b0-5713-4dd7-be28-3898e9505f7e
+  # [37, 142]
+  webex_update:
+    action: cisco_webex.webex_post_message
+    next:
+      - do:
+          - update_itsm
+    input:
+      log_level: DEBUG
+      bearer_token: N2U5NzA4NmYtYjM3OC00MGRjLWE2NDItYWQwMmRjMWUwNWY0N2IzMWIxM2YtNWMx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
+      room_id: Y2lzY29zcGFyazovL3VzL1JPT00vMDQ1NjZjNjAtOGMwMi0xMWVlLWIwMGYtMjc5MGE1NGY0NzRl
+      text: "Guest user automation workflow started , ticket no: <%ctx().ticket_id%>"
+  # [704, 494]
+  result_update_webex:
+    action: cisco_webex.webex_post_message
+    input:
+      log_level: DEBUG
+      bearer_token: N2U5NzA4NmYtYjM3OC00MGRjLWE2NDItYWQwMmRjMWUwNWY0N2IzMWIxM2YtNWMx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
+      room_id: Y2lzY29zcGFyazovL3VzL1JPT00vMDQ1NjZjNjAtOGMwMi0xMWVlLWIwMGYtMjc5MGE1NGY0NzRl
+      text: "Guest user workflow run successfully , ticket no:<%ctx().ticket_id%>"
+    next:
+      - do:
+          - end
 input:
   - external_user_email
   - sponsor

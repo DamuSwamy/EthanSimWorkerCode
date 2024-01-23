@@ -2,20 +2,9 @@ import requests
 from st2common.runners.base_action import Action
 
 class UpdateUserProperties(Action):
-    def run(self, user_object_id, company, given_name, surname, sponsor, ticket, client_id, client_secret, tenant_id):
+    def run(self, user_object_id, company, given_name, surname, sponsor, ticket, access_token):
 
         graph_url = 'https://graph.microsoft.com/v1.0'
-
-        # Get an access token
-        token_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
-        token_data = {
-            'grant_type': 'client_credentials',
-            'client_id': client_id,
-            'client_secret': client_secret,
-            'scope': 'https://graph.microsoft.com/.default'
-        }
-        token_response = requests.post(token_url, data=token_data)
-        access_token = token_response.json().get('access_token')
 
         # Set the new values for user properties
         update_data = {

@@ -2,27 +2,10 @@ from st2common.runners.base_action import Action
 import requests
 
 class InviteExternalUser(Action):
-    def run(self, external_user_email, sponsor_email, client_id, client_secret, tenant_id, given_name, surname, company):
+    def run(self, external_user_email, sponsor_email, access_token, given_name, surname, company):
         # Hardcoded values
         expiration_period_months = 6  # replace with actual value
         invite_redirect_url = 'https://portal.office.com'  # Hardcoded value
-
-        try:
-            # Obtain the access token using client credentials flow
-            token_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
-            token_data = {
-                'grant_type': 'client_credentials',
-                'client_id': client_id,
-                'client_secret': client_secret,
-                'scope': 'https://graph.microsoft.com/.default',
-            }
-
-            token_response = requests.post(token_url, data=token_data)
-            access_token = token_response.json().get('access_token')
-        except Exception as e:
-            # Handle the exception, log it, or raise it depending on your needs
-            print(f"Failed to obtain access token: {e}")
-            raise
 
         # Construct InvitedUserDisplayName
         display_name = f"{given_name} {surname} ({company})"

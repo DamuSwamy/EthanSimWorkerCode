@@ -24,12 +24,6 @@ parameters:
   ticket:
     type: string
     description: Job title/ticket
-  client_id:
+  access_token:
     type: string
-    description: 'Client ID for Microsoft Graph API'
-  client_secret:
-    type: string
-    description: 'Client Secret for Microsoft Graph API'
-  tenant_id:
-    type: string
-    description: 'Tenant ID for Microsoft Graph API'
+    description: 'access_token for Microsoft Graph API'

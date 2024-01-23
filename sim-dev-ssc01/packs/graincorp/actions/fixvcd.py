@@ -73,7 +73,8 @@ class FixVCD(Action):
                 "ethCostCentre": row[46],
                 "ethInternalOrderNumber": row[47],
                 "PlanOrScriptType": row[48],
-                "AlarmCount": row[49]
+                "AlarmCount": row[49],
+                "TotalStorageGB": row[50]
                 }
                   vm_details.append(vm_object)
 
