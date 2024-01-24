@@ -22,7 +22,7 @@ tasks:
         publish:
           - client_id: <% result().result.json_response[0].UserName %>
           - client_secret: <% result().result.json_response[0].Password%>
-  # [157, 580]
+  # [39, 581]
   create_invite_external_user:
     action: sim_core.create_and_invite_external_user
     input:
@@ -43,7 +43,7 @@ tasks:
           - invitedUserEmailAddress: <% result().result.invitedUserEmailAddress%>
           - sendInvitationMessage: <% result().result.sendInvitationMessage%>
           - inviteRedirectUrl: <% result().result.inviteRedirectUrl%>
-  # [351, 277]
+  # [399, 145]
   update_external_user_details:
     action: sim_core.update_external_user_attributes
     input:
@@ -58,7 +58,7 @@ tasks:
     next:
       - do:
           - update_extension_external_user
-  # [691, 84]
+  # [706, 144]
   update_extension_external_user:
     action: sim_core.update_extension_external_user
     input:
@@ -72,11 +72,12 @@ tasks:
       token: <%ctx().access_token%>
     next:
       - do:
-          - send_email_sponsor
+          - update_result
         publish:
           - end_date: <% result().result.end_date %>
+          - status: <% result().result.status %>
         when: i
-  # [693, 199]
+  # [937, 388]
   send_email_sponsor:
     action: core.sendmail
     input:
@@ -87,7 +88,7 @@ tasks:
     next:
       - do:
           - resolve_ticket
-  # [441, 505]
+  # [940, 723]
   end:
     action: core.noop
   # [38, 250]
@@ -105,7 +106,7 @@ tasks:
     next:
       - do:
           - password_from_pwdstate
-  # [699, 371]
+  # [937, 496]
   resolve_ticket:
     action: sim_itsm2.update
     next:
@@ -148,7 +149,7 @@ tasks:
       bearer_token: N2U5NzA4NmYtYjM3OC00MGRjLWE2NDItYWQwMmRjMWUwNWY0N2IzMWIxM2YtNWMx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
       room_id: Y2lzY29zcGFyazovL3VzL1JPT00vMDQ1NjZjNjAtOGMwMi0xMWVlLWIwMGYtMjc5MGE1NGY0NzRl
       text: "Guest user automation workflow started , ticket no: <%ctx().ticket_id%>"
-  # [704, 494]
+  # [939, 609]
   result_update_webex:
     action: cisco_webex.webex_post_message
     input:
@@ -159,6 +160,30 @@ tasks:
     next:
       - do:
           - end
+  # [709, 269]
+  update_result:
+    action: core.noop
+    next:
+      - do:
+          - send_email_sponsor
+        when: <% ctx().status = "success" %>
+      - do:
+          - failed
+        when: <% ctx().status != "success" %>
+  # [576, 393]
+  failed:
+    action: core.noop
+    next:
+      - do:
+          - fail_update_webex
+  # [575, 507]
+  fail_update_webex:
+    action: cisco_webex.webex_post_message
+    input:
+      log_level: DEBUG
+      bearer_token: N2U5NzA4NmYtYjM3OC00MGRjLWE2NDItYWQwMmRjMWUwNWY0N2IzMWIxM2YtNWMx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
+      room_id: Y2lzY29zcGFyazovL3VzL1JPT00vMDQ1NjZjNjAtOGMwMi0xMWVlLWIwMGYtMjc5MGE1NGY0NzRl
+      text: "Guest User automation failed "
 input:
   - external_user_email
   - sponsor

@@ -47,18 +47,41 @@ class JoinCCBToCIAC(Action):
             nameForActiveAndNotFound=""
             serviceItemNameForActiveAndNotFound=""
 
-            modified_obj = obj.copy()
+            modified_obj = {}
             for vm_detail in vm_details_vcd_bracket_fixed:
                 if obj["SIFriendlyName"]==vm_detail["VMName"]:
-                    modified_obj["ethEnvironmentType"]=vm_detail["ethEnvironmentType"]
-                    modified_obj["ethCostCentre"]=vm_detail["ethCostCentre"]
-                    modified_obj["vCPU"]=vm_detail["vCPUs"]
-                    modified_obj["vRAM"]=vm_detail["vRAMGB"]
-                    modified_obj["ethStorageTier"]=vm_detail["ethStorageTier"]
-                    modified_obj["Moref"]=vm_detail["Moref"]
-                    modified_obj['TotalStorageGB']=vm_detail['TotalStorageGB']
+                    if len(modified_obj)<=0:
+                        modified_obj["ethEnvironmentType"]=vm_detail["ethEnvironmentType"]
+                        modified_obj["ethCostCentre"]=vm_detail["ethCostCentre"]
+                        modified_obj["vCPU"]=vm_detail["vCPUs"]
+                        modified_obj["vRAM"]=vm_detail["vRAMGB"]
+                        modified_obj["ethStorageTier"]=vm_detail["ethStorageTier"]
+                        modified_obj["Moref"]=vm_detail["Moref"]
+                        modified_obj['TotalStorageGB']=vm_detail['TotalStorageGB']
+                        modified_obj['Org']=obj['Org']
+                        modified_obj['Name']=obj['Name']
+                        modified_obj['ServiceItemName']=obj['ServiceItemName']
+                        modified_obj['SIFriendlyName']=obj['SIFriendlyName']
+                        modified_obj['ServiceItemType']=obj['ServiceItemType']
+                        modified_obj['CurrentRate']=obj['CurrentRate']
+                        modified_obj['BillingPeriod']=obj['BillingPeriod']
+                        modified_obj['LastUpdate']=obj['LastUpdate']
+                        modified_obj['vCPUHours']=obj['vCPUHours']
+                        modified_obj['MemHours']=obj['MemHours']
+                        modified_obj['StorHours']=obj['StorHours']
+                        modified_obj['ChargevCPU']=obj['ChargevCPU']
+                        modified_obj['ChargeMem']=obj['ChargeMem']
+                        modified_obj['ChargeStorage']=obj['ChargeStorage']
+                        modified_obj['Subtotal']=obj['Subtotal']
+                        modified_obj['BackupBase']=obj['BackupBase']
+                        modified_obj['BackupProtected']=obj['BackupProtected']
+                        modified_obj['BackupAgentProtected']=obj['BackupAgentProtected']
+                        modified_obj['ethDR']=obj['ethDR']
+                        modified_obj['BackupEnabled']=obj['BackupEnabled']
+                        modified_obj['ProcessMethod']=obj['ProcessMethod']
+                        modified_obj["ethInternalOrderNumber"]=vm_detail["ethInternalOrderNumber"]
 
-                    modified_obj["ethInternalOrderNumber"]=vm_detail["ethInternalOrderNumber"]
+
                     if vm_detail["STATUS"].upper()=="ACTIVE" and vm_detail["FSMStatus"].upper()=="REGISTERED":
                         organizationalUnitNameForActiveAndRegistered=vm_detail["organizationalUnitName"]
                         nameForActiveAndRegistered=vm_detail["NAME"]+current_datetime.strftime("%Y%m")
@@ -82,6 +105,7 @@ class JoinCCBToCIAC(Action):
                 modified_obj["ServiceItemName"]=serviceItemNameForActiveAndNotFound
 
             else:
+                modified_obj=obj.copy()
                 modified_obj["Org"]="GrainCorp"
                 modified_obj["Name"]= generate_random_id()
 

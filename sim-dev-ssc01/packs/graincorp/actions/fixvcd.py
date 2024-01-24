@@ -8,7 +8,7 @@ class FixVCD(Action):
 
     def run(self):
         
-        csv_file_path = "/opt/stackstorm/packs/graincorp/servicecatalog3.csv"
+        csv_file_path = "/opt/stackstorm/packs/graincorp/vm_details.csv"
 
         vm_details=[]
 

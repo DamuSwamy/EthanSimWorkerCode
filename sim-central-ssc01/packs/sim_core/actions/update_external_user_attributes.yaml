@@ -27,3 +27,4 @@ parameters:
   access_token:
     type: string
     description: 'access_token for Microsoft Graph API'
+    secret: true

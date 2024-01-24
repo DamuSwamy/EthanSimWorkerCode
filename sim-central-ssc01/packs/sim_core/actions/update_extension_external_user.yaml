@@ -27,3 +27,4 @@ parameters:
   token:
     type: string
     description: 'Token for Microsoft Graph API'
+    secret: true

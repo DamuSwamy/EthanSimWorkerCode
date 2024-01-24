@@ -1,6 +1,6 @@
 version: 1.0
 tasks:
-  # [375, 246]
+  # [305, 247]
   create_WA_ad_user:
     action: core.winrm_ps_cmd
     input:
@@ -26,7 +26,7 @@ tasks:
           - license_added: "NO"
           - mailbox_created: "NO"
           - user_count: " "
-  # [374, 637]
+  # [549, 691]
   add_description:
     action: core.winrm_ps_cmd
     input:
@@ -40,16 +40,7 @@ tasks:
     next:
       - do:
           - copy_membs
-        publish:
-          - key: <% result().val %>
-        when: <% 1 = 2 %>
-      - do:
-          - create_security_group_add_members
-        when: <%ctx().AddToSecurityGroup = 'yes'%>
-      - do:
-          - ticket_update
-        when: <%ctx().AddToSecurityGroup = 'no'%>
-  # [453, 745]
+  # [453, 824]
   copy_membs:
     action: core.winrm_ps_cmd
     input:
@@ -66,12 +57,12 @@ tasks:
         when: <% succeeded() %>
         publish:
           - membership_copied: "Yes"
-  # [701, 153]
+  # [578, 1009]
   add_manager:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: "Get-ADUser -Identity \"<% ctx().first_name.substring(0,1) %><%ctx().last_name%>_Admin\" | Set-ADUser -Manager \"<% ctx().objectid %>\""
+      cmd: "Get-ADUser -Identity \"<% ctx().first_name.substring(0,1) %><%ctx().last_name%>_WA\" | Set-ADUser -Manager \"<% ctx().objectid %>\""
       host: <% ctx().ad_host[0] %>
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>
@@ -80,13 +71,16 @@ tasks:
     next:
       - do:
           - add_license_E5
-        when: <% ctx().mailbox_required = "Yes" %>
+        when: <% ctx().mailbox_required = "sdfsdfdfsdfdf" %>
       - do:
-          - ticket_update
+          - create_security_group_add_members
         publish:
           - state: REMEDIATION
           - info: successfully onboarded
-        when: <% 1 = 1 %>
+        when: <%ctx().AddToSecurityGroup = 'yes'%>
+      - do:
+          - ticket_update
+        when: <%ctx().AddToSecurityGroup = 'no' %>
   # [1008, 866]
   add_licenes:
     action: core.http
@@ -107,7 +101,7 @@ tasks:
         publish:
           - state: REMEDIATION
           - info: successfully onboarded
-  # [373, 5]
+  # [424, 0]
   start:
     action: core.echo
     input:
@@ -147,6 +141,7 @@ tasks:
           - RequestorEmail: <% ctx().data.data.custom_attributes.RequestorEmail %>
           - EmailDomain: <% ctx().data.data.custom_attributes.EmailDomain %>
           - AdminAccountExpiryDate: <% ctx().data.data.custom_attributes.AdminAccountExpiryDate %>
+        when: <%succeeded()%>
   # [1068, 366]
   start_delta_sync:
     action: sim_activedirectory.start_delta_ad_sync
@@ -185,11 +180,11 @@ tasks:
   # [987, 1051]
   end:
     action: core.noop
-  # [311, 1050]
+  # [1, 799]
   ticket_update:
     action: core.echo
     input:
-      message: "Automation has successfully created  the Workstation Admin user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>_WA\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nModel user: <%ctx().model_user %>"
+      message: "Automation has successfully done the process for   the Workstation Admin user creation.\n\nUser: <% ctx().first_name %> <% ctx().last_name %>_WA\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nModel user: <%ctx().model_user %>\nMembership groups added from: <%ctx().model_user %>\nMembership groups copied: <% ctx().membership_copied %>"
     next:
       - do:
           - end
@@ -308,10 +303,10 @@ tasks:
         when: <% result().output.is_mailbox_created != 'mailbox not created' %>
         publish:
           - mailbox_created: "Yes"
-  # [0, 391]
+  # [0, 345]
   end_1_user_exists:
     action: core.noop
-  # [449, 898]
+  # [199, 1017]
   fetch_manager_email:
     action: sim_activedirectory.fetch_email_object_ad_user
     input:
@@ -325,7 +320,7 @@ tasks:
         publish:
           - email: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
           - objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
-  # [374, 107]
+  # [402, 107]
   random:
     action: core.local
     input:
@@ -336,13 +331,19 @@ tasks:
         publish:
           - random_string: <% result().stdout %>
         when: <%ctx().WAAccountExists = 'no'%>
+      - do:
+          - security_group_flow
+        when: <%ctx().WAAccountExists = 'yes'%>
+      - do:
+          - check_ad_user
+        when: <% 1 = 3 %>
   # [774, 330]
   check:
     action: core.noop
     next:
       - do:
           - start_delta_sync
-  # [91, 562]
+  # [248, 561]
   set_account_expiry:
     action: core.winrm_ps_cmd
     input:
@@ -356,7 +357,7 @@ tasks:
     next:
       - do:
           - add_description
-  # [377, 508]
+  # [463, 472]
   expiry_required:
     action: core.noop
     next:
@@ -368,7 +369,7 @@ tasks:
       - do:
           - add_description
         when: <% ctx().expirydate = "NoExpiryDate" %>
-  # [94, 748]
+  # [68, 490]
   create_security_group_add_members:
     action: core.winrm_ps_cmd
     input:
@@ -378,10 +379,20 @@ tasks:
       port: 5985
       verify_ssl_cert: false
       password: <% ctx().password[0] %>
-      cmd: "$addToSecurityGroup = <%ctx().AddToSecurityGroup%>\n$securityGroup = <%ctx().SecurityGroup%>\n$securityGroupOU = <%ctx().SecurityGroupOU%>\n$adUserName = <%ctx().first_name.substring(0,1)%><%ctx().last_name%>_WA\n\nif ($addToSecurityGroup -eq 'yes') {\n    Write-Output \"Checking if the user needs to be added to a security group...\"\n\n    # Check if security group exists\n    Write-Output \"Checking if the security group '$securityGroup' exists...\"\n    if (-not (Get-ADGroup -Filter { Name -eq $securityGroup })) {\n        Write-Output \"Security group '$securityGroup' does not exist. Creating the group...\"\n        # Create the security group\n        New-ADGroup -Name $securityGroup -GroupScope Global -Path $securityGroupOU\n        Write-Output \"Security group '$securityGroup' created successfully.\"\n    } else {\n        Write-Output \"Security group '$securityGroup' already exists.\"\n    }\n\n    # Add user to the security group\n    Write-Output \"Adding user '$adUserName' to the security group '$securityGroup'...\"\n    Add-ADGroupMember -Identity $securityGroup -Members $adUserName\n    Write-Output \"User '$adUserName' added to the security group '$securityGroup' successfully.\"\n}"
-    next
+      cmd: "$addToSecurityGroup = \"<%ctx().AddToSecurityGroup%>\"\n$securityGroup = \"<%ctx().SecurityGroup%>\"\n$securityGroupOU = \"<%ctx().SecurityGroupOU%>\"\n$adUserName = \"<%ctx().first_name.substring(0,1)%><%ctx().last_name%>_WA\"\n\nif ($addToSecurityGroup -eq 'yes') {\n    Write-Output \"Checking if the user needs to be added to a security group...\"\n\n    try {\n        # Check if security group exists\n        Write-Output \"Checking if the security group '$securityGroup' exists...\"\n        $group = Get-ADGroup -Filter { Name -eq $securityGroup } -ErrorAction Stop\n\n        if (-not $group) {\n            Write-Output \"Security group '$securityGroup' does not exist. Creating the group...\"\n            New-ADGroup -Name $securityGroup -GroupScope Global -Path $securityGroupOU -ErrorAction Stop\n            Write-Output \"Security group '$securityGroup' created successfully.\"\n        } else {\n            Write-Output \"Security group '$securityGroup' already exists.\"\n        }\n\n        # Add user to the security group\n        Write-Output \"Adding user '$adUserName' to the security group '$securityGroup'...\"\n        Add-ADGroupMember -Identity $securityGroup -Members $adUserName -ErrorAction Stop\n        Write-Output \"User '$adUserName' added to the security group '$securityGroup' successfully.\"\n    } catch {\n        Write-Output \"An error occurred: $_\"\n        exit\n    }\n}"
+    next:
       - do:
           - ticket_update
+  # [470, 323]
+  security_group_flow:
+    action: core.noop
+    next:
+      - do:
+          - create_security_group_add_members
+        when: <%ctx().AddToSecurityGroup = 'yes'%>
+      - do:
+          - ticket_update
+        when: <%ctx().AddToSecurityGroup = 'no'%>
 input:
   - data
 output:

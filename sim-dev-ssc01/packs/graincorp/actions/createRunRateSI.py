@@ -23,7 +23,9 @@ class CreateRunRateSI(Action):
         run_rate_si_obj=[]
 
         for obj in join_ccb_to_ciac_output:
-            modified_obj={}
+            modified_obj={
+                "Moref":""
+            }
             modified_obj["VMName"]=obj["SIFriendlyName"]
             modified_obj["BusinessUnit"]=short_names[obj["Org"]]
 
@@ -31,20 +33,20 @@ class CreateRunRateSI(Action):
                 modified_obj["SubUnit"]=obj["ethEnvironmentType"]
             else:
                 modified_obj["SubUnit"]=""
-            if "ethCostCentre" in obj:    
-                modified_obj["CostCentre"]=obj["ethCostCentre"]
+            if "ethCostCentre" in obj and len(obj['ethCostCentre'])>0 and obj['ethCostCentre']!="None" and obj['ethCostCentre']!="<blank>":    
+                modified_obj["CostCentre"]=float(obj["ethCostCentre"])
             else:
                 modified_obj["CostCentre"]=""
             if "ethInternalOrderNumber" in obj:
                 modified_obj["Project"]=obj["ethInternalOrderNumber"]
             else:
                 modified_obj["Project"]=""
-            if "vCPU" in obj:
-                modified_obj["vCPU"]=obj["vCPU"]
+            if "vCPU" in obj and len(obj['vCPU'])>0:
+                modified_obj["vCPU"]=float(obj["vCPU"])
             else:
                 modified_obj["vCPU"]=""
-            if "vRAM" in obj:    
-                modified_obj["VRAM"]=obj["vRAM"]
+            if "vRAM" in obj and len(obj['vRAM'])>0:    
+                modified_obj["VRAM"]=float(obj["vRAM"])
             else:
                 modified_obj["VRAM"]=""
             if "TotalStorageGB" in  obj and len(obj['TotalStorageGB'])>0:    
@@ -83,10 +85,8 @@ class CreateRunRateSI(Action):
                 modified_obj["ChargevDisk"]=obj["ChargeStorage"]
             else:
                 modified_obj["ChargevDisk"]=""
-            if "Moref" in obj:       
+            if "Moref" in obj and len(modified_obj['Moref'])<=0:       
                 modified_obj["Moref"]=obj["Moref"]
-            else:
-                modified_obj["Moref"]=""
             if "Subtotal" in obj:    
                 modified_obj["ResourceSubtotal"]=obj["Subtotal"]
             else:

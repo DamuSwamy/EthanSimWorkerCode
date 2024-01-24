@@ -20,3 +20,4 @@ parameters:
     description: Client secret for Microsoft graph API
     default: APu7Q~jD_UGTgQWl~1H2kQBgtitmYyHuzXNmj
     required: true
+    secret: true
