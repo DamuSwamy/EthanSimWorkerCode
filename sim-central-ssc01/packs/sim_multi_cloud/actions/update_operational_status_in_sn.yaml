@@ -1,0 +1,30 @@
+---
+name: update_operational_status_sn
+runner_type: python-script
+description: "update_operational_status to retired"
+enabled: true
+entry_point: 'update_operational_status_in_sn.py'
+parameters:
+ username:
+   type: 'string'
+   description: 'Enter username '
+   required: false
+   secret: True
+   default: 'integration_user'
+ password:
+   type: 'string'
+   description: 'Enter password '
+   required: false
+   secret: true
+   default: 'ld3Zq3q;n-^.r'
+ servicenow_hostname:
+   type: 'string'
+   description: 'Enter the hostname of servicenow instance'
+   secret: false
+   default: 'ethandev.service-now.com'
+#dev_42_file:
+#   type: 'string'
+#   description: 'device 42 details'
+#   required: false
+#   default: "/opt/stackstorm/packs/sim_multi_cloud/actions/dev42"
+

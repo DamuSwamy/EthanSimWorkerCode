@@ -29,16 +29,18 @@ class CreateRunRateSI(Action):
             modified_obj["VMName"]=obj["SIFriendlyName"]
             modified_obj["BusinessUnit"]=short_names[obj["Org"]]
 
-            if "ethEnvironmentType" in obj:
+            if "ethEnvironmentType" in obj and obj["ethEnvironmentType"]!="None":
                 modified_obj["SubUnit"]=obj["ethEnvironmentType"]
             else:
                 modified_obj["SubUnit"]=""
-            if "ethCostCentre" in obj and len(obj['ethCostCentre'])>0 and obj['ethCostCentre']!="None" and obj['ethCostCentre']!="<blank>":    
+            if "ethCostCentre" in obj and obj['ethCostCentre']=="<blank>":
+                modified_obj["CostCentre"]=obj["ethCostCentre"]
+            elif "ethCostCentre" in obj and len(obj['ethCostCentre'])>0 and obj['ethCostCentre']!="None":    
                 modified_obj["CostCentre"]=float(obj["ethCostCentre"])
             else:
                 modified_obj["CostCentre"]=""
-            if "ethInternalOrderNumber" in obj:
-                modified_obj["Project"]=obj["ethInternalOrderNumber"]
+            if "ethInternalOrderNumber" in obj and obj["ethInternalOrderNumber"]!="None":
+                modified_obj["Project"]=obj["ethInternalOrderNumber"].strip()
             else:
                 modified_obj["Project"]=""
             if "vCPU" in obj and len(obj['vCPU'])>0:
@@ -65,11 +67,11 @@ class CreateRunRateSI(Action):
                 modified_obj["GBStorHours"]=obj['StorHours']
             else:
                 modified_obj["GBStorHours"]=""
-            if "ethDR" in obj:
+            if "ethDR" in obj and obj["ethDR"]!=0:
                 modified_obj["DR"]=obj["ethDR"]
             else:
                 modified_obj["DR"]=""
-            if "ethStorageTier" in obj:
+            if "ethStorageTier" in obj and obj["ethStorageTier"]!="None":
                 modified_obj["StorageTier"]=obj["ethStorageTier"]
             else:
                 modified_obj["StorageTier"]=""

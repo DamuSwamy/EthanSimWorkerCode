@@ -1,0 +1,32 @@
+pack: sim_multi_cloud
+enabled: true
+runner_type: orquesta
+name: updates_operational_status_in_SN
+entry_point: workflows/updates_operational_status_in_SN.yaml
+description: updates operational status of resources in service now cmdb
+parameters:
+  D42_password:
+    type: string
+    default: 4591cf9619384bb1bab1d5a40a4b6aee_4f2f174fe5db47bcbe4b0a21380fe455
+    secret: true
+  servicenow_password:
+    type: string
+    default: ld3Zq3q;n-^.r
+    description: Enter the password
+    secret: true
+    
+  servicenow_username:
+    type: string
+    default: integration_user
+    secret: true
+    
+  D42_username:
+    type: string
+    description: Enter username
+    default: 97565142771042ccb0b928ae3e658e26
+    secret: true
+   
+  servicenow_hostname:
+    type: string
+    default: ethandev.service-now.com
+    secret: true

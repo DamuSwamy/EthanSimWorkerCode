@@ -1,0 +1,54 @@
+version: 1.0
+tasks:
+  # [99, 98]
+  generating_d42_token:
+    action: sim_multi_cloud.generates_dev42_token
+    next:
+      - do:
+          - fetching_d42_resources
+        when: < % succeeded %>
+        publish:
+          - token1: <% result().result %>
+    input:
+      log_level: DEBUG
+      username: "{{ ctx().D42_username }}"
+      password: "{{ ctx().D42_password }}"
+  # [208, 274]
+  fetching_d42_resources:
+    action: sim_multi_cloud.get_D42_resources
+    next:
+      - do:
+          - fetching_sn_data
+    input:
+      log_level: DEBUG
+      bearer_token: "{{ ctx().token1 }}"
+  # [360, 468]
+  fetching_sn_data:
+    action: sim_multi_cloud.get_sn_data
+    input:
+      log_level: DEBUG
+      username: "{{ ctx().servicenow_username }}"
+      password: "{{ ctx().servicenow_password }}"
+    next:
+      - do:
+          - updating_status_in_sn
+  # [453, 630]
+  updating_status_in_sn:
+    action: sim_multi_cloud.update_operational_status_sn
+    input:
+      log_level: DEBUG
+      username: "{{ ctx().servicenow_username }}"
+      password: "{{ ctx().servicenow_password }}"
+      servicenow_hostname: "{{ ctx().servicenow_hostname }}"
+    next:
+      - when: < % succeeded %>
+        publish:
+          - output: <% result().stdout %>
+input:
+  - D42_password
+  - servicenow_password
+  - servicenow_username
+  - D42_username
+  - servicenow_hostname
+output:
+  - result: <% ctx().output %>

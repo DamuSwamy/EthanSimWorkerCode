@@ -12,7 +12,7 @@ class GenerateDev42Token(Action):
     def run(self,username, password):
 
         url="https://cmdb.ecorp.systems/tauth/1.0/token/"
-        credentials = base64.b64encode(f'{username}:{password}'.encode()).decode() 
+        credentials = base64.b64encode(f'{username}:{password}'.encode()).decode()
         #credentials='OTc1NjUxNDI3NzEwNDJjY2IwYjkyOGFlM2U2NThlMjY6NDU5MWNmOTYxOTM4NGJiMWJhYjFkNWE0MGE0YjZhZWVfNGYyZjE3NGZlNWRiNDdiY2JlNGIwYTIxMzgwZmU0NTU='
         #print(credentials)
         headers = {
@@ -28,7 +28,7 @@ class GenerateDev42Token(Action):
         #print(type(access_token))
         #print("hello")
         access_token=access_token.rstrip()
-        print(access_token)
-
-
-        
+        #print(access_token)
+        #print(base64.b64encode((access_token+"mis@123").encode()).decode())
+        print("Token Generated")
+        return access_token

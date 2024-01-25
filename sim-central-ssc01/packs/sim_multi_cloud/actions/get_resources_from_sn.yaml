@@ -1,0 +1,21 @@
+---
+name: get_sn_data
+runner_type: python-script
+description: "gets all the resources details from servicenow"
+enabled: true
+entry_point: 'get_resources_from_sn.py'
+parameters:
+  username:
+    type: 'string'
+    description: 'Enter the username'
+    required: false
+    secret: true
+    default: 'integration_user'
+  password:
+    type: 'string'
+    description: 'Enter the password'
+    required: false
+    secret: true
+    default: 'ld3Zq3q;n-^.r'
+
+

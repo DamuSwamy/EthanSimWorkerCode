@@ -1,9 +1,12 @@
 ---
-name: generates_dev42_token 
+name: generates_dev42_token
 runner_type: python-script
 description: "generates authentication token"
 enabled: true
 entry_point: 'generate_dev42_token.py'
+output_schema:
+ type: string
+ secret: True
 parameters:
   username:
     type: 'string'

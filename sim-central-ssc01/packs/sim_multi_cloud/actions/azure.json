@@ -1574,9 +1574,11 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS",
               "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/disks/VM-WES-AVD-UTIL-3_OsDisk_1_71cf22e489314e8688de3df08d3598c4"
             },
-            "deleteOption": "Delete"
+            "deleteOption": "Delete",
+            "diskSizeGB": 127
           },
           "dataDisks": []
         },
@@ -1609,6 +1611,9 @@
         "1"
       ],
       "resources": [
+        {
+          "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-WES-AVD-UTIL-3/extensions/enablevmAccess"
+        },
         {
           "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-WES-AVD-UTIL-3/extensions/MDE.Windows"
         }
@@ -1777,148 +1782,6 @@
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": false
-          }
-        }
-      }
-    },
-    {
-      "name": "VM-NetworkTest-1",
-      "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-INFRA-AE-1/providers/Microsoft.Compute/virtualMachines/VM-NetworkTest-1",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "tags": {
-        "criticality": "medium",
-        "enddate": "none",
-        "environment": "prd",
-        "managedby": "ethan"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_B2s_v2"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "7ed99cea-1297-49db-9816-f3546f839c2c",
-        "additionalCapabilities": {
-          "hibernationEnabled": false
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2022-datacenter-azure-edition",
-            "version": "latest",
-            "exactVersion": "20348.2227.240104"
-          },
-          "osDisk": {
-            "osType": "Windows",
-            "name": "VM-NetworkTest-1_OsDisk_1_cf93455f7bbe46559e22a0cda4bb8939",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-INFRA-AE-1/providers/Microsoft.Compute/disks/VM-NetworkTest-1_OsDisk_1_cf93455f7bbe46559e22a0cda4bb8939"
-            },
-            "deleteOption": "Delete"
-          },
-          "dataDisks": []
-        },
-        "osProfile": {
-          "computerName": "VM-NetworkTest-",
-          "adminUsername": "skipper",
-          "windowsConfiguration": {
-            "provisionVMAgent": true,
-            "enableAutomaticUpdates": true,
-            "patchSettings": {
-              "patchMode": "AutomaticByOS",
-              "assessmentMode": "ImageDefault",
-              "enableHotpatching": false
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "securityProfile": {
-          "uefiSettings": {
-            "secureBootEnabled": true,
-            "vTpmEnabled": true
-          },
-          "securityType": "TrustedLaunch"
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-INFRA-AE-1/providers/Microsoft.Network/networkInterfaces/vm-networktest-1880","properties":{"deleteOption":"Delete"}}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true
-          }
-        }
-      }
-    },
-    {
-      "name": "VM-Testingfw2",
-      "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-INFRA-AE-1/providers/Microsoft.Compute/virtualMachines/VM-Testingfw2",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "tags": {
-        "criticality": "medium",
-        "enddate": "none",
-        "environment": "prd",
-        "managedby": "ethan"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_B2s_v2"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "ad3121ae-5c6d-4cf9-926c-4cbc981e14f5",
-        "additionalCapabilities": {
-          "hibernationEnabled": false
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2022-datacenter-azure-edition",
-            "version": "latest",
-            "exactVersion": "20348.2227.240104"
-          },
-          "osDisk": {
-            "osType": "Windows",
-            "name": "VM-Testingfw2_OsDisk_1_130afc2e2418409eb02c4755321af8ce",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-INFRA-AE-1/providers/Microsoft.Compute/disks/VM-Testingfw2_OsDisk_1_130afc2e2418409eb02c4755321af8ce"
-            },
-            "deleteOption": "Delete"
-          },
-          "dataDisks": []
-        },
-        "osProfile": {
-          "computerName": "VM-Testingfw2",
-          "adminUsername": "skipper",
-          "windowsConfiguration": {
-            "provisionVMAgent": true,
-            "enableAutomaticUpdates": true,
-            "patchSettings": {
-              "patchMode": "AutomaticByOS",
-              "assessmentMode": "ImageDefault",
-              "enableHotpatching": false
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "securityProfile": {
-          "uefiSettings": {
-            "secureBootEnabled": true,
-            "vTpmEnabled": true
-          },
-          "securityType": "TrustedLaunch"
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-INFRA-AE-1/providers/Microsoft.Network/networkInterfaces/vm-testingfw2586","properties":{"deleteOption":"Delete"}}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true
           }
         }
       }
