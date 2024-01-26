@@ -409,6 +409,88 @@
 },{
   "value": [
     {
+      "name": "TCS-AD-DC02",
+      "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Compute/virtualMachines/TCS-AD-DC02",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "Enviorement": "Production",
+        "ManagedBy": "Ethan"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D4as_v4"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "15fffb83-8d17-4c1e-a377-f3a7af1f79f1",
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2022-datacenter-azure-edition",
+            "version": "latest",
+            "exactVersion": "20348.2113.231109"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "TCS-AD-DC02_OsDisk_1_f9ae747c50d747bc802f12b2f8fda4a6",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS",
+              "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Compute/disks/TCS-AD-DC02_OsDisk_1_f9ae747c50d747bc802f12b2f8fda4a6"
+            },
+            "deleteOption": "Delete",
+            "diskSizeGB": 127
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "TCS-AD-DC02",
+          "adminUsername": "Global.admin",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": true,
+            "patchSettings": {
+              "patchMode": "AutomaticByOS",
+              "assessmentMode": "ImageDefault",
+              "enableHotpatching": false
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "securityProfile": {
+          "uefiSettings": {
+            "secureBootEnabled": true,
+            "vTpmEnabled": true
+          },
+          "securityType": "TrustedLaunch"
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Network/networkInterfaces/tcs-ad-dc02217_z1"}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      },
+      "zones": [
+        "1"
+      ],
+      "resources": [
+        {
+          "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Compute/virtualMachines/TCS-AD-DC02/extensions/MDE.Windows"
+        },
+        {
+          "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Compute/virtualMachines/TCS-AD-DC02/extensions/MicrosoftMonitoringAgent"
+        }
+      ]
+    },
+    {
       "name": "TCS-AZ-DC01",
       "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Compute/virtualMachines/TCS-AZ-DC01",
       "type": "Microsoft.Compute/virtualMachines",
@@ -781,88 +863,6 @@
         },
         {
           "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Compute/virtualMachines/TCS-SQL-AZ/extensions/SqlIaasExtension"
-        }
-      ]
-    },
-    {
-      "name": "TCS-AD-DC02",
-      "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/TCS-AD-DC02_GROUP/providers/Microsoft.Compute/virtualMachines/TCS-AD-DC02",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "tags": {
-        "Enviorement": "Production",
-        "ManagedBy": "Ethan"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_D4as_v4"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "15fffb83-8d17-4c1e-a377-f3a7af1f79f1",
-        "additionalCapabilities": {
-          "hibernationEnabled": false
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2022-datacenter-azure-edition",
-            "version": "latest",
-            "exactVersion": "20348.2113.231109"
-          },
-          "osDisk": {
-            "osType": "Windows",
-            "name": "TCS-AD-DC02_OsDisk_1_f9ae747c50d747bc802f12b2f8fda4a6",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "storageAccountType": "Premium_LRS",
-              "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/TCS-AD-DC02_group/providers/Microsoft.Compute/disks/TCS-AD-DC02_OsDisk_1_f9ae747c50d747bc802f12b2f8fda4a6"
-            },
-            "deleteOption": "Delete",
-            "diskSizeGB": 127
-          },
-          "dataDisks": []
-        },
-        "osProfile": {
-          "computerName": "TCS-AD-DC02",
-          "adminUsername": "Global.admin",
-          "windowsConfiguration": {
-            "provisionVMAgent": true,
-            "enableAutomaticUpdates": true,
-            "patchSettings": {
-              "patchMode": "AutomaticByOS",
-              "assessmentMode": "ImageDefault",
-              "enableHotpatching": false
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "securityProfile": {
-          "uefiSettings": {
-            "secureBootEnabled": true,
-            "vTpmEnabled": true
-          },
-          "securityType": "TrustedLaunch"
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/TCS-AD-DC02_group/providers/Microsoft.Network/networkInterfaces/tcs-ad-dc02217_z1","properties":{"deleteOption":"Detach"}}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true
-          }
-        }
-      },
-      "zones": [
-        "1"
-      ],
-      "resources": [
-        {
-          "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/TCS-AD-DC02_GROUP/providers/Microsoft.Compute/virtualMachines/TCS-AD-DC02/extensions/MDE.Windows"
-        },
-        {
-          "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/TCS-AD-DC02_GROUP/providers/Microsoft.Compute/virtualMachines/TCS-AD-DC02/extensions/MicrosoftMonitoringAgent"
         }
       ]
     }
