@@ -101,7 +101,7 @@ tasks:
         publish:
           - state: REMEDIATION
           - info: successfully onboarded
-  # [424, 0]
+  # [416, 0]
   start:
     action: core.echo
     input:
@@ -248,7 +248,7 @@ tasks:
         publish:
           - user_count: <% result().output.task_output.stdout %
       - do:
-          - ticket_update_escalate
+          - security_group_flow
         when: <% str(result().output.task_output.stdout) = "1"  or result().output.task_output.succeeded = false %>
         publish:
           - user_count: <% result().output.task_output.stdout %>
@@ -320,23 +320,20 @@ tasks:
         publish:
           - email: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
           - objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
-  # [402, 107]
+  # [404, 74]
   random:
     action: core.local
     input:
       cmd: "cat /dev/urandom | tr -dc '@~!#%^&*_A-Za-z0-9' | head -c${1:-35}"
     next:
       - do:
-          - create_WA_ad_user
+          - check_ad_user
         publish:
           - random_string: <% result().stdout %>
         when: <%ctx().WAAccountExists = 'no'%>
       - do:
           - security_group_flow
         when: <%ctx().WAAccountExists = 'yes'%>
-      - do:
-          - check_ad_user
-        when: <% 1 = 3 %>
   # [774, 330]
   check:
     action: core.noop

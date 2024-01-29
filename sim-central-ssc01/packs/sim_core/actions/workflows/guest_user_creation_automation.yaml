@@ -116,11 +116,10 @@ tasks:
       log_level: DEBUG
       number: <% ctx().ticket_id %>
       payload:
-        comments: Sim Automation is resolving the service request after successfully creating the Guest User,  inviting the Guest User & notifying Sponsor.
+        comments: Sim Automation has completed the service request after successfully creating the Guest User,inviting the Guest User & notifying Sponsor.
         resolution_code: Completed
-        close_notes: Sim Automation is resolving the service request after completion of operation as per request
         state: 3
-        cause: User Termination request completed by SiM Automation
+        cause: User creation request completed by SiM Automation
         assigned_to: svc_sim_automation
         closed_by: 84cf417087ff3410bd1d32e80cbb3502
         closed_at: <% ctx().close_date %>

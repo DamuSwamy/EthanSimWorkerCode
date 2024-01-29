@@ -302,6 +302,14 @@ tasks:
       password: Monday123!
       delegate_email: aman.mujawar@etest.systems
       user_email: <% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>
+  # [355, 0]
+  start_1:
+    action: core.local
+    next:
+      - do:
+          - start
+    input:
+      cmd: sleep 130
 input:
   - data
 output:

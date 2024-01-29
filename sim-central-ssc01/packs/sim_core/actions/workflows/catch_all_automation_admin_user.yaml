@@ -59,6 +59,7 @@ tasks:
           - ticket_initial_description: <% ctx().robot_data.itsm.details.first_update  %>
           - first_sim_update: Automation has started the execution of request for ITSM ticket number - <% ctx().ticket_id%>
           - due_date: "<% (now() + timespan(minutes => 1440)).format(\"%Y-%m-%d %H:%M:%S\") %>"
+          - close_date: "<% now().format(\"%Y-%m-%d %H:%M:%S\") %>"
         # #629e47
         do: 
           - update_itsm
@@ -206,11 +207,17 @@ tasks:
       log_level: DEBUG
       table: sn_customerservice_general_case
       payload:
-        comments: Sim Automation has completed the User onboarding tasks related to AD and Exchange , this ticket will be further actioned by engineer to complete the remaining onboarding tasks as per request
-        state: 10
-        assigned_to: <% ctx().itsm_tick_name %>
+        comments: "Sim Automation is resolving the service request after completion of tasks related to Workstation admin account "
+        resolution_code: Completed
+        close_notes: Sim Automation is resolving the service request after completion of operation as per request
+        state: 3
+        cause: User creation request completed by SiM Automation
+        assigned_to: svc_sim_automation
+        closed_by: 84cf417087ff3410bd1d32e80cbb3502
+        closed_at: <% ctx().close_date %>
+        notes_to_comments: true
       number: <% ctx().ticket_id %>
-  # [237, 88]
+  # [237, 90]
   update_itsm:
     action: sim_itsm2.update
     next:
