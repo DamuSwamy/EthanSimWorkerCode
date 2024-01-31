@@ -17,5 +17,10 @@ parameters:
     required: false
     secret: true
     default: 'ld3Zq3q;n-^.r'
-
+  servicenow_hostname:
+    type: 'string'
+    required: false
+    secret: true
+    description: 'Enter the servicenow_hostname'
+    default: 'ethandev.service-now.com'
 

@@ -1,0 +1,8 @@
+---
+name: get_user_details
+description: "Action to retrieve user details from Microsoft Graph and return in JSON format."
+
+runner_type: python-script
+entry_point: get_user_details.py
+enabled: true
+

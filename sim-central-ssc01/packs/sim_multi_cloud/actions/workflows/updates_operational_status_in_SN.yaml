@@ -29,6 +29,7 @@ tasks:
       log_level: DEBUG
       username: "{{ ctx().servicenow_username }}"
       password: "{{ ctx().servicenow_password }}"
+      servicenow_hostname: "{{ ctx().servicenow_hostname }}"
     next:
       - do:
           - updating_status_in_sn

@@ -39,7 +39,7 @@ class adds_unique_id_to_devices(Action):
             company=obj.get("company")
             sys_id=obj.get("sys_id")
             status=obj.get("operational_status")
-            name=obj.get("operational_status")
+            name=obj.get("name")
             #print(status)
             if short_description not in idd and company!="" and status!="6":
                 url = f"https://{servicenow_hostname}/api/now/table/cmdb_ci/{sys_id}"
