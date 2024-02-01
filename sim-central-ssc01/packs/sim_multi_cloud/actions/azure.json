@@ -746,7 +746,7 @@
       },
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_D16as_v4"
+          "vmSize": "Standard_D8s_v3"
         },
         "provisioningState": "Succeeded",
         "vmId": "ba9e15ab-7c75-45f4-b264-b1027da0c94f",
@@ -3592,7 +3592,109 @@
       ]
     }
   ]
-},{"value":[]},{
+},{
+  "value": [
+    {
+      "name": "sql-mvgl-espexport-ae-1",
+      "id": "/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-ESPEXPORT-AE-1/providers/Microsoft.Compute/virtualMachines/sql-mvgl-espexport-ae-1",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D4lds_v5"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "83b40bc5-53ef-4bd4-b939-1e5728637558",
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "microsoftsqlserver",
+            "offer": "sql2019-ws2022",
+            "sku": "enterprise-gen2",
+            "version": "latest",
+            "exactVersion": "15.0.240111"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "sql-mvgl-espexport-ae-1_OsDisk_1_dc0725994a364be8a21715b2eec07bd4",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS",
+              "id": "/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-ESPEXPORT-AE-1/providers/Microsoft.Compute/disks/sql-mvgl-espexport-ae-1_OsDisk_1_dc0725994a364be8a21715b2eec07bd4"
+            },
+            "deleteOption": "Delete",
+            "diskSizeGB": 127
+          },
+          "dataDisks": [
+            {
+              "lun": 0,
+              "name": "sql-mvgl-espexport-ae-1_DataDisk_0",
+              "createOption": "Attach",
+              "caching": "ReadOnly",
+              "writeAcceleratorEnabled": false,
+              "managedDisk": {
+                "storageAccountType": "Premium_LRS",
+                "id": "/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-ESPEXPORT-AE-1/providers/Microsoft.Compute/disks/sql-mvgl-espexport-ae-1_DataDisk_0"
+              },
+              "deleteOption": "Detach",
+              "diskSizeGB": 256,
+              "toBeDetached": false
+            },
+            {
+              "lun": 1,
+              "name": "sql-mvgl-espexport-ae-1_DataDisk_1",
+              "createOption": "Attach",
+              "caching": "None",
+              "writeAcceleratorEnabled": false,
+              "managedDisk": {
+                "storageAccountType": "Premium_LRS",
+                "id": "/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-ESPEXPORT-AE-1/providers/Microsoft.Compute/disks/sql-mvgl-espexport-ae-1_DataDisk_1"
+              },
+              "deleteOption": "Detach",
+              "diskSizeGB": 64,
+              "toBeDetached": false
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "sql-mvgl-espexp",
+          "adminUsername": "admiral",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": true,
+            "patchSettings": {
+              "patchMode": "AutomaticByOS",
+              "assessmentMode": "ImageDefault",
+              "enableHotpatching": false
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "securityProfile": {
+          "uefiSettings": {
+            "secureBootEnabled": true,
+            "vTpmEnabled": true
+          },
+          "securityType": "TrustedLaunch"
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-ESPEXPORT-AE-1/providers/Microsoft.Network/networkInterfaces/sql-mvgl-espexport-ae-1622","properties":{"deleteOption":"Delete"}}]}
+      },
+      "resources": [
+        {
+          "id": "/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-ESPEXPORT-AE-1/providers/Microsoft.Compute/virtualMachines/sql-mvgl-espexport-ae-1/extensions/MDE.Windows"
+        },
+        {
+          "id": "/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-ESPEXPORT-AE-1/providers/Microsoft.Compute/virtualMachines/sql-mvgl-espexport-ae-1/extensions/SqlIaasExtension"
+        }
+      ]
+    }
+  ]
+},{
   "value": [
     {
       "name": "VM-MAR-MC-1",

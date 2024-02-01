@@ -7,7 +7,7 @@ import re
 import pytz
 
 class VcenterRawData(BaseAction):
-    def run(self, vsphere, vcenter_id, proxy_vcenters, get_vms=False, ids=[], get_vm_disks=False, get_vm_networks=False, get_hosts=False, get_rps=False, get_folders=False, get_tags=False, datastores=[], custids=[], vm_required_field_array=[], vmdisk_required_field_array=[], tag_filter=[]):
+    def run(self, vsphere, vcenter_id, proxy_vcenters, get_vms=True, ids=[], get_vm_disks=False, get_vm_networks=False, get_hosts=False, get_rps=False, get_folders=False, get_tags=False, datastores=[], custids=[], vm_required_field_array=[], vmdisk_required_field_array=[], tag_filter=[]):
         self.datastores = datastores
         self.vcenter_id = int(vcenter_id)
         self.cust_ids   = custids
@@ -15,7 +15,7 @@ class VcenterRawData(BaseAction):
         self.ids        = ids
         self.proxy_vcenters = proxy_vcenters
         vm_networks = vm_disks = vms = hosts = resouce_pools = folders = tags = []
-        if get_vms or get_hosts or get_rps or get_folders:
+        if get_vms or get_vm_disks or get_hosts or get_rps or get_folders:
             self.establish_connection(vsphere)
         if get_vms:
             vms           = self.get_all_vms()
@@ -51,6 +51,19 @@ class VcenterRawData(BaseAction):
                 vms = [{key : val for key, val in sub.items() if key in vm_required_field_array} for sub in vms]
             if vmdisk_required_field_array:
                 vm_disks = [{key : val for key, val in sub.items() if key in vmdisk_required_field_array} for sub in vm_disks]
+
+        if not get_vms and get_vm_disks:
+            vms           = self.get_all_vms()
+            for sub in vms:
+                for key, val in sub.items():
+                    if key == 'VmDisks':
+                        vm_disks = vm_disks + [disk for disk in val]
+                        break
+            if vmdisk_required_field_array:
+                vm_disks = [{key : val for key, val in sub.items() if key in vmdisk_required_field_array} for sub in vm_disks]
+
+            vms = []
+
 
         if get_hosts:
             hosts         = self.get_all_hosts()

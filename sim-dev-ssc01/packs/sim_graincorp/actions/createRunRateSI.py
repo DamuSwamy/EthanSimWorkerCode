@@ -1,5 +1,6 @@
 from st2common.runners.base_action import Action
 import json
+import csv
 
 class CreateRunRateSI(Action):
     def __init__(self, config=None, action_service=None):
@@ -123,12 +124,16 @@ class CreateRunRateSI(Action):
 
             run_rate_si_obj.append(modified_obj)
         
-        txt_file_output = "/opt/stackstorm/packs/sim_graincorp/output/runrateoutput.txt"
+        csv_file_path = "/opt/stackstorm/packs/sim_graincorp/output/runrateoutput.csv"
         
         try:
-            with open(txt_file_output, 'w') as txt_file:
-            # Write the JSON data to the file
-                json.dump(run_rate_si_obj, txt_file)
+            with open(csv_file_path, 'w', newline='') as csvfile:
+                fields = run_rate_si_obj[0].keys()
+                csvwriter = csv.DictWriter(csvfile, fieldnames=fields)
+                csvwriter.writeheader()
+                csvwriter.writerows(run_rate_si_obj)
+
+
         except FileNotFoundError:
             print("File not found")
         except Exception as e:

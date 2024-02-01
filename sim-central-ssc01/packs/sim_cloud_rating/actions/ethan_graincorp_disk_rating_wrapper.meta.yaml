@@ -1,0 +1,30 @@
+pack: sim_cloud_rating
+enabled: true
+runner_type: orquesta
+name: ethan_graincorp_disk_rating_wrapper
+entry_point: workflows/ethan_graincorp_disk_rating_wrapper.yaml
+description: Synchronize the data between ethan database and vcenter data
+parameters:
+  billing_db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: cloud_billing
+  cmdb_db_connection:
+    type: string
+    description: CMDB database connection to query vcenter information
+    required: true
+    default: cmdb_Ethoria
+  workflow_name:
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: true
+    enum:
+      - ethan_graincorp_disk_rating
+  white_list:
+    type: array
+    description: List of vcenter to be ignored 
+    required: false
+    default: 
+      - VB3-VC33
+      - VB4-VC43

@@ -1,0 +1,23 @@
+pack: sim_cloud_rating
+enabled: true
+runner_type: orquesta
+name: ethan_graincorp_disk_rating
+entry_point: workflows/ethan_graincorp_disk_rating.yaml
+description: Scan graincorp vm disk usage on hourly basis
+parameters:
+  billing_db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: dev_billing
+    position: 2
+  vcenter:
+    type: "string"
+    description: Pre-Configured vsphere connection details
+    required: true
+    position: 0
+  vcenter_id:
+    type: "string"
+    description: Custom vCenter ID from ethan
+    required: true
+    position: 1

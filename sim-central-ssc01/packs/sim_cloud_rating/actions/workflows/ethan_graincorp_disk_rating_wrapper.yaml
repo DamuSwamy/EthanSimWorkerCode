@@ -1,0 +1,57 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - cmdb_db_connection
+  - workflow_name
+  - white_list
+
+#output:
+#- result: <% task(Trigger_Dynamic_Workflow).result.items.where(len($.result.output.result) > 0).select($.result.output.result) %>
+
+tasks:
+  # [192, 51]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - SQL_Select_CMDB_vCenters
+
+  # [642, 201]
+  SQL_Select_CMDB_vCenters:
+    action: sql.query
+    input:
+      connection: <% ctx().cmdb_db_connection %>
+      query: "Select rtrim(invVCServerID) as invVCServerID, rtrim(vcName) as vcName, rtrim(vcIPAddress) as vcIPAddress FROM iaasVCServer WHERE vcActive = '1' ORDER BY invVCServerID"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - cmdb_vcenter_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+          - valid_vcenters: <% ctx(cmdb_vcenter_db_data).where($.vcName in ctx().white_list).select($) %>
+          - vcenters: "{{ ctx().valid_vcenters | list }}"
+        do:
+          - Trigger_Dynamic_Workflow
+      - when: <% failed() %>
+        do: fail
+
+  # [842, 401]
+  Trigger_Dynamic_Workflow:
+    action: "sim_cloud_rating.<% ctx().workflow_name %>"
+    input:
+      billing_db_connection: <% ctx().billing_db_connection %>
+      vcenter_id: <% str(item(invVCServerID)) %>
+      vcenter: <% item(vcName) %>
+    with: 
+      items: <% ctx(vcenters) %>
+      concurrency: 2
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  # [242, 401]
+  End: 
+    action: core.noop

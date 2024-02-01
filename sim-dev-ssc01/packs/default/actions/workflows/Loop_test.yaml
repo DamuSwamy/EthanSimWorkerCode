@@ -1,0 +1,48 @@
+version: 1.0
+tasks:
+  # [504, 189]
+  Increment_task:
+    action: core.noop
+    next:
+      - do:
+          - for_loop_start
+  # [0, 358]
+  End_task:
+    action: core.noop
+  # [187, 1]
+  start_task:
+    action: core.noop
+    next:
+      - do:
+          - for_loop_start
+        publish:
+          - count: 0
+          - i: 0
+          - array_size: <%ctx().Number_list.len()%>
+  # [187, 124]
+  for_loop_start:
+    action: core.noop
+    next:
+      - do:
+          - print_task
+        when: <%ctx().i < ctx().array_size %>
+      - do:
+          - End_task
+        when: <%ctx().i >= ctx().array_size %>
+  # [188, 278]
+  print_task:
+    action: core.echo
+    input:
+      message: <%str(ctx().Number_list[int(ctx().i)])%>
+    next:
+      - do:
+          - Increment_task
+        publish:
+          - i: <% ctx().i+1%>
+input:
+  - Number_list
+
+
+
+
+

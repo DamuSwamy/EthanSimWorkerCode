@@ -1,0 +1,81 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - vcenter_id
+  - vcenter
+
+tasks:
+  # [192, 51]
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - SQL_Select_Billing_Datstores
+
+  # [292, 1051]
+  SQL_Select_Billing_Datstores:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT dsidx, storageTier FROM iaasDatastores WHERE dsidx LIKE '<% ctx().vcenter_id %>-%'"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_datastore_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+        do:
+          - SQL_Select_Billing_VM
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Select_Billing_VM:
+    action: sql.query
+    input:
+      connection: <% ctx().billing_db_connection %>
+      query: "SELECT vmID FROM iaasVM WHERE custidx=26 AND invVCServerID=<% ctx().vcenter_id %> AND vmActive=1"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - billing_vm_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+          - vm_list: <% ctx(billing_vm_db_data).select($.vmID).distinct() %>
+        do:
+          - Get_Vcenter_Raw_Data
+      - when: <% failed() %>
+        do: fail
+
+  # [1542, 1051]
+  Get_Vcenter_Raw_Data:
+    action: sim_vsphere.vcenter_raw_data
+    input:
+      vcenter_id: <% ctx().vcenter_id %>
+      vsphere: <% ctx().vcenter %>
+      get_vms: false
+      get_vm_disks: true
+      datastores: <% ctx().billing_datastore_db_data %>
+      ids: <% ctx().vm_list %>
+      vmdisk_required_field_array: ["EthVmId","DeviceId","DeviceKey","DiskName","DiskTier","DiskSize","DiskUsed","LastScanTime"] 
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - vm_data: <% switch(isDict(result().result) => result().result, true => {}) %>
+          - disk_usage_data: <% ctx().vm_data["VmDisks"] %>
+        do:
+          - SQL_Insert_Disk_Usage
+      - when: <% failed() %>
+        do: fail
+
+  SQL_Insert_Disk_Usage:
+    action: sql.insert_bulk
+    input:
+      table: "EthVmDisk_Tracking"
+      data: <% ctx().disk_usage_data %>
+      connection: <% ctx().billing_db_connection %>
+    next:
+      - when: <% failed() %>
+        do: fail
+      - when: <% succeeded() %>
+        do: End
+
+  End: 
+    action: core.noop

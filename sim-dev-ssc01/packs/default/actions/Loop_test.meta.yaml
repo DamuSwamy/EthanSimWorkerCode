@@ -1,0 +1,10 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: Loop_test
+entry_point: workflows/Loop_test.yaml
+description: Loop workflow
+parameters:
+  Number_list:
+    type: array
+    description: loop
