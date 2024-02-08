@@ -1,16 +1,38 @@
 version: 1.0
 tasks:
-  # [351, 54]
+  # [201, 47]
   task1:
-    action: core.noop
+    action: sim_msoll.FormatNewProductList
+    input:
+      log_level: DEBUG
+      new_product_list:
+        _RowID: 79d09e59-1650-499c-9d2da146dab47350
+        ProductType: Base
+        autoRenewEnabled: True
+        Qty: 1
+        BaseProduct: AI Builder Capacity Add-on T1
+        Term: 1 Year
+        BillingPlan: Monthly
+        BillPlanAlreadySelected: ,
+        BuyPrice: 578.59
+        ExtendedBuy: 578.59
+        ExtendedRRP: 748.30
+        OfferID: "CFQ7TTC0LH0Z:0001"
+        HidTerm: P1Y
+        RRP: 748.3
+        UnitCost: 561.23
+        ActualProduct: AI Builder Capacity Add-on T1
     next:
       - do:
           - task2
-  # [344, 186]
+        when: <% succeeded() %>
+        publish:
+          - key: <% result().result.data %>
+  # [208, 174]
   task2:
-    action: core.http
+    action: sql.insert
     input:
-      url: "https://netdb.essist.com.au/api/v1/asset/assurancedashboard/?customer=36"
-      headers:
-        Content-Type: application/json
-        Authorization: Token 0ab414e6487e35477157f38640f58e8ae6a0df89
+      log_level: DEBUG
+      data: "{{  ctx().key }}"
+      table: MSOL_NCE_Subscribed_Pricing
+      connection: billing

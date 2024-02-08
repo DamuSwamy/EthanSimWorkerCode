@@ -1218,87 +1218,6 @@
       ]
     },
     {
-      "name": "VM-AVD-AE-16-TEST",
-      "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-16-TEST",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_D2s_v3"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "8a424f99-8158-4dbd-9bba-67c476102f73",
-        "additionalCapabilities": {
-          "hibernationEnabled": false
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "MicrosoftWindowsDesktop",
-            "offer": "Windows-10",
-            "sku": "win10-22h2-pro-g2",
-            "version": "latest",
-            "exactVersion": "19045.3930.240104"
-          },
-          "osDisk": {
-            "osType": "Windows",
-            "name": "VM-AVD-AE-16-TEST_OsDisk_1_3206a31c54c64157bb8b3e13e9cd51e0",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "storageAccountType": "Standard_LRS",
-              "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/disks/VM-AVD-AE-16-TEST_OsDisk_1_3206a31c54c64157bb8b3e13e9cd51e0"
-            },
-            "deleteOption": "Delete",
-            "diskSizeGB": 127
-          },
-          "dataDisks": [
-            {
-              "lun": 0,
-              "name": "VM-AVD-AE-16_OsDisk_2",
-              "createOption": "Attach",
-              "caching": "None",
-              "writeAcceleratorEnabled": false,
-              "managedDisk": {
-                "storageAccountType": "Premium_LRS",
-                "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/disks/VM-AVD-AE-16_OsDisk_2"
-              },
-              "deleteOption": "Detach",
-              "diskSizeGB": 128,
-              "toBeDetached": false
-            }
-          ]
-        },
-        "osProfile": {
-          "computerName": "VM-AVD-AE-16-TE",
-          "adminUsername": "skipper",
-          "windowsConfiguration": {
-            "provisionVMAgent": true,
-            "enableAutomaticUpdates": true,
-            "patchSettings": {
-              "patchMode": "AutomaticByOS",
-              "assessmentMode": "ImageDefault",
-              "enableHotpatching": false
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Network/networkInterfaces/vm-avd-ae-16-test114","properties":{"deleteOption":"Delete"}}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true
-          }
-        },
-        "licenseType": "Windows_Client"
-      },
-      "resources": [
-        {
-          "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-16-TEST/extensions/enablevmAccess"
-        }
-      ]
-    },
-    {
       "name": "VM-AVD-AE-2-0",
       "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-0",
       "type": "Microsoft.Compute/virtualMachines",
@@ -4413,9 +4332,11 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
+              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/IHG-RG-INFRA-AEA/providers/Microsoft.Compute/disks/ihgvmjump1_OsDisk_1_cefd0a14606d4b07ab5b086ed289762b"
             },
-            "deleteOption": "Detach"
+            "deleteOption": "Detach",
+            "diskSizeGB": 127
           },
           "dataDisks": []
         },

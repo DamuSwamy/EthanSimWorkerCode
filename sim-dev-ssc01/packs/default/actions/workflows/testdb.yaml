@@ -1,0 +1,37 @@
+version: 1.0
+tasks:
+  # [225, 108]
+  task1:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: SELECT * FROM MSOL_NCE_Subscribed_Pricing WHERE CustomerID = 'test12'
+      connection: billing
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - key: <% result().result %>
+        do:
+          - task2
+  # [229, 197]
+  task2:
+    action: core.echo
+    input:
+      message: <% str(len(ctx().key)) %>
+    next:
+      - do:
+          - task3
+        when: <% result().stdout =1 %>
+      - do:
+          - task4
+        when: <% result().stdout =0 %>
+  # [69, 355]
+  task3:
+    action: core.echo
+    input:
+      message: Found
+  # [510, 324]
+  task4:
+    action: core.echo
+    input:
+      message: Not found

@@ -1,0 +1,14 @@
+version: 1.0
+tasks:
+  # [177, 59]
+  task1:
+    action: sim_msoll.FormatExistingProductList
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - key: <% result().result.data %>
+        do:
+          - task2
+  # [176, 173]
+  task2:
+    action: sql.query

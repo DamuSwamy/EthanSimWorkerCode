@@ -1,0 +1,16 @@
+---
+name: FormatExistingProductList
+pack: sim_msoll
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: formatExistingProductList.py
+parameters:
+  existing_product_list:
+    type: object
+    required: true
+    description: Existing product list
+  customer_id:
+    type: string
+    required: true
+    description: Customer Id
