@@ -59,11 +59,8 @@ tasks:
       - do:
           - escalate_ticket
         when: <% ctx().modify_orders_result.indexOf('Failed') != -1 or ctx().base_orders_result.indexOf('Failed') != -1 or ctx().addon_orders_result.indexOf('Failed') != -1 %>
-  # [108, 1070]
+  # [323, 1352]
   Success:
-    action: core.noop
-  # [503, 1065]
-  Success_with_Exceptions:
     action: core.noop
   # [331, 636]
   Place_Base_order_if_any:
@@ -172,12 +169,13 @@ tasks:
     action: core.echo
     input:
       message: "Time 10 minutes ago <% datetime(ctx().time_10minsago)  %>  \nTime of ITSM ticket open <% datetime(ctx().ticket_opened) %>"
-  # [109, 958]
+  # [107, 1007]
   resolve_ticket:
     action: sim_itsm2.update
-    next:
+    next
       - do:
-          - Success
+          - format_product_list
+        when: <% succeeded() %>
     input:
       log_level: DEBUG
       number: <% ctx().ticket_id %>
@@ -191,12 +189,13 @@ tasks:
         closed_by: 84cf417087ff3410bd1d32e80cbb3502
         closed_at: <% ctx().close_date %>
       table: sn_customerservice_general_case
-  # [502, 960]
+  # [498, 1011]
   escalate_ticket:
     action: sim_itsm2.update
-    next:
+    next
       - do:
-          - Success_with_Exceptions
+          - format_product_list
+        when: <% succeeded() %>
     input:
       log_level: DEBUG
       number: <% ctx().ticket_id %>
@@ -214,3 +213,23 @@ tasks:
     next:
       - do:
           - Place_Addon_order_if_any
+  # [326, 1148]
+  format_product_list:
+    action: sim_msol.FormatProductList
+    next:
+      - do:
+          - task1
+        publish:
+          - new_data: <% result().result.new_product_list %>
+          - existing_data: <% result().result.existing_product_list >
+  # [319, 1244]
+  task1:
+    action: sql.insert_bulk
+    input:
+      log_level: DEBUG
+      data: "{{ ctx().new_data }}"
+      table: MSOL_NCE_Subscribed_Pricing
+      connection: billing
+    next:
+      - do:
+          - Success

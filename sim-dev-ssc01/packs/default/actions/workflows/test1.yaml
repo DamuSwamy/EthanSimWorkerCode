@@ -1,0 +1,8 @@
+version: 1.0
+tasks:
+  # [171, 111]
+  task1:
+    action: sim_msoll.FormatProductList
+    input:
+      log_level: DEBUG
+      customer_id: CUS34554

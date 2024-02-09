@@ -7,28 +7,6 @@ class MSOL(Action):
         super(MSOL, self).__init__(config, action_service)
 
     def run(self, existing_product_list, customer_id):
-        existing_product_list =  {
-	"_RowID": "4f482645-0fc3-47bf-a4cc-c30dfa33fe96",
-	"OfferID": "CFQ7TTC0LFLZ:0002:CFQ7TTC0MH5N",					#PruductID:SkuID:ignore the rest
-	"QTY": 1,
-	"Name": "Microsoft 365 E5",
-	"BillingPlan": "monthly",										#BillingPlan
-	"autoRenewEnabled": "True",										#AutoRenewal
-	"SubscriptionID": "a317b02b-28d1-46cb-cd3f-e86ea2f5e978",
-	"Term": "P1Y",													#TermDuration
-	"OrderID": "e3d42e008faa",
-	"Expiry": "13/08/2024",											#EffectiveEndDate (no computation needed!!)
-	"DisplayTerm": "1 Year",										
-	"RRP": "85.3",
-	"ExistingExtendedRRP": "85.30",
-	"UnitCost": "5.42",												#UnitPrice
-	"YourBuy": "5.59",												#Customer_BuyPrice
-	"ExtendedYourBuy": "5.59",
-	"ProductType": "Base",
-	"NewQty": "20",
-	"ExtendedRRP": "1706.00",
-	"NewExtendedBuy": "111.80"
-    }
 
         new_product_list_output = {
             "CustomerID":customer_id,

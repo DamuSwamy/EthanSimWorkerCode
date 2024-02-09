@@ -1,0 +1,5 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: test5
+entry_point: workflows/test5.yaml

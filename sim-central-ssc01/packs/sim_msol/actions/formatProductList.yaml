@@ -1,15 +1,19 @@
 ---
-name: FormatNewProductList
+name: FormatProductList
 pack: sim_msol
 runner_type: "python-script"
 description: Generate Response
 enabled: true
-entry_point: formatNewProductList.py
+entry_point: formatProductList.py
 parameters:
-  new_product_list1:
+  new_items_json:
     type: object
     required: true
-    description: New product list
+    description: New items json
+  existing_items_json:
+    type: object
+    required: true
+    description: Existing items json  
   customer_id:
     type: string
     required: true

@@ -1,0 +1,281 @@
+version: 1.0
+tasks:
+  # [190, 76]
+  task1:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: SELECT ProductID FROM MSOL_NCE_Subscribed_Pricing
+      connection: billing
+    next:
+      - do:
+          - task2
+        when: <% succeeded() %>
+        publish:
+          - productids: <% result().result %>
+  # [178, 196]
+  task2:
+    action: sim_msoll.FormatProductList
+    input:
+      log_level: DEBUG
+      customer_id: CUS66474
+      productId_from_db: "{{ ctx().productids }}"
+      new_items_json:
+        new_line_items_raw_json:
+          - _RowID: 26d8bc2d-af4f-434f-8b79-c989617db727
+            ProductType: Base
+            autoRenewEnabled: True
+            ffb5109d-64d5-43cd-a88e-e9443c788b3f: "<p style='color:blue;font-weight: bold;font-size:14px'>Please note If you are looking to purchase a license and your preferred billing plan is not available, please check that you do not already have a subscription with this billing plan</p>"
+            Qty: 1
+            BaseProduct: Microsoft Teams Rooms Pro
+            Term: 1 Year
+            BillingPlan: Monthly
+            BillPlanAlreadySelected: ,
+            BuyPrice: 56.14
+            ExtendedBuy: 56.14
+            ExtendedRRP: 59.90
+            OfferID: "CFQ7TTC0QW7C:0001"
+            HidTerm: P1Y
+            RRP: 59.9
+            UnitCost: 47.92
+            ActualProduct: Microsoft Teams Rooms Pro
+      existing_items_json:
+        modify_line_items_raw_json:
+          - _RowID: 35319f78-29bb-43ce-89ac-3a46a1c2f04c
+            OfferID: "CFQ7TTC0LHSF:0001:CFQ7TTC0JSQM"
+            QTY: 12
+            Name: Power BI Pro
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 07ae78c2-7644-4704-cde4-b1f169eeab12
+            Term: P1Y
+            OrderID: 5433d5010673
+            Expiry: 2/12/2024
+            DisplayTerm: 1 Year
+            RRP: 15
+            ExistingExtendedRRP: 180.00
+            UnitCost: 12
+            YourBuy: 14.06
+            ExtendedYourBuy: 168.72
+            ProductType: Base
+          - _RowID: b3d31349-f494-4f61-95ce-2529e250674b
+            OfferID: "CFQ7TTC0LSH0:0001:CFQ7TTC0RS0W"
+            QTY: 1
+            Name: Power Automate unattended RPA add-on
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: aef9254d-0e49-43ef-d4c1-595850954938
+            Term: P1M
+            OrderID: 5002017f0e12
+            Expiry: 12/17/2023
+            DisplayTerm: 1 Month
+            RRP: 269.4
+            ExistingExtendedRRP: 269.40
+            UnitCost: 202.05
+            YourBuy: 236.70
+            ExtendedYourBuy: 236.70
+            ProductType: Add-on
+          - _RowID: 955fe567-5fcb-49d6-93fe-c993fbcbb185
+            OfferID: "CFQ7TTC0LH39:0002:CFQ7TTC0JWMK"
+            QTY: 5
+            Name: Dynamics 365 Business Central Team Members
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 750cd21c-045c-4c77-cb3c-231a83841634
+            Term: P1M
+            OrderID: d132d5f96852
+            Expiry: 12/2/2023
+            DisplayTerm: 1 Month
+            RRP: 14.4
+            ExistingExtendedRRP: 72.00
+            UnitCost: 10.08
+            YourBuy: 11.81
+            ExtendedYourBuy: 59.05
+            ProductType: Base
+          - _RowID: 09850d6d-f760-4448-9f3b-0e9a569fb67e
+            OfferID: "CFQ7TTC0LSGZ:0001:CFQ7TTC0PKRD"
+            QTY: 2
+            Name: Power Automate Premium
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 26cdfb7f-4443-4ff5-d9d9-22f26b133a09
+            Term: P1Y
+            OrderID: 0eebc485687d
+            Expiry: 10/18/2024
+            DisplayTerm: 1 Year
+            RRP: 22.4
+            ExistingExtendedRRP: 44.80
+            UnitCost: 16.8
+            YourBuy: 19.68
+            ExtendedYourBuy: 39.36
+            ProductType: Base
+          - _RowID: 0348c2c8-586e-4afe-bb87-83337b9f5af5
+            OfferID: "CFQ7TTC0HL8W:0001:CFQ7TTC0QLFC"
+            QTY: 3
+            Name: Power BI Premium Per User
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 5533f084-6ddf-43cc-d6cb-567162514944
+            Term: P1M
+            OrderID: 2454336fce55
+            Expiry: 11/27/2023
+            DisplayTerm: 1 Month
+            RRP: 35.88
+            ExistingExtendedRRP: 107.64
+            UnitCost: 28.7
+            YourBuy: 33.62
+            ExtendedYourBuy: 100.86
+            ProductType: Base
+          - _RowID: 7e88b8cc-eba9-437f-84c1-e2a4c651e53b
+            OfferID: "CFQ7TTC0LFLS:0002:CFQ7TTC0R4GR"
+            QTY: 1
+            Name: Microsoft Entra ID P1
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 820de863-7c9d-46e2-dc08-c4a18d2b8606
+            Term: P1Y
+            OrderID: f9c04994f380
+            Expiry: 8/25/2024
+            DisplayTerm: 1 Year
+            RRP: 9
+            ExistingExtendedRRP: 9.00
+            UnitCost: 7.2
+            YourBuy: 8.43
+            ExtendedYourBuy: 8.43
+            ProductType: Base
+          - _RowID: d5d895a6-1351-4b76-b2a7-f48c1215725f
+            OfferID: "CFQ7TTC0HD32:0002:CFQ7TTC0Q3FD"
+            QTY: 5
+            Name: Visio Plan 2
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 237353ca-798b-4923-d5dd-92dec37f5dd4
+            Term: P1Y
+            OrderID: f2a6c49233ab
+            Expiry: 6/18/2024
+            DisplayTerm: 1 Year
+            RRP: 22.4
+            ExistingExtendedRRP: 112.00
+            UnitCost: 17.92
+            YourBuy: 20.99
+            ExtendedYourBuy: 104.95
+            ProductType: Base
+          - _RowID: 6ba96b76-2466-45ae-ae2b-87ff067bad94
+            OfferID: "CFQ7TTC0LH34:0001:CFQ7TTC0JH7M"
+            QTY: 8
+            Name: Dynamics 365 Business Central Essentials
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 393ca9c5-3876-4a6e-d087-1dff790d62ad
+            Term: P1Y
+            OrderID: 2370129fa9a8
+            Expiry: 6/6/2024
+            DisplayTerm: 1 Year
+            RRP: 104.8
+            ExistingExtendedRRP: 838.40
+            UnitCost: 73.36
+            YourBuy: 85.94
+            ExtendedYourBuy: 687.52
+            ProductType: Base
+          - _RowID: 24bf85b3-5f61-4b45-906e-df3ffce5cd3a
+            OfferID: "CFQ7TTC0LH39:0002:CFQ7TTC0JHSD"
+            QTY: 9
+            Name: Dynamics 365 Business Central Team Members
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: e24ed324-bbb9-48bc-d9bf-8b1c1680f56c
+            Term: P1Y
+            OrderID: 2370129fa9a8
+            Expiry: 6/6/2024
+            DisplayTerm: 1 Year
+            RRP: 12
+            ExistingExtendedRRP: 108.00
+            UnitCost: 8.4
+            YourBuy: 9.84
+            ExtendedYourBuy: 88.56
+            ProductType: Base
+          - _RowID: f52e5404-cf6b-4bee-8dd1-e91d1fd36da8
+            OfferID: "CFQ7TTC0LF8Q:0001:CFQ7TTC0RGT4"
+            QTY: 946
+            Name: Office 365 E1
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 8056b73d-c012-4478-d9c2-4a0ea74d8739
+            Term: P1Y
+            OrderID: 2370129fa9a8
+            Expiry: 6/6/2024
+            DisplayTerm: 1 Year
+            RRP: 13.9
+            ExistingExtendedRRP: 13149.40
+            UnitCost: 11.12
+            YourBuy: 13.03
+            ExtendedYourBuy: 12326.38
+            ProductType: Base
+          - _RowID: c3486751-6357-4e2d-ada3-4c7f65ba5607
+            OfferID: "CFQ7TTC0LF8R:0001:CFQ7TTC0PTRC"
+            QTY: 59
+            Name: Office 365 E3
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 72079423-1e6c-4e5b-c858-783832311e3c
+            Term: P1Y
+            OrderID: 2370129fa9a8
+            Expiry: 6/6/2024
+            DisplayTerm: 1 Year
+            RRP: 36.3
+            ExistingExtendedRRP: 2141.70
+            UnitCost: 29.04
+            YourBuy: 34.02
+            ExtendedYourBuy: 2007.18
+            ProductType: Base
+          - _RowID: 7f903c64-65ba-4d6a-9bfb-a7b0fadcc208
+            OfferID: "CFQ7TTC0LH18:0001:CFQ7TTC0MTPF"
+            QTY: 102
+            Name: Microsoft 365 Business Basic
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: d602b9f0-181f-4e6e-df45-e93d05b68a37
+            Term: P1Y
+            OrderID: 2370129fa9a8
+            Expiry: 6/6/2024
+            DisplayTerm: 1 Year
+            RRP: 9
+            ExistingExtendedRRP: 918.00
+            UnitCost: 7.2
+            YourBuy: 8.43
+            ExtendedYourBuy: 859.86
+            ProductType: Base
+          - _RowID: d4b8e64b-9602-480a-b1f3-ef693abc596a
+            OfferID: "CFQ7TTC0LDPB:0001:CFQ7TTC0W5JX"
+            QTY: 232
+            Name: Microsoft 365 Business Standard
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 94e76f58-e774-4653-c397-ca1de38887ed
+            Term: P1Y
+            OrderID: 7f00659fd426
+            Expiry: 6/5/2024
+            DisplayTerm: 1 Year
+            RRP: 18.7
+            ExistingExtendedRRP: 4338.40
+            UnitCost: 14.96
+            YourBuy: 17.53
+            ExtendedYourBuy: 4066.96
+            ProductType: Base
+          - _RowID: dee5436e-45d4-45af-abd2-7b4657845737
+            OfferID: "CFQ7TTC0LH04:0001:CFQ7TTC0QZN7"
+            QTY: 600
+            Name: Microsoft Defender for Office 365 (Plan 1)
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 676b2e88-52e5-427a-d0e6-bd140b66b7b4
+            Term: P1M
+            OrderID: 02369c01d20d
+            Expiry: 12/18/2023
+            DisplayTerm: 1 Month
+            RRP: 3.6
+            ExistingExtendedRRP: 2160.00
+            UnitCost: 2.88
+            YourBuy: 3.37
+            ExtendedYourBuy: 2022.00
+            ProductType: Add-on

@@ -1,0 +1,433 @@
+version: 1.0
+tasks:
+  # [170, 173]
+  task1:
+    action: sim_msoll.FormatProductList
+    input:
+      log_level: DEBUG
+      customer_id: CUS34554
+      existing_items_json:
+        modify_line_items_raw_json:
+          - _RowID: 0f82c8e5-137d-4c73-b41b-7ef520e08f80
+            OfferID: "CFQ7TTC0HDB0:0002:CFQ7TTC0JSRD"
+            QTY: 1
+            Name: Project Plan 3
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 9d9d1c1e-71d4-4537-c13e-c2316a9f6869
+            Term: P1Y
+            OrderID: a9c7640add53
+            Expiry: 23/11/2024
+            DisplayTerm: 1 Year
+            RRP: 44.9
+            ExistingExtendedRRP: 44.90
+            UnitCost: 35.92
+            YourBuy: 40.25
+            ExtendedYourBuy: 40.25
+            ProductType: Base
+          - _RowID: d6eaa18b-b7af-47b3-8404-421cfafaaa33
+            OfferID: "CFQ7TTC0QW7C:0001:CFQ7TTC0QJMJ"
+            QTY: 4
+            Name: Microsoft Teams Rooms Pro
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 2715235d-110d-4363-cdda-0741773ac3b1
+            Term: P1Y
+            OrderID: bea0303d4c0b
+            Expiry: 06/07/2024
+            DisplayTerm: 1 Year
+            RRP: 59.9
+            ExistingExtendedRRP: 239.60
+            UnitCost: 47.92
+            YourBuy: 53.70
+            ExtendedYourBuy: 214.80
+            ProductType: Base
+          - _RowID: 09603bf2-9d3e-4600-8ca3-874bb0f4c0a0
+            OfferID: "CFQ7TTC0LCH4:0009:CFQ7TTBZT6GZ"
+            QTY: 233
+            Name: Microsoft Intune Plan 1
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: e469cdd4-8f06-4882-dc83-ba111cf7389c
+            Term: P1Y
+            OrderID: b833687f9a5b
+            Expiry: 12/04/2024
+            DisplayTerm: 1 Year
+            RRP: 12
+            ExistingExtendedRRP: 2796.00
+            UnitCost: 9.6
+            YourBuy: 10.76
+            ExtendedYourBuy: 2507.08
+            ProductType: Base
+          - _RowID: dbb0712c-6e62-4afe-beaa-1e8c2c85ed35
+            OfferID: "CFQ7TTC0HX56:0002:CFQ7TTC0JMPX"
+            QTY: 233
+            Name: Microsoft Defender for Business
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 572983eb-c3e1-433e-d28b-46fed94d8f11
+            Term: P1Y
+            OrderID: e3e2f683b9c7
+            Expiry: 12/04/2024
+            DisplayTerm: 1 Year
+            RRP: 4.5
+            ExistingExtendedRRP: 1048.50
+            UnitCost: 3.6
+            YourBuy: 4.03
+            ExtendedYourBuy: 938.99
+            ProductType: Base
+          - _RowID: e7d7cb0c-e928-4a32-83c5-c1bab93e0c05
+            OfferID: "CFQ7TTC0HD32:0002:CFQ7TTC0Q0WM"
+            QTY: 6
+            Name: Visio Plan 2
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 5dbf2ac1-ef5e-4a90-ced5-953a018ad255
+            Term: P1Y
+            OrderID: f04067317e23
+            Expiry: 25/03/2024
+            DisplayTerm: 1 Year
+            RRP: 22.4
+            ExistingExtendedRRP: 134.40
+            UnitCost: 17.92
+            YourBuy: 20.08
+            ExtendedYourBuy: 120.48
+            ProductType: Base
+          - _RowID: f4085407-920a-4b6b-807e-bd628f3eb1e7
+            OfferID: "CFQ7TTC0LHXH:0001:CFQ7TTC0JNCK"
+            QTY: 1
+            Name: Microsoft Defender for Office 365 (Plan 2)
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 584305d3-ea6c-4a77-dbc2-586ef03463e8
+            Term: P1Y
+            OrderID: a13b0dad6fa7
+            Expiry: 04/12/2023
+            DisplayTerm: 1 Year
+            RRP: 7.5
+            ExistingExtendedRRP: 7.50
+            UnitCost: 6
+            YourBuy: 6.72
+            ExtendedYourBuy: 6.72
+            ProductType: Add-on
+          - _RowID: d7ef699b-202a-4746-a6fc-d1809541ea88
+            OfferID: "CFQ7TTC0QKW2:0005:CFQ7TTC0J8XD"
+            QTY: 60
+            Name: Microsoft Defender for Business servers
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 2538923d-9b77-4a8e-cc23-2c1c940ea955
+            Term: P1Y
+            OrderID: ad1250cf0fae
+            Expiry: 13/11/2024
+            DisplayTerm: 1 Year
+            RRP: 4.5
+            ExistingExtendedRRP: 270.00
+            UnitCost: 3.6
+            YourBuy: 4.03
+            ExtendedYourBuy: 241.80
+            ProductType: Add-on
+          - _RowID: 99660535-998f-40bb-8c36-3fcd8d96ddc4
+            OfferID: "CFQ7TTC0J1GB:0003:CFQ7TTC0PX8W"
+            QTY: 1
+            Name: Microsoft Defender for Endpoint P1
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 24a6904d-935b-4ef9-c44e-438ab9270969
+            Term: P1Y
+            OrderID: 98fbf1f2ea72
+            Expiry: 09/11/2024
+            DisplayTerm: 1 Year
+            RRP: 4.5
+            ExistingExtendedRRP: 4.50
+            UnitCost: 3.6
+            YourBuy: 4.03
+            ExtendedYourBuy: 4.03
+            ProductType: Base
+          - _RowID: dfe84f35-7342-4eb6-9766-aef6c252263f
+            OfferID: "CFQ7TTC0LFK5:0001:CFQ7TTC0VSKR"
+            QTY: 12
+            Name: Microsoft Entra ID P2
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 0bf47bad-3248-49f5-d394-1a7f95c09b29
+            Term: P1Y
+            OrderID: 7dbd589d08a9
+            Expiry: 04/10/2024
+            DisplayTerm: 1 Year
+            RRP: 13.5
+            ExistingExtendedRRP: 162.00
+            UnitCost: 10.8
+            YourBuy: 12.10
+            ExtendedYourBuy: 145.20
+            ProductType: Base
+          - _RowID: 9f6f24cf-87f8-4861-aa30-bdec0c393caa
+            OfferID: "CFQ7TTC0LH16:0001:CFQ7TTC0NWWM"
+            QTY: 5
+            Name: Exchange Online (Plan 1)
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: ff131074-3076-42a3-c4ee-ec7877be0c5a
+            Term: P1Y
+            OrderID: 147a368416a7
+            Expiry: 11/09/2024
+            DisplayTerm: 1 Year
+            RRP: 6
+            ExistingExtendedRRP: 30.00
+            UnitCost: 4.8
+            YourBuy: 5.38
+            ExtendedYourBuy: 26.90
+            ProductType: Base
+          - _RowID: 2347fcf4-a030-4860-8a6d-db4466bbb336
+            OfferID: "CFQ7TTC0J4GS:0002:CFQ7TTC0WKR9"
+            QTY: 100
+            Name: Power Apps per app plan (1 app or website)
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: d0e73f2b-4a22-4586-d380-fb75364ab147
+            Term: P1Y
+            OrderID: 308b0e87f4bf
+            Expiry: 28/06/2024
+            DisplayTerm: 1 Year
+            RRP: 7.5
+            ExistingExtendedRRP: 750.00
+            UnitCost: 6
+            YourBuy: 6.72
+            ExtendedYourBuy: 672.00
+            ProductType: Base
+          - _RowID: b7793030-afb8-4b04-9eae-0b8d09efb31f
+            OfferID: "CFQ7TTC0LHS9:0001:CFQ7TTC0RH1Q"
+            QTY: 3500
+            Name: Office 365 Extra File Storage
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: eaea9b36-35fe-40e7-de4f-d57b0d915e47
+            Term: P1Y
+            OrderID: e7636fcba059
+            Expiry: 29/05/2024
+            DisplayTerm: 1 Year
+            RRP: 0.3
+            ExistingExtendedRRP: 1050.00
+            UnitCost: 0.24
+            YourBuy: 0.27
+            ExtendedYourBuy: 945.00
+            ProductType: Add-on
+          - _RowID: a77762dc-d3ca-4eea-8362-0e780d8dcaab
+            OfferID: "CFQ7TTC0LHSL:0001:CFQ7TTC0QRHM"
+            QTY: 6
+            Name: Microsoft 365 Audio Conferencing
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 39b7ec03-ba48-45b7-c132-9b67652e81e9
+            Term: P1Y
+            OrderID: 201af7ed095b
+            Expiry: 22/05/2024
+            DisplayTerm: 1 Year
+            RRP: 3.7
+            ExistingExtendedRRP: 22.20
+            UnitCost: 3.7
+            YourBuy: 3.70
+            ExtendedYourBuy: 22.20
+            ProductType: Add-on
+          - _RowID: 98077919-2ee8-4935-b3d2-0c307b0bc0b1
+            OfferID: "CFQ7TTC0LH18:0001:CFQ7TTC0N4D2"
+            QTY: 16
+            Name: Microsoft 365 Business Basic
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: fa14c28e-1dc6-4c38-d42f-e3af2d1aca81
+            Term: P1Y
+            OrderID: 974a0836a9af
+            Expiry: 27/04/2024
+            DisplayTerm: 1 Year
+            RRP: 9
+            ExistingExtendedRRP: 144.00
+            UnitCost: 7.2
+            YourBuy: 8.07
+            ExtendedYourBuy: 129.12
+            ProductType: Base
+          - _RowID: 019328d6-82b1-4830-a576-f48e8574da1c
+            OfferID: "CFQ7TTC0LH04:0001:CFQ7TTC0Q6K3"
+            QTY: 1
+            Name: Microsoft Defender for Office 365 (Plan 1)
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 9873d539-50c9-4c8d-d611-08a8a0791ad8
+            Term: P1Y
+            OrderID: 32bbf73c7182
+            Expiry: 26/04/2024
+            DisplayTerm: 1 Year
+            RRP: 3
+            ExistingExtendedRRP: 3.00
+            UnitCost: 2.4
+            YourBuy: 2.69
+            ExtendedYourBuy: 2.69
+            ProductType: Add-on
+          - _RowID: 38a1124f-723f-46a0-b987-568f94417b63
+            OfferID: "CFQ7TTC0LH3L:0001:CFQ7TTC0RX1W"
+            QTY: 2
+            Name: Power Automate per user plan
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 3888fb83-ad7e-47eb-d944-217fe4e00d68
+            Term: P1Y
+            OrderID: 2a72d4415a09
+            Expiry: 21/04/2024
+            DisplayTerm: 1 Year
+            RRP: 22.4
+            ExistingExtendedRRP: 44.80
+            UnitCost: 16.8
+            YourBuy: 18.83
+            ExtendedYourBuy: 37.66
+            ProductType: Base
+          - _RowID: 6539f493-e2d3-41f9-9812-c915e5e61430
+            OfferID: "CFQ7TTC0LH2H:0002:CFQ7TTC0XS7D"
+            QTY: 3
+            Name: Power Apps Premium
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 3cbbf20d-4d84-4fae-c6c2-293524718f06
+            Term: P1Y
+            OrderID: 29749579ed65
+            Expiry: 20/04/2024
+            DisplayTerm: 1 Year
+            RRP: 29.9
+            ExistingExtendedRRP: 89.70
+            UnitCost: 22.43
+            YourBuy: 25.13
+            ExtendedYourBuy: 75.39
+            ProductType: Base
+          - _RowID: 2376ba8a-beb7-4e02-b4fc-8d3f5fa326da
+            OfferID: "CFQ7TTC0LH0S:0001:CFQ7TTC0JTF0"
+            QTY: 19
+            Name: Microsoft Teams Rooms Standard
+            BillingPlan: monthly
+            autoRenewEnabled: False
+            SubscriptionID: a86ec493-e026-43d9-dba9-61df65c46f0f
+            Term: P1Y
+            OrderID: bae421ba7160
+            Expiry: 19/04/2024
+            DisplayTerm: 
+            RRP: 0.00
+            ExistingExtendedRRP: 0.00
+            UnitCost: 0.00
+            YourBuy: 0.00
+            ExtendedYourBuy: 0.00
+          - _RowID: bedd2fe3-7b5b-4bfa-9f29-facaafc19f5d
+            OfferID: "CFQ7TTC0HL8W:0001:CFQ7TTC0QKH9"
+            QTY: 86
+            Name: Power BI Premium Per User
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 7ac8786e-942c-4e28-cdfb-bec89ea2355a
+            Term: P1Y
+            OrderID: b04ab46d7850
+            Expiry: 18/04/2024
+            DisplayTerm: 1 Year
+            RRP: 29.9
+            ExistingExtendedRRP: 2571.40
+            UnitCost: 23.92
+            YourBuy: 26.80
+            ExtendedYourBuy: 2304.80
+            ProductType: Base
+          - _RowID: 1880adb7-20c0-40fe-9180-fc18a8e523e3
+            OfferID: "CFQ7TTC0LHSF:0001:CFQ7TTC0Q4LM"
+            QTY: 10
+            Name: Power BI Pro
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 4be9e568-6456-4a7c-d945-e0103529b64a
+            Term: P1Y
+            OrderID: 13859c82dc1f
+            Expiry: 18/04/2024
+            DisplayTerm: 1 Year
+            RRP: 15
+            ExistingExtendedRRP: 150.00
+            UnitCost: 12
+            YourBuy: 13.45
+            ExtendedYourBuy: 134.50
+            ProductType: Base
+          - _RowID: f55ed1a2-4c86-4ad6-9202-f06338ec1dda
+            OfferID: "CFQ7TTC0LCHC:0002:CFQ7TTC0WWXJ"
+            QTY: 245
+            Name: Microsoft 365 Business Premium
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: 64cecf01-bab6-4642-c444-66ce7652e7ee
+            Term: P1Y
+            OrderID: a3f90ca27a1d
+            Expiry: 10/04/2024
+            DisplayTerm: 1 Year
+            RRP: 32.9
+            ExistingExtendedRRP: 8060.50
+            UnitCost: 26.32
+            YourBuy: 29.49
+            ExtendedYourBuy: 7225.05
+            ProductType: Base
+          - _RowID: 49bd1842-f216-419d-94b7-35b4025d4ab7
+            OfferID: "CFQ7TTC0LDPB:0001:CFQ7TTC0W8WL"
+            QTY: 233
+            Name: Microsoft 365 Business Standard
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: b0e9478d-d48b-4d0d-cefa-b2de79f65bda
+            Term: P1Y
+            OrderID: a3f90ca27a1d
+            Expiry: 10/04/2024
+            DisplayTerm: 1 Year
+            RRP: 18.7
+            ExistingExtendedRRP: 4357.10
+            UnitCost: 14.96
+            YourBuy: 16.76
+            ExtendedYourBuy: 3905.08
+            ProductType: Base
+          - _RowID: 2891be8d-ae0f-4839-b4d6-e9e53decbd75
+            OfferID: "CFQ7TTC0LH1P:0001:CFQ7TTC0RKNM"
+            QTY: 3
+            Name: Exchange Online (Plan 2)
+            BillingPlan: monthly
+            autoRenewEnabled: True
+            SubscriptionID: f83077e3-653a-48bb-d3ae-47bf20604dcd
+            Term: P1M
+            OrderID: 506d7072ff08
+            Expiry: 09/12/2023
+            DisplayTerm: 1 Month
+            RRP: 13.32
+            ExistingExtendedRRP: 39.96
+            UnitCost: 10.66
+            YourBuy: 11.95
+            ExtendedYourBuy: 35.85
+            ProductType: Base
+      new_items_json:
+        new_line_items_raw_json:
+          - _RowID: c5f42865-db66-46c1-9c08-645e6326790a
+            ProductType: Base
+            autoRenewEnabled: True
+            ffb5109d-64d5-43cd-a88e-e9443c788b3f: "<p style='color:blue;font-weight: bold;font-size:14px'>Please note If you are looking to purchase a license and your preferred billing plan is not available, please check that you do not already have a subscription with this billing plan</p>"
+            Qty: 1
+            BaseProduct: Office 365 E3
+            Term: 1 Month
+            BillingPlan: Monthly
+            BillPlanAlreadySelected: 
+            BuyPrice: 39.05
+            ExtendedBuy: 39.05
+            ExtendedRRP: 43.56
+            OfferID: "CFQ7TTC0LF8R:0001"
+            HidTerm: P1M
+            RRP: 43.56
+            UnitCost: 34.85
+            ActualProduct: Office 365 E3
+      productId_from_db: "{{ ctx().productids }}"
+  # [165, 66]
+  task2:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: SELECT ProductID FROM MSOL_NCE_Subscribed_Pricing
+      connection: billing
+    next:
+      - do:
+          - task1
+        when: <% succeeded() %>
+        publish:
+          - productids: <% result().result %>

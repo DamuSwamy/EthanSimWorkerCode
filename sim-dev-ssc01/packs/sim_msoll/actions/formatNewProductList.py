@@ -6,7 +6,7 @@ class MSOL(Action):
     def __init__(self, config=None, action_service=None):
         super(MSOL, self).__init__(config, action_service)
 
-    def run(self, new_product_list, customer_id):
+    def run(self, new_product_list1, customer_id):
 
         new_product_list_output = {
             "CustomerID":customer_id,
@@ -20,6 +20,7 @@ class MSOL(Action):
             "EffectiveEndDate":""
         }
 
+        new_product_list = new_product_list1["new_line_items_raw_json"][0]
 
         if 'OfferID' in new_product_list:
             new_product_list_output['ProductID'] = new_product_list['OfferID'].split(':')[0]
