@@ -1825,11 +1825,9 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
-              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/disks/vm-cyrisk-1_OsDisk_1_9090c6b7f5e64b4aaaa19749f0ad9909"
             },
-            "deleteOption": "Delete",
-            "diskSizeGB": 127
+            "deleteOption": "Delete"
           },
           "dataDisks": []
         },
@@ -4388,11 +4386,9 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
-              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/IHG-RG-INFRA-AEA/providers/Microsoft.Compute/disks/ihgvmjump1_OsDisk_1_cefd0a14606d4b07ab5b086ed289762b"
             },
-            "deleteOption": "Detach",
-            "diskSizeGB": 127
+            "deleteOption": "Detach"
           },
           "dataDisks": []
         },
