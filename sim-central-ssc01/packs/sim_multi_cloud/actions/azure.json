@@ -1,414 +1,6 @@
 [{"value":[]},{
   "value": [
     {
-      "name": "VM-ETHAN-DAPI-NVA-AE-1",
-      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-DAPI-AE-1/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-DAPI-NVA-AE-1",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_DS1_v2"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "e0fb4655-7f6f-4b8d-9be8-78cb81bbe453",
-        "additionalCapabilities": {
-          "hibernationEnabled": false
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "canonical",
-            "offer": "0001-com-ubuntu-server-jammy",
-            "sku": "22_04-lts-gen2",
-            "version": "latest",
-            "exactVersion": "22.04.202311010"
-          },
-          "osDisk": {
-            "osType": "Linux",
-            "name": "VM-ETHAN-DAPI-NVA-AE-1_OsDisk_1_516a6449d9584ace88377ba2a35a3c25",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "storageAccountType": "StandardSSD_LRS",
-              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-DAPI-AE-1/providers/Microsoft.Compute/disks/VM-ETHAN-DAPI-NVA-AE-1_OsDisk_1_516a6449d9584ace88377ba2a35a3c25"
-            },
-            "deleteOption": "Delete",
-            "diskSizeGB": 30
-          },
-          "dataDisks": []
-        },
-        "osProfile": {
-          "computerName": "VM-ETHAN-DAPI-NVA-AE-1",
-          "adminUsername": "Admiral",
-          "linuxConfiguration": {
-            "disablePasswordAuthentication": false,
-            "provisionVMAgent": true,
-            "patchSettings": {
-              "patchMode": "ImageDefault",
-              "assessmentMode": "ImageDefault"
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "securityProfile": {
-          "uefiSettings": {
-            "secureBootEnabled": true,
-            "vTpmEnabled": true
-          },
-          "securityType": "TrustedLaunch"
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-DAPI-AE-1/providers/Microsoft.Network/networkInterfaces/vm-ethan-dapi-nva-ae-1885","properties":{"primary":true,"deleteOption":"Detach"}},{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-DAPI-AE-1/providers/Microsoft.Network/networkInterfaces/nic-private","properties":{"primary":false}}]}
-      }
-    },
-    {
-      "name": "VM-ETHAN-EWSPRD-AE-1",
-      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-EWSPRD-AE-1",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "tags": {
-        "ethan.owner.department": "ethanweb"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_F16s_v2"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "d1cb02c0-9079-4907-89eb-f48add12a0a0",
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2022-datacenter",
-            "version": "latest",
-            "exactVersion": "20348.350.2111030009"
-          },
-          "osDisk": {
-            "osType": "Windows",
-            "name": "VM-ETHAN-EWSPRD-AE-1_OsDisk_1_83459fa3ecf6456ebd7e309371e57f86",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "storageAccountType": "StandardSSD_LRS",
-              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/disks/VM-ETHAN-EWSPRD-AE-1_OsDisk_1_83459fa3ecf6456ebd7e309371e57f86"
-            },
-            "deleteOption": "Detach",
-            "diskSizeGB": 127
-          },
-          "dataDisks": [
-            {
-              "lun": 0,
-              "name": "VM-ETHAN-EWSPRD-AE-1_DataDisk_0",
-              "createOption": "Attach",
-              "caching": "None",
-              "writeAcceleratorEnabled": false,
-              "managedDisk": {
-                "storageAccountType": "Premium_LRS",
-                "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/disks/VM-ETHAN-EWSPRD-AE-1_DataDisk_0"
-              },
-              "deleteOption": "Detach",
-              "diskSizeGB": 128,
-              "toBeDetached": false
-            }
-          ]
-        },
-        "osProfile": {
-          "computerName": "VM-ETHAN-EWSPRD",
-          "adminUsername": "svc_ewsadmin",
-          "windowsConfiguration": {
-            "provisionVMAgent": true,
-            "enableAutomaticUpdates": false,
-            "patchSettings": {
-              "patchMode": "Manual",
-              "assessmentMode": "ImageDefault",
-              "enableHotpatching": false
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Network/networkInterfaces/vm-ethan-ewsprd-ae-1797"}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true
-          }
-        }
-      },
-      "resources": [
-        {
-          "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-EWSPRD-AE-1/extensions/MicrosoftMonitoringAgent"
-        },
-        {
-          "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-EWSPRD-AE-1/extensions/SqlIaasExtension"
-        }
-      ]
-    },
-    {
-      "name": "vm-uacrm-gateway-ea",
-      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Compute/virtualMachines/vm-uacrm-gateway-ea",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "tags": {
-        "ethan.owner.department": "itt"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_D2s_v3"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "1571a235-91da-43e8-871a-ffb4957c2b94",
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2016-datacenter-gensecond",
-            "version": "latest",
-            "exactVersion": "14393.4770.2111050154"
-          },
-          "osDisk": {
-            "osType": "Windows",
-            "name": "vm-uacrm-gateway-ea_OsDisk_1_8a34399d2a48452db0784154ecc14f9b",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Compute/disks/vm-uacrm-gateway-ea_OsDisk_1_8a34399d2a48452db0784154ecc14f9b"
-            },
-            "deleteOption": "Detach"
-          },
-          "dataDisks": []
-        },
-        "osProfile": {
-          "computerName": "vm-uacrm-gatewa",
-          "adminUsername": "adminuser",
-          "windowsConfiguration": {
-            "provisionVMAgent": true,
-            "enableAutomaticUpdates": false,
-            "patchSettings": {
-              "patchMode": "Manual",
-              "assessmentMode": "ImageDefault",
-              "enableHotpatching": false
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Network/networkInterfaces/vm-uacrm-gateway-ea627"}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true
-          }
-        },
-        "licenseType": "Windows_Server",
-        "priority": "Spot",
-        "evictionPolicy": "Deallocate",
-        "billingProfile": {
-          "maxPrice": -1.0
-        }
-      }
-    },
-    {
-      "name": "vm-ethan-uacrmprd-ae-1",
-      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UACRMPRD-AE/providers/Microsoft.Compute/virtualMachines/vm-ethan-uacrmprd-ae-1",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "tags": {
-        "ethan.owner.department": "itt"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_D2s_v3"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "3e817baa-64e2-489a-bd67-5af0d16d72af",
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2019-datacenter-gensecond",
-            "version": "latest",
-            "exactVersion": "17763.3127.220119"
-          },
-          "osDisk": {
-            "osType": "Windows",
-            "name": "vm-ethan-uacrmprd-ae-1_disk1_d5a422cebfc046b3a28633e487b56a73",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "storageAccountType": "StandardSSD_LRS",
-              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UACRMPRD-AE/providers/Microsoft.Compute/disks/vm-ethan-uacrmprd-ae-1_disk1_d5a422cebfc046b3a28633e487b56a73"
-            },
-            "deleteOption": "Delete",
-            "diskSizeGB": 127
-          },
-          "dataDisks": []
-        },
-        "osProfile": {
-          "computerName": "vm-ethan-uacrmp",
-          "adminUsername": "svc_uacrmprd_1",
-          "windowsConfiguration": {
-            "provisionVMAgent": true,
-            "enableAutomaticUpdates": true,
-            "patchSettings": {
-              "patchMode": "AutomaticByOS",
-              "assessmentMode": "ImageDefault",
-              "enableHotpatching": false
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UACRMPRD-AE/providers/Microsoft.Network/networkInterfaces/vm-ethan-uacrmprd890","properties":{"deleteOption":"Detach"}}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true
-          }
-        }
-      }
-    },
-    {
-      "name": "VM-USMPRD-SENSOR-AE-1",
-      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-USMPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-USMPRD-SENSOR-AE-1",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "tags": {
-        "ethan.owner.department": "security"
-      },
-      "plan": {
-        "name": "unified-security-management-anywhere",
-        "publisher": "alienvault",
-        "product": "unified-security-management-anywhere"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_D2_v2"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "c7773c2a-9fa9-4fe9-8632-5b1003fc07f6",
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "alienvault",
-            "offer": "unified-security-management-anywhere",
-            "sku": "unified-security-management-anywhere",
-            "version": "latest",
-            "exactVersion": "7.0.725"
-          },
-          "osDisk": {
-            "osType": "Linux",
-            "name": "VM-USMPRD-SENSOR-AE-1_OsDisk_1_bbf7b7afa00a4923895b7e23140ebc6e",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "storageAccountType": "StandardSSD_LRS",
-              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-USMPRD-AE/providers/Microsoft.Compute/disks/VM-USMPRD-SENSOR-AE-1_OsDisk_1_bbf7b7afa00a4923895b7e23140ebc6e"
-            },
-            "deleteOption": "Delete",
-            "diskSizeGB": 30
-          },
-          "dataDisks": [
-            {
-              "lun": 0,
-              "name": "VM-USMPRD-SENSOR-AE-1_lun_0_2_3e1aa47fff6743bc8ebaea11915f4c28",
-              "createOption": "FromImage",
-              "caching": "None",
-              "writeAcceleratorEnabled": false,
-              "managedDisk": {
-                "storageAccountType": "StandardSSD_LRS",
-                "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-USMPRD-AE/providers/Microsoft.Compute/disks/VM-USMPRD-SENSOR-AE-1_lun_0_2_3e1aa47fff6743bc8ebaea11915f4c28"
-              },
-              "deleteOption": "Detach",
-              "diskSizeGB": 128,
-              "toBeDetached": false
-            }
-          ]
-        },
-        "osProfile": {
-          "computerName": "VM-USMPRD-SENSOR-AE-1",
-          "adminUsername": "USMManager",
-          "linuxConfiguration": {
-            "disablePasswordAuthentication": false,
-            "provisionVMAgent": true,
-            "patchSettings": {
-              "patchMode": "ImageDefault",
-              "assessmentMode": "ImageDefault"
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-USMPRD-AE/providers/Microsoft.Network/networkInterfaces/vm-usmprd-sensor-554","properties":{"deleteOption":"Detach"}}]}
-      }
-    }
-  ]
-},{"value":[]},{"value":[]},{
-  "value": [
-    {
-      "name": "vm-axapi-dev-1",
-      "id": "/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-DEV-AE-1/providers/Microsoft.Compute/virtualMachines/vm-axapi-dev-1",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_DS1_v2"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "7e1e8762-157e-46bb-98a2-a9328adff84d",
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2022-datacenter-azure-edition-hotpatch",
-            "version": "latest",
-            "exactVersion": "20348.1850.230803"
-          },
-          "osDisk": {
-            "osType": "Windows",
-            "name": "vm-axapi-dev-1_OsDisk_1_533ce331479843e5b873233953de87a1",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "id": "/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-DEV-AE-1/providers/Microsoft.Compute/disks/vm-axapi-dev-1_OsDisk_1_533ce331479843e5b873233953de87a1"
-            },
-            "deleteOption": "Delete"
-          },
-          "dataDisks": []
-        },
-        "osProfile": {
-          "computerName": "vm-axapi-dev-1",
-          "adminUsername": "admiral",
-          "windowsConfiguration": {
-            "provisionVMAgent": true,
-            "enableAutomaticUpdates": true,
-            "patchSettings": {
-              "patchMode": "AutomaticByPlatform",
-              "assessmentMode": "ImageDefault",
-              "enableHotpatching": true
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-DEV-AE-1/providers/Microsoft.Network/networkInterfaces/vm-axapi-dev-1185","properties":{"deleteOption":"Detach"}}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true
-          }
-        }
-      },
-      "resources": [
-        {
-          "id": "/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-DEV-AE-1/providers/Microsoft.Compute/virtualMachines/vm-axapi-dev-1/extensions/enablevmAccess"
-        }
-      ]
-    }
-  ]
-},{
-  "value": [
-    {
       "name": "TCS-AD-DC02",
       "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Compute/virtualMachines/TCS-AD-DC02",
       "type": "Microsoft.Compute/virtualMachines",
@@ -869,6 +461,414 @@
         },
         {
           "id": "/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Compute/virtualMachines/TCS-SQL-AZ/extensions/SqlIaasExtension"
+        }
+      ]
+    }
+  ]
+},{"value":[]},{
+  "value": [
+    {
+      "name": "VM-ETHAN-DAPI-NVA-AE-1",
+      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-DAPI-AE-1/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-DAPI-NVA-AE-1",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_DS1_v2"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "e0fb4655-7f6f-4b8d-9be8-78cb81bbe453",
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "canonical",
+            "offer": "0001-com-ubuntu-server-jammy",
+            "sku": "22_04-lts-gen2",
+            "version": "latest",
+            "exactVersion": "22.04.202311010"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "name": "VM-ETHAN-DAPI-NVA-AE-1_OsDisk_1_516a6449d9584ace88377ba2a35a3c25",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS",
+              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-DAPI-AE-1/providers/Microsoft.Compute/disks/VM-ETHAN-DAPI-NVA-AE-1_OsDisk_1_516a6449d9584ace88377ba2a35a3c25"
+            },
+            "deleteOption": "Delete",
+            "diskSizeGB": 30
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "VM-ETHAN-DAPI-NVA-AE-1",
+          "adminUsername": "Admiral",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": false,
+            "provisionVMAgent": true,
+            "patchSettings": {
+              "patchMode": "ImageDefault",
+              "assessmentMode": "ImageDefault"
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "securityProfile": {
+          "uefiSettings": {
+            "secureBootEnabled": true,
+            "vTpmEnabled": true
+          },
+          "securityType": "TrustedLaunch"
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-DAPI-AE-1/providers/Microsoft.Network/networkInterfaces/vm-ethan-dapi-nva-ae-1885","properties":{"primary":true,"deleteOption":"Detach"}},{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-DAPI-AE-1/providers/Microsoft.Network/networkInterfaces/nic-private","properties":{"primary":false}}]}
+      }
+    },
+    {
+      "name": "VM-ETHAN-EWSPRD-AE-1",
+      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-EWSPRD-AE-1",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "ethan.owner.department": "ethanweb"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_F16s_v2"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "d1cb02c0-9079-4907-89eb-f48add12a0a0",
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2022-datacenter",
+            "version": "latest",
+            "exactVersion": "20348.350.2111030009"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "VM-ETHAN-EWSPRD-AE-1_OsDisk_1_83459fa3ecf6456ebd7e309371e57f86",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS",
+              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/disks/VM-ETHAN-EWSPRD-AE-1_OsDisk_1_83459fa3ecf6456ebd7e309371e57f86"
+            },
+            "deleteOption": "Detach",
+            "diskSizeGB": 127
+          },
+          "dataDisks": [
+            {
+              "lun": 0,
+              "name": "VM-ETHAN-EWSPRD-AE-1_DataDisk_0",
+              "createOption": "Attach",
+              "caching": "None",
+              "writeAcceleratorEnabled": false,
+              "managedDisk": {
+                "storageAccountType": "Premium_LRS",
+                "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/disks/VM-ETHAN-EWSPRD-AE-1_DataDisk_0"
+              },
+              "deleteOption": "Detach",
+              "diskSizeGB": 128,
+              "toBeDetached": false
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "VM-ETHAN-EWSPRD",
+          "adminUsername": "svc_ewsadmin",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": false,
+            "patchSettings": {
+              "patchMode": "Manual",
+              "assessmentMode": "ImageDefault",
+              "enableHotpatching": false
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Network/networkInterfaces/vm-ethan-ewsprd-ae-1797"}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      },
+      "resources": [
+        {
+          "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-EWSPRD-AE-1/extensions/MicrosoftMonitoringAgent"
+        },
+        {
+          "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-ETHAN-EWSPRD-AE-1/extensions/SqlIaasExtension"
+        }
+      ]
+    },
+    {
+      "name": "vm-uacrm-gateway-ea",
+      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Compute/virtualMachines/vm-uacrm-gateway-ea",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "ethan.owner.department": "itt"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2s_v3"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "1571a235-91da-43e8-871a-ffb4957c2b94",
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-datacenter-gensecond",
+            "version": "latest",
+            "exactVersion": "14393.4770.2111050154"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "vm-uacrm-gateway-ea_OsDisk_1_8a34399d2a48452db0784154ecc14f9b",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Compute/disks/vm-uacrm-gateway-ea_OsDisk_1_8a34399d2a48452db0784154ecc14f9b"
+            },
+            "deleteOption": "Detach"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "vm-uacrm-gatewa",
+          "adminUsername": "adminuser",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": false,
+            "patchSettings": {
+              "patchMode": "Manual",
+              "assessmentMode": "ImageDefault",
+              "enableHotpatching": false
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Network/networkInterfaces/vm-uacrm-gateway-ea627"}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        },
+        "licenseType": "Windows_Server",
+        "priority": "Spot",
+        "evictionPolicy": "Deallocate",
+        "billingProfile": {
+          "maxPrice": -1.0
+        }
+      }
+    },
+    {
+      "name": "vm-ethan-uacrmprd-ae-1",
+      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UACRMPRD-AE/providers/Microsoft.Compute/virtualMachines/vm-ethan-uacrmprd-ae-1",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "ethan.owner.department": "itt"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2s_v3"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "3e817baa-64e2-489a-bd67-5af0d16d72af",
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2019-datacenter-gensecond",
+            "version": "latest",
+            "exactVersion": "17763.3127.220119"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "vm-ethan-uacrmprd-ae-1_disk1_d5a422cebfc046b3a28633e487b56a73",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS",
+              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UACRMPRD-AE/providers/Microsoft.Compute/disks/vm-ethan-uacrmprd-ae-1_disk1_d5a422cebfc046b3a28633e487b56a73"
+            },
+            "deleteOption": "Delete",
+            "diskSizeGB": 127
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "vm-ethan-uacrmp",
+          "adminUsername": "svc_uacrmprd_1",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": true,
+            "patchSettings": {
+              "patchMode": "AutomaticByOS",
+              "assessmentMode": "ImageDefault",
+              "enableHotpatching": false
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UACRMPRD-AE/providers/Microsoft.Network/networkInterfaces/vm-ethan-uacrmprd890","properties":{"deleteOption":"Detach"}}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      }
+    },
+    {
+      "name": "VM-USMPRD-SENSOR-AE-1",
+      "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-USMPRD-AE/providers/Microsoft.Compute/virtualMachines/VM-USMPRD-SENSOR-AE-1",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "ethan.owner.department": "security"
+      },
+      "plan": {
+        "name": "unified-security-management-anywhere",
+        "publisher": "alienvault",
+        "product": "unified-security-management-anywhere"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2_v2"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "c7773c2a-9fa9-4fe9-8632-5b1003fc07f6",
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "alienvault",
+            "offer": "unified-security-management-anywhere",
+            "sku": "unified-security-management-anywhere",
+            "version": "latest",
+            "exactVersion": "7.0.725"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "name": "VM-USMPRD-SENSOR-AE-1_OsDisk_1_bbf7b7afa00a4923895b7e23140ebc6e",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS",
+              "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-USMPRD-AE/providers/Microsoft.Compute/disks/VM-USMPRD-SENSOR-AE-1_OsDisk_1_bbf7b7afa00a4923895b7e23140ebc6e"
+            },
+            "deleteOption": "Delete",
+            "diskSizeGB": 30
+          },
+          "dataDisks": [
+            {
+              "lun": 0,
+              "name": "VM-USMPRD-SENSOR-AE-1_lun_0_2_3e1aa47fff6743bc8ebaea11915f4c28",
+              "createOption": "FromImage",
+              "caching": "None",
+              "writeAcceleratorEnabled": false,
+              "managedDisk": {
+                "storageAccountType": "StandardSSD_LRS",
+                "id": "/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-USMPRD-AE/providers/Microsoft.Compute/disks/VM-USMPRD-SENSOR-AE-1_lun_0_2_3e1aa47fff6743bc8ebaea11915f4c28"
+              },
+              "deleteOption": "Detach",
+              "diskSizeGB": 128,
+              "toBeDetached": false
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "VM-USMPRD-SENSOR-AE-1",
+          "adminUsername": "USMManager",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": false,
+            "provisionVMAgent": true,
+            "patchSettings": {
+              "patchMode": "ImageDefault",
+              "assessmentMode": "ImageDefault"
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-USMPRD-AE/providers/Microsoft.Network/networkInterfaces/vm-usmprd-sensor-554","properties":{"deleteOption":"Detach"}}]}
+      }
+    }
+  ]
+},{"value":[]},{
+  "value": [
+    {
+      "name": "vm-axapi-dev-1",
+      "id": "/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-DEV-AE-1/providers/Microsoft.Compute/virtualMachines/vm-axapi-dev-1",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_DS1_v2"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "7e1e8762-157e-46bb-98a2-a9328adff84d",
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2022-datacenter-azure-edition-hotpatch",
+            "version": "latest",
+            "exactVersion": "20348.1850.230803"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "vm-axapi-dev-1_OsDisk_1_533ce331479843e5b873233953de87a1",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "id": "/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-DEV-AE-1/providers/Microsoft.Compute/disks/vm-axapi-dev-1_OsDisk_1_533ce331479843e5b873233953de87a1"
+            },
+            "deleteOption": "Delete"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "vm-axapi-dev-1",
+          "adminUsername": "admiral",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": true,
+            "patchSettings": {
+              "patchMode": "AutomaticByPlatform",
+              "assessmentMode": "ImageDefault",
+              "enableHotpatching": true
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-DEV-AE-1/providers/Microsoft.Network/networkInterfaces/vm-axapi-dev-1185","properties":{"deleteOption":"Detach"}}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      },
+      "resources": [
+        {
+          "id": "/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-DEV-AE-1/providers/Microsoft.Compute/virtualMachines/vm-axapi-dev-1/extensions/enablevmAccess"
         }
       ]
     }
@@ -1796,44 +1796,47 @@
 },{"value":[]},{
   "value": [
     {
-      "name": "vm-cyrisk-1",
-      "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/virtualMachines/vm-cyrisk-1",
+      "name": "sp-vmica-prd-ae",
+      "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae",
       "type": "Microsoft.Compute/virtualMachines",
       "location": "australiaeast",
       "tags": {
-        "ethan.sn.test": "greetings",
-        "ethan.sn.id": "acb9ad8d87c7b810bd1d32e80cbb35ee",
-        "ethan.owner.department": "cyberriskdashboard"
+        "VMAutoShutdown": "true"
+      },
+      "identity": {
+        "type": "SystemAssigned",
+        "principalId": "9222e006-16e0-4c0c-8ccc-9b3b2354c555",
+        "tenantId": "8df850b6-bf1a-410c-9437-09a6b5e2c99e"
       },
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_B2ms"
+          "vmSize": "Standard_D2s_v4"
         },
         "provisioningState": "Succeeded",
-        "vmId": "76604496-a366-439c-a326-58911ada0942",
+        "vmId": "d014d2ff-6da7-48c5-a81c-f624ee425d48",
         "storageProfile": {
           "imageReference": {
             "publisher": "MicrosoftWindowsServer",
             "offer": "WindowsServer",
-            "sku": "2022-datacenter-azure-edition",
+            "sku": "2019-Datacenter",
             "version": "latest",
-            "exactVersion": "20348.1487.230106"
+            "exactVersion": "17763.2237.2110070715"
           },
           "osDisk": {
             "osType": "Windows",
-            "name": "vm-cyrisk-1_OsDisk_1_9090c6b7f5e64b4aaaa19749f0ad9909",
+            "name": "sp-vmica-prd-ae_OsDisk_1_c41798d7ecbd48f9bc67e28ce170caff",
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
-              "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/disks/vm-cyrisk-1_OsDisk_1_9090c6b7f5e64b4aaaa19749f0ad9909"
+              "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/disks/sp-vmica-prd-ae_OsDisk_1_c41798d7ecbd48f9bc67e28ce170caff"
             },
-            "deleteOption": "Delete"
+            "deleteOption": "Detach"
           },
           "dataDisks": []
         },
         "osProfile": {
-          "computerName": "vm-cyrisk-1",
-          "adminUsername": "skipper",
+          "computerName": "sp-vmica-prd-ae",
+          "adminUsername": "spadmin",
           "windowsConfiguration": {
             "provisionVMAgent": true,
             "enableAutomaticUpdates": true,
@@ -1847,13 +1850,292 @@
           "allowExtensionOperations": true,
           "requireGuestProvisionSignal": true
         },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Network/networkInterfaces/vm-cyrisk-1518","properties":{"deleteOption":"Delete"}}]},
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Network/networkInterfaces/sp-vmica-prd-ae615"}]},
         "diagnosticsProfile": {
           "bootDiagnostics": {
-            "enabled": true
+            "enabled": true,
+            "storageUri": "https://spasacorprdae.blob.core.windows.net/"
           }
         }
-      }
+      },
+      "resources": [
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae/extensions/AzureNetworkWatcherExtension"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae/extensions/AzurePolicyforWindows"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae/extensions/DependencyAgent"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae/extensions/enablevmaccess"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae/extensions/MDE.Windows"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae/extensions/Microsoft.Insights.VMDiagnosticsSettings"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae/extensions/MicrosoftMonitoringAgent"
+        }
+      ]
+    },
+    {
+      "name": "spa-vmiotm-prd-ae",
+      "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotm-prd-ae",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "VMAutoShutdown": "true"
+      },
+      "identity": {
+        "type": "SystemAssigned",
+        "principalId": "ee2dd466-d017-4fc0-a10c-bcfc5f784ba4",
+        "tenantId": "8df850b6-bf1a-410c-9437-09a6b5e2c99e"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2s_v4"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "4e8a9ccf-079d-4fee-8266-0523b6cd33c5",
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "18_04-lts-gen2",
+            "version": "latest",
+            "exactVersion": "18.04.202112020"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "name": "spa-vmiotm-prd-ae_OsDisk_1_428c087864b34336a95d1105ff6bf6f8",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/disks/spa-vmiotm-prd-ae_OsDisk_1_428c087864b34336a95d1105ff6bf6f8"
+            },
+            "deleteOption": "Detach"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "spa-vmiotm-prd-ae",
+          "adminUsername": "spadmin",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "/home/spadmin/.ssh/authorized_keys",
+                  "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCvNCYqtARTNyEbMHJ+p4h9Rhyt\r\nnKZh70mkXauNHz/XfpWOlyB8WtGb2ti68RFakhnoxE/Kf8JPEkb4fWiQFB+ENj/b\r\nhJfrqO4hhXWkpCg/elA+8UW9serm0vowC4sIiS6fr3zqJPK67F2faGd/pkROreqq\r\nl+OeUYh88tCa8qIuNrHgCFwaOS9OhCdW4nDZakoSqs1jPklu4es3piKXLQm74A+4\r\nwhHf7AuRwx95Zfwm0RLwhGVIOdMrKEB8vyzfl8zXzsu4NewCcusYgHe3qRyJ1lmD\r\nIF3COimkJjITuIeKiK0bdnTdOB5Nn9E4nzODIG0G6Ih5Gure4kt9+okjvDMjltJ6\r\n/OfBDppwgu5WrXBlptv7z260IUOB13oPsbKt67d7/o1y3AcTfvKQlINERMnhe5aB\r\nvuJAsGUIk+w8+eBIcAff1CYcW07oFMfdZuIYKgQ41Wxb4hghjTJLnmpnkjPFk2mg\r\nqZL8SGRyeVpg+5f80ipNALJJv20hzKYucWAWTCU= generated-by-azure\r\n"
+                }
+              ]
+            },
+            "provisionVMAgent": true,
+            "patchSettings": {
+              "patchMode": "ImageDefault",
+              "assessmentMode": "ImageDefault"
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Network/networkInterfaces/spa-vmiotm-prd-ae908"}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "https://spasacorprdae.blob.core.windows.net/"
+          }
+        }
+      },
+      "resources": [
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotm-prd-ae/extensions/AzurePolicyforLinux"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotm-prd-ae/extensions/enablevmaccess"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotm-prd-ae/extensions/LinuxDiagnostic"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotm-prd-ae/extensions/MDE.Linux"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotm-prd-ae/extensions/OmsAgentForLinux"
+        }
+      ]
+    },
+    {
+      "name": "spa-vmmgt-prd-ae",
+      "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmmgt-prd-ae",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "VMAutoShutdown": "true"
+      },
+      "identity": {
+        "type": "SystemAssigned",
+        "principalId": "6d1f7c0b-408d-45a1-9169-3cbfe994be9b",
+        "tenantId": "8df850b6-bf1a-410c-9437-09a6b5e2c99e"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2s_v4"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "727a4e85-d106-4645-90a6-97c8384f6085",
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "18_04-lts-gen2",
+            "version": "latest",
+            "exactVersion": "18.04.202110250"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "name": "spa-vmmgt-prd-ae_OsDisk_1_0229dc5891c548f8be99618ce75cdf7d",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/disks/spa-vmmgt-prd-ae_OsDisk_1_0229dc5891c548f8be99618ce75cdf7d"
+            },
+            "deleteOption": "Detach"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "spa-vmmgt-prd-ae",
+          "adminUsername": "spadmin",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": false,
+            "provisionVMAgent": true,
+            "patchSettings": {
+              "patchMode": "ImageDefault",
+              "assessmentMode": "ImageDefault"
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Network/networkInterfaces/spa-vmmgt-prd-ae431"}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "https://spasacorprdae.blob.core.windows.net/"
+          }
+        }
+      },
+      "zones": [
+        "1"
+      ],
+      "resources": [
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmmgt-prd-ae/extensions/AzurePolicyforLinux"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmmgt-prd-ae/extensions/enablevmaccess"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmmgt-prd-ae/extensions/LinuxDiagnostic"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmmgt-prd-ae/extensions/MDE.Linux"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmmgt-prd-ae/extensions/OmsAgentForLinux"
+        }
+      ]
+    },
+    {
+      "name": "spa-vmrca-prd-ae",
+      "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "VMAutoShutdown": "true"
+      },
+      "identity": {
+        "type": "SystemAssigned",
+        "principalId": "ab3d62dd-a605-4c7a-8859-bd8399b0928d",
+        "tenantId": "8df850b6-bf1a-410c-9437-09a6b5e2c99e"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2s_v4"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "aaa86b02-672c-4bae-813c-3ef129633295",
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2019-Datacenter",
+            "version": "latest",
+            "exactVersion": "17763.2237.2110070715"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "spa-vmrca-prd-ae_OsDisk_1_c716ce6198904c278fbff21564d8c99b",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/disks/spa-vmrca-prd-ae_OsDisk_1_c716ce6198904c278fbff21564d8c99b"
+            },
+            "deleteOption": "Detach"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "spa-vmrca-prd-a",
+          "adminUsername": "spadmin",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": false,
+            "patchSettings": {
+              "patchMode": "Manual",
+              "assessmentMode": "ImageDefault",
+              "enableHotpatching": false
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Network/networkInterfaces/spa-vmrca-prd-ae725"}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "https://spasacorprdae.blob.core.windows.net/"
+          }
+        }
+      },
+      "resources": [
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae/extensions/AzurePolicyforWindows"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae/extensions/DependencyAgent"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae/extensions/enablevmaccess"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae/extensions/MDE.Windows"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae/extensions/Microsoft.Insights.VMDiagnosticsSettings"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae/extensions/MicrosoftMonitoringAgent"
+        }
+      ]
     }
   ]
 },{
@@ -3167,47 +3449,44 @@
 },{
   "value": [
     {
-      "name": "sp-vmica-prd-ae",
-      "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae",
+      "name": "vm-cyrisk-1",
+      "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/virtualMachines/vm-cyrisk-1",
       "type": "Microsoft.Compute/virtualMachines",
       "location": "australiaeast",
       "tags": {
-        "VMAutoShutdown": "true"
-      },
-      "identity": {
-        "type": "SystemAssigned",
-        "principalId": "9222e006-16e0-4c0c-8ccc-9b3b2354c555",
-        "tenantId": "8df850b6-bf1a-410c-9437-09a6b5e2c99e"
+        "ethan.sn.test": "greetings",
+        "ethan.sn.id": "acb9ad8d87c7b810bd1d32e80cbb35ee",
+        "ethan.owner.department": "cyberriskdashboard"
       },
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_D2s_v4"
+          "vmSize": "Standard_B2ms"
         },
         "provisioningState": "Succeeded",
-        "vmId": "d014d2ff-6da7-48c5-a81c-f624ee425d48",
+        "vmId": "76604496-a366-439c-a326-58911ada0942",
         "storageProfile": {
           "imageReference": {
             "publisher": "MicrosoftWindowsServer",
             "offer": "WindowsServer",
-            "sku": "2019-Datacenter",
+            "sku": "2022-datacenter-azure-edition",
             "version": "latest",
-            "exactVersion": "17763.2237.2110070715"
+            "exactVersion": "20348.1487.230106"
           },
           "osDisk": {
             "osType": "Windows",
-            "name": "sp-vmica-prd-ae_OsDisk_1_c41798d7ecbd48f9bc67e28ce170caff",
+            "name": "vm-cyrisk-1_OsDisk_1_9090c6b7f5e64b4aaaa19749f0ad9909",
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
-              "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/disks/sp-vmica-prd-ae_OsDisk_1_c41798d7ecbd48f9bc67e28ce170caff"
+              "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/disks/vm-cyrisk-1_OsDisk_1_9090c6b7f5e64b4aaaa19749f0ad9909"
             },
-            "deleteOption": "Detach"
+            "deleteOption": "Delete"
           },
           "dataDisks": []
         },
         "osProfile": {
-          "computerName": "sp-vmica-prd-ae",
-          "adminUsername": "spadmin",
+          "computerName": "vm-cyrisk-1",
+          "adminUsername": "skipper",
           "windowsConfiguration": {
             "provisionVMAgent": true,
             "enableAutomaticUpdates": true,
@@ -3221,292 +3500,13 @@
           "allowExtensionOperations": true,
           "requireGuestProvisionSignal": true
         },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Network/networkInterfaces/sp-vmica-prd-ae615"}]},
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Network/networkInterfaces/vm-cyrisk-1518","properties":{"deleteOption":"Delete"}}]},
         "diagnosticsProfile": {
           "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "https://spasacorprdae.blob.core.windows.net/"
+            "enabled": true
           }
         }
-      },
-      "resources": [
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae/extensions/AzureNetworkWatcherExtension"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae/extensions/AzurePolicyforWindows"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae/extensions/DependencyAgent"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae/extensions/enablevmaccess"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae/extensions/MDE.Windows"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae/extensions/Microsoft.Insights.VMDiagnosticsSettings"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/sp-vmica-prd-ae/extensions/MicrosoftMonitoringAgent"
-        }
-      ]
-    },
-    {
-      "name": "spa-vmiotm-prd-ae",
-      "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotm-prd-ae",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "tags": {
-        "VMAutoShutdown": "true"
-      },
-      "identity": {
-        "type": "SystemAssigned",
-        "principalId": "ee2dd466-d017-4fc0-a10c-bcfc5f784ba4",
-        "tenantId": "8df850b6-bf1a-410c-9437-09a6b5e2c99e"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_D2s_v4"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "4e8a9ccf-079d-4fee-8266-0523b6cd33c5",
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "Canonical",
-            "offer": "UbuntuServer",
-            "sku": "18_04-lts-gen2",
-            "version": "latest",
-            "exactVersion": "18.04.202112020"
-          },
-          "osDisk": {
-            "osType": "Linux",
-            "name": "spa-vmiotm-prd-ae_OsDisk_1_428c087864b34336a95d1105ff6bf6f8",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/disks/spa-vmiotm-prd-ae_OsDisk_1_428c087864b34336a95d1105ff6bf6f8"
-            },
-            "deleteOption": "Detach"
-          },
-          "dataDisks": []
-        },
-        "osProfile": {
-          "computerName": "spa-vmiotm-prd-ae",
-          "adminUsername": "spadmin",
-          "linuxConfiguration": {
-            "disablePasswordAuthentication": true,
-            "ssh": {
-              "publicKeys": [
-                {
-                  "path": "/home/spadmin/.ssh/authorized_keys",
-                  "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCvNCYqtARTNyEbMHJ+p4h9Rhyt\r\nnKZh70mkXauNHz/XfpWOlyB8WtGb2ti68RFakhnoxE/Kf8JPEkb4fWiQFB+ENj/b\r\nhJfrqO4hhXWkpCg/elA+8UW9serm0vowC4sIiS6fr3zqJPK67F2faGd/pkROreqq\r\nl+OeUYh88tCa8qIuNrHgCFwaOS9OhCdW4nDZakoSqs1jPklu4es3piKXLQm74A+4\r\nwhHf7AuRwx95Zfwm0RLwhGVIOdMrKEB8vyzfl8zXzsu4NewCcusYgHe3qRyJ1lmD\r\nIF3COimkJjITuIeKiK0bdnTdOB5Nn9E4nzODIG0G6Ih5Gure4kt9+okjvDMjltJ6\r\n/OfBDppwgu5WrXBlptv7z260IUOB13oPsbKt67d7/o1y3AcTfvKQlINERMnhe5aB\r\nvuJAsGUIk+w8+eBIcAff1CYcW07oFMfdZuIYKgQ41Wxb4hghjTJLnmpnkjPFk2mg\r\nqZL8SGRyeVpg+5f80ipNALJJv20hzKYucWAWTCU= generated-by-azure\r\n"
-                }
-              ]
-            },
-            "provisionVMAgent": true,
-            "patchSettings": {
-              "patchMode": "ImageDefault",
-              "assessmentMode": "ImageDefault"
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Network/networkInterfaces/spa-vmiotm-prd-ae908"}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "https://spasacorprdae.blob.core.windows.net/"
-          }
-        }
-      },
-      "resources": [
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotm-prd-ae/extensions/AzurePolicyforLinux"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotm-prd-ae/extensions/enablevmaccess"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotm-prd-ae/extensions/LinuxDiagnostic"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotm-prd-ae/extensions/MDE.Linux"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotm-prd-ae/extensions/OmsAgentForLinux"
-        }
-      ]
-    },
-    {
-      "name": "spa-vmmgt-prd-ae",
-      "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmmgt-prd-ae",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "tags": {
-        "VMAutoShutdown": "true"
-      },
-      "identity": {
-        "type": "SystemAssigned",
-        "principalId": "6d1f7c0b-408d-45a1-9169-3cbfe994be9b",
-        "tenantId": "8df850b6-bf1a-410c-9437-09a6b5e2c99e"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_D2s_v4"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "727a4e85-d106-4645-90a6-97c8384f6085",
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "Canonical",
-            "offer": "UbuntuServer",
-            "sku": "18_04-lts-gen2",
-            "version": "latest",
-            "exactVersion": "18.04.202110250"
-          },
-          "osDisk": {
-            "osType": "Linux",
-            "name": "spa-vmmgt-prd-ae_OsDisk_1_0229dc5891c548f8be99618ce75cdf7d",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/disks/spa-vmmgt-prd-ae_OsDisk_1_0229dc5891c548f8be99618ce75cdf7d"
-            },
-            "deleteOption": "Detach"
-          },
-          "dataDisks": []
-        },
-        "osProfile": {
-          "computerName": "spa-vmmgt-prd-ae",
-          "adminUsername": "spadmin",
-          "linuxConfiguration": {
-            "disablePasswordAuthentication": false,
-            "provisionVMAgent": true,
-            "patchSettings": {
-              "patchMode": "ImageDefault",
-              "assessmentMode": "ImageDefault"
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Network/networkInterfaces/spa-vmmgt-prd-ae431"}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "https://spasacorprdae.blob.core.windows.net/"
-          }
-        }
-      },
-      "zones": [
-        "1"
-      ],
-      "resources": [
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmmgt-prd-ae/extensions/AzurePolicyforLinux"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmmgt-prd-ae/extensions/enablevmaccess"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmmgt-prd-ae/extensions/LinuxDiagnostic"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmmgt-prd-ae/extensions/MDE.Linux"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmmgt-prd-ae/extensions/OmsAgentForLinux"
-        }
-      ]
-    },
-    {
-      "name": "spa-vmrca-prd-ae",
-      "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "tags": {
-        "VMAutoShutdown": "true"
-      },
-      "identity": {
-        "type": "SystemAssigned",
-        "principalId": "ab3d62dd-a605-4c7a-8859-bd8399b0928d",
-        "tenantId": "8df850b6-bf1a-410c-9437-09a6b5e2c99e"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_D2s_v4"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "aaa86b02-672c-4bae-813c-3ef129633295",
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2019-Datacenter",
-            "version": "latest",
-            "exactVersion": "17763.2237.2110070715"
-          },
-          "osDisk": {
-            "osType": "Windows",
-            "name": "spa-vmrca-prd-ae_OsDisk_1_c716ce6198904c278fbff21564d8c99b",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/disks/spa-vmrca-prd-ae_OsDisk_1_c716ce6198904c278fbff21564d8c99b"
-            },
-            "deleteOption": "Detach"
-          },
-          "dataDisks": []
-        },
-        "osProfile": {
-          "computerName": "spa-vmrca-prd-a",
-          "adminUsername": "spadmin",
-          "windowsConfiguration": {
-            "provisionVMAgent": true,
-            "enableAutomaticUpdates": false,
-            "patchSettings": {
-              "patchMode": "Manual",
-              "assessmentMode": "ImageDefault",
-              "enableHotpatching": false
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Network/networkInterfaces/spa-vmrca-prd-ae725"}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "https://spasacorprdae.blob.core.windows.net/"
-          }
-        }
-      },
-      "resources": [
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae/extensions/AzurePolicyforWindows"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae/extensions/DependencyAgent"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae/extensions/enablevmaccess"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae/extensions/MDE.Windows"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae/extensions/Microsoft.Insights.VMDiagnosticsSettings"
-        },
-        {
-          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae/extensions/MicrosoftMonitoringAgent"
-        }
-      ]
+      }
     }
   ]
 },{
