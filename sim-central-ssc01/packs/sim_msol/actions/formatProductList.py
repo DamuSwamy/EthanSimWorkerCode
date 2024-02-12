@@ -8,6 +8,8 @@ class MSOL(Action):
 
     def run(self, new_items_json, existing_items_json, customer_id):
 
+        existing_items_json = json.loads(existing_items_json)
+        new_items_json = json.loads(new_items_json)
 
         new_items_json = new_items_json["new_line_items_raw_json"]
         new_product_list_output=[]
@@ -93,8 +95,15 @@ class MSOL(Action):
                 product_list_json['EffectiveEndDate'] = obj['Term']
 
             existing_product_list_output.append(product_list_json)
+        
+        combined_data = existing_product_list_output
+        
+        if len(new_product_list_output)>0:
+            for data in new_product_list_output:
+                combined_data.append(data)
 
         return {
+            "combined_data":combined_data,
             "new_product_list":new_product_list_output,
             "existing_product_list":existing_product_list_output,
         }

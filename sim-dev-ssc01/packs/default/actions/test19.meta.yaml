@@ -1,0 +1,15 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: test19
+entry_point: workflows/test19.yaml
+parameters:
+  customerID:
+    type: string
+    required: true
+  new_items:
+    type: string
+    required: true
+  existing_items:
+    type: string
+    required: true

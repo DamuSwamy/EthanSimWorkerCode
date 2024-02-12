@@ -1,0 +1,36 @@
+version: 1.0
+tasks:
+  # [169, 25]
+  task1:
+    action: sql.query
+    next:
+      - do:
+          - task2
+    input:
+      log_level: DEBUG
+      query: DELETE FROM MSOL_NCE_Subscribed_Pricing
+      connection: billing
+  # [179, 132]
+  task2:
+    action: sim_msoll.FormatProductList
+    input:
+      log_level: DEBUG
+      customer_id: 133f1631-84d5-44fd-a488-29b6e3d71143
+      existing_items_json: <% ctx().existing_items %>
+      new_items_json: <% ctx().new_items %>
+    next:
+      - do:
+          - task3
+        publish:
+          - combined_data: <% result().result.combined_data %>
+  # [163, 231]
+  task3:
+    action: sql.insert_bulk
+    input:
+      log_level: DEBUG
+      data: "{{ ctx().combined_data }}"
+      connection: billing
+      table: MSOL_NCE_Subscribed_Pricing
+input:
+  - existing_items
+  - new_items

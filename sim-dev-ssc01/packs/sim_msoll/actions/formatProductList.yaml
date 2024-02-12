@@ -7,13 +7,13 @@ enabled: true
 entry_point: formatProductList.py
 parameters:
   new_items_json:
-    type: object
+    type: string
     required: true
-    description: New items json
+    description: New items string
   existing_items_json:
-    type: object
+    type: string
     required: true
-    description: Existing items json  
+    description: Existing items string
   customer_id:
     type: string
     required: true

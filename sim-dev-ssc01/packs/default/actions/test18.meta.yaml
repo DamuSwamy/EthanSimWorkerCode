@@ -1,0 +1,12 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: test18
+entry_point: workflows/test18.yaml
+parameters:
+  existing_items:
+    type: string
+    required: true
+  new_items:
+    type: string
+    required: true

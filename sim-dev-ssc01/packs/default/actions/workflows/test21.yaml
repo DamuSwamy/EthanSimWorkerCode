@@ -1,0 +1,37 @@
+version: 1.0
+tasks:
+  # [193, 52]
+  task1:
+    action: sql.query
+    input:
+      log_level: DEBUG
+      query: DELETE FROM MSOL_NCE_Subscribed_Pricing WHERE CustomerID = '{{ ctx().customerID }}'
+      connection: billing
+    next:
+      - do:
+          - task2
+  # [194, 155]
+  task2:
+    action: sim_msoll.FormatProductList
+    input:
+      log_level: DEBUG
+      customer_id: "{{ ctx().customerID }}"
+      existing_items_json: <% ctx().existing_items %>
+      new_items_json: <% ctx().new_items %>
+    next:
+      - do:
+          - task3
+        publish:
+          - combined_data: <% result().result.combined_data %>
+  # [192, 272]
+  task3:
+    action: sql.insert_bulk
+    input:
+      log_level: DEBUG
+      data: "{{ ctx().combined_data }}"
+      table: MSOL_NCE_Subscribed_Pricing
+      connection: billing
+input:
+  - customerID
+  - new_items
+  - existing_items
