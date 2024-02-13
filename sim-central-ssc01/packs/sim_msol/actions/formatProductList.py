@@ -1,5 +1,7 @@
 from st2common.runners.base_action import Action
 import requests
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import json
 
 class MSOL(Action):
@@ -9,13 +11,14 @@ class MSOL(Action):
     def run(self, new_items_json, existing_items_json, customer_id):
 
         existing_items_json = json.loads(existing_items_json)
-        new_items_json = json.loads(new_items_json)
+        #new_items_json = json.loads(new_items_json)
 
         new_items_json = new_items_json["new_line_items_raw_json"]
         new_product_list_output=[]
         existing_items_json = existing_items_json["modify_line_items_raw_json"]
         existing_product_list_output = []
 
+        today = datetime.today()
 
         for obj in new_items_json:
             product_list_json = {
@@ -42,15 +45,25 @@ class MSOL(Action):
 
             if 'HidTerm' in obj:
                 product_list_json['TermDuration'] = obj['HidTerm']
-
+                termDuration = obj['HidTerm']
+                if termDuration == "P1Y":
+                    endDate = today + relativedelta(years=1) - timedelta(1)
+                    formattedEndDate = endDate.strftime("%Y-%m-%d")
+                    product_list_json['EffectiveEndDate'] = formattedEndDate
+                elif termDuration == "P3Y":
+                    endDate = today + relativedelta(years=3) - timedelta(1)
+                    formattedEndDate = endDate.strftime("%Y-%m-%d")
+                    product_list_json['EffectiveEndDate'] = formattedEndDate
+                elif termDuration == "P1M":
+                    endDate = today + relativedelta(months=1) - timedelta(1)
+                    formattedEndDate = endDate.strftime("%Y-%m-%d")
+                    product_list_json['EffectiveEndDate'] = formattedEndDate
             if 'UnitCost' in obj:
                 product_list_json['UnitPrice'] = obj['UnitCost']
                         
             if 'BuyPrice' in obj:
                 product_list_json['Customer_BuyPrice'] = obj['BuyPrice']
                     
-            if 'Term' in obj:
-                product_list_json['EffectiveEndDate'] = obj['Term']
 
             new_product_list_output.append(product_list_json)
 
@@ -91,8 +104,10 @@ class MSOL(Action):
             if 'YourBuy' in obj:
                 product_list_json['Customer_BuyPrice'] = obj['YourBuy']
         
-            if 'Term' in obj:
-                product_list_json['EffectiveEndDate'] = obj['Term']
+            if 'Expiry' in obj:
+                date_object = datetime.strptime(obj['Expiry'], "%d/%m/%Y")
+                formatted_date = date_object.strftime("%Y-%m-%d")
+                product_list_json['EffectiveEndDate'] = formatted_date
 
             existing_product_list_output.append(product_list_json)
         

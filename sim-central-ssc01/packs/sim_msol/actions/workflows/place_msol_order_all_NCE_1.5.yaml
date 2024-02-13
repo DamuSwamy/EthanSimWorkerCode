@@ -59,9 +59,6 @@ tasks:
       - do:
           - escalate_ticket
         when: <% ctx().modify_orders_result.indexOf('Failed') != -1 or ctx().base_orders_result.indexOf('Failed') != -1 or ctx().addon_orders_result.indexOf('Failed') != -1 %>
-  # [321, 1451]
-  Success:
-    action: core.noop
   # [331, 636]
   Place_Base_order_if_any:
     action: sim_msol.place_msol_base_only_order_NCE
@@ -187,7 +184,7 @@ tasks:
       table: sn_customerservice_general_case
     next:
       - do:
-          - delete_from_MSOL_NCE_Subscribed_Pricing
+          - Success
   # [498, 1011]
   escalate_ticket:
     action: sim_itsm2.update
@@ -201,7 +198,7 @@ tasks:
       table: sn_customerservice_general_case
     next:
       - do:
-          - delete_from_MSOL_NCE_Subscribed_Pricing
+          - Success_with_Exceptions
   # [611, 702]
   sleep:
     action: core.local
@@ -211,37 +208,46 @@ tasks:
     next:
       - do:
           - Place_Addon_order_if_any
-  # [321, 1147]
+  # [305, 1264]
   delete_from_MSOL_NCE_Subscribed_Pricing:
     action: sql.query
     input:
       log_level: DEBUG
-      query: DELETE FROM MSOL_NCE_Subscribed_Pricing
+      query: DELETE FROM MSOL_NCE_Subscribed_Pricing WHERE CustomerID = '{{ ctx().customer_tenant_id }}'
       connection: billing
     next:
       - do:
-          - format_new_and_existing_data
-  # [321, 1247]
-  format_new_and_existing_data:
+          - format_profucts_list
+  # [304, 1368]
+  format_profucts_list:
     action: sim_msol.FormatProductList
     input:
       log_level: DEBUG
       customer_id: "{{ ctx().customer_tenant_id }}"
       existing_items_json: '<% ctx().existing_param_line_items_raw_json %>'
-      new_items_json: '<% ctx().new_param_line_items_raw_json %>'
+      new_items_json: <% ctx().new_param_line_items_raw_json %>
     next:
       - do:
-          - insert_bulk_into_MSOL_NCE_Subscribed_Pricing
+          - bulk_insert_products
         publish:
           - combined_data: <% result().result.combined_data %>
-  # [322, 1347]
-  insert_bulk_into_MSOL_NCE_Subscribed_Pricing:
+  # [305, 1472]
+  bulk_insert_products:
     action: sql.insert_bulk
     input:
       log_level: DEBUG
       data: "{{ ctx().combined_data }}"
-      connection: billing
       table: MSOL_NCE_Subscribed_Pricing
+      connection: billing
+  # [106, 1136]
+  Success:
+    action: core.noop
     next:
       - do:
-          - Success
+          - delete_from_MSOL_NCE_Subscribed_Pricing
+  # [492, 1137]
+  Success_with_Exceptions:
+    action: core.noop
+    next:
+      - do:
+          - delete_from_MSOL_NCE_Subscribed_Pricing

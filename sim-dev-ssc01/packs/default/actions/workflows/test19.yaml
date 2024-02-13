@@ -30,7 +30,7 @@ tasks:
       log_level: DEBUG
       customer_id: "{{ ctx().customerID }}"
       existing_items_json: '<% ctx().existing_items %>'
-      new_items_json: '<% ctx().new_items %>'
+      new_items_json: <% ctx().new_items %>
 input:
   - customerID
   - new_items

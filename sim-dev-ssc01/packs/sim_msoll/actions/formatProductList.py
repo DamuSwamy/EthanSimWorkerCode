@@ -11,7 +11,7 @@ class MSOL(Action):
     def run(self, new_items_json, existing_items_json, customer_id):
 
         existing_items_json = json.loads(existing_items_json)
-        new_items_json = json.loads(new_items_json)
+        #new_items_json = json.loads(new_items_json)
 
         new_items_json = new_items_json["new_line_items_raw_json"]
         new_product_list_output=[]
