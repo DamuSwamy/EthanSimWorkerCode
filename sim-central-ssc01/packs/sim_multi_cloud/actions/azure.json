@@ -3478,9 +3478,11 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
+              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/disks/vm-cyrisk-1_OsDisk_1_9090c6b7f5e64b4aaaa19749f0ad9909"
             },
-            "deleteOption": "Delete"
+            "deleteOption": "Delete",
+            "diskSizeGB": 127
           },
           "dataDisks": []
         },
@@ -3880,6 +3882,88 @@
         },
         {
           "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-3/extensions/MicrosoftMonitoringAgent"
+        }
+      ]
+    },
+    {
+      "name": "VM-MAR-MC-4",
+      "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-4",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "cm-resource-parent": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.DesktopVirtualization/hostpools/AVD-MAR-MCARE",
+        "Criticality": "Medium",
+        "EndDate": "None",
+        "Environment": "MCARE",
+        "ManagedBy": "Ethan"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D8s_v5"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "d10dc08d-4c00-4306-b26d-24b6c2d5e34b",
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
+        "storageProfile": {
+          "imageReference": {
+            "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/galleries/Mar_AVD_Hosts/images/VM-MAR-AVD-Definition/versions/1.0.1",
+            "exactVersion": "1.0.1"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "VM-MAR-MC-4_OsDisk_1_0414c0009e8f4f54928deb7fe2a90b65",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS",
+              "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/disks/VM-MAR-MC-4_OsDisk_1_0414c0009e8f4f54928deb7fe2a90b65"
+            },
+            "deleteOption": "Detach",
+            "diskSizeGB": 127
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "VM-MAR-MC-4",
+          "adminUsername": "Ethan",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": true,
+            "patchSettings": {
+              "patchMode": "AutomaticByOS",
+              "assessmentMode": "ImageDefault"
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "securityProfile": {
+          "uefiSettings": {
+            "secureBootEnabled": true,
+            "vTpmEnabled": true
+          },
+          "securityType": "TrustedLaunch"
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Network/networkInterfaces/VM-MAR-MC-4-nic"}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        },
+        "licenseType": "Windows_Client"
+      },
+      "zones": [
+        "1"
+      ],
+      "resources": [
+        {
+          "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-4/extensions/joindomain"
+        },
+        {
+          "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-4/extensions/Microsoft.PowerShell.DSC"
         }
       ]
     },
@@ -4558,11 +4642,9 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
-              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/IHG-RG-INFRA-AEA/providers/Microsoft.Compute/disks/ihgvmjump1_OsDisk_1_cefd0a14606d4b07ab5b086ed289762b"
             },
-            "deleteOption": "Detach",
-            "diskSizeGB": 127
+            "deleteOption": "Detach"
           },
           "dataDisks": []
         },
