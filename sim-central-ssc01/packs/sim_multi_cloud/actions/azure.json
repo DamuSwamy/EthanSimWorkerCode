@@ -3963,7 +3963,13 @@
           "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-4/extensions/joindomain"
         },
         {
+          "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-4/extensions/MDE.Windows"
+        },
+        {
           "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-4/extensions/Microsoft.PowerShell.DSC"
+        },
+        {
+          "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-4/extensions/MicrosoftMonitoringAgent"
         }
       ]
     },
