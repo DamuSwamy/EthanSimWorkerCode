@@ -1,0 +1,13 @@
+---
+name: get_iaas_vcloud_data2
+pack: sim_cloud_billing
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: ethan_vcloud_get_portal_data2.py
+parameters:
+  refresh_token:
+    type: string
+    description: Refresh token
+    required: true
+    secret: true

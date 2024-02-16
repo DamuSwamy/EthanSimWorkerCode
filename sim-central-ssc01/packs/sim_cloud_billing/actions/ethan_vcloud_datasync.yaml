@@ -14,3 +14,8 @@ parameters:
     type: string
     secret: true
     required: true
+  refresh_token:
+    type: string
+    required: true
+    secret: true
+    description: Refresh token

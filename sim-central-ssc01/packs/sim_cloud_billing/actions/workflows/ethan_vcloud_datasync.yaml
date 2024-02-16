@@ -34,9 +34,9 @@ tasks:
       connection: "{{ ctx().connection }}"
     next:
       - do:
-          - delete_from_iaas_vcloud
+          - get_iaas_vcloud_data2
         when: <% succeeded() %>
-  # [199, 338]
+  # [192, 394]
   delete_from_iaas_vcloud:
     action: sql.delete
     input:
@@ -47,7 +47,7 @@ tasks:
       - do:
           - insert_data_into_iaas_vcloud
         when: <% succeeded() %>
-  # [202, 449]
+  # [194, 505]
   insert_data_into_iaas_vcloud:
     action: sql.query
     input:
@@ -58,7 +58,7 @@ tasks:
       - do:
           - exec_usp_loaddatavcenter
         when: <% succeeded() %>
-  # [191, 554]
+  # [192, 612]
   exec_usp_loaddatavcenter:
     action: mssql.execute.query
     input:
@@ -69,16 +69,40 @@ tasks:
       - do:
           - exec_usp_loaddatavcloud
         when: <% succeeded() %>
-  # [190, 672]
+  # [191, 712]
   exec_usp_loaddatavcloud:
     action: mssql.execute.query
     input:
       log_level: DEBUG
       query_string: "exec usp_loaddatavcloud"
       database: "{{ ctx().connection }}"
+  # [521, 239]
+  get_iaas_vcloud_data2:
+    action: sim_cloud_billing.get_iaas_vcloud_data2
+    next:
+      - do:
+          - insert_into_iaas_vcloud_temp2
+        when: <% succeeded() %>
+        publish:
+          - data2: <% result().result.output %>
+    input:
+      log_level: DEBUG
+      refresh_token: "{{ ctx().refresh_token }}"
+  # [518, 349]
+  insert_into_iaas_vcloud_temp2:
+    action: sql.insert_bulk
+    input:
+      log_level: DEBUG
+      data: "{{ ctx().data2 }}"
+      table: Iaas_vCloud_Temp
+      connection: "{{ ctx().connection }}"
+    next:
+      - do:
+          - delete_from_iaas_vcloud
 
     
 input:
   - connection
   - username
   - password
+  - refresh_token
