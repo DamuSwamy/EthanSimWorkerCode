@@ -3478,11 +3478,9 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
-              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/disks/vm-cyrisk-1_OsDisk_1_9090c6b7f5e64b4aaaa19749f0ad9909"
             },
-            "deleteOption": "Delete",
-            "diskSizeGB": 127
+            "deleteOption": "Delete"
           },
           "dataDisks": []
         },
@@ -3695,6 +3693,9 @@
           "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-1/extensions/AADLoginForWindows"
         },
         {
+          "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-1/extensions/AzureMonitorWindowsAgent"
+        },
+        {
           "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-1/extensions/MDE.Windows"
         },
         {
@@ -3783,6 +3784,9 @@
       "resources": [
         {
           "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-2/extensions/AADLoginForWindows"
+        },
+        {
+          "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-2/extensions/AzureMonitorWindowsAgent"
         },
         {
           "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-2/extensions/MDE.Windows"
@@ -3875,6 +3879,9 @@
           "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-3/extensions/AADLoginForWindows"
         },
         {
+          "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-3/extensions/AzureMonitorWindowsAgent"
+        },
+        {
           "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-3/extensions/MDE.Windows"
         },
         {
@@ -3896,6 +3903,11 @@
         "EndDate": "None",
         "Environment": "MCARE",
         "ManagedBy": "Ethan"
+      },
+      "identity": {
+        "type": "SystemAssigned",
+        "principalId": "fc30ddc5-84b4-403e-9c46-308d07e2444e",
+        "tenantId": "84293c45-f3e0-45cd-b160-40ad2f761e50"
       },
       "properties": {
         "hardwareProfile": {
@@ -3959,6 +3971,9 @@
         "1"
       ],
       "resources": [
+        {
+          "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-4/extensions/AzureMonitorWindowsAgent"
+        },
         {
           "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-MC-4/extensions/joindomain"
         },
