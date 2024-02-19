@@ -31,7 +31,7 @@ tasks:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: set-aduser -Identity "<% ctx().first_name.substring(0,1)%><%ctx().last_name %>"  -description "User Onboarded as part of <% ctx().ticketNo %>"  -Verbose
+      cmd: set-aduser -Identity "<% ctx().first_name.substring(0,1)%><%ctx().last_name %>"  -description "MELAIR - <%ctx().title%>"  -Verbose
       host: <% ctx().ad_host[0] %>
       password: <% ctx().password[0] %>
       username: <% ctx().username[0] %>
