@@ -2355,6 +2355,85 @@
       ]
     },
     {
+      "name": "spa-iotedgeupdate-iot-tst-ae",
+      "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-IOT-TST-AE/providers/Microsoft.Compute/virtualMachines/spa-iotedgeupdate-iot-tst-ae",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "identity": {
+        "type": "SystemAssigned",
+        "principalId": "1d638e03-59b2-4665-b4ab-c9eee36da8b8",
+        "tenantId": "8df850b6-bf1a-410c-9437-09a6b5e2c99e"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2s_v5"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "8ce65db6-2377-4849-9dd7-e99378cdffc3",
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "canonical",
+            "offer": "0001-com-ubuntu-server-focal",
+            "sku": "20_04-lts-gen2",
+            "version": "latest",
+            "exactVersion": "20.04.202402050"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "name": "spa-iotedgeupdate-iot-tst-ae_OsDisk_1_863ad4f0df8c48b3bd7e0496bd82851e",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS",
+              "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-IOT-TST-AE/providers/Microsoft.Compute/disks/spa-iotedgeupdate-iot-tst-ae_OsDisk_1_863ad4f0df8c48b3bd7e0496bd82851e"
+            },
+            "deleteOption": "Delete",
+            "diskSizeGB": 30
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "spa-iotedgeupdate-iot-tst-ae",
+          "adminUsername": "adminshayne",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": false,
+            "provisionVMAgent": true,
+            "patchSettings": {
+              "patchMode": "AutomaticByPlatform",
+              "assessmentMode": "ImageDefault"
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "securityProfile": {
+          "uefiSettings": {
+            "secureBootEnabled": true,
+            "vTpmEnabled": true
+          },
+          "securityType": "TrustedLaunch"
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-IOT-TST-AE/providers/Microsoft.Network/networkInterfaces/spa-iotedgeupdate-iot-tst-ae877","properties":{"deleteOption":"Delete"}}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      },
+      "resources": [
+        {
+          "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-IOT-TST-AE/providers/Microsoft.Compute/virtualMachines/spa-iotedgeupdate-iot-tst-ae/extensions/AzurePolicyforLinux"
+        },
+        {
+          "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-IOT-TST-AE/providers/Microsoft.Compute/virtualMachines/spa-iotedgeupdate-iot-tst-ae/extensions/OmsAgentForLinux"
+        }
+      ]
+    },
+    {
       "name": "spa-vmiotedge-dev-ae",
       "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-SBX-DEV-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotedge-dev-ae",
       "type": "Microsoft.Compute/virtualMachines",
@@ -4665,11 +4744,9 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
-              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/IHG-RG-INFRA-AEA/providers/Microsoft.Compute/disks/ihgvmjump1_OsDisk_1_cefd0a14606d4b07ab5b086ed289762b"
             },
-            "deleteOption": "Detach",
-            "diskSizeGB": 127
+            "deleteOption": "Detach"
           },
           "dataDisks": []
         },
