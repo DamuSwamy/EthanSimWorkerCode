@@ -91,32 +91,41 @@ class FormatCCBToCIAC(Action):
                 if vms == obj["vmName"]:
                     SIFriendlyName=obj["vmName"]
                     ethvmid=obj["ethvmid"]
-                    if obj["Resource"]=="BackupLicensing" and obj["Volume"]=="1":
+                    if obj["Resource"]=="BackupLicensing" and obj["Volume"]=="1" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         backupBase=float(obj["Charge_Amt"])
-                    if obj["Resource"]=="Backup" and obj["Volume"]!="1":
+                    if obj["Resource"]=="Backup" and obj["Volume"]!="1" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         backupProt+=float(obj["Charge_Amt"])
-                    if obj["Resource"]=="Backup" and obj["Volume"]=="1":
+                    if obj["Resource"]=="Backup" and obj["Volume"]=="1" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         chargeAmtForBackupEnabled=float(obj["Charge_Amt"])
-                    if obj["Resource"]=="drLicensing":
-                        drLicensing=obj["Charge_Amt"]  
-                    if obj["Resource"]=="drDisk":   
-                        drDisk=obj["Charge_Amt"]   
-                    if obj["Resource"]=="drCPUs":
-                        drCPU=obj["Charge_Amt"]  
-                    if obj["Resource"]=="drRAM":
-                        drRam=obj["Charge_Amt"]
+                    if obj["Resource"]=="drLicensing" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
+                        drLicensing=float(obj["Charge_Amt"])  
+                    if obj["Resource"]=="drDisk" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":   
+                        drDisk=float(obj["Charge_Amt"])   
+                    if obj["Resource"]=="drCPUs" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
+                        drCPU=float(obj["Charge_Amt"])  
+                    if obj["Resource"]=="drRAM" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
+                        drRam=float(obj["Charge_Amt"])
                     if obj["Resource"]=="numCPUs":
-                        cpuHoursvolume=obj["Volume"]
-                        cpuHoursduration=obj["Duration"]
-                        cpuTotal+=float(obj["Charge_Amt"])
+                        if obj["Volume"]!="" and obj["Volume"]!="N/A":
+                            cpuHoursvolume=float(obj["Volume"])
+                        if obj["Duration"]!="" and obj["Duration"]!="N/A":    
+                            cpuHoursduration=float(obj["Duration"])
+                        if obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":    
+                            cpuTotal+=float(obj["Charge_Amt"])
                     if obj["Resource"]=="memoryMB":
-                        memHoursVolume=float(obj["Volume"])
-                        memHoursDuration=float(obj["Duration"])
-                        memTotal+=float(obj["Charge_Amt"])
+                        if obj["Volume"]!="" and obj["Volume"]!="N/A":
+                            memHoursVolume=float(obj["Volume"])
+                        if obj["Duration"]!="" and obj["Duration"]!="N/A":    
+                            memHoursDuration=float(obj["Duration"])
+                        if obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":    
+                            memTotal+=float(obj["Charge_Amt"])
                     if obj["Resource"]=="VirtualDisk":
-                        storHoursVolume+=float(obj["Volume"])
-                        storHoursDuration=max(float(storHoursDuration),float(obj["Duration"]))
-                        storTotal+=float(obj["Charge_Amt"])
+                        if obj["Volume"]!="" and obj["Volume"]!="N/A":
+                            storHoursVolume+=float(obj["Volume"])
+                        if obj["Duration"]!="" and obj["Duration"]!="N/A":
+                            storHoursDuration=max(float(storHoursDuration),float(obj["Duration"]))
+                        if obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
+                            storTotal+=float(obj["Charge_Amt"])
 
                     
             backupTotal=round(float(backupBase)+float(backupProt),6)

@@ -1,0 +1,14 @@
+---
+name: FSaas
+pack: sim_fsaas
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: fsaas.py
+parameters:
+  fileName:
+    type: string
+    description: file name
+    required: false
+  
+      

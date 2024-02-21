@@ -73,6 +73,35 @@ tasks:
       - when: <% succeeded() %>
         do:
           - End
+      - when: <% succeeded() and ctx().workflow_name = 'do-not-enable' %>
+        do:
+          - Update_Live_Data
+      - when: <% failed() %>
+        do: fail
+
+  Update_Live_Data:
+    delay: 30
+    action: mssql.execute.query
+    input:
+      database: <% ctx().cloud_db_connection %>
+      query_string: "exec usp_updatelivedata"
+    next:
+      - when: <% succeeded() %>
+        do:
+          - Add_Vcenter_Data
+      - when: <% failed() %>
+        do: fail
+
+  Add_Vcenter_Data:
+    delay: 30
+    action: mssql.execute.query
+    input:
+      database: <% ctx().cloud_db_connection %>
+      query_string: "exec usp_loaddataaddvcenter"
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
       - when: <% failed() %>
         do: fail
 
