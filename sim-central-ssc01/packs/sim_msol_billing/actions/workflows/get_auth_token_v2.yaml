@@ -41,6 +41,7 @@ tasks:
         do:
           - Set_Refresh_Token
 
+  # [233, 472]
   Set_Refresh_Token:
     action: sim_msol_billing.get_config_key
     input:

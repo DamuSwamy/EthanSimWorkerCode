@@ -5,15 +5,15 @@ parameters:
   Device42_username:
     type: string
     required: false
-    secret: true
+    secret: false
     default: 97565142771042ccb0b928ae3e658e26
   Device42_password:
     type: string
-    secret: true
+    secret: false
     default: 4591cf9619384bb1bab1d5a40a4b6aee_4f2f174fe5db47bcbe4b0a21380fe455
   Azure_client_id:
     type: string
-    secret: true
+    secret: false
     default: 724835d5-ee48-42d4-bd17-9b75ee411461
   Azure_client_secret:
     type: string

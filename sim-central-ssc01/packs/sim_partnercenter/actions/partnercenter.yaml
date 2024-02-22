@@ -1,0 +1,25 @@
+---
+name: get_customer_daily_usage
+pack: sim_partnercenter
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: partnercenter.py
+parameters:
+  tenant_id:
+    type: string
+    description: Partner Center Tenant Id
+    required: true
+  client_id:
+    type: string
+    description: Partnet Center Client Id
+    required: true
+    secret: true
+  client_secret:
+    type: string
+    description: Partnet Center Client Secret
+    required: true
+    secret: true
+  
+  
+      

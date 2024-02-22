@@ -6,7 +6,7 @@ enabled: true
 entry_point: 'generate_dev42_token.py'
 output_schema:
  type: string
- secret: True
+ #secret: True
 parameters:
   username:
     type: 'string'
