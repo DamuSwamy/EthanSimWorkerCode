@@ -5,7 +5,7 @@ class GetNetDbDetails(Action):
     def run(self):
         try:
             url = "https://netdb.essist.com.au/api/v1/asset/assurancedashboard/?customer=36"
-            auth_token = "0ab414e6487e35477157f38640f58e8ae6a0df89"
+            auth_token = "d53d2028a7c8f872c31243af766f8fe6fe615594"
 
             method = 'get'
 

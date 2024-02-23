@@ -25,10 +25,12 @@ class GenerateDev42Token(Action):
         response_json=json.loads(response.text)
         #print(response_json)
         access_token = response_json.get('token')
+        #print(access_token)
         #print(type(access_token))
         #print("hello")
         access_token=access_token.rstrip()
         #print(access_token)
         #print(base64.b64encode((access_token+"mis@123").encode()).decode())
-        print("Token Generated")
+       # print("Token Generated")
+        #print(access_token)
         return access_token

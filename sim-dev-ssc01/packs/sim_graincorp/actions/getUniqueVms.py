@@ -25,29 +25,29 @@ class UniqueVMs(Action):
                         break
 
                     billing_object = {
-                "Account Code": row[0],
-                "ethvmid": row[1],
-                "vmName": row[2],
-                "Product_Code": row[3],
-                "Billing_Type": row[4],
-                "Resource": row[5],
-                "Storage_Tier": row[6],
-                "Device_Id": row[7],
-                "deviceKey": row[8],
-                "Volume": row[9],
-                "Duration": row[10],
-                "Rate_Flag": row[11],
-                "Rate": row[12],
-                "Charge_Amt": row[13],
-                "Service_Id": row[14],
-                "Charged_Amt": row[15],
-                "ServiceProfile": row[16],
-                "waive_charge": row[17],
-                "waive_days": row[18],
-                "waive_ticket_num": row[19],
-                "waive_requestBy": row[20],
-                "IDCol": row[21],
-            }
+                        "Account Code": row[1], #Account_Nbr
+                "ethvmid": row[2], #EthVmId
+                "vmName": row[3], #VmName
+                "Product_Code": row[11], #Prod_Code
+                "Billing_Type": "",
+                "Resource": row[4], #usg
+                "Storage_Tier": row[5], #tier
+                "Device_Id": "",
+                "deviceKey": "",
+                "Volume": row[6],  #vol
+                "Duration": row[9],  #usg_hours
+                "Rate_Flag": "",
+                "Rate": "",
+                "Charge_Amt": row[13], #Charge_Amt
+                "Service_Id": row[12],  #Service_Id"
+                "Charged_Amt": row[13],  
+                "ServiceProfile": "",
+                "waive_charge": "",
+                "waive_days": "",
+                "waive_ticket_num": "",
+                "waive_requestBy": "",
+                "IDCol": row[15], #Row_id
+                    }
             
                     billing_details.append(billing_object)
                     

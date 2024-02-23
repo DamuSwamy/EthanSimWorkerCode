@@ -84,6 +84,8 @@ class JoinCCBToCIAC(Action):
                         modified_obj['BackupEnabled']=obj['BackupEnabled']
                         modified_obj['ProcessMethod']=obj['ProcessMethod']
                         modified_obj["ethInternalOrderNumber"]=vm_detail["ethInternalOrderNumber"]
+                        modified_obj["LicVolume"] = obj['LicVolume']
+                        modified_obj["LicCost"] = obj['LicCost']
 
 
                     if vm_detail["STATUS"].upper()=="ACTIVE" and vm_detail["FSMStatus"].upper()=="REGISTERED":

@@ -26,28 +26,28 @@ class FormatCCBToCIAC(Action):
               break
 
             billing_object = {
-                "Account Code": row[0],
-                "ethvmid": row[1],
-                "vmName": row[2],
-                "Product_Code": row[3],
-                "Billing_Type": row[4],
-                "Resource": row[5],
-                "Storage_Tier": row[6],
-                "Device_Id": row[7],
-                "deviceKey": row[8],
-                "Volume": row[9],
-                "Duration": row[10],
-                "Rate_Flag": row[11],
-                "Rate": row[12],
-                "Charge_Amt": row[13],
-                "Service_Id": row[14],
-                "Charged_Amt": row[15],
-                "ServiceProfile": row[16],
-                "waive_charge": row[17],
-                "waive_days": row[18],
-                "waive_ticket_num": row[19],
-                "waive_requestBy": row[20],
-                "IDCol": row[21],
+                "Account Code": row[1], #Account_Nbr
+                "ethvmid": row[2], #EthVmId
+                "vmName": row[3], #VmName
+                "Product_Code": row[11], #Prod_Code
+                "Billing_Type": "",
+                "Resource": row[4], #usg
+                "Storage_Tier": row[5], #tier
+                "Device_Id": "",
+                "deviceKey": "",
+                "Volume": row[6],  #vol
+                "Duration": row[9],  #usg_hours
+                "Rate_Flag": "",
+                "Rate": "",
+                "Charge_Amt": row[14], #Charge_Amt
+                "Service_Id": row[12],  #Service_Id"
+                "Charged_Amt": row[14],  
+                "ServiceProfile": "",
+                "waive_charge": "",
+                "waive_days": "",
+                "waive_ticket_num": "",
+                "waive_requestBy": "",
+                "IDCol": row[15], #Row_id
             }
             
             billing_data.append(billing_object)
@@ -86,40 +86,46 @@ class FormatCCBToCIAC(Action):
             chargeAmtForBackupEnabled=0
             SIFriendlyName=""
             ethvmid=""
+            LicVolume = 0
+            LicCost = 0
             
             for obj in billing_data:
                 if vms == obj["vmName"]:
+                    #monthly_charge_amt = float(float(obj["Charge_Amt"]) * int(obj["Duration"]))
                     SIFriendlyName=obj["vmName"]
                     ethvmid=obj["ethvmid"]
-                    if obj["Resource"]=="BackupLicensing" and obj["Volume"]=="1" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
+                    if obj["Resource"]=="BackupLic" and obj["Volume"]=="1" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         backupBase=float(obj["Charge_Amt"])
+                    if obj["Resource"] == "LIC" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
+                        LicVolume = float(obj["Volume"])
+                        LicCost = float(obj['Charge_Amt'])
                     if obj["Resource"]=="Backup" and obj["Volume"]!="1" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         backupProt+=float(obj["Charge_Amt"])
-                    if obj["Resource"]=="Backup" and obj["Volume"]=="1" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
+                    if obj["Resource"]=="Backup" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         chargeAmtForBackupEnabled=float(obj["Charge_Amt"])
-                    if obj["Resource"]=="drLicensing" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
+                    if obj["Resource"]=="DrLic" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         drLicensing=float(obj["Charge_Amt"])  
-                    if obj["Resource"]=="drDisk" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":   
+                    if obj["Resource"]=="DrDisk" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":   
                         drDisk=float(obj["Charge_Amt"])   
                     if obj["Resource"]=="drCPUs" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         drCPU=float(obj["Charge_Amt"])  
-                    if obj["Resource"]=="drRAM" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
+                    if obj["Resource"]=="DrRAM" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         drRam=float(obj["Charge_Amt"])
-                    if obj["Resource"]=="numCPUs":
+                    if obj["Resource"]=="CPU":
                         if obj["Volume"]!="" and obj["Volume"]!="N/A":
                             cpuHoursvolume=float(obj["Volume"])
                         if obj["Duration"]!="" and obj["Duration"]!="N/A":    
                             cpuHoursduration=float(obj["Duration"])
                         if obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":    
                             cpuTotal+=float(obj["Charge_Amt"])
-                    if obj["Resource"]=="memoryMB":
+                    if obj["Resource"]=="RAM":
                         if obj["Volume"]!="" and obj["Volume"]!="N/A":
                             memHoursVolume=float(obj["Volume"])
                         if obj["Duration"]!="" and obj["Duration"]!="N/A":    
                             memHoursDuration=float(obj["Duration"])
                         if obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":    
                             memTotal+=float(obj["Charge_Amt"])
-                    if obj["Resource"]=="VirtualDisk":
+                    if obj["Resource"]=="DISK":
                         if obj["Volume"]!="" and obj["Volume"]!="N/A":
                             storHoursVolume+=float(obj["Volume"])
                         if obj["Duration"]!="" and obj["Duration"]!="N/A":
@@ -130,7 +136,7 @@ class FormatCCBToCIAC(Action):
                     
             backupTotal=round(float(backupBase)+float(backupProt),6)
             drTotal=round(float(drCPU)+float(drRam)+float(drDisk)+float(drLicensing),6)
-            subTotal=round(float(cpuTotal)+float(memTotal)+float(storTotal),6)
+            subTotal=round(float(cpuTotal)+float(memTotal)+float(storTotal)+float(LicCost),6)
             vmTotal = round(float(subTotal)+float(backupTotal)+float(drTotal),6)
             CurrentRate = round(float(vmTotal),6)
             vCPUHours=round(float(cpuHoursvolume)*float(cpuHoursduration),6)
@@ -180,6 +186,8 @@ class FormatCCBToCIAC(Action):
             vm_object["ethDR"]=ethDR
             vm_object["BackupEnabled"]=BackupEnabled
             vm_object["ProcessMethod"]="AUTOCCB"
+            vm_object["LicCost"] = LicCost
+            vm_object["LicVolume"] = LicVolume
 
             unique_vm_configs.append(vm_object)
 

@@ -33,7 +33,31 @@ class CreateRunRateSI(Action):
 
         for obj in join_ccb_to_ciac_output:
             modified_obj={
-                "Moref":""
+                "VMName":"",
+                "BusinessUnit":"",
+                "SubUnit":"",
+                "CostCentre":"",
+                "Project":"",
+                "Licence":"",
+                "vCPU":"",
+                "VRAM":"",
+                "vDisk":"",
+                "VCPUHours":"",
+                "GBMemHours":"",
+                "GBStorHours":"",
+                "DR":"",
+                "StorageTier":"",
+                "ChargeLicence":"",
+                "ChargevCPU":"",
+                "ChargevRAM":"",
+                "ChargevDisk":"",
+                "Moref":"",
+                "ResourceSubtotal":"",
+                "Backup":"",
+                "BackupCost":"",
+                "Total":"",
+                "BillingPeriod":""
+
             }
             modified_obj["VMName"]=obj["SIFriendlyName"]
             modified_obj["BusinessUnit"]=short_names[obj["Org"]]
@@ -121,7 +145,14 @@ class CreateRunRateSI(Action):
                 modified_obj["BillingPeriod"]=obj["BillingPeriod"]
             else:
                 modified_obj["BillingPeriod"]=""   
-
+            if "LicVolume" in obj:
+                modified_obj["Licence"]=obj["LicVolume"]
+            else:
+                modified_obj["Licence"]=""
+            if "LicCost" in obj:
+                modified_obj["ChargeLicence"]=obj["LicCost"]
+            else:
+                modified_obj["ChargeLicence"]=""
             run_rate_si_obj.append(modified_obj)
         
         csv_file_path = "/opt/stackstorm/packs/sim_graincorp/output/runrateoutput.csv"

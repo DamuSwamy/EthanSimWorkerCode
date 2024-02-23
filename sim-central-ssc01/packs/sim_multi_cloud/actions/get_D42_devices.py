@@ -17,8 +17,10 @@ SELECT device_pk,cid.instance_id as cid_instance_id , cf.identifier , virtualsub
                 payload = {
                 'query': sql_query
                 }
-                #bearer_token=bearer_token.decode('utf-8') 
+                #bearer_token=bearer_token.decode('utf-8')
                 bearer_token = bearer_token.replace('\n', '').replace('\r', '')
+                #bearer_token = base64.b64decode(bearer_token.encode()).decode()[:-len("mis@123")]
+
                 headers = {
                 'Authorization': f'Bearer {bearer_token}',
                 'Accept': 'application/json'  # Adjust content type based on your API requirements
@@ -27,4 +29,22 @@ SELECT device_pk,cid.instance_id as cid_instance_id , cf.identifier , virtualsub
                 with open("/opt/stackstorm/packs/sim_multi_cloud/actions/dev42","wb") as filee:
                     filee.write(data.content)
                 #print(data)
-                print("Device details are successfully stored in dev42 file")
+                print("Device details are successfully stored in dev42 file\n")
+
+                file_path = "/opt/stackstorm/packs/sim_multi_cloud/actions/dev42"  # Replace with the actual path to your file
+
+                devices_with_third_field = 0
+                devices_without_third_field = 0
+
+                with open(file_path, 'r') as file:
+                    for line in file:
+                        fields = line.strip().split(',')
+
+        # Check if the third field is present and not empty
+                        if len(fields) >= 3 and fields[2]:
+                            devices_with_third_field += 1
+                        else:
+                            devices_without_third_field += 1
+
+                print(f"Total devices with identifier in their custom field: {devices_with_third_field}\n")
+                print(f"Total devices without identifier in their custom field: {devices_without_third_field}\n")

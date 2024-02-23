@@ -95,8 +95,11 @@ class PartnerCenter(Action):
 
                 # start_time = "2024-02-20T00:00:00-08:00" 
                 # end_time = "2024-02-21T00:00:00-08:00" 
-                start_time = f"{yesterday_str}T00:00:00-08:00"
-                end_time = f"{today_str}T00:00:00-08:00"
+                #start_time = f"{yesterday_str}T00:00:00-08:00"
+                #end_time = f"{today_str}T00:00:00-08:00"
+                
+                start_time  = "2024-02-21T00:00:00-08:00"
+                end_time  = "2024-02-22T00:00:00-08:00"
 
                 granularity = "daily"
                 show_details = True

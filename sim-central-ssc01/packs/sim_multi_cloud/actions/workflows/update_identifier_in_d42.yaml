@@ -8,7 +8,7 @@ tasks:
           - get_d42_devices
         when: < % succeeded %>
         publish:
-          - token1: <% result().stdout %>
+          - token1: <% result().result %>
     input:
       log_level: DEBUG
       username: "{{ ctx().Device42_username }}"
