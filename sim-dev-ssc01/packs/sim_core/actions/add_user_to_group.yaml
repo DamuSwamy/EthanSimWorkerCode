@@ -1,0 +1,28 @@
+---
+name: add_user_to_group
+runner_type: python-script
+description: Add a user to a specified Azure AD group
+enabled: true
+entry_point: add_user_to_group.py
+parameters:
+  user_upn:
+    description: "User's UPN (User Principal Name)"
+    type: string
+    required: true
+  group_display_name:
+    description: "Display name of the Azure AD group"
+    type: string
+    required: true
+  client_id:
+    description: "Azure AD client ID"
+    type: string
+    required: true
+  tenant_id:
+    description: "Azure AD tenant ID"
+    type: string
+    required: true
+  client_secret:
+    description: "Azure AD client secret"
+    type: string
+    required: true
+
