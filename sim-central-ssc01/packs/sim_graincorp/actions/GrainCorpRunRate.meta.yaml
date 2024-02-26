@@ -1,0 +1,24 @@
+pack: sim_graincorp
+enabled: true
+runner_type: orquesta
+name: GrainCorpRunRate
+entry_point: workflows/GrainCorpRunRate.yaml
+parameters:
+  service_catalog_username:
+    type: string
+    required: true
+    default: "{{config_context.catalog.username}}"
+  service_catalog_password:
+    type: string
+    required: true
+    secret: true
+    default: "{{config_context.catalog.password}}"
+  billing_username:
+    type: string
+    required: true
+    default: "{{config_context.billing.username}}"
+  billing_password:
+    type: string
+    required: true
+    secret: true
+    default: "{{config_context.billing.password}}"

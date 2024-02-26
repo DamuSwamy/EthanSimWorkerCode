@@ -1,0 +1,7 @@
+---
+name: get_unique_vms
+pack: sim_graincorp
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: getUniqueVms.py

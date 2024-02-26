@@ -1,0 +1,28 @@
+---
+billing:
+  type: "object"
+  properties:
+    username:
+      description: "Authenticated user."
+      type: "string"
+      required: true
+    password:
+      description: "The password of the specified user."
+      type: "string"
+      secret: true
+      required: true
+  additionalProperties: false
+
+catalog:
+  type: "object"
+  properties:
+    username:
+      description: "Authenticated user."
+      type: "string"
+      required: true
+    password:
+      description: "The password of the specified user."
+      type: "string"
+      secret: true
+      required: true
+  additionalProperties: false

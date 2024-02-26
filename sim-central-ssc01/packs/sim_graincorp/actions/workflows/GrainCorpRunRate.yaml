@@ -1,0 +1,86 @@
+version: 1.0
+tasks:
+  # [77, 40]
+  get_vm_details:
+    action: core.local_sudo
+    input:
+      cmd: "isql service_catalog {{ ctx().service_catalog_username }} {{ ctx().service_catalog_password }} -dx -x0x2C << EOF > /opt/stackstorm/packs/sim_graincorp/inputs/vm_details.csv\nSELECT COALESCE(vs.ethZenossID,'None') AS ethZenossID, COALESCE(vs.Billable, 'None') AS Billable, COALESCE(vs.ethBackupAgent,'None') AS ethBackupAgent, COALESCE(vs.ethStorageTier,'None') AS ethStorageTier, COALESCE(vs.ConsoleURL,'None') AS ConsoleURL, COALESCE(vs.Moref,'None') AS Moref, COALESCE(vs.NAME,'None') AS NAME, COALESCE(vs.FriendlyName,'None') AS FriendlyName, COALESCE(vs.GuestOperatingSystemFamily,'None') AS GuestOperatingSystemFamily, COALESCE(vs.VMType,'None') AS VMType, COALESCE(vs.VDCSIName,'None') AS VDCSIName, COALESCE(vs.PowerState,'None') AS PowerState, COALESCE(vs.CustomerNetworkName,'None') AS CustomerNetworkName, COALESCE(vs.CustomerNetworkSIName,'None') AS CustomerNetworkSIName, COALESCE(vs.PlatformElementID,'None') AS PlatformElementID, COALESCE(vs.VMFullPath,'None') AS VMFullPath, COALESCE(vs.PrimaryIPAddress,'None') AS PrimaryIPAddress, COALESCE(sis.ServiceItemTypeName,'None') AS ServiceItemTypeName,COALESCE(CAST(TRY_CAST(datediff(ss, 'Jan 01 1970', lt.LeaseExpirationDate) AS BIGINT)*1000 AS VARCHAR(MAX)) ,'None') as RunTimeLeaseExpirationDate, COALESCE(ac.NAME,'None') AS Tenant, COALESCE(dir.NAME,'None') AS organizationalUnitName, COALESCE(p.FirstName + ' ' + p.LastName,'None') AS customerName, COALESCE(CAST(TRY_CAST(datediff(ss, 'Jan 01 1970', sis.SubmittedDate) AS BIGINT)*1000 AS VARCHAR(MAX)),'None') as SubmittedDate, COALESCE(CAST(TRY_CAST(datediff(ss, 'Jan 01 1970', sis.AssignedDate) AS BIGINT)*1000 AS VARCHAR(MAX)),'None') as AssignedDate,COALESCE(pod.Type,'None') AS podType, COALESCE(sis.ServiceItemTypeID,'None') AS ServiceItemTypeID, COALESCE(sis.ServiceItemID,'None') AS ServiceItemID, COALESCE(vs.ComputerName,'None') AS ComputerName, COALESCE(vs.GuestOperatingSystem,'None') AS GuestOperatingSystem, COALESCE(vs.VMTemplateName,'None') AS VMTemplateName, COALESCE(vs.ServerSize,'None') AS ServerSize, COALESCE(vs.vCPUs,0) AS vCPUs,COALESCE(vs.vRAMGB,0) AS vRAMGB,COALESCE(CAST(CASE WHEN vs.TotalStorageGB IS NOT NULL AND vs.TotalStorageGB > 0 THEN vs.TotalStorageGB ELSE vs.IncludedStorage END AS VARCHAR), 'None') AS TotalDiskSizeGB,'None' AS NumberCores,'None' AS NumberCPUs, 'None' AS TotalMemory, 'None' AS OSDiskSizeGB, vs.STATUS, vs.FSMStatus, COALESCE(CAST(TRY_CAST(datediff(ss, 'Jan 01 1970', lt.StorageExpirationDate) AS BIGINT)*1000 AS VARCHAR(MAX)),'None') as StorageExpirationDate, COALESCE(vs.ManagementIPAddress,'None') AS ManagementIPAddress,COALESCE(vs.ManagementNetworkName,'None') AS ManagementNetworkName, COALESCE(vs.TotalDisk,0) AS NumHDs,COALESCE(vs.VMName,'None') AS VMName, COALESCE(vs.ethEnvironmentType, 'None') AS ethEnvironmentType, COALESCE(vs.ethCostCentre, 'None') AS ethCostCentre, COALESCE(vs.ethInternalOrderNumber,'None') AS ethInternalOrderNumber ,COALESCE(sps.PlanOrScriptType,'None') AS PlanOrScriptType, CASE WHEN alc.AlarmCount IS NOT NULL THEN alc.AlarmCount ELSE 0 END as AlarmCount, vs.TotalStorageGB FROM SiVirtualServer vs INNER JOIN SiServiceItemSubscription sis ON vs.PrimaryID = sis.ServiceItemID AND sis.ServiceItemTypeID = (SELECT DataTypeID FROM MdrDataType WHERE LogicName = 'SiVirtualServer') LEFT JOIN Acaccount ac ON sis.AccountID = ac.PrimaryID LEFT JOIN DirOrganizationalUnit dir ON dir.OrganizationalUnitID = sis.OrganizationalUnitID LEFT JOIN SiSiTenantVirtualDataCenter vdc ON lower(vdc.FSMStatus) = 'active' AND vs.VDCSIName = vdc.VDCName LEFT JOIN SiPOD pod ON vdc.PODSIName = pod.NAME LEFT JOIN DirPerson p ON p.PersonID = sis.CustomerID LEFT JOIN SiPlanOrScriptOnVM sps ON sps.VMSIName=vs.NAME LEFT JOIN (SELECT Server, StorageExpirationDate, LeaseExpirationDate, ROW_NUMBER() OVER(PARTITION BY Server ORDER BY LeaseExpirationDate DESC) as r FROM SiManagedLeaseInstance) lt ON lt.Server = vs.Name and lt.r=1 LEFT JOIN (SELECT count(*) as AlarmCount, ad.InstanceId as InstanceId FROM SiAlarmDefinition ad INNER JOIN SiAlarmOccurences ao on ao.AlarmDefinitionID = ad.AlarmName WHERE lower(ad.FSMStatus) = 'active' AND ao.Status = 'Active' GROUP BY ad.InstanceId) alc on vs.Name = alc.InstanceId WHERE (vs.FSMStatus = 'Registered' OR vs.FSMStatus = 'NotFound') AND (lower(vs.STATUS) = 'active' OR lower(vs.STATUS) = 'inactive')\nEOF"
+    next:
+      - do:
+          - get_billing_details
+        when: <% succeeded() %>
+  # [200, 164]
+  get_billing_details:
+    action: core.local_sudo
+    input:
+      cmd: "isql billing {{ ctx().billing_username }} {{ ctx().billing_password }} -dx -x0x2C << EOF > /opt/stackstorm/packs/sim_graincorp/inputs/billingDetails.csv\nSELECT * FROM EthVm_Usage_Rated WHERE Account_Nbr = '40000391'\nEOF"
+    next:
+      - do:
+          - get_unique_vms
+        when: <% succeeded() %>
+  # [504, 357]
+  format_ccb_to_ciac:
+    action: sim_graincorp.format_ccb_to_ciac
+    next:
+      - do:
+          - join_ccb_to_ciac
+        when: <% succeeded() %>
+  # [658, 477]
+  join_ccb_to_ciac:
+    action: sim_graincorp.join_ccb_to_ciac
+    next:
+      - do:
+          - get_unique_orgs
+        when: <% succeeded() %>
+  # [879, 596]
+  get_unique_orgs:
+    action: sim_graincorp.get_unique_orgs
+    next:
+      - do:
+          - extract_ethDR
+        when: <% succeeded() %>
+  # [1063, 746]
+  extract_ethDR:
+    action: sim_graincorp.extract_EthDr
+    next:
+      - do:
+          - create_SI_Runrate
+        when: <% succeeded() %>
+  # [328, 261]
+  fixvcd:
+    action: sim_graincorp.fixvcd
+    next:
+      - do:
+          - format_ccb_to_ciac
+        when: <% succeeded() %>
+  # [1296, 890]
+  create_SI_Runrate:
+    action: sim_graincorp.create_RunRate_SI
+    next:
+      - do:
+          - SendReport
+        when: <% succeeded() %>
+        publish:
+          - month: <% result().result.month %>
+          - year: <% result().result.year %>
+  # [74, 283]
+  get_unique_vms:
+    action: sim_graincorp.get_unique_vms
+    next:
+      - do:
+          - fixvcd
+        when: <% succeeded() %>
+  # [1234, 1016]
+  SendReport:
+    action: core.sendmail
+    input:
+      from: SiM.Automation@ethan.com.au
+      to: nandhakumar.arumugam@ethan.com.au
+      subject: GC - RunRates for {{ ctx().month }}{{ ctx().year }}
+      body: "Please find the attached run rate report for {{ ctx().month }} - {{ ctx().year }} month.\nPlease validate and upload to Graincorp SFTP server."
+      attachments: '/opt/stackstorm/packs/sim_graincorp/output/MY_RUN_RATES_EXPORT_{{ ctx().month }}{{ ctx().year }}-Final.csv'
+input:
+  - service_catalog_username
+  - service_catalog_password
+  - billing_username
+  - billing_password

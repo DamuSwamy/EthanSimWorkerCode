@@ -53,9 +53,16 @@ tasks:
       - do:
           - format_ccb_to_ciac
         when: <% succeeded() %>
-  # [1296, 890]
+  # [1057, 852]
   create_SI_Runrate:
     action: sim_graincorp.create_RunRate_SI
+    next:
+      - do:
+          - send_email
+        when: <% succeeded() %>
+        publish:
+          - month: <% result().result.month %>
+          - year: <% result().result.year %>
   # [74, 283]
   get_unique_vms:
     action: sim_graincorp.get_unique_vms
@@ -63,6 +70,15 @@ tasks:
       - do:
           - fixvcd
         when: <% succeeded() %>
+  # [294, 792]
+  send_email:
+    action: core.sendmail
+    input:
+      from: SiM.Automation@ethan.com.au
+      to: 'nandhakumar.arumugam@ethan.com.au'
+      subject: GC - RunRates for {{ ctx().month }}{{ ctx().year }}
+      attachments: "/opt/stackstorm/packs/sim_graincorp/output/runrateoutput.csv"
+      body: "Please find the attached run rate report for {{ ctx().month }} - {{ ctx().year }} month.\nPlease validate and upload to Graincorp SFTP server."
 input:
   - service_catalog_username
   - service_catalog_password

@@ -59,6 +59,7 @@ tasks:
           - ticket_initial_description: <% ctx().robot_data.itsm.details.first_update  %>
           - first_sim_update: Automation has started the execution of request for ITSM ticket number - <% ctx().ticket_id%>
           - due_date: "<% (now() + timespan(minutes => 1440)).format(\"%Y-%m-%d %H:%M:%S\") %>"
+          - close_date: "<% now().format(\"%Y-%m-%d %H:%M:%S\") %>"
         # #629e47
         do: 
           - update_itsm
@@ -94,14 +95,7 @@ tasks:
         # #629e47
         do: 
           - escalate_ticket
-      # #629e47
-      - do:
-          - close_subtask_ad
-        when: <% succeeded()  and  result().output.info.info.get('ad_created',"") = "Yes" %>
-      - when: <% succeeded()  and  result().output.info.info.get('mailbox_created',"") = "Yes" %>
-        # #629e47
-        do:
-          - close_subtask_ex
+      - when: <% succeeded()  and  result().output.info.info.get('ad_created',"") = "Yes" %>
   # [240, 488]
   decide_now_or_later:
     action: core.noop
@@ -114,15 +108,21 @@ tasks:
     action: core.noop
     next:
       - do:
-          - add_ad_subtask
+          - decide_now_or_later
         publish:
           - first_sim_update: Automation has started the execution of request for ITSM ticket number - <% ctx().ticket_id%>
         when: <% succeeded() %>
+      - do:
+          - add_ad_subtask
+        when: <% 1 = 2 %>
   # [261, 1170]
   complete:
     action: core.echo
     input:
       message: "<% ctx().messages %>"
+    next:
+      - do:
+          - task1
   # [261, 1065]
   done:
     action: core.noop
@@ -184,7 +184,7 @@ tasks:
     action: core.echo
     input:
       message: <% ctx().messages %>
-  # [574, 905]
+  # [406, 819]
   escalate_ticket:
     action: sim_itsm2.update
     input:
@@ -199,7 +199,7 @@ tasks:
       # #629e47
       - do:
           - done
-  # [381, 773]
+  # [60, 747]
   on_task_completion_itsm_ticket:
     action: sim_itsm2.update
     next:
@@ -210,11 +210,17 @@ tasks:
       log_level: DEBUG
       table: sn_customerservice_general_case
       payload:
-        comments: Sim Automation has completed the User onboarding tasks related to AD and Exchange , this ticket will be further actioned by engineer to complete the remaining onboarding tasks as per request
-        state: 10
-        assigned_to: <% ctx().itsm_tick_name %>
+        comments: "Sim Automation is resolving the service request after completion of tasks related to Workstation admin account "
+        resolution_code: Completed
+        close_notes: Sim Automation is resolving the service request after completion of operation as per request
+        state: 3
+        cause: User creation request completed by SiM Automation
+        assigned_to: svc_sim_automation
+        closed_by: 84cf417087ff3410bd1d32e80cbb3502
+        closed_at: <% ctx().close_date %>
+        notes_to_comments: true
       number: <% ctx().ticket_id %>
-  # [237, 88]
+  # [237, 90]
   update_itsm:
     action: sim_itsm2.update
     next:
@@ -232,7 +238,7 @@ tasks:
         assigned_to: svc_sim_automation
         service_offering: Managed 365
       table: sn_customerservice_general_case
-  # [239, 300]
+  # [558, 161]
   add_ad_subtask:
     action: sim_itsm2.insert
     next:
@@ -268,7 +274,7 @@ tasks:
         description: "Create Exchange Mailbox subtask for service request "
         assigned_to: svc_sim_automation
         due_date: <% ctx().due_date %>
-  # [602, 302]
+  # [554, 269]
   update_ticket_AD_task:
     action: sim_itsm2.update
     input:
@@ -310,37 +316,7 @@ tasks:
     next:
       - do:
           - print_ex_task_id
-  # [0, 782]
-  close_subtask_ad:
-    action: sim_itsm2.update
-    input:
-      log_level: DEBUG
-      number: <% ctx().ad_task_id %>
-      table: sn_customerservice_task
-      payload:
-        state: 3
-        parent: <% ctx().ticket_id %>
-        comments: "closing AD subtask for service request after successful completion "
-        assigned_to: svc_sim_automation
-    next:
-      - do:
-          - done
-  # [190, 832]
-  close_subtask_ex:
-    action: sim_itsm2.update
-    input:
-      log_level: DEBUG
-      number: <% ctx().ex_task_id %>
-      payload:
-        state: 3
-        parent: <% ctx().ticket_id %>
-        comments: "closing EX subtask for service request after successful completion "
-        assigned_to: svc_sim_automation
-      table: sn_customerservice_task
-    next:
-      - do:
-          - done
-  # [698, 693]
+  # [958, 680]
   print_ex_task_id:
     action: core.echo
     input:
@@ -348,3 +324,11 @@ tasks:
     next:
       - do:
           - decide_now_or_later
+  # [542, 1204]
+  task1:
+    action: cisco_webex.webex_post_message
+    input:
+      log_level: DEBUG
+      room_id: Y2lzY29zcGFyazovL3VzL1JPT00vMDQ1NjZjNjAtOGMwMi0xMWVlLWIwMGYtMjc5MGE1NGY0NzRl
+      bearer_token: N2U5NzA4NmYtYjM3OC00MGRjLWE2NDItYWQwMmRjMWUwNWY0N2IzMWIxM2YtNWMx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
+      text: Warrigal Onboarding request

@@ -31,6 +31,9 @@ class CreateRunRateSI(Action):
             
         run_rate_si_obj=[]
 
+        billing_month=""
+        billing_year = ""
+
         for obj in join_ccb_to_ciac_output:
             modified_obj={
                 "VMName":"",
@@ -40,9 +43,9 @@ class CreateRunRateSI(Action):
                 "Project":"",
                 "Licence":"",
                 "vCPU":"",
-                "VRAM":"",
+                "vRAM":"",
                 "vDisk":"",
-                "VCPUHours":"",
+                "vCPUHours":"",
                 "GBMemHours":"",
                 "GBStorHours":"",
                 "DR":"",
@@ -81,17 +84,17 @@ class CreateRunRateSI(Action):
             else:
                 modified_obj["vCPU"]=""
             if "vRAM" in obj and len(obj['vRAM'])>0:    
-                modified_obj["VRAM"]=float(obj["vRAM"])
+                modified_obj["vRAM"]=float(obj["vRAM"])
             else:
-                modified_obj["VRAM"]=""
+                modified_obj["vRAM"]=""
             if "TotalStorageGB" in  obj and len(obj['TotalStorageGB'])>0:    
                 modified_obj["vDisk"]=float(obj['TotalStorageGB'])
             else:
                 modified_obj["vDisk"]=""
             if "vCPUHours" in obj:
-                modified_obj["VCPUHours"]=obj["vCPUHours"]
+                modified_obj["vCPUHours"]=obj["vCPUHours"]
             else:
-                modified_obj["VCPUHours"]=""
+                modified_obj["vCPUHours"]=""
             if "MemHours" in obj:
                 modified_obj["GBMemHours"]=obj["MemHours"]
             else:
@@ -141,8 +144,10 @@ class CreateRunRateSI(Action):
                 modified_obj["Total"]=obj["CurrentRate"]
             else:
                 modified_obj["Total"]="" 
-            if "BillingPeriod" in obj:           
+            if "BillingPeriod" in obj:
                 modified_obj["BillingPeriod"]=obj["BillingPeriod"]
+                billing_month = obj["BillingPeriod"].split('-')[0] 
+                billing_year = obj["BillingPeriod"].split('-')[1] 
             else:
                 modified_obj["BillingPeriod"]=""   
             if "LicVolume" in obj:
@@ -155,7 +160,9 @@ class CreateRunRateSI(Action):
                 modified_obj["ChargeLicence"]=""
             run_rate_si_obj.append(modified_obj)
         
-        csv_file_path = "/opt/stackstorm/packs/sim_graincorp/output/runrateoutput.csv"
+
+
+        csv_file_path = f"/opt/stackstorm/packs/sim_graincorp/output/MY_RUN_RATES_EXPORT_{billing_month+billing_year} - Final.csv"
         
         try:
             with open(csv_file_path, 'w', newline='') as csvfile:
@@ -170,6 +177,8 @@ class CreateRunRateSI(Action):
         except Exception as e:
             print(e)
         return {
+            'month': billing_month,
+            'year':billing_year,
             'data':run_rate_si_obj
         }
     

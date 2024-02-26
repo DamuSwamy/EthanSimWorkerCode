@@ -3528,6 +3528,71 @@
 },{
   "value": [
     {
+      "name": "vm-ELIODEF-1",
+      "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Compute/virtualMachines/vm-ELIODEF-1",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "ethan.sn.id": "acb9ad8d87c7b810bd1d32e80cbb35ee"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2s_v3"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "bdbdb669-1fdf-4c2d-8572-d8425f890286",
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "microsoftwindowsdesktop",
+            "offer": "windows-11",
+            "sku": "win11-22h2-pro",
+            "version": "latest",
+            "exactVersion": "22621.3155.240210"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "vm-ELIODEF-1_OsDisk_1_50454fca9c2c4b349cd4e6f88178bbf0",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Compute/disks/vm-ELIODEF-1_OsDisk_1_50454fca9c2c4b349cd4e6f88178bbf0"
+            },
+            "deleteOption": "Delete"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "vm-ELIODEF-1",
+          "adminUsername": "elio",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": true,
+            "patchSettings": {
+              "patchMode": "AutomaticByOS",
+              "assessmentMode": "ImageDefault",
+              "enableHotpatching": false
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Network/networkInterfaces/vm-eliodef-1656_z1","properties":{"deleteOption":"Detach"}}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        },
+        "licenseType": "Windows_Client"
+      },
+      "zones": [
+        "1"
+      ]
+    },
+    {
       "name": "vm-cyrisk-1",
       "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/virtualMachines/vm-cyrisk-1",
       "type": "Microsoft.Compute/virtualMachines",
@@ -3557,9 +3622,11 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
+              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/disks/vm-cyrisk-1_OsDisk_1_9090c6b7f5e64b4aaaa19749f0ad9909"
             },
-            "deleteOption": "Delete"
+            "deleteOption": "Delete",
+            "diskSizeGB": 127
           },
           "dataDisks": []
         },
