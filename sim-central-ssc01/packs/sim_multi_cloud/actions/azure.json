@@ -2136,6 +2136,89 @@
           "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-COR-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-vmrca-prd-ae/extensions/MicrosoftMonitoringAgent"
         }
       ]
+    },
+    {
+      "name": "spa-beacon-prd-ae",
+      "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-SQL-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-beacon-prd-ae",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "identity": {
+        "type": "SystemAssigned",
+        "principalId": "a1dda210-7009-496b-87b2-16ee8bf3abfa",
+        "tenantId": "8df850b6-bf1a-410c-9437-09a6b5e2c99e"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D4lds_v5"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "3be58f24-76c3-433c-a9a1-119514f27edf",
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2022-datacenter-azure-edition-hotpatch",
+            "version": "latest",
+            "exactVersion": "20348.2227.240206"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "spa-beacon-prd-ae_OsDisk_1_2999c28fbf9f4b79a8d458351a48b051",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS",
+              "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-SQL-PRD-AE/providers/Microsoft.Compute/disks/spa-beacon-prd-ae_OsDisk_1_2999c28fbf9f4b79a8d458351a48b051"
+            },
+            "deleteOption": "Delete",
+            "diskSizeGB": 127
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "spa-beacon-prd-",
+          "adminUsername": "spaadmin",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": true,
+            "patchSettings": {
+              "patchMode": "AutomaticByPlatform",
+              "assessmentMode": "ImageDefault",
+              "enableHotpatching": true
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "securityProfile": {
+          "uefiSettings": {
+            "secureBootEnabled": true,
+            "vTpmEnabled": true
+          },
+          "securityType": "TrustedLaunch"
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-SQL-PRD-AE/providers/Microsoft.Network/networkInterfaces/spa-beacon-prd-ae609_z1","properties":{"deleteOption":"Detach"}}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      },
+      "zones": [
+        "1"
+      ],
+      "resources": [
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-SQL-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-beacon-prd-ae/extensions/AzurePolicyforWindows"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-SQL-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-beacon-prd-ae/extensions/MDE.Windows"
+        }
+      ]
     }
   ]
 },{

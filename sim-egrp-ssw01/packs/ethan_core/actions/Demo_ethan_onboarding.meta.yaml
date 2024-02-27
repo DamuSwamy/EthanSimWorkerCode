@@ -1,0 +1,5 @@
+pack: ethan_core
+enabled: true
+runner_type: orquesta
+name: Demo_ethan_onboarding
+entry_point: workflows/Demo_ethan_onboarding.yaml

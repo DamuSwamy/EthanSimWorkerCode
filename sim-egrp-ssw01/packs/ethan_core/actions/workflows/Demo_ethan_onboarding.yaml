@@ -1,0 +1,28 @@
+version: 1.0
+tasks:
+  # [381, 38]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - mimecast
+  # [379, 146]
+  mimecast:
+    action: core.noop
+    next:
+      - do:
+          - retrieve-license_and_check
+  # [381, 263]
+  retrieve-license_and_check:
+    action: core.noop
+    next:
+      - do:
+          - escalate
+      - do:
+          - azure_automation
+  # [579, 376]
+  escalate:
+    action: core.noop
+  # [217, 376]
+  azure_automation:
+    action: core.noop

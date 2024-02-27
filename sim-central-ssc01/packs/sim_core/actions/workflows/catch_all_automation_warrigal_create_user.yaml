@@ -122,7 +122,7 @@ tasks:
       message: "<% ctx().messages %>"
     next:
       - do:
-          - task1
+          - webex_report
   # [261, 1065]
   done:
     action: core.noop
@@ -325,7 +325,7 @@ tasks:
       - do:
           - decide_now_or_later
   # [542, 1204]
-  task1:
+  webex_report:
     action: cisco_webex.webex_post_message
     input:
       log_level: DEBUG
