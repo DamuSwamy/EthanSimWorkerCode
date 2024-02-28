@@ -1,14 +1,14 @@
 ---
-name: FSaas
+name: get_quotas
 pack: sim_fsaas
 runner_type: "python-script"
 description: Generate Response
 enabled: true
-entry_point: fsaas.py
+entry_point: fsaas_get_quotas.py
 parameters:
   cluster:
     type: string
-    description: file name
-    required: false
+    description: Cluster Name
+    required: true
   
       

@@ -1,0 +1,12 @@
+---
+name: fsaas_scanned_data
+pack: sim_cloud_billing
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: scan_data.py
+parameters:
+  quotas:
+    type: string
+    description: Cluster Name
+    required: true

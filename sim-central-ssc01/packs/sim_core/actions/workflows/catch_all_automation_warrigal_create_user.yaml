@@ -210,7 +210,7 @@ tasks:
       log_level: DEBUG
       table: sn_customerservice_general_case
       payload:
-        comments: "Sim Automation is resolving the service request after completion of tasks related to Workstation admin account "
+        comments: "Sim Automation is resolving the service request after completion of tasks related to user onboarding "
         resolution_code: Completed
         close_notes: Sim Automation is resolving the service request after completion of operation as per request
         state: 3

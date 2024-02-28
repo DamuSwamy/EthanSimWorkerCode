@@ -2217,6 +2217,9 @@
         },
         {
           "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-SQL-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-beacon-prd-ae/extensions/MDE.Windows"
+        },
+        {
+          "id": "/subscriptions/dc8ba4d0-16c1-4d68-a822-3b72243e1254/resourceGroups/SPA-RG-SQL-PRD-AE/providers/Microsoft.Compute/virtualMachines/spa-beacon-prd-ae/extensions/MicrosoftMonitoringAgent"
         }
       ]
     }

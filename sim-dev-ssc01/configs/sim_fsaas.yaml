@@ -1,0 +1,11 @@
+ssl_verify: false
+fsaas:
+  vb4-isi1:
+    cluster: vb4-isi1-mgmt.fs.ethoria.services
+    authorization: dmI0LWlzaTEtYXBpLVJPOnR1bmVyLVpiRkMyaXdlaXo2UWUhaEFrZGpMi
+    port: 8080
+  vb3-isi1:
+    cluster: vb3-isi1-mgmt.fs.ethoria.services
+    authorization: dmIzLWlzaTEtYXBpLVJPOj8iITRzfDB2TjRSK1VybU0=
+    port: 8080
+ 

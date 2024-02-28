@@ -1,0 +1,20 @@
+version: 1.0
+tasks:
+  # [405, 3]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - Mimecast
+  # [406, 115]
+  Mimecast:
+    action: core.noop
+    next:
+      - do:
+          - task1
+  # [410, 225]
+  task1:
+    action: core.noop
+  # [207, 342]
+  task2:
+    action: core.noop

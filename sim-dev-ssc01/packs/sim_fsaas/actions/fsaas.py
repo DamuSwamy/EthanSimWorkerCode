@@ -11,11 +11,13 @@ class FSaas(Action):
 
     def run(self, fileName):
 
-        url = 'https://10.120.97.200:8080/platform/3/cluster/config'
+        url = 'https://vb4-isi1-mgmt.fs.ethoria.services:8080/platform/3/cluster/config'
+        #url = "https://vb4-isi1-mgmt.fs.ethoria.services:8080/platform/15/quota/quotas"
         username = 'vb4-isi1-api-RO'
         password = 'tuner-ZbFC2iweiz6Qe!hAkdjL'
         headers = {
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Authorization': 'Basic dmI0LWlzaTEtYXBpLVJPOnR1bmVyLVpiRkMyaXdlaXo2UWUhaEFrZGpM'
         }
 
         response = requests.get(url, auth=(username, password), headers=headers, verify = False)

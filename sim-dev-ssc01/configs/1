@@ -1,0 +1,5 @@
+ssl_verify: false
+fsaas:
+  vb4-isi1:
+    cluster: vb4-isi1-mgmt.fs.ethoria.services
+    authorization: dmI0LWlzaTEtYXBpLVJPOnR1bmVyLVpiRkMyaXdlaXo2UWUhaEFrZGpM
