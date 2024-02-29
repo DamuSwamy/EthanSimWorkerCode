@@ -28,5 +28,5 @@ parameters:
    
   servicenow_hostname:
     type: string
-    default: ethandev.service-now.com
+    default: ethanprod.service-now.com
     secret: true

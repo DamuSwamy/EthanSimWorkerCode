@@ -3614,8 +3614,8 @@
 },{
   "value": [
     {
-      "name": "vm-ELIODEF-1",
-      "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Compute/virtualMachines/vm-ELIODEF-1",
+      "name": "vm-ELIODEF02",
+      "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Compute/virtualMachines/vm-ELIODEF02",
       "type": "Microsoft.Compute/virtualMachines",
       "location": "australiaeast",
       "tags": {
@@ -3626,7 +3626,7 @@
           "vmSize": "Standard_D2s_v3"
         },
         "provisioningState": "Succeeded",
-        "vmId": "bdbdb669-1fdf-4c2d-8572-d8425f890286",
+        "vmId": "c8af82a0-65a4-4d2a-9fd0-b201c19338b9",
         "additionalCapabilities": {
           "hibernationEnabled": false
         },
@@ -3634,24 +3634,24 @@
           "imageReference": {
             "publisher": "microsoftwindowsdesktop",
             "offer": "windows-11",
-            "sku": "win11-22h2-pro",
+            "sku": "win11-23h2-pro",
             "version": "latest",
-            "exactVersion": "22621.3155.240210"
+            "exactVersion": "22631.3155.240210"
           },
           "osDisk": {
             "osType": "Windows",
-            "name": "vm-ELIODEF-1_OsDisk_1_50454fca9c2c4b349cd4e6f88178bbf0",
+            "name": "vm-ELIODEF02_OsDisk_1_ce35610ac0264a00b377a7b7a7c1a357",
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
-              "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Compute/disks/vm-ELIODEF-1_OsDisk_1_50454fca9c2c4b349cd4e6f88178bbf0"
+              "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Compute/disks/vm-ELIODEF02_OsDisk_1_ce35610ac0264a00b377a7b7a7c1a357"
             },
             "deleteOption": "Delete"
           },
           "dataDisks": []
         },
         "osProfile": {
-          "computerName": "vm-ELIODEF-1",
+          "computerName": "vm-ELIODEF02",
           "adminUsername": "elio",
           "windowsConfiguration": {
             "provisionVMAgent": true,
@@ -3666,7 +3666,7 @@
           "allowExtensionOperations": true,
           "requireGuestProvisionSignal": true
         },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Network/networkInterfaces/vm-eliodef-1656_z1","properties":{"deleteOption":"Detach"}}]},
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Network/networkInterfaces/vm-eliodef02184_z1","properties":{"deleteOption":"Detach"}}]},
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": true
@@ -3676,6 +3676,11 @@
       },
       "zones": [
         "1"
+      ],
+      "resources": [
+        {
+          "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Compute/virtualMachines/vm-ELIODEF02/extensions/enablevmAccess"
+        }
       ]
     },
     {

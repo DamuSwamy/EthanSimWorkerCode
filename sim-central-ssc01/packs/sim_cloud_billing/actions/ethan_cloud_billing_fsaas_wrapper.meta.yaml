@@ -1,0 +1,28 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_cloud_billing_fsaas_wrapper
+entry_point: workflows/ethan_cloud_billing_fsaas_wrapper.yaml
+description: Synchronize the data between ethan database and fsaas data
+parameters:
+  billing_db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: cloud_billing
+  cmdb_db_connection:
+    type: string
+    description: Cloud Database connection to query, insert or update the records to
+    required: true
+    default: cmdb_Ethoria
+  workflow_name:
+    type: string
+    description: Dynamic workflow name to be called
+    required: true
+    enum:
+      - ethan_fsaas_scan_live
+  ignore_list:
+    type: array
+    description: List of fsaas to be ignored 
+    required: false
+    default: []

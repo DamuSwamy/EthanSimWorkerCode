@@ -1,0 +1,21 @@
+---
+name: ethan_fsaas_scan_data
+pack: sim_cloud_billing
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: ethan_fsaas_scan_data.py
+parameters:
+  quotas:
+    type: string
+    description: Quota Data
+    required: true
+  clusterName:
+    type: string
+    description: Cluster Name
+    required: true
+  guid:
+    type: string
+    description: guid
+    required: true
+  

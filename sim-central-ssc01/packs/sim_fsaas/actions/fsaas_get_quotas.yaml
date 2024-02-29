@@ -1,0 +1,14 @@
+---
+name: get_quotas
+pack: sim_fsaas
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: fsaas_get_quotas.py
+parameters:
+  cluster:
+    type: string
+    description: Cluster Name
+    required: true
+  
+      

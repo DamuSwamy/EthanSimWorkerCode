@@ -1,0 +1,52 @@
+version: 1.0
+tasks:
+  # [219, 73]
+  get_configs:
+    action: sim_fsaas.get_config
+    next:
+      - do:
+          - get_quotas
+        when: <% succeeded() %>
+        publish:
+          - guid: <% result().result.data.guid %>
+    input:
+      log_level: DEBUG
+      cluster: "{{ ctx().clusterName }}"
+  # [222, 176]
+  get_quotas:
+    action: sim_fsaas.get_quotas
+    next:
+      - do:
+          - generate_scanned_data
+        when: <% succeeded() %>
+        publish:
+          - quota: <% result().result.data %>
+          - quota_string: "{{ ctx().quota | tojson }} "
+    input:
+      log_level: DEBUG
+      cluster: "{{ ctx().clusterName }}"
+  # [214, 280]
+  generate_scanned_data:
+    action: sim_cloud_billing.ethan_fsaas_scan_data
+    input:
+      log_level: DEBUG
+      clusterName: "{{ ctx().clusterName }}"
+      guid: "{{ ctx().guid }}"
+      quotas: "{{ ctx().quota_string }}"
+    next:
+      - do:
+          - insert_into_FSaaS_Tracking
+        when: <% succeeded() %>
+        publish:
+          - data: <% result().result.data%>
+  # [209, 405]
+  insert_into_FSaaS_Tracking:
+    action: sql.insert_bulk
+    input:
+      log_level: DEBUG
+      data: "{{ ctx().data }}"
+      table: FSaaS_Tracking
+      connection: "{{ ctx().billing_db_connection }}"
+input:
+  - clusterName
+  - billing_db_connection

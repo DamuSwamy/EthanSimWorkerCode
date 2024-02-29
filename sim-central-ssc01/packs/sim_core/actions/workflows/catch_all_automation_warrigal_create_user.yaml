@@ -210,15 +210,9 @@ tasks:
       log_level: DEBUG
       table: sn_customerservice_general_case
       payload:
-        comments: "Sim Automation is resolving the service request after completion of tasks related to user onboarding "
-        resolution_code: Completed
-        close_notes: Sim Automation is resolving the service request after completion of operation as per request
-        state: 3
-        cause: User creation request completed by SiM Automation
-        assigned_to: svc_sim_automation
-        closed_by: 84cf417087ff3410bd1d32e80cbb3502
-        closed_at: <% ctx().close_date %>
-        notes_to_comments: true
+        comments: Sim Automation has completed onboarding of user. The manual step of sending the password to user will be done by our helpdesk team.
+        state: 10
+        assigned_to: <% ctx().itsm_tick_name %>
       number: <% ctx().ticket_id %>
   # [237, 90]
   update_itsm:

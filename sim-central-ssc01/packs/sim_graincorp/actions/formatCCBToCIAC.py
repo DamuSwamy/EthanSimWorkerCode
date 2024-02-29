@@ -106,6 +106,7 @@ class FormatCCBToCIAC(Action):
                         testcharge+=float(obj['Charge_Amt'])
                         LicVolume = float(obj["Volume"])
                         LicCost = float(obj['Charge_Amt'])
+                        cpuTotal += float(obj['Charge_Amt'])
                     if obj["Resource"]=="Backup" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         #print("Backup vol!=1",obj['Charge_Amt'], obj['Volume'])
                         testcharge+=float(obj['Charge_Amt'])
@@ -154,7 +155,7 @@ class FormatCCBToCIAC(Action):
 
             backupTotal=round(float(backupBase)+float(backupProt),6)
             drTotal=round(float(drCPU)+float(drRam)+float(drDisk)+float(drLicensing),6)
-            subTotal=round(float(cpuTotal)+float(memTotal)+float(storTotal)+float(LicCost),6)
+            subTotal=round(float(cpuTotal)+float(memTotal)+float(storTotal),6)
             vmTotal = round(float(subTotal)+float(backupTotal)+float(drTotal),6)
             CurrentRate = round(float(vmTotal),6)
             vCPUHours=round(float(cpuHoursvolume)*float(cpuHoursduration),6)

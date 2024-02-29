@@ -41,7 +41,7 @@ class CreateRunRateSI(Action):
                 "SubUnit":"",
                 "CostCentre":"",
                 "Project":"",
-                "Licence":"",
+                #"Licence":"",
                 "vCPU":"",
                 "vRAM":"",
                 "vDisk":"",
@@ -50,7 +50,7 @@ class CreateRunRateSI(Action):
                 "GBStorHours":"",
                 "DR":"",
                 "StorageTier":"",
-                "ChargeLicence":"",
+                #"ChargeLicence":"",
                 "ChargevCPU":"",
                 "ChargevRAM":"",
                 "ChargevDisk":"",
@@ -150,14 +150,14 @@ class CreateRunRateSI(Action):
                 billing_year = obj["BillingPeriod"].split('-')[1] 
             else:
                 modified_obj["BillingPeriod"]=""   
-            if "LicVolume" in obj:
-                modified_obj["Licence"]=obj["LicVolume"]
-            else:
-                modified_obj["Licence"]=""
-            if "LicCost" in obj:
-                modified_obj["ChargeLicence"]=obj["LicCost"]
-            else:
-                modified_obj["ChargeLicence"]=""
+            #if "LicVolume" in obj:
+            #    modified_obj["Licence"]=obj["LicVolume"]
+            #else:
+            #    modified_obj["Licence"]=""
+            #if "LicCost" in obj:
+            #    modified_obj["ChargeLicence"]=obj["LicCost"]
+            #else:
+            #    modified_obj["ChargeLicence"]=""
             run_rate_si_obj.append(modified_obj)
         
 

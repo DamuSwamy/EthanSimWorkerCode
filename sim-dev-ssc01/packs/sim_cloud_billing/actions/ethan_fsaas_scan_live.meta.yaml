@@ -1,0 +1,14 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: ethan_fsaas_scan_live
+entry_point: workflows/ethan_fsaas_scan_live.yaml
+parameters:
+  clusterName:
+    type: string
+    required: true
+  billing_db_connection:
+    type: string
+    description: Billing Database connection to query, insert or update the records to
+    required: true
+    default: cloud_billing

@@ -1,0 +1,49 @@
+version: 1.0
+
+input:
+  - billing_db_connection
+  - cmdb_db_connection
+  - workflow_name
+  - ignore_list
+
+tasks:
+  Start:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        do:
+          - SQL_Select_CMDB_FSaaS_Clusters
+
+  SQL_Select_CMDB_FSaaS_Clusters:
+    action: sql.query
+    input:
+      connection: <% ctx().cmdb_db_connection %>
+      query: "SELECT clusteridx, clusterGUID, clusterName, ipAddress, hostname, clusterVersion FROM fsasClusters WHERE clusterActive='true' ORDER BY clusteridx"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - cmdb_fsaas_db_data: <% switch(isList(result().result) => result().result, true => []) %>
+          - valid_clusters: <% ctx(cmdb_fsaas_db_data).where(not $.clusterName in ctx().ignore_list).select($) %>
+          - fsaas_clusters: "{{ ctx().valid_clusters | list }}"
+        do:
+          - Trigger_Dynamic_Workflow
+      - when: <% failed() %>
+        do: fail
+
+  Trigger_Dynamic_Workflow:
+    action: "sim_cloud_billing.<% ctx().workflow_name %>"
+    input:
+      billing_db_connection: <% ctx().billing_db_connection %>
+      clusterName: <% str(item(clusterName)) %>
+    with: 
+      items: <% ctx(fsaas_clusters) %>
+      concurrency: 3
+    next:
+      - when: <% succeeded() %>
+        do:
+          - End
+      - when: <% failed() %>
+        do: fail
+
+  End: 
+    action: core.noop

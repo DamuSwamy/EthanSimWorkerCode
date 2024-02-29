@@ -1,0 +1,9 @@
+pack: sim_cloud_billing
+enabled: true
+runner_type: orquesta
+name: scan_data_workflow
+entry_point: workflows/scan_data_workflow.yaml
+parameters:
+  clusterName:
+    type: string
+    required: true

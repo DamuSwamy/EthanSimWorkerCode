@@ -1,0 +1,30 @@
+ssl_verify:
+  description: "Verify SSL certificate used with backup Server."
+  type: boolean
+  default: True
+
+fsaas:
+  type: "object"
+  required: true
+  patternProperties:
+      "^\\w+":
+        "$ref": "#/properties/input"
+  additionalProperties: false
+
+input:
+  type: "object"
+  properties:
+    cluster:
+      description: "Cluster Name."
+      type: "string"
+      required: true
+    authorization:
+      description: "Basic authorization token."
+      type: "string"
+      required: true
+      secret: true
+    port:
+      description: "Port."
+      type: "integer"
+      required: true
+  additionalProperties: false
