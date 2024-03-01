@@ -1,0 +1,50 @@
+version: 1.0
+tasks:
+  # [340, 47]
+  new_password_generate:
+    action: core.local
+    input:
+      cmd: "tr -dc 'A-Za-z0-9!@#$%^&*' </dev/urandom | head -c 8 ; echo ''"
+    next:
+      - do:
+          - password_updated
+        when: <% succeeded() %>
+        publish:
+          - password: <% result().stdout %>
+  # [340, 160]
+  password_updated:
+    action: core.http
+    input:
+      url: "https://sim-etest.sim.esecure.systems/api/v1/executions"
+      body: "{\n    \"action\": \"core.winrm_ps_cmd\",\n    \"parameters\": {\n        \"cmd\": \"Set-ADAccountPassword -Identity (Get-ADUser -Filter {UserPrincipalName -eq 'Sahil.Dutta@etest.systems'}).DistinguishedName -Reset -NewPassword (ConvertTo-SecureString -AsPlainText 'XKbNt7c7' -Force)\",\n        \"host\": \"10.234.16.10\",\n        \"password\": \"Saturday123!\",\n        \"username\": \"sim_test\",\n        \"verify_ssl_cert\": false\n    }\n}"
+      headers:
+        St2-Api-Key: OWJjNGVhNDg3MmQ0MDM1NTc5ZjEyMzBiZmJhZTcwYmU0MTkxOWEwNTEwODY3MGU4NjA0Y2NhZTc5YmJiM2Y3OQ
+      verify_ssl_cert: false
+    next:
+      - do:
+          - update_servicenow
+  # [340, 268]
+  update_servicenow:
+    action: core.local
+    input:
+      cmd: sleep 9
+    next:
+      - do:
+          - send_sms
+  # [340, 381]
+  send_sms:
+    action: core.http
+    input:
+      url: "https://api.twilio.com/2010-04-01/Accounts/AC344b4acf3e99799a0e72ea5ab018ab1d/Messages.json"
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+        Authorization: Basic QUMzNDRiNGFjZjNlOTk3OTlhMGU3MmVhNWFiMDE4YWIxZDoyNDg3NGY2OTA2NjczMGZmYmI5ZmI4N2ZmZmU0OTRmMQ==
+      body: Body=Your+ethan+one-time-password+is+%7B%7Bctx%28%29.password%7D%7D&From=%2B13156233623&To=%7B%7Bctx%28%29.phone_no%7D%7D
+      method: POST
+      verify_ssl_cert: false
+      username: null
+      password: null
+input:
+  - email_id
+  - sys_id
+  - phone_no
