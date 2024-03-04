@@ -3,3 +3,9 @@ enabled: true
 runner_type: orquesta
 name: demo_workflow_onboarding
 entry_point: workflows/demo_workflow_onboarding.yaml
+description: onboard a new user
+parameters:
+  data:
+    type: object
+    description: input json payload
+    

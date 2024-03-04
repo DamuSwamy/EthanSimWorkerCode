@@ -1,0 +1,10 @@
+---
+ref: sim_twilio
+name : sim_twilio
+description : st2 content pack containing twilio integrations
+version: 1.0.0
+python_versions:
+  - "3"
+author : StackStorm, Inc.
+email : info@stackstorm.com
+

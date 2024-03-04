@@ -2441,6 +2441,78 @@
       ]
     },
     {
+      "name": "spa-vmiotedge-tst-ae-005",
+      "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-IOT-DEV-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotedge-tst-ae-005",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "identity": {
+        "type": "SystemAssigned",
+        "principalId": "c355486a-b406-4914-b672-2950068e9d9e",
+        "tenantId": "8df850b6-bf1a-410c-9437-09a6b5e2c99e"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D4plds_v5"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "78ea1dc0-882f-46f0-8c18-fab00c7cf099",
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "canonical",
+            "offer": "0001-com-ubuntu-server-focal",
+            "sku": "20_04-lts-arm64",
+            "version": "latest",
+            "exactVersion": "20.04.202402290"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "name": "spa-vmiotedge-tst-ae-005_OsDisk_1_8d68accffbf243e7b7f3117f13de7e37",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS",
+              "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-IOT-DEV-AE/providers/Microsoft.Compute/disks/spa-vmiotedge-tst-ae-005_OsDisk_1_8d68accffbf243e7b7f3117f13de7e37"
+            },
+            "deleteOption": "Delete",
+            "diskSizeGB": 30
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "spa-vmiotedge-tst-ae-005",
+          "adminUsername": "adminshayne",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": false,
+            "provisionVMAgent": true,
+            "patchSettings": {
+              "patchMode": "ImageDefault",
+              "assessmentMode": "ImageDefault"
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-IOT-DEV-AE/providers/Microsoft.Network/networkInterfaces/spa-vmiotedge-tst-ae-005628","properties":{"deleteOption":"Delete"}}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      },
+      "resources": [
+        {
+          "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-IOT-DEV-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotedge-tst-ae-005/extensions/AzurePolicyforLinux"
+        },
+        {
+          "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-IOT-DEV-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotedge-tst-ae-005/extensions/OmsAgentForLinux"
+        }
+      ]
+    },
+    {
       "name": "spa-iotedgeupdate-iot-tst-ae",
       "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-IOT-TST-AE/providers/Microsoft.Compute/virtualMachines/spa-iotedgeupdate-iot-tst-ae",
       "type": "Microsoft.Compute/virtualMachines",
@@ -3644,9 +3716,11 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
+              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Compute/disks/vm-ELIODEF02_OsDisk_1_ce35610ac0264a00b377a7b7a7c1a357"
             },
-            "deleteOption": "Delete"
+            "deleteOption": "Delete",
+            "diskSizeGB": 127
           },
           "dataDisks": []
         },
@@ -3713,9 +3787,11 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
+              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/disks/vm-cyrisk-1_OsDisk_1_9090c6b7f5e64b4aaaa19749f0ad9909"
             },
-            "deleteOption": "Delete"
+            "deleteOption": "Delete",
+            "diskSizeGB": 127
           },
           "dataDisks": []
         },
