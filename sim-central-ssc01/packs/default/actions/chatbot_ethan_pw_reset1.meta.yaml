@@ -1,0 +1,16 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: chatbot_ethan_pw_reset1
+entry_point: workflows/chatbot_ethan_pw_reset1.yaml
+parameters:
+  email_id:
+    type: string
+    description: email of the user
+    required: true
+  sys_id:
+    type: string
+    required: true
+  phone_no:
+    type: string
+    required: true

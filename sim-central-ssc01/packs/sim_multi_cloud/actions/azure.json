@@ -3716,11 +3716,9 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
-              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Compute/disks/vm-ELIODEF02_OsDisk_1_ce35610ac0264a00b377a7b7a7c1a357"
             },
-            "deleteOption": "Delete",
-            "diskSizeGB": 127
+            "deleteOption": "Delete"
           },
           "dataDisks": []
         },
@@ -3787,11 +3785,9 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
-              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/disks/vm-cyrisk-1_OsDisk_1_9090c6b7f5e64b4aaaa19749f0ad9909"
             },
-            "deleteOption": "Delete",
-            "diskSizeGB": 127
+            "deleteOption": "Delete"
           },
           "dataDisks": []
         },
@@ -4542,6 +4538,9 @@
       ],
       "resources": [
         {
+          "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-INFRA-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-SQL1/extensions/AzureBackupWindowsWorkload"
+        },
+        {
           "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-INFRA-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-SQL1/extensions/MDE.Windows"
         },
         {
@@ -4632,6 +4631,9 @@
         "1"
       ],
       "resources": [
+        {
+          "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-INFRA-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-SQL2/extensions/AzureBackupWindowsWorkload"
+        },
         {
           "id": "/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-INFRA-1/providers/Microsoft.Compute/virtualMachines/VM-MAR-SQL2/extensions/MDE.Windows"
         },

@@ -21,6 +21,8 @@ class MSOL(Action):
         today = datetime.today()
 
         for obj in new_items_json:
+            if 'UnitCost' in obj and  obj['UnitCost']<=0:
+                continue
             product_list_json = {
                     "CustomerID":customer_id,
                     "ProductID":"",
@@ -70,7 +72,8 @@ class MSOL(Action):
 
 
         for obj in existing_items_json:
-
+            if 'UnitCost' in obj and  obj['UnitCost']<=0:
+                continue
             product_list_json = {
                     "_ProductID":"",
                     "CustomerID":customer_id,

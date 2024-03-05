@@ -1,6 +1,6 @@
 version: 1.0
 tasks:
-  # [376, 526]
+  # [375, 491]
   create_ad_user:
     action: core.winrm_ps_cmd
     input:
@@ -22,25 +22,8 @@ tasks:
           - mailbox_created: false
           - user_count: " "
       - do:
-          - copy_membs
-  # [379, 650]
-  copy_membs:
-    action: core.winrm_ps_cmd
-    input:
-      transport: ntlm
-      cmd: "Get-ADUser -Identity <% ctx().model_user %> -Properties memberof | Select-Object -ExpandProperty memberof | Add-ADGroupMember -Members \"<% ctx().first_name.substring(0,1)%><%ctx().last_name %>\""
-      password: <% ctx().password[0] %>
-      username: <% ctx().username[0] %>
-      verify_ssl_cert: false
-      host: <% ctx().ad_host[0] %>
-      port: 5985
-    next:
-      - do:
           - fetch_manager_email
-        when: <% succeeded() %>
-        publish:
-          - membership_copied: Yes
-  # [701, 153]
+  # [705, 54]
   add_manager:
     action: core.winrm_ps_cmd
     input:
@@ -84,7 +67,7 @@ tasks:
           - tenant_id: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.tenant_id)) %>
           - client_id: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.client_id)) %>
           - client_secret: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.client_secret)) %>
-  # [1028, 310]
+  # [711, 318]
   start_delta_sync:
     action: sim_activedirectory.start_delta_ad_sync
     input:
@@ -93,8 +76,8 @@ tasks:
       password: <% ctx().password[0] %>
     next:
       - do:
-          - user_to_default_groups
-  # [1029, 635]
+          - set_extension_attribute
+  # [963, 801]
   sleep_90:
     action: core.local
     input:
@@ -102,11 +85,11 @@ tasks:
       timeout: 120
     next:
       - do:
-          - set_location_license
+          - ticket_update
   # [704, 1014]
   end:
     action: core.noop
-  # [704, 902]
+  # [702, 906]
   ticket_update:
     action: core.echo
     input:
@@ -138,23 +121,6 @@ tasks:
                   status: In Progress
                   ticket_update: Sim Automation is escalating the service request after completing AD and Exchange tasks
           - execution_log: "[{\"task_name\":\"ad_created\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().ad_created  %>},{\"task_name\":\"membership_copied\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().membership_copied  %>},{\"task_name\":\"license_added\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().license_added  %>},{\"task_name\":\"mailbox_created\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().mailbox_created  %>}]"
-  # [1017, 512]
-  add_license_E5:
-    action: core.winrm_ps_cmd
-    input:
-      transport: ntlm
-      cmd: "Add-ADGroupMember -Identity \"<% ctx().MailBoxADGroup %>\" -Members \"<% ctx().first_name.substring(0,1)%><%ctx().last_name %>\" "
-      host: <% ctx().ad_host[0] %>
-      password: <% ctx().password[0] %>
-      username: <% ctx().username[0] %>
-      verify_ssl_cert: false
-      port: 5985
-    next:
-      - do:
-          - sleep_90
-        when: <% succeeded() %>
-        publish:
-          - license_added: Yes
   # [378, 232]
   check_ad_user:
     action: sim_activedirectory.check_ad_user
@@ -165,7 +131,7 @@ tasks:
       password: <% ctx().password[0] %>
     next:
       - do:
-          - task3
+          - task4
         when: <% str(result().output.task_output.stdout) != "1" and  result().output.task_output.succeeded = true %>
         publish:
           - user_count: <% result().output.task_output.stdout %
@@ -206,7 +172,7 @@ tasks:
                   status: In Progress
                   ticket_update: Sim Automation is escalating the service request after finding the user to be onboarded already exists
           - execution_log: "[{\"task_name\":\"check_ad_user\",\"expected_returncode\":\"1\", \"actual_returncode\":<% ctx().user_count  %>}]"
-  # [1029, 5]
+  # [703, 184]
   create_mailbox:
     action: sim_exchange.create_mailboxscript
     input:
@@ -221,18 +187,10 @@ tasks:
     next:
       - do:
           - start_delta_sync
-        when: <% result().output.is_mailbox_created = 'mailbox not created' %>
-        publish:
-          - mailbox_created: false
-      - do:
-          - check
-        when: <% result().output.is_mailbox_created != 'mailbox not created' %>
-        publish:
-          - mailbox_created: true
   # [0, 391]
   end_1_user_exists:
     action: core.noop
-  # [377, 778]
+  # [380, 669]
   fetch_manager_email:
     action: sim_activedirectory.fetch_email_object_ad_user
     input:
@@ -246,41 +204,18 @@ tasks:
         publish:
           - email: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
           - objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
-  # [1218, 171]
-  check:
-    action: core.noop
-    next:
-      - do:
-          - start_delta_sync
-  # [1018, 746]
-  set_location_license:
-    action: sim_o365.set_location_license
-    input:
-      user: <% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>
-      tenant_id: <% ctx().tenant_id[0] %>
-      client_secret: <% ctx().client_secret[0] %>
-      client_id: <% ctx().client_id[0] %>
-    next:
-      - do:
-          - ticket_update
   # [412, 94]
   task2:
     action: core.noop
     next:
       - do:
           - check_ad_user
-  # [384, 376]
-  task3:
-    action: sim_passwordstate.generate_password
-    next:
-      - do:
-          - task4
-  # [1027, 413]
+  # [1057, 66]
   user_to_default_groups:
     action: core.winrm_ps_cmd
     next:
       - do:
-          - add_license_E5
+          - add_user_to_license
     input:
       transport: ntlm
       cmd: "# User to add\n$UserToAdd = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n# Check if the user exists\n$User = Get-ADUser -Filter {UserPrincipalName -eq $UserToAdd}\n\nif ($User) {\n    Write-Host \"User '$UserToAdd' found. Adding to groups...\"\n    \n    # Array of group names\n    $GroupNames = \"patest\", \"Az-RG-ETEST-REDBOX-AE-Owners\", \"Az-RG-ETEST-REDBOX-AE-Contributors\", \"Az-RG-ETEST-REDBOX-AE-Readers\"\n    \n    # Add user to each group\n    foreach ($GroupName in $GroupNames) {\n        Add-ADGroupMember -Identity $GroupName -Members $User\n        Write-Host \"Added '$UserToAdd' to group '$GroupName'\"\n    }\n} else {\n    Write-Host \"User '$UserToAdd' not found in Active Directory.\"\n}\n"
@@ -288,7 +223,7 @@ tasks:
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>
       verify_ssl_cert: false
-  # [521, 449]
+  # [379, 365]
   task4:
     action: core.local
     next:
@@ -298,6 +233,71 @@ tasks:
           - random_string: <% result().stdout %>
     input:
       cmd: "cat /dev/urandom | tr -dc '~!@#$%^&*_A-Za-z0-9' | head -c${1:-33}"
+  # [708, 443]
+  set_extension_attribute:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "# Retrieve the user by UPN\n$UserPrincipalName = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n$ADUser = Get-ADUser -Filter {UserPrincipalName -eq $UserPrincipalName}\n\n# Define the attributes to add\n$ADAttributesHash = @{\n    'extensionAttribute1' = \"Value1\"\n    'extensionAttribute2' = \"Value2\"\n    'extensionAttribute4' = \"Value4\"\n    'extensionAttribute15' = \"Value15\"\n    'employeeID' = \"123456\"\n}\n\n# Set the attributes for the user\n$ADUser | Set-ADUser -Add $ADAttributesHash"
+      host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      password: " <% ctx().password[0] %>"
+      verify_ssl_cert: false
+    next:
+      - do:
+          - set_mobile_number
+  # [724, 579]
+  set_mobile_number:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "# Retrieve the user by UPN\n$UserPrincipalName = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n$ADUser = Get-ADUser -Filter {UserPrincipalName -eq $UserPrincipalName}\n\n# Define the attributes to update\n$ADAttributesHash = @{\n    'Mobile' = \"<%ctx().mobile%>\"\n    'Title' = \"<%ctx().title%>\"\n}\n\n# Update the attributes for the user\n$ADUser | Set-ADUser -Mobile $ADAttributesHash.Mobile -Title $ADAttributesHash.Title\n"
+      host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      password: " <% ctx().password[0] %>"
+      verify_ssl_cert: false
+    next:
+      - do:
+          - user_to_default_groups
+  # [1066, 204]
+  add_user_to_license:
+    action: core.winrm_cmd
+    input:
+      transport: ntlm
+      cmd: "# User to add\n$UserToAdd = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n# Check if the user exists\n$User = Get-ADUser -Filter {UserPrincipalName -eq $UserToAdd}\n\nif ($User) {\n    Write-Host \"User '$UserToAdd' found. Adding to groups...\"\n    \n    # Array of group names\n    $GroupNames = \"patest\", \"Az-RG-ETEST-REDBOX-AE-Owners\", \"Az-RG-ETEST-REDBOX-AE-Contributors\", \"Az-RG-ETEST-REDBOX-AE-Readers\"\n    \n    # Add user to each group\n    foreach ($GroupName in $GroupNames) {\n        Add-ADGroupMember -Identity $GroupName -Members $User\n        Write-Host \"Added '$UserToAdd' to group '$GroupName'\"\n    }\n} else {\n    Write-Host \"User '$UserToAdd' not found in Active Directory.\"\n}\n"
+      host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      password: " <% ctx().password[0] %>"
+      verify_ssl_cert: false
+    next:
+      - do:
+          - connect_exchange_online
+  # [1069, 369]
+  connect_exchange_online:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: hostname
+      host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      password: " <% ctx().password[0] %>"
+      verify_ssl_cert: false
+    next:
+      - do:
+          - check_user_mail
+  # [1086, 540]
+  check_user_mail:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "$UPNToCheck = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n\n# Check if the UPN exists in Exchange Online\n$User = Get-Mailbox -Identity $UPNToCheck -ErrorAction SilentlyContinue\nif ($User) {\n    Write-Host \"The UPN '$UPNToCheck' exists in Exchange Online.\"\n} else {\n    Write-Host \"The UPN '$UPNToCheck' does not exist in Exchange Online.\"\n}"
+      host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+      verify_ssl_cert: false
+    next:
+      - do:
+          - sleep_90
 input:
   - data
 output:

@@ -7,12 +7,12 @@ tasks:
       cmd: "tr -dc 'A-Za-z0-9!@#$%^&*' </dev/urandom | head -c 8 ; echo ''"
     next:
       - do:
-          - password_updated
+          - update_password
         when: <% succeeded() %>
         publish:
           - password: <% result().stdout %>
   # [340, 162]
-  password_updated:
+  update_password:
     action: core.http
     input:
       url: "https://sim-etest.sim.esecure.systems/api/v1/executions"
@@ -20,12 +20,12 @@ tasks:
       headers:
         St2-Api-Key: OWJjNGVhNDg3MmQ0MDM1NTc5ZjEyMzBiZmJhZTcwYmU0MTkxOWEwNTEwODY3MGU4NjA0Y2NhZTc5YmJiM2Y3OQ
       verify_ssl_cert: false
-    next
+    next:
       - do:
-          - task1
+          - change_ticket_status
         when: <% succeeded() %>
   # [340, 289]
-  task1:
+  change_ticket_status:
     action: core.http
     input:
       url: "https://ethantest.service-now.com/api/now/table/sn_customerservice_general_case/{{ctx().sys_id}}"
@@ -35,6 +35,14 @@ tasks:
       body: "{\n\"state\":\"6\",\n\"close_code\":\"Ticket closed\",\n\"close_notes\":\"Sim automation resolved the ticket\",\n\"action_status\": \"7\",\n\"resolved_by\": \"SiM Automation\",\n\"needs_attention\": \"false\"\n}"
       headers:
         Content-Type: application/json
+    next:
+      - do:
+          - send_sms
+  # [340, 412]
+  send_sms:
+    action: core.local
+    input:
+      cmd: "curl -x http://210.48.210.35:3128/ -v -L 'https://api.twilio.com/2010-04-01/Accounts/AC344b4acf3e99799a0e72ea5ab018ab1d/Messages.json' --header 'Content-Type: application/x-www-form-urlencoded' --header 'Authorization: Basic QUMzNDRiNGFjZjNlOTk3OTlhMGU3MmVhNWFiMDE4YWIxZDoyNDg3NGY2OTA2NjczMGZmYmI5ZmI4N2ZmZmU0OTRmMQ==' --data-urlencode 'Body=Your new password {{ctx().password}}' --data-urlencode 'From=+13156233623' --data-urlencode 'To={{ctx().phone_no}}'"
 input:
   - email_id
   - sys_id
