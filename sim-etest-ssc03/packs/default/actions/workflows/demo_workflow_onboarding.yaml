@@ -172,21 +172,6 @@ tasks:
                   status: In Progress
                   ticket_update: Sim Automation is escalating the service request after finding the user to be onboarded already exists
           - execution_log: "[{\"task_name\":\"check_ad_user\",\"expected_returncode\":\"1\", \"actual_returncode\":<% ctx().user_count  %>}]"
-  # [703, 184]
-  create_mailbox:
-    action: sim_exchange.create_mailboxscript
-    input:
-      ad_host: <% ctx().ad_host[0] %>
-      exchange_username: <% ctx().username[0] %>
-      mailbox_type: User
-      exchange_password: <% ctx().password[0] %>
-      SamAccountName: <% ctx().first_name.substring(0,1)%><%ctx().last_name %>
-      exchange_host: <% ctx().ex_host[0] %>
-      email_address: <% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>
-      use_commands_instead: "\"YES\""
-    next:
-      - do:
-          - start_delta_sync
   # [0, 391]
   end_1_user_exists:
     action: core.noop
@@ -241,7 +226,7 @@ tasks:
       cmd: "# Retrieve the user by UPN\n$UserPrincipalName = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n$ADUser = Get-ADUser -Filter {UserPrincipalName -eq $UserPrincipalName}\n\n# Define the attributes to add\n$ADAttributesHash = @{\n    'extensionAttribute1' = \"Value1\"\n    'extensionAttribute2' = \"Value2\"\n    'extensionAttribute4' = \"Value4\"\n    'extensionAttribute15' = \"Value15\"\n    'employeeID' = \"123456\"\n}\n\n# Set the attributes for the user\n$ADUser | Set-ADUser -Add $ADAttributesHash"
       host: <% ctx().ad_host[0] %>
       username: <% ctx().username[0] %>
-      password: " <% ctx().password[0] %>"
+      password: <% ctx().password[0] %>
       verify_ssl_cert: false
     next:
       - do:
@@ -254,7 +239,7 @@ tasks:
       cmd: "# Retrieve the user by UPN\n$UserPrincipalName = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n$ADUser = Get-ADUser -Filter {UserPrincipalName -eq $UserPrincipalName}\n\n# Define the attributes to update\n$ADAttributesHash = @{\n    'Mobile' = \"<%ctx().mobile%>\"\n    'Title' = \"<%ctx().title%>\"\n}\n\n# Update the attributes for the user\n$ADUser | Set-ADUser -Mobile $ADAttributesHash.Mobile -Title $ADAttributesHash.Title\n"
       host: <% ctx().ad_host[0] %>
       username: <% ctx().username[0] %>
-      password: " <% ctx().password[0] %>"
+      password: <% ctx().password[0] %>
       verify_ssl_cert: false
     next:
       - do:
@@ -267,7 +252,7 @@ tasks:
       cmd: "# User to add\n$UserToAdd = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n# Check if the user exists\n$User = Get-ADUser -Filter {UserPrincipalName -eq $UserToAdd}\n\nif ($User) {\n    Write-Host \"User '$UserToAdd' found. Adding to groups...\"\n    \n    # Array of group names\n    $GroupNames = \"patest\", \"Az-RG-ETEST-REDBOX-AE-Owners\", \"Az-RG-ETEST-REDBOX-AE-Contributors\", \"Az-RG-ETEST-REDBOX-AE-Readers\"\n    \n    # Add user to each group\n    foreach ($GroupName in $GroupNames) {\n        Add-ADGroupMember -Identity $GroupName -Members $User\n        Write-Host \"Added '$UserToAdd' to group '$GroupName'\"\n    }\n} else {\n    Write-Host \"User '$UserToAdd' not found in Active Directory.\"\n}\n"
       host: <% ctx().ad_host[0] %>
       username: <% ctx().username[0] %>
-      password: " <% ctx().password[0] %>"
+      password: <% ctx().password[0] %>
       verify_ssl_cert: false
     next:
       - do:
@@ -280,7 +265,7 @@ tasks:
       cmd: hostname
       host: <% ctx().ad_host[0] %>
       username: <% ctx().username[0] %>
-      password: " <% ctx().password[0] %>"
+      password: <% ctx().password[0] %>
       verify_ssl_cert: false
     next:
       - do:
@@ -298,6 +283,20 @@ tasks:
     next:
       - do:
           - sleep_90
+  # [718, 173]
+  create_mailbox:
+    action: core.winrm_ps_cmd
+    next:
+      - do:
+          - start_delta_sync
+    input:
+      transport: ntlm
+      cmd: New-Mailbox -Name "<% ctx().first_name %> <% ctx().last_name %>" -Password (ConvertTo-SecureString "<% ctx().random_string %>" -AsPlainText -Force) -UserPrincipalName ("$((<% ctx().first_name %>).replace(' ', ''))$((<% ctx().last_name %>).replace(' ', ''))@etest.systems") -Alias ("$((<% ctx().first_name %>).replace(' ', ''))$((<% ctx().last_name %>).replace(' ', ''))") -DisplayName "<% ctx().first_name %> <% ctx().last_name %>" -FirstName "<% ctx().first_name %>" -LastName "<% ctx().last_name %>" -OrganizationalUnit "OU=Users,OU=TestOU,OU=ETEST EUC,DC=etest,DC=systems" -PrimarySmtpAddress ("$((<% ctx().first_name %>).replace(' ', ''))$((<% ctx().last_name %>).replace(' ', ''))@etest.systems") -ResetPasswordOnNextLogon $false -SamAccountName ("$((<% ctx().first_name %>).replace(' ', ''))$((<% ctx().last_name %>).replace(' ', ''))")
+      host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+      port: 5985
+      verify_ssl_cert: false
 input:
   - data
 output:

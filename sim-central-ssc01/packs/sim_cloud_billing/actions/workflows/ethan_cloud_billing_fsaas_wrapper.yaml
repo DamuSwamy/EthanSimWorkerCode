@@ -37,7 +37,7 @@ tasks:
       clusterName: <% str(item(clusterName)) %>
     with: 
       items: <% ctx(fsaas_clusters) %>
-      concurrency: 3
+      concurrency: 1
     next:
       - when: <% succeeded() %>
         do:

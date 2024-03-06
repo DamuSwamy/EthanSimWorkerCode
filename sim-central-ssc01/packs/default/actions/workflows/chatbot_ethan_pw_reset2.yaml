@@ -32,7 +32,7 @@ tasks:
   send_sms:
     action: core.local
     input:
-      cmd: "curl -x http://210.48.210.35:3128/ -v -L 'https://api.twilio.com/2010-04-01/Accounts/AC344b4acf3e99799a0e72ea5ab018ab1d/Messages.json' --header 'Content-Type: application/x-www-form-urlencoded' --header 'Authorization: Basic QUMzNDRiNGFjZjNlOTk3OTlhMGU3MmVhNWFiMDE4YWIxZDoyNDg3NGY2OTA2NjczMGZmYmI5ZmI4N2ZmZmU0OTRmMQ==' --data-urlencode 'Body=Your new password {{ctx().password}}' --data-urlencode 'From=+13156233623' --data-urlencode 'To={{ctx().phone_no}}'"
+      cmd: "curl -x http://210.48.210.35:3128/ -v -L 'https://api.twilio.com/2010-04-01/Accounts/AC344b4acf3e99799a0e72ea5ab018ab1d/Messages.json' --header 'Content-Type: application/x-www-form-urlencoded' --header 'Authorization: Basic QUMzNDRiNGFjZjNlOTk3OTlhMGU3MmVhNWFiMDE4YWIxZDpiNTkzNDY1ZTlkYjJlMjQ1ZjI2YzE2Njg4OWI3MzY1Nw==' --data-urlencode 'Body=Your new password {{ctx().password}}' --data-urlencode 'From=+13156233623' --data-urlencode 'To={{ctx().phone_no}}'"
   # [340, 36]
   generate_random_password:
     action: sim_passwordstate.generate_password
