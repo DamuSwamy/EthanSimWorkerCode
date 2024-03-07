@@ -30,7 +30,34 @@ WHERE vendor_resource_type IN ('SQL Database', 'SQL Server', 'Azure Function App
                 with open("/opt/stackstorm/packs/sim_multi_cloud/actions/dev42_resources","wb") as filee:
                     filee.write(data.content)
                 #print(data)
-                print("Details of resources are successfully stored in dev42_resources file\n")
+                csv_file_path = '/opt/stackstorm/packs/sim_multi_cloud/actions/dev42_resources'
+
+                # Open the CSV file
+                with open(csv_file_path, 'r') as file:
+                # Create a CSV reader
+                    csv_reader = csv.reader(file)
+                    total_rows = 0
+                    # Iterate through each row in the CSV file
+                    access_denied = True
+                    for row in csv_reader:
+                        # Check if the row has at least two fields
+                        
+                        if "You don't have permission" in row[0]:
+                            access_denied = False
+                            print("You do not have access or unable to fetch the data using api")
+                            break
+                        total_rows += 1
+
+                        if len(row) >= 2:
+                            # Print the first and second fields
+                            print("resource_pk - ", row[0])
+                            print("resource_name - ", row[1])
+                            print("\n")
+                        else:
+                            print("Row does not have enough fields.")
+                    if access_denied:
+                        print("Total number of resources added - ", total_rows) 
+                        print("Details of resources are successfully stored in dev42_resources file\n")
 
                 #file_path = "/opt/stackstorm/packs/sn_integration/actions/dev42"  # Replace with the actual path to your file
 

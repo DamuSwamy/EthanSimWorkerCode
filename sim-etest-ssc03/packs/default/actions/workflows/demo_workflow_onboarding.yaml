@@ -50,7 +50,7 @@ tasks:
           - username: <% ctx().data.ci_details.where($.ci_id = 'AD01').select($.connections.POWERSHELL.username) %>
           - password: <% ctx().data.ci_details.where($.ci_id = 'AD01').select($.connections.POWERSHELL.password) %>
           - model_user: <% ctx().data.data.custom_attributes.modeluser %>
-          - mobile: <% ctx().data.data.custom_attributes.phone_number %>
+          - mobile: <% ctx().data.data.custom_attributes.MobileNumberSIM%>
           - location: <% ctx().data.data.custom_attributes.location %>
           - title: <% ctx().data.data.custom_attributes.position %>
           - department: <% ctx().data.data.custom_attributes.business_unit %>
