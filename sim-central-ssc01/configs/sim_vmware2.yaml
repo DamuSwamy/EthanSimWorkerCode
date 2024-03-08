@@ -105,3 +105,8 @@ vsphere:
     passwd: 'ADn!rdB*6L91'
     port: 21443
     user: ethan.billing@vsphere.local
+  VB2-VC21:
+    host: 10.120.43.1
+    passwd: Qb3rO5xZ1H
+    port: 443
+    user: service_ciac_vsphere

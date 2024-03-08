@@ -309,12 +309,12 @@ tasks:
   random:
     action: core.local
     input:
-      cmd: "cat /dev/urandom | tr -dc '~!@#$%^&*_A-Za-z0-9' | head -c${1:-40}"
+      cmd: "curl -x http://210.48.210.35:3128/ -X GET 'https://pwd.ecorp.systems/api/generatepassword/' -H 'APIKey: e75c3a324b869fd46d98ec23f75ba3c3' -v -L"
     next:
       - do:
           - check_ad_user
         publish:
-          - random_string: <% result().stdout %>
+          - random_string: <% result().stdout[0].Password %>
   # [774, 330]
   check:
     action: core.noop

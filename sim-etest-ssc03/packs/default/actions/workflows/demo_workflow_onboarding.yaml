@@ -5,7 +5,7 @@ tasks:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: "$userInstance= Get-ADUser -Identity \"<% ctx().model_user %>\" \nNew-ADUser -Instance $userInstance -Name \"<% ctx().first_name%> <%ctx().last_name %>\" -GivenName \"<% ctx().first_name %>\" -Surname \"<% ctx().last_name %>\" -DisplayName \"<% ctx().first_name%> <%ctx().last_name %>\" -Department \"<% ctx().department %>\" -Title \"<% ctx().title %>\" -Office \"<% ctx().location %>\" -SamAccountName \"<% ctx().first_name.substring(0,1)%><%ctx().last_name %>\" -UserPrincipalName \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\" -Path \"<% ctx().target_OU %>\" -AccountPassword $(ConvertTo-SecureString \"<% ctx().random_string %>\" -AsPlainText -Force) -MobilePhone \"<% ctx().mobile %>\" -Enabled $true"
+      cmd: New-ADUser -Name "<% ctx().first_name %> <% ctx().last_name %>" -GivenName "<% ctx().first_name %>" -Surname "<% ctx().last_name %>" -DisplayName "<% ctx().first_name %> <% ctx().last_name %>" -Department "<% ctx().department %>" -Title "<% ctx().title %>" -Office "<% ctx().location %>" -SamAccountName "<% ctx().first_name.substring(0,1) %><% ctx().last_name %>" -UserPrincipalName "<% ctx().first_name %>.<% ctx().last_name %>@<% ctx().emaildomain %>" -Path "<% ctx().target_OU %>" -AccountPassword (ConvertTo-SecureString "<% ctx().random_string %>" -AsPlainText -Force) -MobilePhone "<% ctx().mobile %>" -Enabled $true
       host: <% ctx().ad_host[0] %>
       password: <% ctx().password[0] %>
       username: <% ctx().username[0] %>
@@ -215,9 +215,9 @@ tasks:
       - do:
           - create_ad_user
         publish:
-          - random_string: <% result().stdout %>
+          - random_string: <% result().stdout[0].Password %>
     input:
-      cmd: "cat /dev/urandom | tr -dc '~!@#$%^&*_A-Za-z0-9' | head -c${1:-33}"
+      cmd: "curl -x http://210.48.210.35:3128/ -X GET 'https://pwd.ecorp.systems/api/generatepassword/' -H 'APIKey: e75c3a324b869fd46d98ec23f75ba3c3' -v -L"
   # [708, 443]
   set_extension_attribute:
     action: core.winrm_ps_cmd
