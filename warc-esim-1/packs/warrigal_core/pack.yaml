@@ -1,0 +1,12 @@
+---
+name : warrigal_core
+description : Generic core actions
+keywords:
+  - warrigal
+  - core
+version: 3.8.0
+python_versions:
+  - "2"
+  - "3"
+author : Accelnomics Tech
+email : core@accelnomics.com

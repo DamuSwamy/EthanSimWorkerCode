@@ -1,0 +1,12 @@
+pack: sim_activedirectory
+enabled: true
+runner_type: orquesta
+name: list_groups
+entry_point: workflows/list_groups.yaml
+description: List all users available
+parameters:
+  data:
+    type: object
+    description: Input json payload
+    required: true
+    secret: false

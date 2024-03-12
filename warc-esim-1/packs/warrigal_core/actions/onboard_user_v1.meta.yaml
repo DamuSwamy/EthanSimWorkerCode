@@ -1,0 +1,10 @@
+pack: warrigal_core
+enabled: true
+runner_type: orquesta
+name: onboard_user_v1
+entry_point: workflows/onboard_user_v1.yaml
+description: onboard a new user
+parameters:
+  data:
+    type: object
+    description: input json payload

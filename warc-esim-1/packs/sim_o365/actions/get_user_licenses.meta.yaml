@@ -1,0 +1,16 @@
+pack: sim_o365
+enabled: true
+runner_type: orquesta
+name: get_user_licenses
+entry_point: workflows/get_user_licenses.yaml
+description: "Get user licenses from office365 Admin centre:"
+parameters:
+  graph_auth_token:
+    type: string
+    description: Graph API auth token
+    required: true
+  user_email:
+    type: string
+    description: User Email Address to get licenses of
+    required: true
+    default: sim.testuser01@etest.systems

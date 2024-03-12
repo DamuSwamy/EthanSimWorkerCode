@@ -1,0 +1,278 @@
+version: 1.0
+tasks:
+  # [370, 414]
+  create_ad_user:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "New-ADUser  -Name \"<% ctx().first_name%> <%ctx().last_name %>\" -GivenName \"<% ctx().first_name %>\" -Surname \"<% ctx().last_name %>\" -DisplayName \"<% ctx().first_name%> <%ctx().last_name %>\" -Department \"<% ctx().department %>\" -Title \"<% ctx().title %>\" -Description \"<% ctx().title %>\" -Office \"<% ctx().location %>\" -SamAccountName \"<% ctx().samaccountname %>\" -UserPrincipalName \"<% ctx().email %>\" -Path \"<% ctx().target_OU %>\" -AccountPassword $(ConvertTo-SecureString \"<% ctx().random_string %>\" -AsPlainText -Force) -MobilePhone \"<% ctx().mobile %>\" -PostalCode \"<% ctx().zipcode %>\" -StreetAddress \"<% ctx().street %>\" -State \"<% ctx().state %>\"  -HomePhone \"<% ctx().homephone %>\" -Country \"<% ctx().country %>\" -Company \"<% ctx().company %>\" -City \"<% ctx().city %>\" -ChangePasswordAtLogon $true -Enabled $true"
+      host: <% ctx().ad_host[0] %>
+      password: <% ctx().password[0] %>
+      username: <% ctx().username[0] %>
+      verify_ssl_cert: false
+      port: 5985
+    next:
+      - do:
+          - add_group_membs
+        when: <% succeeded() %>
+        publish:
+          - ad_created: Yes
+      - do:
+          - ticket_update_escalate
+        when: <% failed() %>
+        publish:
+          - ad_created: false
+          - membership_copied: false
+          - license_added: false
+          - mailbox_created: false
+          - user_count: " "
+  # [373, 526]
+  add_group_membs:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: |
+        $groups = "<% ctx().NewUserADGroups %>"
+        $skippedGroups = @()
+        foreach ($group in $groups.split(";")) {
+          if ($group.StartsWith("ERRROR:")) {
+            $groupName = $group.Substring(7)
+            $skippedGroups += $groupName
+            continue
+          }
+
+          Add-ADGroupMember -Identity $group -Members "<% ctx().samaccountname %>"
+        }
+
+        if ($skippedGroups.Count -gt 0) {
+          $skippedGroupsString = $skippedGroups -join ', '
+          $skippedGroupsString
+        }
+      password: <% ctx().password[0] %>
+      username: <% ctx().username[0] %>
+      verify_ssl_cert: false
+      host: <% ctx().ad_host[0] %>
+      port: 5985
+    next:
+      - do:
+          - fetch_manager_email
+        when: <% succeeded() %>
+        publish:
+          - membership_copied: Yes
+          - skipped_groups: <% result().stdout %>
+          - group_errors: <% result().stderr %>
+  # [755, 144]
+  add_manager:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "Get-ADUser -Identity \"<% ctx().samaccountname%>\" | Set-ADUser -Manager \"<% ctx().objectid %>\""
+      host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+      verify_ssl_cert: false
+      port: 5985
+    next:
+      - do:
+          - start_delta_sync
+        when: <% succeeded() %>
+  # [368, 96]
+  start:
+    action: core.echo
+    input:
+      message: "\"starting\""
+    next:
+      - do:
+          - random
+        publish:
+          - ad_host: <% ctx().data.ci_details.where($.ci_id = 'AD01').select(str($.connections.POWERSHELL.ip_address)) %>
+          - username: <% ctx().data.ci_details.where($.ci_id = 'AD01').select($.connections.POWERSHELL.username) %>
+          - password: <% ctx().data.ci_details.where($.ci_id = 'AD01').select($.connections.POWERSHELL.password) %>
+          - mobile: <% ctx().data.data.custom_attributes.Location %>
+          - location: <% ctx().data.data.custom_attributes.Location %>
+          - title: <% ctx().data.data.custom_attributes.Title %>
+          - department: <% ctx().data.data.custom_attributes.Department %>
+          - first_name: <% ctx().data.data.custom_attributes.FirstName %>
+          - last_name: <% ctx().data.data.custom_attributes.LastName %>
+          - ticketNo: <% ctx().data.itsm.details.ticket_id %>
+          - manager: <% ctx().data.data.custom_attributes.Manager %>
+          - display_user: <% ctx().first_name%> <%ctx().last_name %>
+          - MailBoxADGroup: false
+          - mailbox_required: false
+          - ex_host: <% ctx().data.ci_details.where($.ci_id = 'EX01').select(str($.connections.POWERSHELL.ip_address)) %>
+          - target_OU: <% ctx().data.data.custom_attributes.OU %>
+          - email: <% ctx().data.data.custom_attributes.Email %>
+          - tenant_id: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.tenant_id)) %>
+          - client_id: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.client_id)) %>
+          - client_secret: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.client_secret)) %>
+          - zipcode: 4000
+          - city: Brisbane
+          - street: 345 Queen Street
+          - country: AU
+          - state: QLD
+          - homephone: +61 7 3222 8444
+          - company: Pitcher Partners
+          - position: <% ctx().data.data.custom_attributes.Title %>
+          - description: <% ctx().data.data.custom_attributes.Title %>
+          - samaccountname: <% ctx().data.data.custom_attributes.SamAccountName %>
+          - NewUserADGroups: <% ctx().data.data.custom_attributes.NewUserADGroups.trimRight(";") %>
+          - NewUserDistributionGroups: <% ctx().data.data.custom_attributes.NewUserDistributionGroups %>
+  # [758, 252]
+  start_delta_sync:
+    action: sim_activedirectory.start_delta_ad_sync_v2
+    input:
+      ad_host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+    next:
+      - do:
+          - sleep_180
+  # [760, 369]
+  sleep_180:
+    action: core.local
+    input:
+      cmd: sleep 180
+      timeout: 240
+    next:
+      - do:
+          - set_location_license
+  # [763, 727]
+  end:
+    action: core.noop
+  # [761, 601]
+  ticket_update:
+    action: core.echo
+    input:
+      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added: True\nAD sync: True\nLicense Added: <% ctx().license_added %>\nThe following groups have been skipped as they do not exist in AD: <% ctx().skipped_groups %>"
+    next:
+      - do:
+          - end
+        publish:
+          - state: REMEDIATION
+          - info:
+              summary: AD and EX tasks attempted
+              next_action: escalate
+              root_cause: actions_failed
+              first_notified: <% task().end_timestamp %>
+              last_worked_upon: <% task().end_timestamp %>
+              ad_created: <% ctx().ad_created %>
+              membership_copied: <% ctx().ad_created %>
+              license_added: <% ctx().license_added %>
+              mailbox_created: <% ctx().mailbox_created %>
+              next_action_attributes:
+                escalate:
+                  resolution_flag: false
+                  team_name: SD
+                  owner: None
+                  status: In Progress
+                  ticket_update: Sim Automation is escalating the service request after completing AD and Exchange tasks
+          - execution_log: "[{\"task_name\":\"ad_created\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().ad_created  %>},{\"task_name\":\"membership_copied\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().membership_copied  %>},{\"task_name\":\"license_added\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().license_added  %>},{\"task_name\":\"mailbox_created\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().mailbox_created  %>}]"
+
+  # [369, 300]
+  check_ad_user:
+    action: sim_activedirectory.check_ad_user
+    input:
+      ad_host: <% ctx().ad_host[0] %>
+      display_name: <% ctx().display_user %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+      port: 5986
+    next:
+      - do:
+          - create_ad_user
+        when: <% str(result().output.task_output.stdout) != "1" and  result().output.task_output.succeeded = true %>
+        publish:
+          - user_count: <% result().output.task_output.stdout %
+      - do:
+          - ticket_update_escalate
+        when: <% str(result().output.task_output.stdout) = "1"  or result().output.task_output.succeeded = false %>
+        publish:
+          - user_count: <% result().output.task_output.stdout %>
+  # [1, 237]
+  ticket_update_escalate:
+    action: core.echo
+    input:
+      message: Input User Issue. Escalating ticket.Reason <% ctx().user_count %> user already present on active directory or error creating new user.
+    next:
+      - do:
+          - end_1_user_exists
+        publish:
+          - state: DIAGNOSIS
+          - info:
+              summary: User NOT on-boarded
+              next_action: escalate
+              root_cause: actions_failed
+              first_notified: <% task().end_timestamp %>
+              last_worked_upon: <% task().end_timestamp %>
+              ad_created: <% ctx().ad_created %>
+              membership_copied: <% ctx().ad_created %>
+              license_added: <% ctx().license_added %>
+              mailbox_created: <% ctx().mailbox_created %>
+              next_action_attributes:
+                escalate:
+                  resolution_flag: false
+                  team_name: SD
+                  owner: None
+                  status: In Progress
+                  ticket_update: Sim Automation is escalating the service request after finding the user to be onboarded already exists
+          - execution_log: "[{\"task_name\":\"check_ad_user\",\"expected_returncode\":\"1\", \"actual_returncode\":<% ctx().user_count  %>}]"
+  # [0, 365]
+  end_1_user_exists:
+    action: core.noop
+  # [371, 636]
+  fetch_manager_email:
+    action: sim_activedirectory.fetch_email_object_ad_user
+    input:
+      ad_host: <% ctx().ad_host[0] %>
+      display_name: <% ctx().manager %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+    next:
+      - do:
+          - add_manager
+        publish:
+          - email_manager: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
+          - objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
+  # [368, 196]
+  random:
+    action: core.local
+    input:
+      cmd: "echo \"Pitchers1234\""
+    next:
+      - do:
+          - check_ad_user
+        publish:
+          - random_string: <% result().stdout %>
+  # [760, 486]
+  set_location_license:
+    action: sim_o365.set_location_license
+    input:
+      user: <% ctx().email %>
+      tenant_id: <% ctx().tenant_id[0] %>
+      client_secret: <% ctx().client_secret[0] %>
+      client_id: <% ctx().client_id[0] %>
+    next:
+      - do:
+          - ticket_update
+        publish:
+          - state: REMEDIATION
+          - info: successfully onboarded
+          - license_added: true
+  # [363, 0]
+  sleep:
+    action: core.local
+    input:
+      cmd: sleep 10
+    next:
+      - do:
+          - start
+input:
+  - data
+output:
+  - state: <% ctx().state %>
+  - info:  <% ctx().info %>
+vars:
+  - ad_created: NO
+  - membership_copied: NO
+  - license_added: NO
+  - mailbox_created: NO

@@ -1,0 +1,397 @@
+version: 1.0
+tasks:
+  # [378, 391]
+  create_ad_user:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "$userInstance= Get-ADUser -Identity \"<% ctx().model_user %>\" \nNew-ADUser -Instance $userInstance -Name \"<% ctx().first_name%> <%ctx().last_name %>\" -GivenName \"<% ctx().first_name %>\" -Surname \"<% ctx().last_name %>\" -DisplayName \"<% ctx().first_name%> <%ctx().last_name %>\" -Department \"<% ctx().department %>\" -Title \"<% ctx().title %>\" -Office \"<% ctx().location %>\" -SamAccountName \"<% ctx().SamAccountName%>\" -UserPrincipalName \"<% ctx().SamAccountName%>@<% ctx().emaildomain %>\" -Path \"<% ctx().target_OU %>\" -AccountPassword $(ConvertTo-SecureString \"<% ctx().random_string %>\" -AsPlainText -Force) -EmailAddress \"<% ctx().SamAccountName%>@<% ctx().emaildomain %>\" -Company \"<% ctx().company %>\"  -OtherAttributes @{'employeeID'='<%ctx().EstaffUserID%>'} -Enabled $true"
+      host: <% ctx().ad_host[0] %>
+      password: <% ctx().password[0] %>
+      username: <% ctx().username[0] %>
+      verify_ssl_cert: false
+      port: 5985
+    next:
+      - do:
+          - expiry_required
+        when: <% succeeded() %>
+        publish:
+          - ad_created: "Yes"
+      - do:
+          - ticket_update_escalate
+        when: <% failed() %>
+        publish:
+          - ad_created: "NO"
+          - membership_copied: "NO"
+          - license_added: "NO"
+          - mailbox_created: "NO"
+          - user_count: " "
+  # [375, 637]
+  add_description:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: set-aduser -Identity "<% ctx().SamAccountName%>"  -description "User Onboarded as part of <% ctx().ticketNo %>"  -Verbose
+      host: <% ctx().ad_host[0] %>
+      password: <% ctx().password[0] %>
+      username: <% ctx().username[0] %>
+      verify_ssl_cert: false
+      port: 5985
+    next:
+      - do:
+          - copy_membs
+  # [375, 732]
+  copy_membs:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "Get-ADUser -Identity <% ctx().model_user %> -Properties memberof | Select-Object -ExpandProperty memberof | Add-ADGroupMember -Members \"<% ctx().SamAccountName%>\""
+      password: <% ctx().password[0] %>
+      username: <% ctx().username[0] %>
+      verify_ssl_cert: false
+      host: <% ctx().ad_host[0] %>
+      port: 5985
+    next:
+      - do:
+          - fetch_manager_email
+        publish:
+          - membership_copied: Yes
+  # [701, 153]
+  add_manager:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "Get-ADUser -Identity \"<%ctx().SamAccountName%>\" | Set-ADUser -Manager \"<% ctx().objectid %>\""
+      host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+      verify_ssl_cert: false
+      port: 5985
+    next:
+      - do:
+          - add_user_to_groups
+        when: <% 1 = 1 %>
+      - do:
+          - ticket_update
+        when: <% 1 = 3 %>
+  # [955, 853]
+  add_licenes:
+    action: core.http
+    input:
+      url: "https://graph.microsoft.com/v1.0/users/<% ctx().first_name%>.<%ctx().last_name %>@etest.systems/assignLicense"
+      body: "{\"addLicenses\":[{\"skuId\":\"f30db892-07e9-47e9-837c-80727f46fd3d\"},{\"skuId\":\"a403ebcc-fae0-4ca2-8c8c-7a907fd6c235\"}],\"removeLicenses\":[]}"
+      method: POST
+      headers:
+        Authorization: Bearer
+        Content-Type: application/json
+    retry:
+      when: <% failed() %>
+      count: 2
+      delay: 5
+    next:
+      - do:
+          - ticket_update
+        publish:
+          - state: REMEDIATION
+          - info: successfully onboarded
+  # [373, 5]
+  start:
+    action: core.echo
+    input:
+      message: "\"starting\""
+    next:
+      - do:
+          - random
+        publish:
+          - ad_host: <% ctx().data.ci_details.where($.ci_id = 'AD01').select(str($.connections.POWERSHELL.ip_address)) %>
+          - username: <% ctx().data.ci_details.where($.ci_id = 'AD01').select($.connections.POWERSHELL.username) %>
+          - password: <% ctx().data.ci_details.where($.ci_id = 'AD01').select($.connections.POWERSHELL.password) %>
+          - model_user: <% ctx().data.data.custom_attributes.copymembership %>
+          - mobile: <% ctx().data.data.custom_attributes.HomePhone %>
+          - location: <% ctx().data.data.custom_attributes.Location %>
+          - title: <% ctx().data.data.custom_attributes.Position %>
+          - department: <% ctx().data.data.custom_attributes.Department %>
+          - first_name: <% ctx().data.data.custom_attributes.FirstName %>
+          - last_name: <% ctx().data.data.custom_attributes.LastName %>
+          - ticketNo: <% ctx().data.itsm.details.ticket_id %>
+          - manager: <% ctx().data.data.custom_attributes.Manager %>
+          - display_user: <% ctx().first_name%> <%ctx().last_name %>
+          - mailbox_required: <% ctx().data.data.custom_attributes.mailbox_required %>
+          - ex_host: <% ctx().data.ci_details.where($.ci_id = 'EX01').select(str($.connections.POWERSHELL.ip_address)) %>
+          - target_OU: <% ctx().data.data.custom_attributes.OU %>
+          - emaildomain: warrigal.com.au
+          - company: warrigal
+          - expirydate: <% (timespan(days => 365) + now()).format("%d/%m/%Y")  %>
+          - stafftype: <% ctx().data.data.custom_attributes.AccountType %>
+          - Email: <% ctx().data.data.custom_attributes.Email %>
+          - SamAccountName: <% ctx().data.data.custom_attributes.SamAccountName %>
+          - AccountType: <% ctx().data.data.custom_attributes.AccountType %>
+          - ManagersOU: <% ctx().data.data.custom_attributes.ManagersOU %>
+          - LastusedEmailPrefix: <% ctx().data.data.custom_attributes.LastusedEmailPrefix %>
+          - EmailPrefixSearch: <% ctx().data.data.custom_attributes.EmailPrefixSearch %>
+          - copymembership: <% ctx().data.data.custom_attributes.copymembership %>
+          - DefaultOnPremGroups: <% ctx().data.data.custom_attributes.DefaultOnPremGroups %>
+          - CitrixOnPremGroup: <% ctx().data.data.custom_attributes.CitrixOnPremGroup %>
+          - DriveConnect: \\wc.local\userdata\Content$\
+          - EstaffUserID: <% ctx().data.data.custom_attributes.EstaffUserID %>
+          - OnPremGroups: <% ctx().data.data.custom_attributes.OnPremGroups %>
+          - AADGroups: <% ctx().data.data.custom_attributes.AADGroups %>
+  # [959, 396]
+  start_delta_sync:
+    action: sim_activedirectory.start_delta_ad_sync
+    input:
+      ad_host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+    next:
+      - do:
+          - sleep_180
+  # [959, 528]
+  sleep_180:
+    action: core.local
+    input:
+      cmd: sleep 180
+      timeout: 200
+    next:
+      - do:
+          - set_usage_location
+        when: <% 2 > 3 %>
+      - do:
+          - ad_user_to_group
+  # [966, 627]
+  set_usage_location:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "$teamsUsername = 'SiM.Admin@etest.systems'\n	$teamsPassword = 'Monday123!'\n	$secureTeamsPassword = ConvertTo-SecureString -String $teamsPassword -AsPlainText -Force\n	$teamsCreds = New-Object System.Management.Automation.PSCredential ($teamsUsername, $secureTeamsPassword)\nConnect-MsolService -Credential $teamsCreds\nSet-MsolUser -UserPrincipalName \"<% ctx().first_name%>.<%ctx().last_name %>@etest.systems\" -UsageLocation \"AU\""
+      host: 10.234.16.10
+      username: sim_test
+      password: fF2ag96$HS^TXd
+      verify_ssl_cert: false
+    next:
+      - do:
+          - sleep_20
+  # [705, 1023]
+  end:
+    action: core.noop
+  # [1263, 719]
+  ticket_update:
+    action: core.echo
+    input:
+      message: "Automation update for user onboarding is as follows:\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added from: <%ctx().model_user %>\nMembership groups copied: <% ctx().membership_copied %>\nAD sync: True\nLicense Added: <% ctx().license_added %>\nMailbox Created: <% ctx().mailbox_created %>"
+    next:
+      - do:
+          - end
+        publish:
+          - state: REMEDIATION
+          - info:
+              ticketNo: <% ctx().data.itsm.details.ticket_id %>
+              summary: AD and EX tasks attempted
+              next_action: escalate
+              root_cause: actions_failed
+              first_notified: <% task().end_timestamp %>
+              last_worked_upon: <% task().end_timestamp %>
+              ad_created: <% ctx().ad_created %>
+              membership_copied: <% ctx().ad_created %>
+              license_added: <% ctx().license_added %>
+              mailbox_created: <% ctx().mailbox_created %>
+              next_action_attributes:
+                escalate:
+                  resolution_flag: false
+                  team_name: SD
+                  owner: None
+                  status: In Progress
+                  ticket_update: Sim Automation is escalating the service request after completing AD and Exchange tasks
+          - execution_log: "[{\"task_name\":\"ad_created\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().ad_created  %>},{\"task_name\":\"membership_copied\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().membership_copied  %>},{\"task_name\":\"license_added\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().license_added  %>},{\"task_name\":\"mailbox_created\",\"expected_returncode\":\"Yes\", \"actual_returncode\":<% ctx().mailbox_created  %>}]"
+      - do:
+          - report_to_webex
+  # [958, 756]
+  sleep_20:
+    action: core.local
+    input:
+      cmd: sleep 20
+    next:
+      - do:
+          - add_licenes
+  # [1049, 58]
+  add_user_to_groups:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "# The list of AD groups\n$OnPremGroups = \"<%ctx().OnPremGroups%>\"\n# The username of the user to add to the groups\n$userName = \"<% ctx().SamAccountName %>\"\n\n# Split the group names into an array\n$groups = $OnPremGroups -split ','\n\n# Loop through each group and add the user to the group\nforeach ($group in $groups) {\n    try {\n        # Attempt to add the user to the group\n        Add-ADGroupMember -Identity ${group} -Members ${userName}\n        Write-Output \"Successfully added $userName to ${group}\"\n    } catch {\n        # If an error occurs, display a message\n        Write-Error \"Failed to add ${userName} to ${group}: $_\"\n    }\n}"
+      host: <% ctx().ad_host[0] %>
+      password: <% ctx().password[0] %>
+      username: <% ctx().username[0] %>
+      verify_ssl_cert: false
+      port: 5985
+    next:
+      - do:
+          - check
+        when: <% succeeded() %>
+        publish:
+          - license_added: "Yes"
+  # [378, 232]
+  check_ad_user:
+    action: sim_activedirectory.check_ad_user
+    input:
+      ad_host: <% ctx().ad_host[0] %>
+      display_name: <% ctx().display_user %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+    next:
+      - do:
+          - create_ad_user
+        when: <% str(result().output.task_output.stdout) != "1" and  result().output.task_output.succeeded = true %>
+        publish:
+          - user_count: <% result().output.task_output.stdout %
+      - do:
+          - ticket_update_escalate
+        when: <% str(result().output.task_output.stdout) = "1"  or result().output.task_output.succeeded = false %>
+        publish:
+          - user_count: <% result().output.task_output.stdout %>
+  # [1, 237]
+  ticket_update_escalate:
+    action: core.echo
+    input:
+      message: Input User Issue. Escalating ticket.Reason <% ctx().user_count %> user already present on active directory or error creating new user.
+    next:
+      - do:
+          - end_1_user_exists
+        publish:
+          - state: DIAGNOSIS
+          - info:
+              ticketNo: <% ctx().data.itsm.details.ticket_id %>
+              summary: User NOT on-boarded
+              next_action: escalate
+              root_cause: actions_failed
+              first_notified: <% task().end_timestamp %>
+              last_worked_upon: <% task().end_timestamp %>
+              ad_created: <% ctx().ad_created %>
+              membership_copied: <% ctx().ad_created %>
+              license_added: <% ctx().license_added %>
+              mailbox_created: <% ctx().mailbox_created %>
+              next_action_attributes:
+                escalate:
+                  resolution_flag: false
+                  team_name: SD
+                  owner: None
+                  status: In Progress
+                  ticket_update: Sim Automation is escalating the service request after finding the user to be onboarded already exists
+          - execution_log: "[{\"task_name\":\"check_ad_user\",\"expected_returncode\":\"1\", \"actual_returncode\":<% ctx().user_count  %>}]"
+  # [0, 391]
+  end_1_user_exists:
+    action: core.noop
+  # [376, 843]
+  fetch_manager_email:
+    action: sim_activedirectory.fetch_email_object_ad_user
+    input:
+      ad_host: <% ctx().ad_host[0] %>
+      display_name: <% ctx().manager %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+    next:
+      - do:
+          - add_manager
+        publish:
+          - email: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
+          - objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
+  # [375, 109]
+  random:
+    action: core.local
+    input:
+      cmd: "cat /dev/urandom | tr -dc '~!@#$%^&*_A-Za-z0-9' | head -c${1:-35}"
+    next:
+      - do:
+          - check_ad_user
+        publish:
+          - random_string: <% result().stdout %>
+  # [966, 256]
+  check:
+    action: core.noop
+    next:
+      - do:
+          - sleep_180
+      - do:
+          - start_delta_sync
+        when: <% 1 = 2 %>
+  # [91, 562]
+  set_account_expiry:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "Set-ADAccountExpiration  -Identity \"<% ctx().first_name.substring(0,1)%><%ctx().last_name %>\" -DateTime \"<% ctx().expirydate %>\""
+      host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      port: 5985
+      verify_ssl_cert: false
+      password: <% ctx().password[0] %>
+    next:
+      - do:
+          - add_description
+  # [376, 508]
+  expiry_required:
+    action: core.noop
+    next:
+      - do:
+          - set_account_expiry
+        when: <% 1 = 2 %>
+      - do:
+          - add_description
+        when: <% 1 = 1 %>
+  # [1361, 506]
+  set_home_for_citrix_users:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "# Define the user's samAccountName\n$userSamAccountName = \"<% ctx().SamAccountName %>\" \n# Define the Home Drive letter\n$homeDrive = \"H:\"\n# Define the Home Directory path, using the username variable\n$homeDirectory = \"<%ctx().DriveConnect%>\" + \"<%ctx().SamAccountName%>\"\n# Set the Home Drive and Home Directory for the user\nSet-ADUser -Identity $userSamAccountName -HomeDrive $homeDrive -HomeDirectory $homeDirectory\n# Output to verify the command was applied\nWrite-Output \"Home folder set for user $userSamAccountName to $homeDirectory on drive $homeDrive\""
+      host: <% ctx().ad_host[0] %>
+      username: <% ctx().username[0] %>
+      password: <% ctx().password[0] %>
+      verify_ssl_cert: false
+    next:
+      - do:
+          - ticket_update
+  # [136, 39]
+  trigger:
+    action: core.local
+    next:
+      - do:
+          - start
+    input:
+      cmd: sleep 9
+  # [1327, 354]
+  ad_user_to_group:
+    action: sim_o365.azuread.add_user_to_group
+    next:
+      - do:
+          - set_home_for_citrix_users
+        when: <% ctx().AccountType != "Email Only" %>
+      - do:
+          - ticket_update
+        when: <% ctx().AccountType = "Email Only" %>
+    input:
+      log_level: DEBUG
+      group_display_name: <%ctx().AADGroups%>
+      user_upn: <%ctx().Email%>
+      client_secret: BjU8Q~lc5Bc24o8GQpcXYFokm2cDlCx37had2cmH
+      client_id: d1ad7f89-3647-4fdd-a86e-d1bdf9215771
+      tenant_id: 093fbc57-fe85-40b2-8cfd-45e5fb06e327
+  # [1299, 956]
+  report_to_webex:
+    action: cisco_webex.webex_post_message
+    input:
+      log_level: DEBUG
+      room_id: Y2lzY29zcGFyazovL3VzL1JPT00vMDQ1NjZjNjAtOGMwMi0xMWVlLWIwMGYtMjc5MGE1NGY0NzRl
+      text: "Automation update for user onboarding is as follows:\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added from: <%ctx().model_user %>\nMembership groups copied: <% ctx().membership_copied %>\nAD sync: True\nLicense Added: <% ctx().license_added %>\nMailbox Created: <% ctx().mailbox_created %>"
+      bearer_token: N2U5NzA4NmYtYjM3OC00MGRjLWE2NDItYWQwMmRjMWUwNWY0N2IzMWIxM2YtNWMx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
+input:
+  - data
+output:
+  - state: <% ctx().state %>
+  - info:  <% ctx().info %>
+vars:
+  - ad_created: NO
+  - membership_copied: NO
+  - license_added: NO
+  - mailbox_created: NO
+

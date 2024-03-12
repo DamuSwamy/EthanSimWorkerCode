@@ -66,10 +66,12 @@ class ManagementGroupSensor(PollingSensor):
         current_day    = current_ast_ts.strftime('%A')
         current_hour   = current_ast_ts.strftime('%H')
         current_minute = self.closest_left(int(current_ast_ts.strftime('%M')))
-        if current_minute < 10:
-            current_time = '{}:0{}'.format(current_hour, current_minute)
-        else:
-            current_time = '{}:{}'.format(current_hour, current_minute)
+        #current_time   = '{:02d}:{:02d}'.format(current_hour, current_minute)
+        #if current_minute < 10:
+        #    current_time = '{}:0{}'.format(current_hour, current_minute)
+        #else:
+        #    current_time = '{}:{}'.format(current_hour, current_minute)
+        current_time = '{}:{}'.format(current_hour, current_minute)
         self.current_day  = current_day
         self.current_time = current_time
         return_result = None
@@ -87,7 +89,7 @@ class ManagementGroupSensor(PollingSensor):
                           and a.ManagmentGroupSIName = c.ManagementGroupSIName
                           and a.ManagmentGroupSIName = d.Name
                           and c.Day='{self.current_day}'
-                          and c.ActionTime='{self.current_time}'
+                          and CONVERT(time, c.ActionTime) = CONVERT(time, '{self.current_time}')
                           """
             self._logger.debug(COUNT_QUERY)
             rows = conn.execute(COUNT_QUERY).fetchone()
@@ -117,7 +119,7 @@ class ManagementGroupSensor(PollingSensor):
                             and a.ManagmentGroupSIName = c.ManagementGroupSIName
                             and a.ManagmentGroupSIName = d.Name
                             and c.Day='{self.current_day}' 
-                            and c.ActionTime='{self.current_time}') AS RowNumberedTable
+                            and CONVERT(time, c.ActionTime) = CONVERT(time, '{self.current_time}')) AS RowNumberedTable
                         WHERE RowNumber BETWEEN {start_row + 1} AND {start_row + batch_size}
                         """
                 self._logger.debug(QUERY)
@@ -129,6 +131,7 @@ class ManagementGroupSensor(PollingSensor):
                     return_result = []
                     all_results = query_result.fetchall()
                     for row in all_results:
+                        self._logger.info('Processing ManagementGroup: {}, VM: {}'.format(row['ManagmentGroupSIName'], row['ServerFriendlyName']))
                         return_result.append(self.row_to_dict(row))
                 if len(return_result) > 0:
                     self._logger.info('Records found: {}'.format(len(return_result)))

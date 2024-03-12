@@ -1,0 +1,118 @@
+version: 1.0
+tasks:
+  # [894, 61]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - convert_delegate_forward_removesharedmems
+  # [1147, 753]
+  print_execution_log:
+    action: core.echo
+    input:
+      message: "\"<% ctx().execution_log %>\""
+  # [749, 194]
+  convert_delegate_forward_removesharedmems:
+    action: sim_exchange.convert_delegate_forward_removefromshared_mailbox_v2
+    input:
+      user_email: <% ctx().user_email %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+      organisation: <% ctx().organisation %>
+      host: <% ctx().ad_host %>
+      type: <% ctx().type %>
+      app_id: <% ctx().app_id %>
+      certificate_file_path: <% ctx().certificate_file_path %>
+      emailDelegate: <% ctx().emailDelegate %>
+      emailDelegateUser: <% ctx().emailDelegateUser %>
+      forwardDelegate: <% ctx().forwardDelegate %>
+      forwardDelegateUser: <% ctx().forwardDelegateUser %>
+    next:
+      - do:
+          - con_del_for_success
+        publish:
+          - convert_mailbox: <% dict(task_name=>"convert_mailbox", expected_returncode=>"True", actual_returncode=>"True") %>
+          - forward_mailbox: <% dict(task_name=>"forward_mailbox", expected_returncode=>"True", actual_returncode=>"True") %>
+          - delegate_mailbox: <% dict(task_name=>"delegate_mailbox", expected_returncode=>"True", actual_returncode=>"True") %>
+          - removesharedmem_mailbox: <% dict(task_name=>"removesharedmem_mailbox", expected_returncode=>"True", actual_returncode=>"True") %>
+        when: <% succeeded() %>
+      - do:
+          - con_del_for_failed
+        when: <% failed() %>
+        publish:
+          - convert_mailbox: <% dict(task_name=>"convert_mailbox", expected_returncode=>"True", actual_returncode=>"False") %>
+          - forward_mailbox: <% dict(task_name=>"forward_mailbox", expected_returncode=>"True", actual_returncode=>"False") %>
+          - delegate_mailbox: <% dict(task_name=>"delegate_mailbox", expected_returncode=>"True", actual_returncode=>"False") %>
+          - removesharedmem_mailbox: <% dict(task_name=>"removesharedmem_mailbox", expected_returncode=>"True", actual_returncode=>"False") %>
+  # [1147, 603]
+  build_execution_log:
+    action: core.noop
+    next:
+      - do:
+          - print_execution_log
+        publish:
+          - execution_log: <% ctx().get('execution_log' , []) + [ ctx(convert_mailbox) , ctx(delegate_mailbox) ,  ctx(forward_mailbox) ,   ctx(removesharedmem_mailbox) , ctx(delegate_onedrive)] %>
+  # [1142, 448]
+  one_drive_delegation:
+    action: sim_o365.one_drive_delegation_v2
+    input:
+      delegate_email: <% ctx().oneDriveDelegateUser %>
+      host: <% ctx().ad_host %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+      user_email: <% ctx().user_email %>
+      admin_url: <% ctx().admin_url %>
+      certificate_file_path: <% ctx().certificate_file_path %>
+    next:
+      - do:
+          - build_execution_log
+        publish:
+          - delegate_onedrive: <% dict(task_name=>"delegate_onedrive", expected_returncode=>0, actual_returncode=>result().output.task_std_ret_code) %>
+  # [847, 307]
+  con_del_for_success:
+    action: core.noop
+    next:
+      - do:
+          - end_exchange
+  # [551, 325]
+  con_del_for_failed:
+    action: core.noop
+    next:
+      - do:
+          - end_exchange
+  # [766, 443]
+  end_exchange:
+    action: core.noop
+    next:
+      - do:
+          - one_drive_delegation
+        when: <%ctx().oneDriveDelegate = "Yes"%>
+      - do:
+          - build_execution_log_1_exch
+        when: <%ctx().oneDriveDelegate !="Yes"%>
+  # [711, 629]
+  build_execution_log_1_exch:
+    action: core.noop
+    next:
+      - do:
+          - print_execution_log
+        publish:
+          - execution_log: <% ctx().get('execution_log' , []) + [ ctx(convert_mailbox) , ctx(delegate_mailbox) ,  ctx(forward_mailbox) ,   ctx(removesharedmem_mailbox) ] %>
+input:
+  - user_email
+  - ad_host
+  - username
+  - password
+  - organisation
+  - app_id
+  - type
+  - certificate_file_path
+  - admin_url
+  - emailDelegate
+  - forwardDelegate
+  - oneDriveDelegate
+  - emailDelegateUser
+  - forwardDelegateUser
+  - oneDriveDelegateUser
+output:
+  - execution_log: <% ctx().execution_log %>

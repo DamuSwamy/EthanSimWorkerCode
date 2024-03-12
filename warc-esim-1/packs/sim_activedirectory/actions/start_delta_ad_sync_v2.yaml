@@ -1,0 +1,27 @@
+pack: sim_activedirectory
+enabled: true
+runner_type: orquesta
+name: start_delta_ad_sync_v2
+entry_point: workflows/start_delta_ad_sync_v2.yaml
+description: For a Delta Sync from AD to Cloud Most Common sync
+parameters:
+  ad_host:
+    type: string
+    description: AD host to connect to
+    required: true
+  username:
+    type: string
+    description: username
+    required: true
+  password:
+    type: string
+    required: true
+    secret: true
+  transport:
+    type: string
+    description: transport
+    default: ntlm
+  verify_ssl_cert:
+    type: boolean
+    description: use ssl or not
+    default: null

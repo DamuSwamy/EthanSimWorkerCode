@@ -1,0 +1,29 @@
+pack: warrigal_core
+enabled: true
+runner_type: orquesta
+name: reset_user
+entry_point: workflows/reset_user.yaml
+description: Reset offboarded user status
+parameters:
+  ad_host:
+    type: string
+    default: 10.232.32.12
+    required: true
+  username:
+    type: string
+    description: username
+    default: svc-simauto-1@ecorp.systems
+    required: true
+  password:
+    type: string
+    description: Password
+    default: 9HCyebdFegocotbideat
+    required: true
+    secret: true
+  user:
+    type: string
+    default: stest2
+    required: true
+  model_user:
+    type: string
+    default: Supriya.Kadam

@@ -1,0 +1,42 @@
+pack: warrigal_core
+enabled: true
+runner_type: orquesta
+name: offboard_user_suspend_process
+entry_point: workflows/offboard_user_suspend_process.yaml
+description: Offboard User Suspend User Process
+parameters:
+  ad_host:
+    type: string
+    description: Active Directory Host to connect to
+    required: true
+  password:
+    type: string
+    description: Password of the user
+    default: Password of the user
+    required: true
+  username:
+    type: string
+    description: Username
+    required: true
+    default: Administrator
+  new_description:
+    type: string
+    description: New Description to put against user
+    required: true
+  display_name:
+    type: string
+    description: Display Name  of the AD user
+    required: true
+  client_id:
+    type: string
+    description: Microsoft Graph API client id
+    required: true
+  client_secret:
+    type: string
+    description: Microsoft Graph API client secret
+    required: true
+    secret: true
+  tenant_id:
+    type: string
+    required: true
+    description: Microsoft Graph API tenant id

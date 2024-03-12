@@ -1,0 +1,6 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: onboard_new_user
+entry_point: workflows/onboard_new_user.yaml
+description: Onboarding a new user
