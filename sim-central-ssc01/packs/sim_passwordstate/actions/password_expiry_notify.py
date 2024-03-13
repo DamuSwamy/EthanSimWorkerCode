@@ -54,7 +54,7 @@ class GetUserDetailsWithinExpiryRangeAction(Action):
                 }
             }
             response = requests.post(url, headers=headers, json=payload)
-            return response.json()
+            #return response.json()
 
         # Function to get users with last password change timestamp
         def get_all_users_enabled_within_expiry_range(token, domains, min_days, max_days):
@@ -155,7 +155,7 @@ class GetUserDetailsWithinExpiryRangeAction(Action):
 #iteration for every user
         for user in users:
             user["days_to_expiry"] = (datetime.strptime(user["expiry_date"], "%Y-%m-%d") - datetime.now()).days
-            to_email = "Sai.Yagneswarreddy@Ethan.com.au"
+            to_email = user["email"]
             subject = "Password Expiry Notification - Your Password Will Expire Soon"
 
             # Update the HTML body template with individual user details
@@ -164,12 +164,9 @@ class GetUserDetailsWithinExpiryRangeAction(Action):
                 days_to_expiry=user["days_to_expiry"],
                 expiry_date=user["expiry_date"]
             )
-            time.sleep(200)
+            time.sleep(10)
             # Send email
             response = send_email("to_email", subject, html_body)
-            if "success" in response and response["success"]:
-                print(f"Email sent successfully to {to_email}")
-            else:
-                print(f"Failed to send email to {to_email}. Response: {response}")
+            print(f"Email sent successfully to {to_email}")
 
         return users

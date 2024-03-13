@@ -120,9 +120,6 @@ tasks:
     action: core.echo
     input:
       message: "<% ctx().messages %>"
-    next:
-      - do:
-          - webex_report
   # [261, 1065]
   done:
     action: core.noop
@@ -318,11 +315,3 @@ tasks:
     next:
       - do:
           - decide_now_or_later
-  # [542, 1204]
-  webex_report:
-    action: cisco_webex.webex_post_message
-    input:
-      log_level: DEBUG
-      room_id: Y2lzY29zcGFyazovL3VzL1JPT00vMDQ1NjZjNjAtOGMwMi0xMWVlLWIwMGYtMjc5MGE1NGY0NzRl
-      bearer_token: N2U5NzA4NmYtYjM3OC00MGRjLWE2NDItYWQwMmRjMWUwNWY0N2IzMWIxM2YtNWMx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
-      text: Warrigal Onboarding request

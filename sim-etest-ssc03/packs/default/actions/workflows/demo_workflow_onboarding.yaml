@@ -67,6 +67,9 @@ tasks:
           - tenant_id: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.tenant_id)) %>
           - client_id: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.client_id)) %>
           - client_secret: <% ctx().data.ci_details.where($.ci_id = 'OFFICE365').select(str($.connections.GRAPH_API.client_secret)) %>
+          - office_id: <% ctx().data.data.custom_attributes.OfficeID %>
+          - department_id: <% ctx().data.data.custom_attributes.DepaartmentFullID %>
+          - employee_number: <% ctx().data.data.custom_attributes.UniqueEmployeeNumber%>
   # [711, 318]
   start_delta_sync:
     action: sim_activedirectory.start_delta_ad_sync
@@ -223,7 +226,7 @@ tasks:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: "# Retrieve the user by UPN\n$UserPrincipalName = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n$ADUser = Get-ADUser -Filter {UserPrincipalName -eq $UserPrincipalName}\n\n# Define the attributes to add\n$ADAttributesHash = @{\n    'extensionAttribute1' = \"Value1\"\n    'extensionAttribute2' = \"Value2\"\n    'extensionAttribute4' = \"Value4\"\n    'extensionAttribute15' = \"Value15\"\n    'employeeID' = \"123456\"\n}\n\n# Set the attributes for the user\n$ADUser | Set-ADUser -Add $ADAttributesHash"
+      cmd: "# Retrieve the user by UPN\n$UserPrincipalName = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n$ADUser = Get-ADUser -Filter {UserPrincipalName -eq $UserPrincipalName}\n\n# Define the attributes to add\n$TodayDate = Get-Date -Format \"yyyy-MM-dd\"\n$ADAttributesHash = @{\n    'extensionAttribute1' = \"<%ctx().office_id%>\"\n    'extensionAttribute2' = \"value2\"\n    'extensionAttribute4' = \"<%ctx().department_id%>\"\n    'extensionAttribute15' = \"Sim Automation on $TodayDate\"\n    'employeeID' = <%ctx().employee_number%>\"\n}\n\n# Set the attributes for the user\n$ADUser | Set-ADUser -Add $ADAttributesHash\n"
       host: <% ctx().ad_host[0] %>
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>

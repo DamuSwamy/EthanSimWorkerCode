@@ -97,15 +97,15 @@ class FormatCCBToCIAC(Action):
                     #monthly_charge_amt = float(float(obj["Charge_Amt"]) * int(obj["Duration"]))
                     SIFriendlyName=obj["vmName"]
                     ethvmid=obj["ethvmid"]
-                    if obj["Resource"]=="BackupLic" and obj["Volume"]=="1" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
+                    if obj["Resource"]=="BackupLic" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         #print("Backuplic",obj['Charge_Amt'], obj['Volume'])
                         testcharge+=float(obj['Charge_Amt'])
-                        backupBase=float(obj["Charge_Amt"])
+                        backupBase+=float(obj["Charge_Amt"])
                     if obj["Resource"] == "LIC" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         #print("lic",obj['Charge_Amt'], obj['Volume'])
                         testcharge+=float(obj['Charge_Amt'])
-                        LicVolume = float(obj["Volume"])
-                        LicCost = float(obj['Charge_Amt'])
+                        LicVolume += float(obj["Volume"])
+                        LicCost += float(obj['Charge_Amt'])
                         cpuTotal += float(obj['Charge_Amt'])
                     if obj["Resource"]=="Backup" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         #print("Backup vol!=1",obj['Charge_Amt'], obj['Volume'])
@@ -115,19 +115,19 @@ class FormatCCBToCIAC(Action):
                     if obj["Resource"]=="DrLic" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         testcharge+=float(obj['Charge_Amt'])
                         #print("DrLic",obj['Charge_Amt'], obj['Volume'])
-                        drLicensing=float(obj["Charge_Amt"])  
+                        drLicensing+=float(obj["Charge_Amt"])  
                     if obj["Resource"]=="DrDisk" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":   
                         testcharge+=float(obj['Charge_Amt'])
                         #print("DrDisk",obj['Charge_Amt'], obj['Volume'])
-                        drDisk=float(obj["Charge_Amt"])   
+                        drDisk+=float(obj["Charge_Amt"])   
                     if obj["Resource"]=="DrCPU" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         testcharge+=float(obj['Charge_Amt'])
                         #print("DrCpu",obj['Charge_Amt'], obj['Volume'])
-                        drCPU=float(obj["Charge_Amt"])  
+                        drCPU+=float(obj["Charge_Amt"])  
                     if obj["Resource"]=="DrRAM" and obj["Charge_Amt"]!="" and obj["Charge_Amt"]!="N/A":
                         testcharge+=float(obj['Charge_Amt'])
                         #print("DrRam",obj['Charge_Amt'], obj['Volume'])
-                        drRam=float(obj["Charge_Amt"])
+                        drRam+=float(obj["Charge_Amt"])
                     if obj["Resource"]=="CPU":
                         if obj["Volume"]!="" and obj["Volume"]!="N/A":
                             cpuHoursvolume=float(obj["Volume"])

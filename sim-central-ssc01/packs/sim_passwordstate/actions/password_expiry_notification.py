@@ -42,7 +42,7 @@ class GetUserDetailsWithinExpiryRangeAction(Action):
         # Function to get users with specific domains, last password change timestamp, and accountEnabled: true
         def get_all_users_enabled_within_expiry_range(token, domains, min_days, max_days):
             users = []
-            graph_url = f'https://graph.microsoft.com/beta/users?$select=displayName,userPrincipalName,lastPasswordChangeDateTime,accountEnabled'
+            graph_url = f'https://graph.microsoft.com/beta/users?$filter=accountEnabled eq true&$select=displayName,userPrincipalName,lastPasswordChangeDateTime,accountEnabled'
             headers = {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'}
 
             while True:
@@ -79,8 +79,8 @@ class GetUserDetailsWithinExpiryRangeAction(Action):
         # Main
         token = get_access_token()
         domains = ['Ethan.com.au', 'ethan.com.au']
-        min_days = 7
-        max_days = 15
+        min_days = 15
+        max_days = 30
 
         users = get_all_users_enabled_within_expiry_range(token, domains, min_days, max_days)
 
