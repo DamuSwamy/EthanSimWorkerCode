@@ -5,7 +5,7 @@ tasks:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: New-ADUser -Name "<% ctx().first_name %> <% ctx().last_name %>" -GivenName "<% ctx().first_name %>" -Surname "<% ctx().last_name %>" -DisplayName "<% ctx().first_name %> <% ctx().last_name %>" -Department "<% ctx().department %>" -Title "<% ctx().title %>" -Office "<% ctx().location %>" -SamAccountName "<% ctx().first_name.substring(0,1) %><% ctx().last_name %>" -UserPrincipalName "<% ctx().first_name %>.<% ctx().last_name %>@<% ctx().emaildomain %>" -Path "<% ctx().target_OU %>" -AccountPassword (ConvertTo-SecureString "<% ctx().random_string %>" -AsPlainText -Force) -MobilePhone "<% ctx().mobile %>" -Enabled $true
+      cmd: New-ADUser -Name "<% ctx().first_name %> <% ctx().last_name %>" -GivenName "<% ctx().first_name %>" -Surname "<% ctx().last_name %>" -DisplayName "<% ctx().first_name %> <% ctx().last_name %>" -Department "<% ctx().Department %>" -Title "<% ctx().title %>" -Office "<% ctx().location %>" -SamAccountName "<% ctx().first_name %>.<% ctx().last_name %>" -UserPrincipalName "<% ctx().first_name %>.<% ctx().last_name %>@<% ctx().emaildomain %>" -Path "<% ctx().target_OU %>" -AccountPassword (ConvertTo-SecureString "<% ctx().random_string %>" -AsPlainText -Force) -MobilePhone "<% ctx().mobile %>" -Division "<% ctx().division %>" -Enabled $true
       host: <% ctx().ad_host[0] %>
       password: <% ctx().password[0] %>
       username: <% ctx().username[0] %>
@@ -23,7 +23,7 @@ tasks:
           - user_count: " "
       - do:
           - fetch_manager_email
-  # [705, 54]
+  # [717, 55]
   add_manager:
     action: core.winrm_ps_cmd
     input:
@@ -44,7 +44,7 @@ tasks:
       message: "\"starting\""
     next:
       - do:
-          - task2
+          - task1
         publish:
           - ad_host: <% ctx().data.ci_details.where($.ci_id = 'AD01').select(str($.connections.POWERSHELL.ip_address)) %>
           - username: <% ctx().data.ci_details.where($.ci_id = 'AD01').select($.connections.POWERSHELL.username) %>
@@ -70,7 +70,9 @@ tasks:
           - office_id: <% ctx().data.data.custom_attributes.OfficeID %>
           - department_id: <% ctx().data.data.custom_attributes.DepaartmentFullID %>
           - employee_number: <% ctx().data.data.custom_attributes.UniqueEmployeeNumber%>
-  # [711, 318]
+          - division: <% ctx().data.data.custom_attributes.Division %>
+          - Department: <% ctx().data.data.custom_attributes.Department %>
+  # [713, 587]
   start_delta_sync:
     action: sim_activedirectory.start_delta_ad_sync
     input:
@@ -79,8 +81,8 @@ tasks:
       password: <% ctx().password[0] %>
     next:
       - do:
-          - set_extension_attribute
-  # [963, 801]
+          - connect_exchange_online
+  # [1005, 327]
   sleep_90:
     action: core.local
     input:
@@ -89,14 +91,14 @@ tasks:
     next:
       - do:
           - ticket_update
-  # [704, 1014]
+  # [1012, 589]
   end:
     action: core.noop
-  # [702, 906]
+  # [1007, 445]
   ticket_update:
     action: core.echo
     input:
-      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added from: <%ctx().model_user %>\nMembership groups copied: <% ctx().membership_copied %>\nAD sync: True\nLicense Added: True\nMailbox Created: True\nSalesforce: True"
+      message: "Automation has successfully onboarded the user.\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added from: <%ctx().model_user %>\nMembership groups copied: <% ctx().membership_copied %>\nAD sync: True\nLicense Added: True\nMailbox Created: False\n"
     next:
       - do:
           - end
@@ -134,7 +136,7 @@ tasks:
       password: <% ctx().password[0] %>
     next:
       - do:
-          - task4
+          - password_generate
         when: <% str(result().output.task_output.stdout) != "1" and  result().output.task_output.succeeded = true %>
         publish:
           - user_count: <% result().output.task_output.stdout %
@@ -193,17 +195,17 @@ tasks:
           - email: <% regex_substring(result().output.task_output.stdout, "(\S+@\S+)") %>
           - objectid: <% regex_substring(result().output.task_output.stdout, "(\S+-\S+-\S+-\S+)") %>
   # [412, 94]
-  task2:
+  task1:
     action: core.noop
     next:
       - do:
           - check_ad_user
-  # [1057, 66]
+  # [716, 438]
   user_to_default_groups:
     action: core.winrm_ps_cmd
     next:
       - do:
-          - add_user_to_license
+          - start_delta_sync
     input:
       transport: ntlm
       cmd: "# User to add\n$UserToAdd = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n# Check if the user exists\n$User = Get-ADUser -Filter {UserPrincipalName -eq $UserToAdd}\n\nif ($User) {\n    Write-Host \"User '$UserToAdd' found. Adding to groups...\"\n    \n    # Array of group names\n    $GroupNames = \"patest\", \"Az-RG-ETEST-REDBOX-AE-Owners\", \"Az-RG-ETEST-REDBOX-AE-Contributors\", \"Az-RG-ETEST-REDBOX-AE-Readers\"\n    \n    # Add user to each group\n    foreach ($GroupName in $GroupNames) {\n        Add-ADGroupMember -Identity $GroupName -Members $User\n        Write-Host \"Added '$UserToAdd' to group '$GroupName'\"\n    }\n} else {\n    Write-Host \"User '$UserToAdd' not found in Active Directory.\"\n}\n"
@@ -212,7 +214,7 @@ tasks:
       password: <% ctx().password[0] %>
       verify_ssl_cert: false
   # [379, 365]
-  task4:
+  password_generate:
     action: core.local
     next:
       - do:
@@ -221,25 +223,12 @@ tasks:
           - random_string: <% result().stdout[0].Password %>
     input:
       cmd: "curl -x http://210.48.210.35:3128/ -X GET 'https://pwd.ecorp.systems/api/generatepassword/' -H 'APIKey: e75c3a324b869fd46d98ec23f75ba3c3' -v -L"
-  # [708, 443]
+  # [717, 311]
   set_extension_attribute:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: "# Retrieve the user by UPN\n$UserPrincipalName = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n$ADUser = Get-ADUser -Filter {UserPrincipalName -eq $UserPrincipalName}\n\n# Define the attributes to add\n$TodayDate = Get-Date -Format \"yyyy-MM-dd\"\n$ADAttributesHash = @{\n    'extensionAttribute1' = \"<%ctx().office_id%>\"\n    'extensionAttribute2' = \"value2\"\n    'extensionAttribute4' = \"<%ctx().department_id%>\"\n    'extensionAttribute15' = \"Sim Automation on $TodayDate\"\n    'employeeID' = <%ctx().employee_number%>\"\n}\n\n# Set the attributes for the user\n$ADUser | Set-ADUser -Add $ADAttributesHash\n"
-      host: <% ctx().ad_host[0] %>
-      username: <% ctx().username[0] %>
-      password: <% ctx().password[0] %>
-      verify_ssl_cert: false
-    next:
-      - do:
-          - set_mobile_number
-  # [724, 579]
-  set_mobile_number:
-    action: core.winrm_ps_cmd
-    input:
-      transport: ntlm
-      cmd: "# Retrieve the user by UPN\n$UserPrincipalName = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n$ADUser = Get-ADUser -Filter {UserPrincipalName -eq $UserPrincipalName}\n\n# Define the attributes to update\n$ADAttributesHash = @{\n    'Mobile' = \"<%ctx().mobile%>\"\n    'Title' = \"<%ctx().title%>\"\n}\n\n# Update the attributes for the user\n$ADUser | Set-ADUser -Mobile $ADAttributesHash.Mobile -Title $ADAttributesHash.Title\n"
+      cmd: $UserPrincipalName = "<% ctx().first_name %>.<% ctx().last_name %>@<% ctx().emaildomain %>"; $ADUser = Get-ADUser -Filter {UserPrincipalName -eq $UserPrincipalName}; $TodayDate = Get-Date -Format "yyyy-MM-dd"; $ADUser | Set-ADUser -Add @{ 'extensionAttribute1' = "<% ctx().office_id %>"; 'extensionAttribute2' = "value2"; 'extensionAttribute4' = "<% ctx().department_id %>"; 'extensionAttribute15' = "Sim Automation on $TodayDate"; 'employeeID' = "<% ctx().employee_number %>" }
       host: <% ctx().ad_host[0] %>
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>
@@ -247,20 +236,7 @@ tasks:
     next:
       - do:
           - user_to_default_groups
-  # [1066, 204]
-  add_user_to_license:
-    action: core.winrm_cmd
-    input:
-      transport: ntlm
-      cmd: "# User to add\n$UserToAdd = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n# Check if the user exists\n$User = Get-ADUser -Filter {UserPrincipalName -eq $UserToAdd}\n\nif ($User) {\n    Write-Host \"User '$UserToAdd' found. Adding to groups...\"\n    \n    # Array of group names\n    $GroupNames = \"patest\", \"Az-RG-ETEST-REDBOX-AE-Owners\", \"Az-RG-ETEST-REDBOX-AE-Contributors\", \"Az-RG-ETEST-REDBOX-AE-Readers\"\n    \n    # Add user to each group\n    foreach ($GroupName in $GroupNames) {\n        Add-ADGroupMember -Identity $GroupName -Members $User\n        Write-Host \"Added '$UserToAdd' to group '$GroupName'\"\n    }\n} else {\n    Write-Host \"User '$UserToAdd' not found in Active Directory.\"\n}\n"
-      host: <% ctx().ad_host[0] %>
-      username: <% ctx().username[0] %>
-      password: <% ctx().password[0] %>
-      verify_ssl_cert: false
-    next:
-      - do:
-          - connect_exchange_online
-  # [1069, 369]
+  # [1007, 85]
   connect_exchange_online:
     action: core.winrm_ps_cmd
     input:
@@ -273,7 +249,7 @@ tasks:
     next:
       - do:
           - check_user_mail
-  # [1086, 540]
+  # [1006, 198]
   check_user_mail:
     action: core.winrm_ps_cmd
     input:
@@ -289,9 +265,6 @@ tasks:
   # [718, 173]
   create_mailbox:
     action: core.winrm_ps_cmd
-    next:
-      - do:
-          - start_delta_sync
     input:
       transport: ntlm
       cmd: New-Mailbox -Name "<% ctx().first_name %> <% ctx().last_name %>" -Password (ConvertTo-SecureString "<% ctx().random_string %>" -AsPlainText -Force) -UserPrincipalName ("$((<% ctx().first_name %>).replace(' ', ''))$((<% ctx().last_name %>).replace(' ', ''))@etest.systems") -Alias ("$((<% ctx().first_name %>).replace(' ', ''))$((<% ctx().last_name %>).replace(' ', ''))") -DisplayName "<% ctx().first_name %> <% ctx().last_name %>" -FirstName "<% ctx().first_name %>" -LastName "<% ctx().last_name %>" -OrganizationalUnit "OU=Users,OU=TestOU,OU=ETEST EUC,DC=etest,DC=systems" -PrimarySmtpAddress ("$((<% ctx().first_name %>).replace(' ', ''))$((<% ctx().last_name %>).replace(' ', ''))@etest.systems") -ResetPasswordOnNextLogon $false -SamAccountName ("$((<% ctx().first_name %>).replace(' ', ''))$((<% ctx().last_name %>).replace(' ', ''))")
@@ -300,6 +273,9 @@ tasks:
       password: <% ctx().password[0] %>
       port: 5985
       verify_ssl_cert: false
+    next:
+      - do:
+          - set_extension_attribute
 input:
   - data
 output:

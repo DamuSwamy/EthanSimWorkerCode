@@ -3245,6 +3245,9 @@
           "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-SBX-TST-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotedge-tst-ae/extensions/AzurePolicyforLinux"
         },
         {
+          "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-SBX-TST-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotedge-tst-ae/extensions/enablevmAccess"
+        },
+        {
           "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-SBX-TST-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotedge-tst-ae/extensions/OmsAgentForLinux"
         }
       ]
