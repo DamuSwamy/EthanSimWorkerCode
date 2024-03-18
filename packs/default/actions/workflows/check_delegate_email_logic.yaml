@@ -1,0 +1,35 @@
+version: 1.0
+tasks:
+  # [388, 40]
+  execute_automation:
+    action: core.noop
+    next:
+      - do:
+          - check_next
+  # [388, 188]
+  check_next:
+    action: core.noop
+    next:
+      - do:
+          - done
+        when: <% ctx().indexOf('failed_actions','delegate_onedrive') = -1 %>
+      - do:
+          - delegated_user_email
+        when: <% ctx().indexOf('failed_actions') != "delegate_onedrive" %>
+  # [628, 443]
+  done:
+    action: core.echo
+    input:
+      message: "\" Complete \" "
+  # [284, 335]
+  delegated_user_email:
+    action: core.sendmail
+    next:
+      - do:
+          - done
+    input:
+      to: supriya.kadam@accelnomics.com
+      subject: One drive is delegated
+      body: "\" One drive delegation successful \""
+input:
+  - failed_actions

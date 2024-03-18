@@ -1,0 +1,10 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: prime_or_composite
+entry_point: workflows/prime_or_composite.yaml
+parameters:
+  n:
+    type: number
+    description: Check if prime or not
+    required: true

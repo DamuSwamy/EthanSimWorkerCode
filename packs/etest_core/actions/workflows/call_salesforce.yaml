@@ -1,0 +1,17 @@
+version: 1.0
+tasks:
+  # [219, 91]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - call_wf
+  # [219, 257]
+  call_wf:
+    action: core.http
+    input:
+      url: "https://axl.accelnomics.com/api/v1/executions"
+      body: "{\"action\":\"axl_salesforce.create_user\",\"parameters\":{\"password\":\"Friday123!\",\"username\":\"aman@accelnomics.sandbox\",\"securitytoken\":\"LwrcOnqHeY9HR8es5JRIpGhs\",\"user_details\":{\"Username\":\"sai7Reddy7@etest.systems\",\"Alias\":\"demo7\",\"Email\":\"sai7@etest.systems\",\"LastName\":\"reddy\",\"FirstName\":\"sai7\",\"CommunityNickname\":\"sai77\",\"TimeZoneSidKey\":\"America/Los_Angeles\",\"LocaleSidKey\":\"en_US\",\"EmailEncodingKey\":\"ISO-8859-1\",\"ProfileId\":\"00e5i000004WpGfAAK\",\"LanguageLocaleKey\":\"en_US\"}}}"
+      headers:
+        St2-Api-Key: MGRjNGVjOTM2NmZiMTQzMDg2YzIwOGFkZWE4ZGZhZjJmZTllNjEyNmU1ZjY2OTEzMTZjNmViNjAxYTZmMDliYw
+      method: POST

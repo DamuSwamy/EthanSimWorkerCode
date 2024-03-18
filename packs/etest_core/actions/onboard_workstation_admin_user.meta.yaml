@@ -1,0 +1,9 @@
+pack: etest_core
+enabled: true
+runner_type: orquesta
+name: onboard_workstation_admin_user
+entry_point: workflows/onboard_workstation_admin_user.yaml
+parameters:
+  data:
+    type: object
+    description: input json payload

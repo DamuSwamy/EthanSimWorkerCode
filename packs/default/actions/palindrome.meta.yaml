@@ -1,0 +1,9 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: palindrome
+entry_point: workflows/palindrome.yaml
+parameters:
+  i:
+    type: integer
+    required: true

@@ -153,8 +153,8 @@ tasks:
   sleep_180:
     action: core.local
     input:
-      cmd: sleep 180
-      timeout: 200
+      cmd: sleep 250
+      timeout: 300
     next:
       - do:
           - set_usage_location

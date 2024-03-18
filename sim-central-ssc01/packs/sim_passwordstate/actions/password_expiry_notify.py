@@ -135,7 +135,7 @@ class GetUserDetailsWithinExpiryRangeAction(Action):
                 </ul>
                 <p>As a reminder, you should not share your password with anyone, including IT support or colleagues.</p>
                 <p><strong>Need Assistance?</strong></p>
-                <p>If you encounter any difficulties while updating your password or have questions about password security, please don't hesitate to reach out to our IT support team at [IT Support Email or Phone Number]. They are here to assist you (and will look upon you very kindly for making the effort to change your password before it expires).</p>
+                <p>If you encounter any difficulties while updating your password or have questions about password security,Please don't hesitate to reach out to our IT support team at helpdesk@ethan.com.au or call 1Ethan (13 84 26). They are here to assist you (and will look upon you very kindly for making the effort to change your password before it expires).</p>
                 <p>We appreciate your cooperation in maintaining the security of our systems and data, and hope you have a great day.</p>
                 <p><strong>Click below button to change the password</strong></p>
                 <!-- Hyperlink for Redirect -->
@@ -164,7 +164,7 @@ class GetUserDetailsWithinExpiryRangeAction(Action):
                 days_to_expiry=user["days_to_expiry"],
                 expiry_date=user["expiry_date"]
             )
-            time.sleep(10)
+            time.sleep(7)
             # Send email
             response = send_email("to_email", subject, html_body)
             print(f"Email sent successfully to {to_email}")

@@ -1,0 +1,5 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: delegate email logic
+entry_point: workflows/delegate email logic.yaml

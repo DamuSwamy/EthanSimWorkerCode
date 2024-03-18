@@ -1,0 +1,36 @@
+pack: sim_activedirectory
+enabled: true
+runner_type: orquesta
+name: remove_memberships_ad_user
+entry_point: workflows/remove_memberships_ad_user.yaml
+description: Remove memberships of AD user
+parameters:
+  username:
+    type: string
+    description: username
+    default: Administrator
+    required: true
+  password:
+    type: string
+    description: password
+    default: Eth@nGroup12345
+    required: true
+    secret: true
+  objectid:
+    type: string
+    description: objectid
+    default: 87061b8b-0dbc-4b4f-91aa-8e3edeb9535b
+    required: true
+  transport:
+    type: string
+    description: transport
+    default: ntlm
+  verify_ssl_certs:
+    type: boolean
+    description: use ssl or not
+    default: null
+  ad_host:
+    type: string
+    description: AD host to connect to
+    default: ec2-35-154-52-226.ap-south-1.compute.amazonaws.com
+    required: true

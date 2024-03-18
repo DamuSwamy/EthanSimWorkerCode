@@ -1,0 +1,146 @@
+version: 1.0
+tasks:
+  # [328, 0]
+  start:
+    action: core.noop
+    next:
+      - when: <
+      - do:
+          - convert_remove_user_from_sharedboxes
+        when: <% ctx().delegation_required = false %>
+      - do:
+          - convert_delegate_forward_removesharedmems
+        when: <% ctx().delegation_required = true %>
+  # [588, 416]
+  delegation_not_required:
+    action: core.noop
+    next:
+      - do:
+          - print_execution_log
+        publish:
+          - execution_log: <% ctx().get('execution_log' , []) + [ ctx(convert_mailbox), ctx(removesharedmem_mailbox)] %>
+  # [591, 574]
+  print_execution_log:
+    action: core.echo
+    input:
+      message: "\"<% ctx().execution_log %>\""
+  # [134, 110]
+  convert_delegate_forward_removesharedmems:
+    action: sim_exchange.convert_delegate_forward_removefromshared_mailbox
+    input:
+      user_email: <% ctx().user_email %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+      organisation: <% ctx().organisation %>
+      host: <% ctx().ad_host %>
+      type: <% ctx().type %>
+      app_id: <% ctx().app_id %>
+      forwarding_email_address: <% ctx().delegate_email %>
+      delegate_forward_email: <% ctx().delegate_email %>
+      certificate_file_path: <% ctx().certificate_file_path %>
+    next:
+      - do:
+          - con_del_for_success
+        publish:
+          - convert_mailbox: <% dict(task_name=>"convert_mailbox", expected_returncode=>"True", actual_returncode=>"True") %>
+          - forward_mailbox: <% dict(task_name=>"forward_mailbox", expected_returncode=>"True", actual_returncode=>"True") %>
+          - delegate_mailbox: <% dict(task_name=>"delegate_mailbox", expected_returncode=>"True", actual_returncode=>"True") %>
+          - removesharedmem_mailbox: <% dict(task_name=>"removesharedmem_mailbox", expected_returncode=>"True", actual_returncode=>"True") %>
+        when: <% succeeded() %>
+      - do:
+          - con_del_for_failed
+        when: <% failed() %>
+        publish:
+          - convert_mailbox: <% dict(task_name=>"convert_mailbox", expected_returncode=>"True", actual_returncode=>"False") %>
+          - forward_mailbox: <% dict(task_name=>"forward_mailbox", expected_returncode=>"True", actual_returncode=>"False") %>
+          - delegate_mailbox: <% dict(task_name=>"delegate_mailbox", expected_returncode=>"True", actual_returncode=>"False") %>
+          - removesharedmem_mailbox: <% dict(task_name=>"removesharedmem_mailbox", expected_returncode=>"True", actual_returncode=>"False") %>
+  # [132, 563]
+  build_execution_log:
+    action: core.noop
+    next:
+      - do:
+          - print_execution_log
+        publish:
+          - execution_log: <% ctx().get('execution_log' , []) + [ ctx(convert_mailbox), ctx(delegate_mailbox),  ctx(forward_mailbox), ctx(removesharedmem_mailbox),ctx(delegate_onedrive)] %>
+  # [121, 416]
+  one_drive_delegation:
+    action: sim_o365.one_drive_delegation_v2
+    input:
+      delegate_email: <% ctx().delegate_email %>
+      host: <% ctx().ad_host %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+      user_email: damodaran.swamy@etest.systems
+      admin_url: <% ctx().admin_url %>
+    next:
+      - do:
+          - build_execution_log
+        publish:
+          - delegate_onedrive: <% dict(task_name=>"delegate_onedrive", expected_returncode=>0, actual_returncode=>0) %>
+  # [503, 111]
+  convert_remove_user_from_sharedboxes:
+    action: sim_exchange.convert_remove_members_sharedmailboxes
+    next:
+      # #629e47
+      - do:
+          - convert_success
+        publish:
+          - removesharedmem_mailbox: <% dict(task_name=>"removesharedmem_mailbox", expected_returncode=>0, actual_returncode=>result().output.task_std_ret_code) %>
+          - convert_mailbox: <% dict(task_name=>"convert_mailbox", expected_returncode=>0, actual_returncode=>result().output.task_std_ret_code) %>
+        when: <% succeeded() %>
+      # #fd9d32
+      - do:
+          - convert_failed
+        when: <% failed() %>
+        publish:
+          - convert_mailbox: <% dict(task_name=>"convert_mailbox", expected_returncode=>0, actual_returncode=>1) %>
+          - removesharedmem_mailbox: <% dict(task_name=>"removesharedmem_mailbox", expected_returncode=>0, actual_returncode=>1) %>
+    input:
+      app_id: <% ctx().app_id %>
+      certificate_file_path: <% ctx().certificate_file_path %>
+      host: <% ctx().ad_host %>
+      organisation: <% ctx().organisation %>
+      username: <% ctx().username %>
+      password: <% ctx().password %>
+      user_email: <% ctx().user_email %>
+      type: <% ctx().type %>
+  # [232, 264]
+  con_del_for_success:
+    action: core.noop
+    next:
+      - do:
+          - one_drive_delegation
+  # [0, 265]
+  con_del_for_failed:
+    action: core.noop
+    next:
+      - do:
+          - one_drive_delegation
+  # [682, 267]
+  convert_success:
+    action: core.noop
+    next:
+      - do:
+          - delegation_not_required
+  # [460, 266]
+  convert_failed:
+    action: core.noop
+    next:
+      - do:
+          - delegation_not_required
+input:
+  - user_email
+  - delegate_email
+  - forward_email
+  - delegation_required
+  - ad_host
+  - username
+  - password
+  - organisation
+  - app_id
+  - type
+  - certificate_file_path
+  - admin_url
+output:
+  - execution_log: <% ctx().execution_log %>

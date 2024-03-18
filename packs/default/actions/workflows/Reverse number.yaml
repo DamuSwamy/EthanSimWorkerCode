@@ -1,0 +1,39 @@
+version: 1.0
+tasks:
+  # [174, 27]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - next
+  # [174, 126]
+  next:
+    action: core.noop
+    next:
+      - do:
+          - change
+        publish:
+          - rev: <% ctx().rev*10 + ctx().a mod 10 %>
+          - a: <% ctx().a/10 %>
+  # [174, 238]
+  change:
+    action: core.noop
+    next:
+      - do:
+          - reversed_output
+        when: <% ctx().a <= 0 %>
+      - do:
+          - next
+        when: <% ctx().a > 0 %>
+  # [174, 367]
+  reversed_output:
+    action: core.echo
+    input:
+      message: "\" <% ctx().rev %> \""
+vars:
+  - rev: 0
+input:
+  - a
+  - i
+output:
+  - reverse: <% ctx().rev %>

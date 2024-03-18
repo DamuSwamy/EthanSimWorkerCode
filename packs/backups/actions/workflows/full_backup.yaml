@@ -1,0 +1,82 @@
+---
+version: '1.0'
+description: Workflow that backs up the StackStorm MongoDB and Postgres databases
+input:
+  - path
+  - mistral_config
+  - mongodb_admin_username
+  - mongodb_admin_password
+  - retention_days
+  - backup_timeout
+  - mongodb_host
+
+vars:
+  - mongo_backup_success: false
+  - postgres_backup_success: false
+
+output:
+  - mongodb_dump_archive: '{{ ctx().mongodb_dump_archive }}'
+  - postgres_dump_archive: '{{ ctx().postgres_dump_archive }}'
+
+tasks:
+  # [215, 29]
+  date:
+    action: core.local
+    input:
+      cmd: "date +%Y%m%d_%H%M%S"
+    next:
+      - when: '{{ succeeded() }}'
+        publish:
+          - date: '{{ result().stdout }}'
+        do:
+          - mongodb_backup
+          - postgres_backup
+
+  # [365, 179]
+  mongodb_backup:
+    action: backups.mongodb_backup
+    input:
+      path: '{{ ctx().path }}'
+      date: '{{ ctx().date }}'
+      mongodb_admin_username: '{{ ctx().mongodb_admin_username }}'
+      mongodb_admin_password: '{{ ctx().mongodb_admin_password }}'
+      mongodb_host: '{{ ctx().mongodb_host }}'
+      retention_days: '{{ ctx().retention_days }}'
+      backup_timeout: '{{ ctx().backup_timeout }}'
+
+    next:
+      - when: "{{ completed() }}"
+        publish:
+          - mongo_backup_success: "{{ true if succeeded() else false }}"
+          - mongodb_dump_archive: '{{ result().output.mongodb_dump_archive }}'
+        do:
+          - end
+
+  # [65, 179]
+  postgres_backup:
+    action: backups.postgres_backup
+    input:
+      path: '{{ ctx().path }}'
+      date: '{{ ctx().date }}'
+      mistral_config: '{{ ctx().mistral_config }}'
+      retention_days: '{{ ctx().retention_days }}'
+      backup_timeout: '{{ ctx().backup_timeout }}'
+    next:
+      - when: "{{ completed() }}"
+        publish:
+          - postgres_backup_success: "{{ true if succeeded() else false }}"
+          - postgres_dump_archive: '{{ result().output.postgres_dump_archive }}'
+        do:
+          - end
+
+  # [165, 329]
+  end:
+    action: core.noop
+    join: all
+    next:
+      - when: "{{ succeeded() and (ctx().mongo_backup_success and ctx().postgres_backup_success) }}"
+        do:
+          - noop
+      - when: "{{ succeeded() and (not ctx().mongo_backup_success or not ctx().postgres_backup_success) }}"
+        do:
+          - fail

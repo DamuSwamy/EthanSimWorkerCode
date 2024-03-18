@@ -1,0 +1,53 @@
+version: 1.0
+tasks:
+  # [390, 42]
+  execute_automation:
+    action: core.noop
+    next:
+      - do:
+          - check_failed_delegate_onedrive
+        when: <% succeeded()  and  result().output.info.delegate_notification.get('delegate',"") = "Yes" %>
+        publish:
+          - x: 0
+  # [390, 187]
+  check_failed_delegate_onedrive:
+    action: core.noop
+    next:
+      - do:
+          - check_next
+        when: <% ctx().x < len(result().output.info.get('failed_actions')) %>
+  # [391, 309]
+  check_next:
+    action: core.noop
+    next:
+      - do:
+          - skip
+        when: <% ctx().result().output.info.get('failed_actions[ctx().x]') != delegate_onedrive
+      - do:
+          - done
+        when: <% ctx().result().output.info.get('failed_actions[ctx().x]') = delegate_onedrive
+  # [285, 415]
+  skip:
+    action: core.noop
+    next:
+      - do:
+          - check_failed_delegate_onedrive
+        publish:
+          - x: <% ctx().x+1 %>
+      - do:
+          - next
+  # [788, 594]
+  done:
+    action: core.echo
+  # [514, 579]
+  delegated_user_email:
+    action: core.sendmail
+    next:
+      - do:
+          - done
+  # [243, 563]
+  next:
+    action: core.noop
+    next:
+      - do:
+          - delegated_user_email

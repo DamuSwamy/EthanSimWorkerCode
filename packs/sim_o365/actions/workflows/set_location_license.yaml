@@ -1,0 +1,44 @@
+version: 1.0
+tasks:
+  # [182, 61]
+  get_token:
+    action: core.http
+    input:
+      url: "https://login.microsoftonline.com/<% ctx().tenant_id %> /oauth2/v2.0/token"
+      body: client_id=<% ctx().client_id %>&scope=https%3A%2F%2Fgraph.microsoft.com%2F.default&client_secret=<% ctx().client_secret %>&grant_type=client_credentials
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+      method: GET
+    next:
+      - do:
+          - update_usage_location
+        publish:
+          - graph_auth_token: <% result().body. access_token %>
+  # [182, 327]
+  assign_license:
+    action: core.http
+    input:
+      url: "https://graph.microsoft.com/v1.0/users/<% ctx().user %>/assignLicense"
+      body: "{\"addLicenses\":[{\"skuId\":\"06ebc4ee-1bb5-47dd-8120-11324bc54e06\"},{\"skuId\":\"f30db892-07e9-47e9-837c-80727f46fd3d\"},{\"skuId\":\"a403ebcc-fae0-4ca2-8c8c-7a907fd6c235\"}],\"removeLicenses\":[]}"
+      headers:
+        Authorization: Bearer <% ctx().graph_auth_token %>
+        Content-Type: application/json
+      method: POST
+  # [185, 190]
+  update_usage_location:
+    action: core.http
+    next:
+      - do:
+          - assign_license
+    input:
+      url: "https://graph.microsoft.com/v1.0/users/<% ctx().user %>/"
+      method: PATCH
+      headers:
+        Authorization: Bearer <% ctx().graph_auth_token %>
+        Content-Type: application/json
+      body: "{\"usageLocation\":\"AU\"}"
+input:
+  - tenant_id
+  - client_id
+  - client_secret
+  - user

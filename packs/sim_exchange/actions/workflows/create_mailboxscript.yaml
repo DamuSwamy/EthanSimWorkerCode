@@ -1,0 +1,144 @@
+---
+version: 1.0
+
+description: create mailbox workflow
+
+vars:
+  - notifications: []
+  - process_name: "Create mailbox workflow"
+
+input:
+  - SamAccountName
+  - email_address
+  - mailbox_type
+  - exchange_host
+  - exchange_username
+  - exchange_password
+  - ad_host
+  - use_commands_instead
+
+output:
+  - is_mailbox_created: <% ctx().is_mailbox_created %>
+
+tasks:
+  # [144, 169]
+  create_mailbox:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: ./Enable-RemoteMailboxMelAir_v2.ps1 -UserSamAccountName <% ctx().SamAccountName %> -emailAddress <% ctx().email_address %> -mailboxType <% ctx().mailbox_type %> -adServer <% ctx().ad_host %>  -username <% ctx().exchange_username %> -passwd '<% ctx().exchange_password %>'
+      host: <% ctx().exchange_host %>
+      password: <% ctx().exchange_password %>
+      username: <% ctx().exchange_username %>
+      cwd: "C:\\_admin\\"
+      port: 5985
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - is_mailbox_created: "{{ 'mailbox created' if regex_search(result().stdout, 'RemoteUserMailbox') else 'mailbox not created' }}"
+        do:
+          - noop
+      - when: <% failed() %>
+        publish:
+          - is_mailbox_created: "mailbox not created - command failed"
+        do:
+          - fail
+  # [113, 2]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - create_mailbox
+        when: <% 1 > 2%>
+      - do:
+          - get_ad_user
+        when: <% 1 = 1 %>
+        publish:
+          - email_id: <% ctx().email_address.split('@')[0] %>
+  # [476, 180]
+  enable_remote_mailbox:
+    action: core.winrm_ps_cmd
+    next:
+      # #629e47
+      - do:
+          - set_remote_mailbox
+        when: <% succeeded() %>
+        publish:
+          - is_mailbox_created: in progress
+      - do:
+          - enable_remote_mailbox_failed
+        when: <% failed() %>
+        publish:
+          - is_mailbox_created: mailbox not created enable remote mailbox failed
+    input:
+      transport: ntlm
+      cmd: "$teamsUsername = '<% ctx().exchange_username %>'\n$teamsPassword = '<% ctx().exchange_password %>'\n$secureTeamsPassword = ConvertTo-SecureString $teamsPassword -AsPlainText -Force\n$Creds = New-Object System.Management.Automation.PSCredential ($teamsUsername, $secureTeamsPassword)\n$SessionOption = New-PSSessionOption -SkipCACheck -SkipCNCheck –SkipRevocationCheck\n$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://ETSTDC1EXCH1.etest.systems/PowerShell/ -Credential $Creds -SessionOption $SessionOption -Authentication Kerberos\nImport-PSSession $Session -DisableNameChecking\nEnable-RemoteMailbox -Identity '<% ctx().objectid %>' -RemoteRoutingAddress \"<% ctx().email_id %>@apam.mail.onmicrosoft.com\" -PrimarySmtpAddress <% ctx().email_address %>"
+      host: <% ctx().exchange_host %>
+      username: <% ctx().exchange_username %>
+      port: 5985
+      verify_ssl_cert: false
+      password: <% ctx().exchange_password %>
+  # [318, 284]
+  set_remote_mailbox:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "$teamsUsername = '<% ctx().exchange_username %>'\n$teamsPassword = '<% ctx().exchange_password %>'\n$secureTeamsPassword = ConvertTo-SecureString $teamsPassword -AsPlainText -Force\n$Creds = New-Object System.Management.Automation.PSCredential ($teamsUsername, $secureTeamsPassword)\n$SessionOption = New-PSSessionOption -SkipCACheck -SkipCNCheck –SkipRevocationCheck\n$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://ETSTDC1EXCH1.etest.systems/PowerShell/ -Credential $Creds -SessionOption $SessionOption -Authentication Kerberos\nImport-PSSession $Session -DisableNameChecking\nSet-RemoteMailbox '<% ctx().objectid %>' -EmailAddresses @{add=\"<% ctx().email_id %>@apam.mail.onmicrosoft.com\"}"
+      host: <% ctx().exchange_host %>
+      username: <% ctx().exchange_username %>
+      port: 5985
+      verify_ssl_cert: false
+      password: <% ctx().exchange_password %>
+    next:
+      - do:
+          - failed_set_remote_mailbox
+        when: <% failed() %>
+        publish:
+          - is_mailbox_created: mailbox not created set remote mailbox failed
+      # #629e47
+      - do:
+          - success_mailbox_created
+        publish:
+          - is_mailbox_created: mailbox created set remote mailbox completed
+  # [668, 284]
+  enable_remote_mailbox_failed:
+    action: core.echo
+    input:
+      message: "\"failed enable remote mailbox\""
+  # [188, 411]
+  failed_set_remote_mailbox:
+    action: core.echo
+    input:
+      message: "\"failed set remote mailbox\""
+  # [468, 410]
+  success_mailbox_created:
+    action: core.echo
+    input:
+      message: "\"mailbox created\""
+  # [475, 53]
+  get_ad_user:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: Get-ADUser -Identity <% ctx().SamAccountName %> -Properties  DistinguishedName
+      host: <% ctx().ad_host %>
+      username: <% ctx().exchange_username %>
+      password: <% ctx().exchange_password %>
+      port: 5985
+      verify_ssl_cert: false
+    next:
+      - do:
+          - user_not_found
+        when: <% failed() %>
+        publish:
+          - is_mailbox_created: mailbox not created user not found on AD
+      - do:
+          - enable_remote_mailbox
+        when: <% succeeded() %>
+        publish:
+          - objectid: <% regex_substring(result().stdout, "(\S+-\S+-\S+-\S+)") %> 
+  # [753, 50]
+  user_not_found:
+    action: core.echo
+    input:
+      message: "\"user not found\""

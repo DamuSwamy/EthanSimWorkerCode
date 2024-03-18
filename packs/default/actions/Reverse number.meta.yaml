@@ -1,0 +1,9 @@
+pack: default
+enabled: true
+runner_type: orquesta
+name: Reverse number
+entry_point: workflows/Reverse number.yaml
+parameters:
+  a:
+    type: integer
+    required: true

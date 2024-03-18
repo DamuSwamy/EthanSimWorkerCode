@@ -1,0 +1,63 @@
+version: 1.0
+tasks:
+  # [210, 0]
+  begin:
+    action: core.noop
+    next:
+      - do:
+          - start
+  # [213, 96]
+  start:
+    action: core.noop
+    next:
+      - do:
+          - negative_numbers
+        when: <% ctx().number<0 %>
+      - do:
+          - print_number
+        publish:
+          - i: <% ctx().i+1 %>
+        when: <% ctx().number > 1 %>
+      - do:
+          - zero_and_one
+        when: <% ctx().number=0 or ctx().number=1 %>
+  # [0, 212]
+  negative_numbers:
+    action: core.echo
+    input:
+      message: "\" Factorial cannot be determined for negative numbers \""
+  # [302, 234]
+  print_number:
+    action: core.noop
+    next:
+      - do:
+          - start
+        when: <% ctx().number > ctx().i %>
+        publish:
+          - factorial: <% ctx().factorial * ctx().i %>
+      - do:
+          - next
+        when: <% ctx().number = ctx().i %>
+  # [318, 446]
+  factorial:
+    action: core.echo
+    input:
+      message: "\" <% ctx().output %> \""
+  # [1, 336]
+  zero_and_one:
+    action: core.echo
+    input:
+      message: "\" The factorial value is 1 \""
+  # [223, 343]
+  next:
+    action: core.noop
+    next:
+      - do:
+          - factorial
+        publish:
+          - output: <% ctx().factorial * ctx().number %>
+input:
+  - number
+vars:
+  - i: 1
+  - factorial: 1
