@@ -1249,11 +1249,9 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
-              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/disks/VM-AVD-AE-2-3_OsDisk_1_1f48860e423c4693a1a250cb7b22ae71"
             },
-            "deleteOption": "Detach",
-            "diskSizeGB": 128
+            "deleteOption": "Detach"
           },
           "dataDisks": []
         },
