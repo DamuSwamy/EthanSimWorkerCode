@@ -1,5 +1,0 @@
-pack: default
-enabled: true
-runner_type: orquesta
-name: trial_onboarding_etest
-entry_point: workflows/trial_onboarding_etest.yaml

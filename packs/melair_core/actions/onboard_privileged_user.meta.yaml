@@ -1,9 +1,0 @@
-pack: melair_core
-enabled: true
-runner_type: orquesta
-name: onboard_privileged_user
-entry_point: workflows/onboard_privileged_user.yaml
-parameters:
-  data:
-    type: object
-    description: input json payload

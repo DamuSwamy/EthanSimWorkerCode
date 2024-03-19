@@ -1,5 +1,0 @@
-pack: default
-enabled: true
-runner_type: orquesta
-name: trial
-entry_point: workflows/trial.yaml

@@ -1,6 +1,0 @@
-pack: melair_core
-enabled: true
-runner_type: orquesta
-name: onboard_user_activedirectory
-entry_point: workflows/onboard_user_activedirectory.yaml
-description: Active Directory steps for onboarding user

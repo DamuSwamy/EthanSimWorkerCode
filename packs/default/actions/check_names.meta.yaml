@@ -1,9 +1,0 @@
-pack: default
-enabled: true
-runner_type: orquesta
-name: check_names
-entry_point: workflows/check_names.yaml
-parameters:
-  input:
-    type: array
-    required: true

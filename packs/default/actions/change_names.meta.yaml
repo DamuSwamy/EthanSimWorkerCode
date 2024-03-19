@@ -1,9 +1,0 @@
-pack: default
-enabled: true
-runner_type: orquesta
-name: change_names
-entry_point: workflows/change_names.yaml
-parameters:
-  input:
-    type: array
-    required: true

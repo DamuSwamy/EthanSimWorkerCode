@@ -1,6 +1,0 @@
-pack: etest_core
-enabled: true
-runner_type: orquesta
-name: call_salesforce
-entry_point: workflows/call_salesforce.yaml
-description: testing
