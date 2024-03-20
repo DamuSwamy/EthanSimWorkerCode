@@ -1,0 +1,40 @@
+---
+name: self_destruct_message
+description: Sends a self-destruct message via ecorp.systems API
+runner_type: python-script
+enabled: true
+entry_point: self_destruct_message.py
+parameters:
+  api_url:
+    type: string
+    description: The URL of the API endpoint
+    required: true
+  api_key:
+    type: string
+    description: The API key for authentication
+    required: true
+    secret: true
+  to_email:
+    type: string
+    description: The recipient's email address
+    required: true
+  message:
+    type: string
+    description: The message to be sent
+    required: true
+    secret: true
+  expires_at:
+    type: string
+    description: Expiry time for the message (e.g., "3d" for 3 days)
+    required: true
+  passphrase:
+    type: string
+    description: Passphrase for authentication
+    required: true
+    default: ethan2020
+    secret: true
+  no_views:
+    type: integer
+    description: Number of times the message can be viewed
+    required: true
+

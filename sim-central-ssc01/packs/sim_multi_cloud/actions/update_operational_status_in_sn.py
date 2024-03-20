@@ -16,7 +16,7 @@ class adds_unique_id_to_devices(Action):
         csv_file_path="/opt/stackstorm/packs/sim_multi_cloud/actions/dev42_resources"
         with open(csv_file_path, 'r') as csv_file:
             csv_reader = csv.reader(csv_file)
-            next(csv_reader)  # Skip the header row if it exists
+           # next(csv_reader)  # Skip the header row if it exists
 
             for row in csv_reader:
         # Assuming the third field is at index 2 (0-indexed)

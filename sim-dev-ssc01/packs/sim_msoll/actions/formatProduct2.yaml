@@ -1,0 +1,13 @@
+---
+name: format_products_2
+pack: sim_msoll
+runner_type: "python-script"
+description: Generate Response
+enabled: true
+entry_point: formatProducts2.py
+parameters:
+  text:
+    type: string
+    description: file name
+    required: false
+      

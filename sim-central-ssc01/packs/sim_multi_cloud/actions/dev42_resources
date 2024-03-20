@@ -1,39 +1,45 @@
+48095,qasmercury,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Qas/providers/Microsoft.Web/sites/qasmercury,Azure Function App
+48096,prdmercury,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Prd/providers/Microsoft.Web/sites/prdmercury,Azure Function App
+48099,DefaultWorkspace-7e8ed0a0-804a-4660-8acd-80f0c85b5a15-EAU,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourcegroups/defaultresourcegroup-eau/providers/microsoft.operationalinsights/workspaces/defaultworkspace-7e8ed0a0-804a-4660-8acd-80f0c85b5a15-eau,Log Analytics Workspace
+48100,LOGA-MVGL-INFRA-AAD-AE-1,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-INFRA-AE-1/providers/Microsoft.OperationalInsights/workspaces/LOGA-MVGL-INFRA-AAD-AE-1,Log Analytics Workspace
 32104,ihg-plan-web-uat-shared-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat-aea/providers/Microsoft.Web/serverfarms/ihg-plan-web-uat-shared-aea,Server Farm
 31156,ethanstoredevdb,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEV-AE-1/providers/Microsoft.Sql/servers/ethanstoredevdb/databases/ethanstoredevdb,SQL Database
 48180,venus-prd-asp,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Prd/providers/Microsoft.Web/serverfarms/venus-prd-asp,Server Farm
-30198,ASP-ECRP-MAZUNaming-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ECRP-MAZUNames-AE-1/providers/Microsoft.Web/serverfarms/ASP-ECRP-MAZUNaming-AE-1,Server Farm
+48101,westus3storagea14ae20abf,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/westus3/providers/Microsoft.Storage/storageAccounts/westus3storagea14ae20abf,Blob Storage Account
+48103,venusstorageqas,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Storage/storageAccounts/venusstorageqas,Blob Storage Account
+48105,teams2021migration,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/DefaultResourceGroup-EAU/providers/Microsoft.Storage/storageAccounts/teams2021migration,Blob Storage Account
+48106,stpbiadlsaelrs1,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-INFRA-AE-1/providers/Microsoft.Storage/storageAccounts/stpbiadlsaelrs1,Blob Storage Account
 29946,ASP-ECSPPRD-PortalAPI-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Web/serverfarms/ASP-ECSPPRD-PortalAPI-1,Server Farm
 30209,ASP-ETHAN-PCMC-PROD-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-PROD-AE-1/providers/Microsoft.Web/serverfarms/ASP-ETHAN-PCMC-PROD-AE-1,Server Farm
+31142,ASP-ETHAN-ETHO-PRM-DEV-AE-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Web/serverfarms/ASP-ETHAN-ETHO-PRM-DEV-AE-1,Server Farm
 30379,ASP-ECSPUAT-PRM,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Web/serverfarms/ASP-ECSPUAT-PRM,Server Farm
 30440,SouthCentralUSPlan,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Web/serverfarms/SouthCentralUSPlan,Server Farm
+75480,ASP-ApiProject-a4f4,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/ApiProject/providers/Microsoft.Web/serverfarms/ASP-ApiProject-a4f4,Server Farm
 59352,ASP-RGMARWEBSITE1-a6fb,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-WEBSITE-1/providers/Microsoft.Web/serverfarms/ASP-RGMARWEBSITE1-a6fb,Server Farm
+29945,ASP-ECSPPRD-PortalAPI,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Web/serverfarms/ASP-ECSPPRD-PortalAPI,Server Farm
+30198,ASP-ECRP-MAZUNaming-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ECRP-MAZUNames-AE-1/providers/Microsoft.Web/serverfarms/ASP-ECRP-MAZUNaming-AE-1,Server Farm
 31929,ASP-SOLOTEL-CTO365-AE,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/RG-SOLOTEL-CTO365-AE/providers/Microsoft.Web/serverfarms/ASP-SOLOTEL-CTO365-AE,Server Farm
 29918,AFD-ECSPPRD-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Network/frontdoors/AFD-ECSPPRD-AE-1,Frontdoor
-29731,stethanecspuataestdlrs1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Storage/storageAccounts/stethanecspuataestdlrs1,Blob Storage Account
-48113,dataplatformpbi,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/DataPlatform/providers/Microsoft.Storage/storageAccounts/dataplatformpbi,Blob Storage Account
+30439,ASP-RGETHAND365AE-bfb4,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Web/serverfarms/ASP-RGETHAND365AE-bfb4,Server Farm
 31183,LOG-MAZU-LOGS-AE-1,/subscriptions/076abda6-b09c-42ec-8921-bb90c76d2428/resourcegroups/rg-mazu-logs-ae/providers/microsoft.operationalinsights/workspaces/log-mazu-logs-ae-1,Log Analytics Workspace
 27595,psql-ethan-d365-ae-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Sql/servers/psql-ethan-d365-ae-1,SQL Server
 27614,master,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Sql/servers/sql-ethan-mazu-ae-1/databases/master,SQL Database
 31327,teamcity.insurancehouse.com.au,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-stg-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-stg-aea/databases/teamcity.insurancehouse.com.au,SQL Database
-31330,asp.net.sessions,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-stg-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-stg-aea/databases/asp.net.sessions,SQL Database
-31331,master,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-stg-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-stg-aea/databases/master,SQL Database
 31336,ihg-sqldb-web-preprod-pami-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-preprod-pami-aea,SQL Database
-31337,ihg-sqldb-web-uat-pami-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-uat-pami-aea,SQL Database
 31340,ihg-sqldb-web-uat-coredata-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-uat-coredata-aea,SQL Database
-31343,ihg-sqldb-web-uat-kenticoom-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-uat-kenticoom-aea,SQL Database
-31341,ihg-sqldb-web-uat2-pami-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-uat2-pami-aea,SQL Database
-31344,ihg-sqldb-web-preprod-coredata-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-preprod-coredata-aea,SQL Database
-31375,ihg-as-web-prod-webpres-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Web/sites/ihg-as-web-prod-webpres-aea,Azure Function App
 30115,ASP-RGETHANMAZUAE-8897,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Web/serverfarms/ASP-RGETHANMAZUAE-8897,Server Farm
 30206,ASP-ETHAN-PCMC-DEV-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-DEV-AE-1/providers/Microsoft.Web/serverfarms/ASP-ETHAN-PCMC-DEV-AE-1,Server Farm
+31099,stethanonsharedloglrsae2,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-SHARED-AE-1/providers/Microsoft.Storage/storageAccounts/stethanonsharedloglrsae2,Blob Storage Account
+31100,stethanondevloglrsae2,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Storage/storageAccounts/stethanondevloglrsae2,Blob Storage Account
+31102,ethonportalapilrsae2,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Storage/storageAccounts/ethonportalapilrsae2,Blob Storage Account
+31103,ethoninternalapilrsae2,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Storage/storageAccounts/ethoninternalapilrsae2,Blob Storage Account
 59364,ASP-RGMARINTRANET1-b5c5,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-INTRANET-1/providers/Microsoft.Web/serverfarms/ASP-RGMARINTRANET1-b5c5,Server Farm
 30436,ASP-RGETHAND365AE-9f1d,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Web/serverfarms/ASP-RGETHAND365AE-9f1d,Server Farm
-30439,ASP-RGETHAND365AE-bfb4,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Web/serverfarms/ASP-RGETHAND365AE-bfb4,Server Farm
 48170,mercuryprd,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Prd/providers/Microsoft.Web/serverfarms/mercuryprd,Server Farm
 29702,loganalyticswpace,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourcegroups/rg-ethan-pmapidev-ae/providers/microsoft.operationalinsights/workspaces/loganalyticswpace,Log Analytics Workspace
 48056,onetrack_fhl_blob_prd,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/onetrack-sql/providers/Microsoft.Sql/servers/onetrack-sql-prd/databases/onetrack_fhl_blob_prd,SQL Database
-31617,stkrprdase01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-appprd-ase-1/providers/Microsoft.Storage/storageAccounts/stkrprdase01,Blob Storage Account
 31620,stkrhubase01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-hub-ase-1/providers/Microsoft.Storage/storageAccounts/stkrhubase01,Blob Storage Account
+31617,stkrprdase01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-appprd-ase-1/providers/Microsoft.Storage/storageAccounts/stkrprdase01,Blob Storage Account
 27598,psql-ethan-ecspprd-ae-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Sql/servers/psql-ethan-ecspprd-ae-1,SQL Server
 27605,master,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Sql/servers/psql-ethan-ecspuat-ae-1/databases/master,SQL Database
 85302,ASP-ETHAN-UC-CLBA-PRD-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UC-CLBA-AE/providers/Microsoft.Web/serverfarms/ASP-ETHAN-UC-CLBA-PRD-AE-1,Server Farm
@@ -43,28 +49,22 @@
 48117,mercuryprd,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Prd/providers/Microsoft.Storage/storageAccounts/mercuryprd,Blob Storage Account
 31191,LOG-DNATA-LOGS-AE-1,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourcegroups/rg-dnata-logs-ae/providers/microsoft.operationalinsights/workspaces/log-dnata-logs-ae-1,Log Analytics Workspace
 31199,netx5krsvase01asrcache,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-INFRA-SE/providers/Microsoft.Storage/storageAccounts/netx5krsvase01asrcache,Blob Storage Account
-29719,storageaccountrgethbfdd,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Storage/storageAccounts/storageaccountrgethbfdd,Blob Storage Account
+28325,FunApp-ED365-RefreshFilteredView,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Web/sites/FunApp-ED365-RefreshFilteredView,Azure Function App
 29749,stecrpinfravdceageneral,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ECRP-INFRA-VDC-EA/providers/Microsoft.Storage/storageAccounts/stecrpinfravdceageneral,Blob Storage Account
-30378,ASP-ECSPUAT-PortalAPI,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Web/serverfarms/ASP-ECSPUAT-PortalAPI,Server Farm
 27606,DB-GrainCorp,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Sql/servers/psql-ethan-ecspuat-ae-1/databases/DB-GrainCorp,SQL Database
-48177,venus-qas-asp,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Web/serverfarms/venus-qas-asp,Server Farm
+30378,ASP-ECSPUAT-PortalAPI,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Web/serverfarms/ASP-ECSPUAT-PortalAPI,Server Farm
 56620,master,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Sql/servers/sql-ethan-mazu-finops-ae-1/databases/master,SQL Database
-29945,ASP-ECSPPRD-PortalAPI,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Web/serverfarms/ASP-ECSPPRD-PortalAPI,Server Farm
+48177,venus-qas-asp,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Web/serverfarms/venus-qas-asp,Server Farm
+58795,marathonhealth,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-WEBSITE-1/providers/Microsoft.Web/sites/marathonhealth,Azure Function App
 31610,PowerBI,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-ase-legacy/providers/Microsoft.Sql/servers/ggfasesql01/databases/PowerBI,SQL Database
-31194,stdntalogsaelrsprivate1,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-LOGS-AE/providers/Microsoft.Storage/storageAccounts/stdntalogsaelrsprivate1,Blob Storage Account
-31197,stdnatacsoclrs,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-INFRA-AE/providers/Microsoft.Storage/storageAccounts/stdnatacsoclrs,Blob Storage Account
-31328,staging.insurancehouseplus.com.au,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-stg-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-stg-aea/databases/staging.insurancehouseplus.com.au,SQL Database
-65343,LA-ECRP-INFRA-Common-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ECRP-INFRA-VDC-AE/providers/Microsoft.OperationalInsights/workspaces/LA-ECRP-INFRA-Common-AE-1,Log Analytics Workspace
 32184,ihg-plan-web-prod-webpres-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Web/serverfarms/ihg-plan-web-prod-webpres-aea,Server Farm
 29725,stethanteamssspae1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-TEAMSSSP-AE/providers/Microsoft.Storage/storageAccounts/stethanteamssspae1,Blob Storage Account
 31351,master,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-aea/databases/master,SQL Database
 30447,sql-ethan-etho-dev-ae-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Sql/servers/sql-ethan-etho-dev-ae-1,SQL Server
-30451,DB-ETHAN-ETHO-CustomerServicePortal-DEV-AE-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Sql/servers/sql-ethan-etho-dev-ae-1/databases/DB-ETHAN-ETHO-CustomerServicePortal-DEV-AE-1,SQL Database
 31386,ihg-la-infra-all-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-infra-aea/providers/Microsoft.OperationalInsights/workspaces/ihg-la-infra-all-aea,Log Analytics Workspace
 73984,webApps-Production,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Production/providers/Microsoft.Web/serverfarms/webApps-Production,Server Farm
 31181,ASP-ETHAN-AXAPI-PROD-AE-1,/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-PROD-AE-1/providers/Microsoft.Web/serverfarms/ASP-ETHAN-AXAPI-PROD-AE-1,Server Farm
 32258,ihg-plan-web-uat2-shared-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.Web/serverfarms/ihg-plan-web-uat2-shared-aea,Server Farm
-30580,APP-ETHAN-ETHO-PORTALPAGE-DEV-AE-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Web/sites/APP-ETHAN-ETHO-PORTALPAGE-DEV-AE-1,Azure Function App
 48181,AustraliaEastPlan,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/DefaultResourceGroup-EAU/providers/Microsoft.Web/serverfarms/AustraliaEastPlan,Server Farm
 73959,intranetautomationprod,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Production/providers/Microsoft.Web/sites/intranetautomationprod,Azure Function App
 64982,azrestore01,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Storage/storageAccounts/azrestore01,Blob Storage Account
@@ -72,70 +72,69 @@
 29947,ASP-ECSPPRD-PRM,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Web/serverfarms/ASP-ECSPPRD-PRM,Server Farm
 48063,prd_transport,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Prd/providers/Microsoft.Sql/servers/venus-prd/databases/prd_transport,SQL Database
 30058,ASP-RGETHANPMAPIDEVAE-a220,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIDEV-AE/providers/Microsoft.Web/serverfarms/ASP-RGETHANPMAPIDEVAE-a220,Server Farm
-48071,qas_operations,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Sql/servers/venus-qas/databases/qas_operations,SQL Database
-70608,intranetautomationdev,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Development/providers/Microsoft.Web/sites/intranetautomationdev,Azure Function App
 70609,nzintranetstaging,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Development/providers/Microsoft.Web/sites/nzintranetstaging,Azure Function App
 31434,FUNC-SOLOTEL-CTO365-GRAPHAPI-NODE-AE,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/RG-SOLOTEL-CTO365-AE/providers/Microsoft.Web/sites/FUNC-SOLOTEL-CTO365-GRAPHAPI-NODE-AE,Azure Function App
-56675,DefaultWorkspace-95c87b36-ed69-4af9-bd09-2b55fbb8be7e-EAU,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/DefaultResourceGroup-EAU/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-95c87b36-ed69-4af9-bd09-2b55fbb8be7e-EAU,Log Analytics Workspace
-31193,stdntalogsaselrsprivate1,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-LOGS-AE/providers/Microsoft.Storage/storageAccounts/stdntalogsaselrsprivate1,Blob Storage Account
 48072,mercury-prd,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Prd/providers/Microsoft.Sql/servers/mercury-prd,SQL Server
 48081,qas-mfs-fns,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/mfs-qas/providers/Microsoft.Web/sites/qas-mfs-fns,Azure Function App
-27599,DB-ECSPPRD-CSPExtension,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Sql/servers/psql-ethan-ecspprd-ae-1/databases/DB-ECSPPRD-CSPExtension,SQL Database
 70632,webApps-Development,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Development/providers/Microsoft.Web/serverfarms/webApps-Development,Server Farm
+27597,DB-D365-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Sql/servers/psql-ethan-d365-ae-1/databases/DB-D365-1,SQL Database
+27599,DB-ECSPPRD-CSPExtension,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Sql/servers/psql-ethan-ecspprd-ae-1/databases/DB-ECSPPRD-CSPExtension,SQL Database
+27601,DB-ECSPPRD-CSPExtension_2023-07-28T03-30Z_Restore,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Sql/servers/psql-ethan-ecspprd-ae-1/databases/DB-ECSPPRD-CSPExtension_2023-07-28T03-30Z_Restore,SQL Database
 31382,ihg-la-infra-uat-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourcegroups/ihg-rg-common-uat-aea/providers/microsoft.operationalinsights/workspaces/ihg-la-infra-uat-aea,Log Analytics Workspace
 31377,ihg-as-web-prod-pami-ase,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-ase/providers/Microsoft.Web/sites/ihg-as-web-prod-pami-ase,Azure Function App
-30354,AFD-ECSPUAT-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Network/frontdoors/AFD-ECSPUAT-AE-1,Frontdoor
 30191,ASP-UATAX-AE,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-Ethan-UATAX-AE/providers/Microsoft.Web/serverfarms/ASP-UATAX-AE,Server Farm
+30354,AFD-ECSPUAT-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Network/frontdoors/AFD-ECSPUAT-AE-1,Frontdoor
 30437,ASP-RGETHAND365AE-a005,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Web/serverfarms/ASP-RGETHAND365AE-a005,Server Farm
+27620,master,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-PROD-AE-1/providers/Microsoft.Sql/servers/sql-ethan-pcmc-prod-ae-1/databases/master,SQL Database
+27603,DB-ECSPPRD-ServiceCatalogTemp,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Sql/servers/psql-ethan-ecspprd-ae-1/databases/DB-ECSPPRD-ServiceCatalogTemp,SQL Database
 27604,psql-ethan-ecspuat-ae-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Sql/servers/psql-ethan-ecspuat-ae-1,SQL Server
-31461,DefaultWorkspace-8b170db7-832a-47fa-b80b-86b48c117b68-SEA,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourcegroups/defaultresourcegroup-sea/providers/microsoft.operationalinsights/workspaces/defaultworkspace-8b170db7-832a-47fa-b80b-86b48c117b68-sea,Log Analytics Workspace
 31465,AzureBackupWSP,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourcegroups/solotelazure/providers/microsoft.operationalinsights/workspaces/azurebackupwsp,Log Analytics Workspace
+31461,DefaultWorkspace-8b170db7-832a-47fa-b80b-86b48c117b68-SEA,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourcegroups/defaultresourcegroup-sea/providers/microsoft.operationalinsights/workspaces/defaultworkspace-8b170db7-832a-47fa-b80b-86b48c117b68-sea,Log Analytics Workspace
 31466,storphaneddisksotlshdae1,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/DefaultResourceGroup-EAU/providers/Microsoft.Storage/storageAccounts/storphaneddisksotlshdae1,Blob Storage Account
+27636,WebApp-MAZU-BillingManagement,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Web/sites/WebApp-MAZU-BillingManagement,Azure Function App
+27639,WebApp-AXUAT-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-Ethan-UATAX-AE/providers/Microsoft.Web/sites/WebApp-AXUAT-AE-1,Azure Function App
 31319,production.insurancehouseplus.com.au,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-prd-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-prd-aea/databases/production.insurancehouseplus.com.au,SQL Database
 31324,ihg-sql-plus-stg-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-stg-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-stg-aea,SQL Server
-31103,ethoninternalapilrsae2,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Storage/storageAccounts/ethoninternalapilrsae2,Blob Storage Account
 31335,ihg-sqldb-web-preprod-kentico-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-preprod-kentico-aea,SQL Database
 48054,onetrack-sql-prd,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/onetrack-sql/providers/Microsoft.Sql/servers/onetrack-sql-prd,SQL Server
-48075,mercury-qas,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Qas/providers/Microsoft.Sql/servers/mercury-qas,SQL Server
 48086,venusdriver-qas-site,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Web/sites/venusdriver-qas-site,Azure Function App
+48075,mercury-qas,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Qas/providers/Microsoft.Sql/servers/mercury-qas,SQL Server
 31339,ihg-sqldb-web-uat2-coredata-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-uat2-coredata-aea,SQL Database
 31101,stethandevaestdlrs2,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Storage/storageAccounts/stethandevaestdlrs2,Blob Storage Account
 27517,LOGA-ETST-CYRISK-AE-1,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.OperationalInsights/workspaces/LOGA-ETST-CYRISK-AE-1,Log Analytics Workspace
 29720,storageaccountrgethbd01,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIDEV-AE/providers/Microsoft.Storage/storageAccounts/storageaccountrgethbd01,Blob Storage Account
 31153,master,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEMO-AE-1/providers/Microsoft.Sql/servers/ethanstore/databases/master,SQL Database
-56613,master,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-PROD-AE-1/providers/Microsoft.Sql/servers/sql-ethan-store-prod-ae-1/databases/master,SQL Database
 31154,ethanstore,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEMO-AE-1/providers/Microsoft.Sql/servers/ethanstore/databases/ethanstore,SQL Database
+56613,master,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-PROD-AE-1/providers/Microsoft.Sql/servers/sql-ethan-store-prod-ae-1/databases/master,SQL Database
 29738,rgethanecspprdaeb775,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Storage/storageAccounts/rgethanecspprdaeb775,Blob Storage Account
 31609,master,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-ase-legacy/providers/Microsoft.Sql/servers/ggfasesql01/databases/master,SQL Database
 27596,master,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Sql/servers/psql-ethan-d365-ae-1/databases/master,SQL Database
 70612,nzintranetdev,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Development/providers/Microsoft.Web/sites/nzintranetdev,Azure Function App
-27601,DB-ECSPPRD-CSPExtension_2023-07-28T03-30Z_Restore,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Sql/servers/psql-ethan-ecspprd-ae-1/databases/DB-ECSPPRD-CSPExtension_2023-07-28T03-30Z_Restore,SQL Database
 27608,DB-ECSPUAT-CustomerServicePortal,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Sql/servers/psql-ethan-ecspuat-ae-1/databases/DB-ECSPUAT-CustomerServicePortal,SQL Database
 28308,APP-ETHAN-PCMC-PROD-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-PROD-AE-1/providers/Microsoft.Web/sites/APP-ETHAN-PCMC-PROD-AE-1,Azure Function App
 28306,WebApp-ECSPPRD-PortalPage,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Web/sites/WebApp-ECSPPRD-PortalPage,Azure Function App
 31467,ihgstwebpreprodwebaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Storage/storageAccounts/ihgstwebpreprodwebaea,Blob Storage Account
-31431,ihgstwebprodwebaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Storage/storageAccounts/ihgstwebprodwebaea,Blob Storage Account
 31321,master,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-prd-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-prd-aea/databases/master,SQL Database
 48220,ASP-mfsqas-9a5d,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/mfs-qas/providers/Microsoft.Web/serverfarms/ASP-mfsqas-9a5d,Server Farm
-31618,stkrmbdase01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-gen-ase-1/providers/Microsoft.Storage/storageAccounts/stkrmbdase01,Blob Storage Account
 31608,ggfasesql01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-ase-legacy/providers/Microsoft.Sql/servers/ggfasesql01,SQL Server
+31618,stkrmbdase01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-gen-ase-1/providers/Microsoft.Storage/storageAccounts/stkrmbdase01,Blob Storage Account
 94826,stkrrestlrsv2,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-REST-ASE-1/providers/Microsoft.Storage/storageAccounts/stkrrestlrsv2,Blob Storage Account
 31624,stkrazcase01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-gen-ase-1/providers/Microsoft.Storage/storageAccounts/stkrazcase01,Blob Storage Account
 31625,stkrasrcase01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-gen-ase-1/providers/Microsoft.Storage/storageAccounts/stkrasrcase01,Blob Storage Account
+27644,FunApp-TeamsSSP-PRD,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-TEAMSSSP-AE/providers/Microsoft.Web/sites/FunApp-TeamsSSP-PRD,Azure Function App
 31393,FUNC-SOLOTEL-CTO365-SHAREPOINTAPI-NODE-AE,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/RG-SOLOTEL-CTO365-AE/providers/Microsoft.Web/sites/FUNC-SOLOTEL-CTO365-SHAREPOINTAPI-NODE-AE,Azure Function App
 31470,solotelstorageaccount,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/SolotelAzure/providers/Microsoft.Storage/storageAccounts/solotelstorageaccount,Blob Storage Account
 31318,ihg-sql-plus-prd-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-prd-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-prd-aea,SQL Server
 29706,LA-ETHAN-PCMC-DEV-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-DEV-AE-1/providers/Microsoft.OperationalInsights/workspaces/LA-ETHAN-PCMC-DEV-AE-1,Log Analytics Workspace
 73957,auintranetprod,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Production/providers/Microsoft.Web/sites/auintranetprod,Azure Function App
 29733,stecrpdaasaelrspublic1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ECRP-DAAS-AE/providers/Microsoft.Storage/storageAccounts/stecrpdaasaelrspublic1,Blob Storage Account
-31325,octopus.insurancehouse.com.au,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-stg-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-stg-aea/databases/octopus.insurancehouse.com.au,SQL Database
 31326,old-staging.insurancehouseplus.com.au,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-stg-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-stg-aea/databases/old-staging.insurancehouseplus.com.au,SQL Database
+31325,octopus.insurancehouse.com.au,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-stg-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-stg-aea/databases/octopus.insurancehouse.com.au,SQL Database
 29701,LOGA-ETHAN-AZPM-AE,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourcegroups/rg-ethan-azpm-ae/providers/microsoft.operationalinsights/workspaces/loga-ethan-azpm-ae,Log Analytics Workspace
-28325,FunApp-ED365-RefreshFilteredView,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Web/sites/FunApp-ED365-RefreshFilteredView,Azure Function App
 31473,ihgstwebpreprodbacksaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Storage/storageAccounts/ihgstwebpreprodbacksaea,Blob Storage Account
-29716,rgethanecspuatae9cbb,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Storage/storageAccounts/rgethanecspuatae9cbb,Blob Storage Account
 29717,stsecprdaelrsv2,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ECRP-DAAS-AE/providers/Microsoft.Storage/storageAccounts/stsecprdaelrsv2,Blob Storage Account
 31478,ihgsalogsuataea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-common-uat-aea/providers/Microsoft.Storage/storageAccounts/ihgsalogsuataea,Blob Storage Account
+29716,rgethanecspuatae9cbb,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Storage/storageAccounts/rgethanecspuatae9cbb,Blob Storage Account
 31487,ihgplusbackupstglrsaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-stg-aea/providers/Microsoft.Storage/storageAccounts/ihgplusbackupstglrsaea,Blob Storage Account
 31623,stkrcfgase01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-gen-ase-1/providers/Microsoft.Storage/storageAccounts/stkrcfgase01,Blob Storage Account
 31174,ASP-ETHAN-AXAPI-DEV-AE-1,/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-DEV-AE-1/providers/Microsoft.Web/serverfarms/ASP-ETHAN-AXAPI-DEV-AE-1,Server Farm
@@ -145,7 +144,6 @@
 56617,LA-ETHAN-STORE-PROD-AE-1,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-PROD-AE-1/providers/Microsoft.OperationalInsights/workspaces/LA-ETHAN-STORE-PROD-AE-1,Log Analytics Workspace
 48097,prdapimercury,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Prd/providers/Microsoft.Web/sites/prdapimercury,Azure Function App
 31166,ethanstoreblob,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEMO-AE-1/providers/Microsoft.Storage/storageAccounts/ethanstoreblob,Blob Storage Account
-31196,stdnatadiagaelrs,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-INFRA-AE/providers/Microsoft.Storage/storageAccounts/stdnatadiagaelrs,Blob Storage Account
 31495,ihgplusbackupprdlrsaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-prd-aea/providers/Microsoft.Storage/storageAccounts/ihgplusbackupprdlrsaea,Blob Storage Account
 31479,azcloudshellib,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/DefaultResourceGroup-EAU/providers/Microsoft.Storage/storageAccounts/azcloudshellib,Blob Storage Account
 31198,stdnataaelrscostexport,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-INFRA-AE/providers/Microsoft.Storage/storageAccounts/stdnataaelrscostexport,Blob Storage Account
@@ -155,86 +153,69 @@
 48078,prd-mfs-fns,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/mfs-prd/providers/Microsoft.Web/sites/prd-mfs-fns,Azure Function App
 30123,afd-ethan-ewsprd,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Network/frontdoors/afd-ethan-ewsprd,Frontdoor
 29700,LogAnalysticstest1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourcegroups/rg-ecrp-infra/providers/microsoft.operationalinsights/workspaces/loganalysticstest1,Log Analytics Workspace
-29729,stethanpcmcdevloglrsae2,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-DEV-AE-1/providers/Microsoft.Storage/storageAccounts/stethanpcmcdevloglrsae2,Blob Storage Account
 31332,ihg-sql-web-preprod-shared-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea,SQL Server
-31352,ihg-sql-web-prod-shared-ase,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-ase,SQL Server
 48051,mvgl-bi,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/DataPlatform/providers/Microsoft.Sql/servers/mvgl-bi,SQL Server
+31352,ihg-sql-web-prod-shared-ase,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-ase,SQL Server
 48060,onetrack_fhl_blob_qas,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/onetrack-sql/providers/Microsoft.Sql/servers/onetrack-sql-qas/databases/onetrack_fhl_blob_qas,SQL Database
 70616,fnappwgvl5s5o7fo3o,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-MON-AE-1/providers/Microsoft.Web/sites/fnappwgvl5s5o7fo3o,Azure Function App
 48090,venusdriver-prd-site,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Prd/providers/Microsoft.Web/sites/venusdriver-prd-site,Azure Function App
-48087,venusdriver-qas-api,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Web/sites/venusdriver-qas-api,Azure Function App
-48096,prdmercury,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Prd/providers/Microsoft.Web/sites/prdmercury,Azure Function App
-48105,teams2021migration,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/DefaultResourceGroup-EAU/providers/Microsoft.Storage/storageAccounts/teams2021migration,Blob Storage Account
 48107,qasmfsfns,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/mfs-qas/providers/Microsoft.Storage/storageAccounts/qasmfsfns,Blob Storage Account
-48111,onetrackdocumentsml,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Documents-ML/providers/Microsoft.Storage/storageAccounts/onetrackdocumentsml,Blob Storage Account
 48116,mercuryqas,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Qas/providers/Microsoft.Storage/storageAccounts/mercuryqas,Blob Storage Account
 31152,ethanstore,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEMO-AE-1/providers/Microsoft.Sql/servers/ethanstore,SQL Server
-31142,ASP-ETHAN-ETHO-PRM-DEV-AE-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Web/serverfarms/ASP-ETHAN-ETHO-PRM-DEV-AE-1,Server Farm
-31480,ihgsacoredatauataea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat-aea/providers/Microsoft.Storage/storageAccounts/ihgsacoredatauataea,Blob Storage Account
 27617,master,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-DEV-AE-1/providers/Microsoft.Sql/servers/sql-ethan-pcmc-dev-ae-1/databases/master,SQL Database
-29707,LA-ETHAN-RSVREPORT-TST-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.OperationalInsights/workspaces/LA-ETHAN-RSVREPORT-TST-AE-1,Log Analytics Workspace
+31480,ihgsacoredatauataea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat-aea/providers/Microsoft.Storage/storageAccounts/ihgsacoredatauataea,Blob Storage Account
 29718,storageaccountuacrmsq,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UACRMPRD-AE/providers/Microsoft.Storage/storageAccounts/storageaccountuacrmsq,Blob Storage Account
+29707,LA-ETHAN-RSVREPORT-TST-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.OperationalInsights/workspaces/LA-ETHAN-RSVREPORT-TST-AE-1,Log Analytics Workspace
 27609,sql-ethan-mazu-ae-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Sql/servers/sql-ethan-mazu-ae-1,SQL Server
-56619,sql-ethan-mazu-finops-ae-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Sql/servers/sql-ethan-mazu-finops-ae-1,SQL Server
-85289,stethanucclbalrsae1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UC-CLBA-AE/providers/Microsoft.Storage/storageAccounts/stethanucclbalrsae1,Blob Storage Account
 27613,DB-MAZU-Reporting,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Sql/servers/sql-ethan-mazu-ae-1/databases/DB-MAZU-Reporting,SQL Database
 27615,sql-ethan-pcmc-dev-ae-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-DEV-AE-1/providers/Microsoft.Sql/servers/sql-ethan-pcmc-dev-ae-1,SQL Server
+56619,sql-ethan-mazu-finops-ae-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Sql/servers/sql-ethan-mazu-finops-ae-1,SQL Server
 27623,master,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-SYSINTDEV-AE/providers/Microsoft.Sql/servers/sql-ethan-sysintdev-ae-1/databases/master,SQL Database
+85289,stethanucclbalrsae1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UC-CLBA-AE/providers/Microsoft.Storage/storageAccounts/stethanucclbalrsae1,Blob Storage Account
 31462,workspace-b8c63704-02d2-4020-ae28-9c5fc525b53d-sea,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourcegroups/defaultresourcegroup-sea/providers/microsoft.operationalinsights/workspaces/workspace-b8c63704-02d2-4020-ae28-9c5fc525b53d-sea,Log Analytics Workspace
 48167,mercuryqas,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Qas/providers/Microsoft.Web/serverfarms/mercuryqas,Server Farm
-75480,ASP-ApiProject-a4f4,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/ApiProject/providers/Microsoft.Web/serverfarms/ASP-ApiProject-a4f4,Server Farm
 32073,ihg-plan-web-prod-shared-ase,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-ase/providers/Microsoft.Web/serverfarms/ihg-plan-web-prod-shared-ase,Server Farm
-58803,mh01automation,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/MHAutomation/providers/Microsoft.Storage/storageAccounts/mh01automation,Blob Storage Account
 58797,stmarvscaegrs,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-VEEAM-1/providers/Microsoft.Storage/storageAccounts/stmarvscaegrs,Blob Storage Account
+58803,mh01automation,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/MHAutomation/providers/Microsoft.Storage/storageAccounts/mh01automation,Blob Storage Account
 56621,FinOps-Dev,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Sql/servers/sql-ethan-mazu-finops-ae-1/databases/FinOps-Dev,SQL Database
 96487,DefaultWorkspace-de7bb359-fa42-4187-b495-85f4917eee77-USW3,/subscriptions/de7bb359-fa42-4187-b495-85f4917eee77/resourceGroups/RG-HCA-Corp-Prd-AE-1/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-de7bb359-fa42-4187-b495-85f4917eee77-USW3,Log Analytics Workspace
 27622,sqldb-ethan-sysintdev-ae-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-SYSINTDEV-AE/providers/Microsoft.Sql/servers/sql-ethan-sysintdev-ae-1/databases/sqldb-ethan-sysintdev-ae-1,SQL Database
-96488,sthcafilesprdae1,/subscriptions/de7bb359-fa42-4187-b495-85f4917eee77/resourceGroups/RG-HCA-Corp-Prd-AE-1/providers/Microsoft.Storage/storageAccounts/sthcafilesprdae1,Blob Storage Account
 70644,fnappwgvl5s5o7fo3o,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-MON-AE-1/providers/Microsoft.Web/serverfarms/fnappwgvl5s5o7fo3o,Server Farm
 27618,sql-ethan-pcmc-prod-ae-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-PROD-AE-1/providers/Microsoft.Sql/servers/sql-ethan-pcmc-prod-ae-1,SQL Server
 48052,master,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/DataPlatform/providers/Microsoft.Sql/servers/mvgl-bi/databases/master,SQL Database
-27621,sql-ethan-sysintdev-ae-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-SYSINTDEV-AE/providers/Microsoft.Sql/servers/sql-ethan-sysintdev-ae-1,SQL Server
 48053,mvgl_cw_vissyd,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/DataPlatform/providers/Microsoft.Sql/servers/mvgl-bi/databases/mvgl_cw_vissyd,SQL Database
-31100,stethanondevloglrsae2,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Storage/storageAccounts/stethanondevloglrsae2,Blob Storage Account
+27621,sql-ethan-sysintdev-ae-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-SYSINTDEV-AE/providers/Microsoft.Sql/servers/sql-ethan-sysintdev-ae-1,SQL Server
 31097,LA-ETHAN-ETHO-SHARED-AE-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-SHARED-AE-1/providers/Microsoft.OperationalInsights/workspaces/LA-ETHAN-ETHO-SHARED-AE-1,Log Analytics Workspace
 31200,stdnatainfraaev2lrsshell,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-INFRA-AE/providers/Microsoft.Storage/storageAccounts/stdnatainfraaev2lrsshell,Blob Storage Account
-48064,master,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Prd/providers/Microsoft.Sql/servers/venus-prd/databases/master,SQL Database
-27607,DB-ECSPUAT-CSPExtension,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Sql/servers/psql-ethan-ecspuat-ae-1/databases/DB-ECSPUAT-CSPExtension,SQL Database
 27602,DB-ECSPPRD-CustomerServicePortal,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Sql/servers/psql-ethan-ecspprd-ae-1/databases/DB-ECSPPRD-CustomerServicePortal,SQL Database
 48065,prd_operations,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Prd/providers/Microsoft.Sql/servers/venus-prd/databases/prd_operations,SQL Database
-58802,mh01cloudshell,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/AzureCloudShell/providers/Microsoft.Storage/storageAccounts/mh01cloudshell,Blob Storage Account
+27607,DB-ECSPUAT-CSPExtension,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Sql/servers/psql-ethan-ecspuat-ae-1/databases/DB-ECSPUAT-CSPExtension,SQL Database
+48064,master,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Prd/providers/Microsoft.Sql/servers/venus-prd/databases/master,SQL Database
 48070,qas_transport,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Sql/servers/venus-qas/databases/qas_transport,SQL Database
 58801,stfsmaraelrs,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-INFRA-1/providers/Microsoft.Storage/storageAccounts/stfsmaraelrs,Blob Storage Account
-27610,DB-MAZU-BillingManagement,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Sql/servers/sql-ethan-mazu-ae-1/databases/DB-MAZU-BillingManagement,SQL Database
+58802,mh01cloudshell,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/AzureCloudShell/providers/Microsoft.Storage/storageAccounts/mh01cloudshell,Blob Storage Account
 27619,DB-ETHAN-PCMC-PROD-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-PROD-AE-1/providers/Microsoft.Sql/servers/sql-ethan-pcmc-prod-ae-1/databases/DB-ETHAN-PCMC-PROD-AE-1,SQL Database
-27620,master,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-PROD-AE-1/providers/Microsoft.Sql/servers/sql-ethan-pcmc-prod-ae-1/databases/master,SQL Database
+27610,DB-MAZU-BillingManagement,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Sql/servers/sql-ethan-mazu-ae-1/databases/DB-MAZU-BillingManagement,SQL Database
 31310,stwesavdaelrs3,/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Storage/storageAccounts/stwesavdaelrs3,Blob Storage Account
 48091,venus-prd-api,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Prd/providers/Microsoft.Web/sites/venus-prd-api,Azure Function App
 31320,asp.net.sessions,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-prd-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-prd-aea/databases/asp.net.sessions,SQL Database
 31346,ihg-sql-web-prod-shared-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-aea,SQL Server
 31347,ihg-db-kenticocms-prod,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-aea/databases/ihg-db-kenticocms-prod,SQL Database
 29730,stethanmazulrstfstate1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Storage/storageAccounts/stethanmazulrstfstate1,Blob Storage Account
-29739,functionappsqapistorage,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Storage/storageAccounts/functionappsqapistorage,Blob Storage Account
 69002,azureshellsession,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Storage/storageAccounts/azureshellsession,Blob Storage Account
 31350,ihg-db-coredata-prod,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-aea/databases/ihg-db-coredata-prod,SQL Database
-31353,ihg-db-coredata-prod,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-ase/databases/ihg-db-coredata-prod,SQL Database
 31345,ihg-sqldb-web-uat2-kentico-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-uat2-kentico-aea,SQL Database
 31355,ihg-db-pami-prod,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-ase/databases/ihg-db-pami-prod,SQL Database
 31356,ihg-db-kenticoom-prod,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-ase/databases/ihg-db-kenticoom-prod,SQL Database
 31359,ihg-db-pami-prod_suspect_standalone_azoutage_20230831_0935,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-ase/databases/ihg-db-pami-prod_suspect_standalone_azoutage_20230831_0935,SQL Database
 31358,master,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-ase/databases/master,SQL Database
-31364,ihg-as-web-uat2-coredata-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.Web/sites/ihg-as-web-uat2-coredata-aea,Azure Function App
-31368,ihg-as-web-preprod-webpres-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Web/sites/ihg-as-web-preprod-webpres-aea,Azure Function App
-31362,ihg-as-webadmin-uat-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat-aea/providers/Microsoft.Web/sites/ihg-as-webadmin-uat-aea,Azure Function App
-31361,ihg-as-webpres-uat-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat-aea/providers/Microsoft.Web/sites/ihg-as-webpres-uat-aea,Azure Function App
 31363,ihg-as-coredata-uat-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat-aea/providers/Microsoft.Web/sites/ihg-as-coredata-uat-aea,Azure Function App
-31369,ihg-as-web-preprod-kentico-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Web/sites/ihg-as-web-preprod-kentico-aea,Azure Function App
 31381,ihg-la-web-prod-ase,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-ase/providers/Microsoft.OperationalInsights/workspaces/ihg-la-web-prod-ase,Log Analytics Workspace
 31383,DefaultWorkspace-dcdebc0e-0928-4a62-b613-ce72b4c87230-EAU,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/DefaultResourceGroup-EAU/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-dcdebc0e-0928-4a62-b613-ce72b4c87230-EAU,Log Analytics Workspace
+31369,ihg-as-web-preprod-kentico-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Web/sites/ihg-as-web-preprod-kentico-aea,Azure Function App
 31385,ihg-la-web-prod-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-common/providers/Microsoft.OperationalInsights/workspaces/ihg-la-web-prod-aea,Log Analytics Workspace
-31387,ihg-la-web-uat-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat-aea/providers/Microsoft.OperationalInsights/workspaces/ihg-la-web-uat-aea,Log Analytics Workspace
 31415,ihgstwebuat2coreaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.Storage/storageAccounts/ihgstwebuat2coreaea,Blob Storage Account
-31468,stcto365funcsae,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/RG-SOLOTEL-CTO365-AE/providers/Microsoft.Storage/storageAccounts/stcto365funcsae,Blob Storage Account
+31387,ihg-la-web-uat-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat-aea/providers/Microsoft.OperationalInsights/workspaces/ihg-la-web-uat-aea,Log Analytics Workspace
 31334,ihg-sqldb-web-preprod-kenticoom-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-preprod-kenticoom-aea,SQL Database
 31338,master,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/master,SQL Database
 31477,cs1100320030aa63212,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/cloud-shell-storage-southeastasia/providers/Microsoft.Storage/storageAccounts/cs1100320030aa63212,Blob Storage Account
@@ -246,209 +227,228 @@
 31357,ihg-db-kenticocms-prod,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-ase/databases/ihg-db-kenticocms-prod,SQL Database
 31379,ihg-as-web-prod-kentico-ase,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-ase/providers/Microsoft.Web/sites/ihg-as-web-prod-kentico-ase,Azure Function App
 31616,stkrtstase01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-apptst-ase-1/providers/Microsoft.Storage/storageAccounts/stkrtstase01,Blob Storage Account
-31619,stkrlogase01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-gen-ase-1/providers/Microsoft.Storage/storageAccounts/stkrlogase01,Blob Storage Account
 31621,stkrgenase01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-gen-ase-1/providers/Microsoft.Storage/storageAccounts/stkrgenase01,Blob Storage Account
-29713,LOGA-ETHAN-PMAPIPRD-AE,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.OperationalInsights/workspaces/LOGA-ETHAN-PMAPIPRD-AE,Log Analytics Workspace
+31619,stkrlogase01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-gen-ase-1/providers/Microsoft.Storage/storageAccounts/stkrlogase01,Blob Storage Account
 29721,storageaccountrgethb460,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Storage/storageAccounts/storageaccountrgethb460,Blob Storage Account
-29734,sqlvacmeaewwc2pa5e,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Storage/storageAccounts/sqlvacmeaewwc2pa5e,Blob Storage Account
-77605,migratersa1998750925,/subscriptions/de7bb359-fa42-4187-b495-85f4917eee77/resourceGroups/HCA-Azure-Migrate-RG-1/providers/Microsoft.Storage/storageAccounts/migratersa1998750925,Blob Storage Account
 29722,storageaccountrgeth9b2e,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Storage/storageAccounts/storageaccountrgeth9b2e,Blob Storage Account
-29728,stethanpcmcprodloglrsae2,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-PROD-AE-1/providers/Microsoft.Storage/storageAccounts/stethanpcmcprodloglrsae2,Blob Storage Account
-31475,storphaneddisksotlshdsa1,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/DefaultResourceGroup-SEA/providers/Microsoft.Storage/storageAccounts/storphaneddisksotlshdsa1,Blob Storage Account
 31201,cs110032000d99e84cd,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/AzureBackupRG_australiaeast_1/providers/Microsoft.Storage/storageAccounts/cs110032000d99e84cd,Blob Storage Account
-29740,ethanuacrmsqapistorage,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Storage/storageAccounts/ethanuacrmsqapistorage,Blob Storage Account
 29737,rgethanecspuataea18a,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Storage/storageAccounts/rgethanecspuataea18a,Blob Storage Account
-27603,DB-ECSPPRD-ServiceCatalogTemp,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Sql/servers/psql-ethan-ecspprd-ae-1/databases/DB-ECSPPRD-ServiceCatalogTemp,SQL Database
-48055,onetrack_azure_prd,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/onetrack-sql/providers/Microsoft.Sql/servers/onetrack-sql-prd/databases/onetrack_azure_prd,SQL Database
+29740,ethanuacrmsqapistorage,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Storage/storageAccounts/ethanuacrmsqapistorage,Blob Storage Account
 48057,master,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/onetrack-sql/providers/Microsoft.Sql/servers/onetrack-sql-prd/databases/master,SQL Database
-31202,cs110032000d2aadc20,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/cloud-shell-storage-southeastasia/providers/Microsoft.Storage/storageAccounts/cs110032000d2aadc20,Blob Storage Account
+48055,onetrack_azure_prd,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/onetrack-sql/providers/Microsoft.Sql/servers/onetrack-sql-prd/databases/onetrack_azure_prd,SQL Database
 31157,master,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEV-AE-1/providers/Microsoft.Sql/servers/ethanstoredevdb/databases/master,SQL Database
+29723,storageaccountrgeth856a,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Storage/storageAccounts/storageaccountrgeth856a,Blob Storage Account
 29711,LogAnalytics-DaaS-Update-Compliance,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ECRP-DAAS-AE/providers/Microsoft.OperationalInsights/workspaces/LogAnalytics-DaaS-Update-Compliance,Log Analytics Workspace
 90330,stethanucclbacqapplrsae1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UC-CLBA-AE/providers/Microsoft.Storage/storageAccounts/stethanucclbacqapplrsae1,Blob Storage Account
-29723,storageaccountrgeth856a,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Storage/storageAccounts/storageaccountrgeth856a,Blob Storage Account
-77606,hcaazmigcorp0786usa,/subscriptions/de7bb359-fa42-4187-b495-85f4917eee77/resourceGroups/RG-HCA-AzMigrate-Prd-AE-1/providers/Microsoft.Storage/storageAccounts/hcaazmigcorp0786usa,Blob Storage Account
 48059,onetrack_azure_qas,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/onetrack-sql/providers/Microsoft.Sql/servers/onetrack-sql-qas/databases/onetrack_azure_qas,SQL Database
 48061,master,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/onetrack-sql/providers/Microsoft.Sql/servers/onetrack-sql-qas/databases/master,SQL Database
 48062,venus-prd,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Prd/providers/Microsoft.Sql/servers/venus-prd,SQL Server
 48066,prd_reports,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Prd/providers/Microsoft.Sql/servers/venus-prd/databases/prd_reports,SQL Database
-48069,qas_reports,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Sql/servers/venus-qas/databases/qas_reports,SQL Database
+31468,stcto365funcsae,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/RG-SOLOTEL-CTO365-AE/providers/Microsoft.Storage/storageAccounts/stcto365funcsae,Blob Storage Account
+31475,storphaneddisksotlshdsa1,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/DefaultResourceGroup-SEA/providers/Microsoft.Storage/storageAccounts/storphaneddisksotlshdsa1,Blob Storage Account
+96488,sthcafilesprdae1,/subscriptions/de7bb359-fa42-4187-b495-85f4917eee77/resourceGroups/RG-HCA-Corp-Prd-AE-1/providers/Microsoft.Storage/storageAccounts/sthcafilesprdae1,Blob Storage Account
+77605,migratersa1998750925,/subscriptions/de7bb359-fa42-4187-b495-85f4917eee77/resourceGroups/HCA-Azure-Migrate-RG-1/providers/Microsoft.Storage/storageAccounts/migratersa1998750925,Blob Storage Account
+48073,master,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Prd/providers/Microsoft.Sql/servers/mercury-prd/databases/master,SQL Database
 29705,LOGA-FunApp-ECSPPRD-PortalAPI,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.OperationalInsights/workspaces/LOGA-FunApp-ECSPPRD-PortalAPI,Log Analytics Workspace
 85290,stecorpsoeaelrspublic1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ECRP-SOE-AE/providers/Microsoft.Storage/storageAccounts/stecorpsoeaelrspublic1,Blob Storage Account
-48067,venus-qas,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Sql/servers/venus-qas,SQL Server
-48073,master,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Prd/providers/Microsoft.Sql/servers/mercury-prd/databases/master,SQL Database
-48074,Mercury,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Prd/providers/Microsoft.Sql/servers/mercury-prd/databases/Mercury,SQL Database
+77606,hcaazmigcorp0786usa,/subscriptions/de7bb359-fa42-4187-b495-85f4917eee77/resourceGroups/RG-HCA-AzMigrate-Prd-AE-1/providers/Microsoft.Storage/storageAccounts/hcaazmigcorp0786usa,Blob Storage Account
+48069,qas_reports,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Sql/servers/venus-qas/databases/qas_reports,SQL Database
 48076,master,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Qas/providers/Microsoft.Sql/servers/mercury-qas/databases/master,SQL Database
-31149,APP-ETHAN-AXAPI-PROD-AE-1,/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-PROD-AE-1/providers/Microsoft.Web/sites/APP-ETHAN-AXAPI-PROD-AE-1,Azure Function App
+48074,Mercury,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Prd/providers/Microsoft.Sql/servers/mercury-prd/databases/Mercury,SQL Database
 31150,LA-ETHAN-AXAPI-SHARED-AE-1,/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-SHARED-AE-1/providers/Microsoft.OperationalInsights/workspaces/LA-ETHAN-AXAPI-SHARED-AE-1,Log Analytics Workspace
+31149,APP-ETHAN-AXAPI-PROD-AE-1,/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-PROD-AE-1/providers/Microsoft.Web/sites/APP-ETHAN-AXAPI-PROD-AE-1,Azure Function App
 48085,venus-qas-api,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Web/sites/venus-qas-api,Azure Function App
 30122,afd-ethan-ewsfwd,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.Network/frontdoors/afd-ethan-ewsfwd,Frontdoor
-48093,venusdriver-prd-api,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Prd/providers/Microsoft.Web/sites/venusdriver-prd-api,Azure Function App
-48095,qasmercury,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Qas/providers/Microsoft.Web/sites/qasmercury,Azure Function App
-48094,qasapimercury,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Qas/providers/Microsoft.Web/sites/qasapimercury,Azure Function App
+31328,staging.insurancehouseplus.com.au,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-stg-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-stg-aea/databases/staging.insurancehouseplus.com.au,SQL Database
+31330,asp.net.sessions,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-stg-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-stg-aea/databases/asp.net.sessions,SQL Database
+31331,master,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-stg-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-stg-aea/databases/master,SQL Database
 94400,LOG-MAZU-ARM-AE-1,/subscriptions/076abda6-b09c-42ec-8921-bb90c76d2428/resourceGroups/RG-MAZU-ARMEXPORT-AE-1/providers/Microsoft.OperationalInsights/workspaces/LOG-MAZU-ARM-AE-1,Log Analytics Workspace
 31187,stgmazulogsae1,/subscriptions/076abda6-b09c-42ec-8921-bb90c76d2428/resourceGroups/RG-MAZU-LOGS-AE/providers/Microsoft.Storage/storageAccounts/stgmazulogsae1,Blob Storage Account
 48098,LOG-MVGL-DFC-AE-1,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-DFC-AE-1/providers/Microsoft.OperationalInsights/workspaces/LOG-MVGL-DFC-AE-1,Log Analytics Workspace
-48100,LOGA-MVGL-INFRA-AAD-AE-1,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-INFRA-AE-1/providers/Microsoft.OperationalInsights/workspaces/LOGA-MVGL-INFRA-AAD-AE-1,Log Analytics Workspace
-48099,DefaultWorkspace-7e8ed0a0-804a-4660-8acd-80f0c85b5a15-EAU,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourcegroups/defaultresourcegroup-eau/providers/microsoft.operationalinsights/workspaces/defaultworkspace-7e8ed0a0-804a-4660-8acd-80f0c85b5a15-eau,Log Analytics Workspace
-48101,westus3storagea14ae20abf,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/westus3/providers/Microsoft.Storage/storageAccounts/westus3storagea14ae20abf,Blob Storage Account
 48104,venusstorageprd,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Prd/providers/Microsoft.Storage/storageAccounts/venusstorageprd,Blob Storage Account
-48106,stpbiadlsaelrs1,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-INFRA-AE-1/providers/Microsoft.Storage/storageAccounts/stpbiadlsaelrs1,Blob Storage Account
-48103,venusstorageqas,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Storage/storageAccounts/venusstorageqas,Blob Storage Account
-31192,DefaultWorkspace-bc1200eb-bd76-470e-849f-777d7fc25256-EAU,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/DefaultResourceGroup-EAU/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-bc1200eb-bd76-470e-849f-777d7fc25256-EAU,Log Analytics Workspace
 31322,old-preproduction.insurancehouseplus.com.au,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-prd-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-prd-aea/databases/old-preproduction.insurancehouseplus.com.au,SQL Database
 31342,ihg-sqldb-web-uat-kentico-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-uat-kentico-aea,SQL Database
 75478,TcsPosApi,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/ApiProject/providers/Microsoft.Web/sites/TcsPosApi,Azure Function App
+31192,DefaultWorkspace-bc1200eb-bd76-470e-849f-777d7fc25256-EAU,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/DefaultResourceGroup-EAU/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-bc1200eb-bd76-470e-849f-777d7fc25256-EAU,Log Analytics Workspace
+31193,stdntalogsaselrsprivate1,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-LOGS-AE/providers/Microsoft.Storage/storageAccounts/stdntalogsaselrsprivate1,Blob Storage Account
 48108,prdmfsfns,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/mfs-prd/providers/Microsoft.Storage/storageAccounts/prdmfsfns,Blob Storage Account
+31389,ihgstwebprodlogsase,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-ase/providers/Microsoft.Storage/storageAccounts/ihgstwebprodlogsase,Blob Storage Account
 31423,ihgstwebuat2backsaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.Storage/storageAccounts/ihgstwebuat2backsaea,Blob Storage Account
 31380,DefaultWorkspace-dcdebc0e-0928-4a62-b613-ce72b4c87230-SEAU,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/DefaultResourceGroup-SEAU/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-dcdebc0e-0928-4a62-b613-ce72b4c87230-SEAU,Log Analytics Workspace
-31389,ihgstwebprodlogsase,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-ase/providers/Microsoft.Storage/storageAccounts/ihgstwebprodlogsase,Blob Storage Account
-31376,ihg-as-web-prod-coredata-ase,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-ase/providers/Microsoft.Web/sites/ihg-as-web-prod-coredata-ase,Azure Function App
+93803,ihg-sqldb-web-uat2-coredata-aea-OLD,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-uat2-coredata-aea-OLD,SQL Database
+31337,ihg-sqldb-web-uat-pami-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-uat-pami-aea,SQL Database
+31194,stdntalogsaelrsprivate1,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-LOGS-AE/providers/Microsoft.Storage/storageAccounts/stdntalogsaelrsprivate1,Blob Storage Account
+31196,stdnatadiagaelrs,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-INFRA-AE/providers/Microsoft.Storage/storageAccounts/stdnatadiagaelrs,Blob Storage Account
+31197,stdnatacsoclrs,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/RG-DNATA-INFRA-AE/providers/Microsoft.Storage/storageAccounts/stdnatacsoclrs,Blob Storage Account
+31202,cs110032000d2aadc20,/subscriptions/bc1200eb-bd76-470e-849f-777d7fc25256/resourceGroups/cloud-shell-storage-southeastasia/providers/Microsoft.Storage/storageAccounts/cs110032000d2aadc20,Blob Storage Account
 48109,onetrackterraform,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/terraform/providers/Microsoft.Storage/storageAccounts/onetrackterraform,Blob Storage Account
 31167,csb10032002a3e5dd96,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/cloud-shell-storage-westeurope/providers/Microsoft.Storage/storageAccounts/csb10032002a3e5dd96,Blob Storage Account
 48110,onetrackqascdn,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/OneTrack-QAS/providers/Microsoft.Storage/storageAccounts/onetrackqascdn,Blob Storage Account
 31474,solotelazurediag,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/SolotelAzure/providers/Microsoft.Storage/storageAccounts/solotelazurediag,Blob Storage Account
+31343,ihg-sqldb-web-uat-kenticoom-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-uat-kenticoom-aea,SQL Database
+31341,ihg-sqldb-web-uat2-pami-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-uat2-pami-aea,SQL Database
 70613,auintranetstaging,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Development/providers/Microsoft.Web/sites/auintranetstaging,Azure Function App
-70626,fnappwgvl5s5o7fo3o,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-MON-AE-1/providers/Microsoft.Storage/storageAccounts/fnappwgvl5s5o7fo3o,Blob Storage Account
+31344,ihg-sqldb-web-preprod-coredata-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-preprod-coredata-aea,SQL Database
+31353,ihg-db-coredata-prod,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-ase/databases/ihg-db-coredata-prod,SQL Database
+31360,ihg-as-pami-uat-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat-aea/providers/Microsoft.Web/sites/ihg-as-pami-uat-aea,Azure Function App
 48112,mimecastdataapi,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/DataPlatform/providers/Microsoft.Storage/storageAccounts/mimecastdataapi,Blob Storage Account
 48221,ASP-mfsprd-ac8e,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/mfs-prd/providers/Microsoft.Web/serverfarms/ASP-mfsprd-ac8e,Server Farm
 27637,logic-ethan-pmapi-processgroupqueue,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIDEV-AE/providers/Microsoft.Web/sites/logic-ethan-pmapi-processgroupqueue,Azure Function App
-28307,APP-ETHAN-PCMC-DEV-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-DEV-AE-1/providers/Microsoft.Web/sites/APP-ETHAN-PCMC-DEV-AE-1,Azure Function App
 27640,WebApp-AXShipAddr-UAT-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-Ethan-UATAX-AE/providers/Microsoft.Web/sites/WebApp-AXShipAddr-UAT-AE-1,Azure Function App
-56612,DB-ETHAN-STORE-CSPExtension-PROD-AE-1,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-PROD-AE-1/providers/Microsoft.Sql/servers/sql-ethan-store-prod-ae-1/databases/DB-ETHAN-STORE-CSPExtension-PROD-AE-1,SQL Database
 31158,EthanStoreAPI,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEMO-AE-1/providers/Microsoft.Web/sites/EthanStoreAPI,Azure Function App
-27522,stetestharnessexport1,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-INFRA/providers/Microsoft.Storage/storageAccounts/stetestharnessexport1,Blob Storage Account
 73979,stetestalzambaae1,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-IB-AE-1/providers/Microsoft.Storage/storageAccounts/stetestalzambaae1,Blob Storage Account
-27523,steseccyrisktransferlrs1,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Storage/storageAccounts/steseccyrisktransferlrs1,Blob Storage Account
-27525,d1lmixrsvetstaasrcache,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-INFRA/providers/Microsoft.Storage/storageAccounts/d1lmixrsvetstaasrcache,Blob Storage Account
-31102,ethonportalapilrsae2,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Storage/storageAccounts/ethonportalapilrsae2,Blob Storage Account
-70610,PosApiDev,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Development/providers/Microsoft.Web/sites/PosApiDev,Azure Function App
 28353,FunApp-ECSPUAT-InternalAPI,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Web/sites/FunApp-ECSPUAT-InternalAPI,Azure Function App
 31348,ihg-db-kenticoom-prod,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-aea/databases/ihg-db-kenticoom-prod,SQL Database
-27636,WebApp-MAZU-BillingManagement,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Web/sites/WebApp-MAZU-BillingManagement,Azure Function App
 58798,stmarvmbootaelrs,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-INFRA-1/providers/Microsoft.Storage/storageAccounts/stmarvmbootaelrs,Blob Storage Account
 58794,martymarathonhealth,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-INTRANET-1/providers/Microsoft.Web/sites/martymarathonhealth,Azure Function App
-31160,EthanstoreDevWeb,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEV-AE-1/providers/Microsoft.Web/sites/EthanstoreDevWeb,Azure Function App
 31163,EthanstoreDevCMS,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEV-AE-1/providers/Microsoft.Web/sites/EthanstoreDevCMS,Azure Function App
+31160,EthanstoreDevWeb,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEV-AE-1/providers/Microsoft.Web/sites/EthanstoreDevWeb,Azure Function App
 31164,DefaultWorkspace-395fbcac-64d7-4b4f-be58-37cf864c1ae6-EAU,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/DefaultResourceGroup-EAU/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-395fbcac-64d7-4b4f-be58-37cf864c1ae6-EAU,Log Analytics Workspace
 58800,stmaravdaelrs,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Storage/storageAccounts/stmaravdaelrs,Blob Storage Account
 30448,DB-ETHAN-ETHO-ServiceCatalogTemp-DEV-AE-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Sql/servers/sql-ethan-etho-dev-ae-1/databases/DB-ETHAN-ETHO-ServiceCatalogTemp-DEV-AE-1,SQL Database
-31308,stwesinfrashellaelrs1,/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-INFRA-AE-1/providers/Microsoft.Storage/storageAccounts/stwesinfrashellaelrs1,Blob Storage Account
+27523,steseccyrisktransferlrs1,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Storage/storageAccounts/steseccyrisktransferlrs1,Blob Storage Account
+54740,DefaultWorkspace-dfc40a97-e5a3-48dc-bf0d-4b87e16a6583-EUS,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/DefaultResourceGroup-EUS/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-dfc40a97-e5a3-48dc-bf0d-4b87e16a6583-EUS,Log Analytics Workspace
+77482,stetsttfsateae1,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-IB-AE-1/providers/Microsoft.Storage/storageAccounts/stetsttfsateae1,Blob Storage Account
+27522,stetestharnessexport1,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-INFRA/providers/Microsoft.Storage/storageAccounts/stetestharnessexport1,Blob Storage Account
 31329,prestaging.insurancehouseplus.com.au,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-stg-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-stg-aea/databases/prestaging.insurancehouseplus.com.au,SQL Database
+27524,stcyriskckclshell,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Storage/storageAccounts/stcyriskckclshell,Blob Storage Account
+27525,d1lmixrsvetstaasrcache,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-INFRA/providers/Microsoft.Storage/storageAccounts/d1lmixrsvetstaasrcache,Blob Storage Account
+70608,intranetautomationdev,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Development/providers/Microsoft.Web/sites/intranetautomationdev,Azure Function App
+70610,PosApiDev,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Development/providers/Microsoft.Web/sites/PosApiDev,Azure Function App
+56675,DefaultWorkspace-95c87b36-ed69-4af9-bd09-2b55fbb8be7e-EAU,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/DefaultResourceGroup-EAU/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-95c87b36-ed69-4af9-bd09-2b55fbb8be7e-EAU,Log Analytics Workspace
+73962,rgintranetproductiondiag,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Production/providers/Microsoft.Storage/storageAccounts/rgintranetproductiondiag,Blob Storage Account
+56677,iposfraudimages,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_iPOSApp/providers/Microsoft.Storage/storageAccounts/iposfraudimages,Blob Storage Account
+56678,devintranetstorage,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Development/providers/Microsoft.Storage/storageAccounts/devintranetstorage,Blob Storage Account
 31378,ihg-as-web-prod-webpres-ase,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-ase/providers/Microsoft.Web/sites/ihg-as-web-prod-webpres-ase,Azure Function App
 31407,ihgstwebuat2logsaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.Storage/storageAccounts/ihgstwebuat2logsaea,Blob Storage Account
-31366,ihg-as-web-uat2-webpres-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.Web/sites/ihg-as-web-uat2-webpres-aea,Azure Function App
-31360,ihg-as-pami-uat-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat-aea/providers/Microsoft.Web/sites/ihg-as-pami-uat-aea,Azure Function App
 90328,FUNC-ETHAN-UC-CLBACQAPP-PRD-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UC-CLBA-AE/providers/Microsoft.Web/sites/FUNC-ETHAN-UC-CLBACQAPP-PRD-AE-1,Azure Function App
 31372,ihg-as-web-prod-coredata-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Web/sites/ihg-as-web-prod-coredata-aea,Azure Function App
-31388,ihg-la-web-uat2-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.OperationalInsights/workspaces/ihg-la-web-uat2-aea,Log Analytics Workspace
-31471,ihgstwebpreprodcoreaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Storage/storageAccounts/ihgstwebpreprodcoreaea,Blob Storage Account
 31400,ihgstwebuat2webaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.Storage/storageAccounts/ihgstwebuat2webaea,Blob Storage Account
+31471,ihgstwebpreprodcoreaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Storage/storageAccounts/ihgstwebpreprodcoreaea,Blob Storage Account
+31388,ihg-la-web-uat2-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.OperationalInsights/workspaces/ihg-la-web-uat2-aea,Log Analytics Workspace
 29727,stethansoeaelrspublic1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ECRP-EUC-AE/providers/Microsoft.Storage/storageAccounts/stethansoeaelrspublic1,Blob Storage Account
 31141,ASP-ETHAN-ETHO-PORTALAPI-DEV-AE-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Web/serverfarms/ASP-ETHAN-ETHO-PORTALAPI-DEV-AE-1,Server Farm
 31510,cs11003200157f57961,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/cloud-shell-storage-southeastasia/providers/Microsoft.Storage/storageAccounts/cs11003200157f57961,Blob Storage Account
 31165,ethanstoredevblob,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEV-AE-1/providers/Microsoft.Storage/storageAccounts/ethanstoredevblob,Blob Storage Account
 30185,ASP-RGETHANPMAPIUATAE-af06,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIUAT-AE/providers/Microsoft.Web/serverfarms/ASP-RGETHANPMAPIUATAE-af06,Server Farm
 31615,log-ase-kr-infra-01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-gen-ase-1/providers/Microsoft.OperationalInsights/workspaces/log-ase-kr-infra-01,Log Analytics Workspace
-31463,DefaultWorkspace-8b170db7-832a-47fa-b80b-86b48c117b68-EAU,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourcegroups/defaultresourcegroup-eau/providers/microsoft.operationalinsights/workspaces/defaultworkspace-8b170db7-832a-47fa-b80b-86b48c117b68-eau,Log Analytics Workspace
-31622,stkrdevase01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-appdev-ase-1/providers/Microsoft.Storage/storageAccounts/stkrdevase01,Blob Storage Account
 90833,stgmazuarmexportae1,/subscriptions/076abda6-b09c-42ec-8921-bb90c76d2428/resourceGroups/RG-MAZU-ARMEXPORT-AE-1/providers/Microsoft.Storage/storageAccounts/stgmazuarmexportae1,Blob Storage Account
 85794,stscb2cflatfilesprdae1,/subscriptions/a5fb9daa-a40d-4130-b1ab-b1feb5bf20db/resourceGroups/RG-SC-B2CFLATFILES-PRD-AE-1/providers/Microsoft.Storage/storageAccounts/stscb2cflatfilesprdae1,Blob Storage Account
-31151,stethanaxapilogslrs1,/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-SHARED-AE-1/providers/Microsoft.Storage/storageAccounts/stethanaxapilogslrs1,Blob Storage Account
 31148,APP-ETHAN-AXAPI-DEV-AE-1,/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-DEV-AE-1/providers/Microsoft.Web/sites/APP-ETHAN-AXAPI-DEV-AE-1,Azure Function App
-29710,LOGA-ETHAN-EWSPRD-AE,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.OperationalInsights/workspaces/LOGA-ETHAN-EWSPRD-AE,Log Analytics Workspace
+31361,ihg-as-webpres-uat-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat-aea/providers/Microsoft.Web/sites/ihg-as-webpres-uat-aea,Azure Function App
+31362,ihg-as-webadmin-uat-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat-aea/providers/Microsoft.Web/sites/ihg-as-webadmin-uat-aea,Azure Function App
+31151,stethanaxapilogslrs1,/subscriptions/a6cff144-3f90-44ee-b3ec-f3f4d8f9c1a8/resourceGroups/RG-ETHAN-AXAPI-SHARED-AE-1/providers/Microsoft.Storage/storageAccounts/stethanaxapilogslrs1,Blob Storage Account
 29712,LOGA-ETHAN-ECSPUAT-AE,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.OperationalInsights/workspaces/LOGA-ETHAN-ECSPUAT-AE,Log Analytics Workspace
 29735,scpmapidevcloudshell,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIDEV-AE/providers/Microsoft.Storage/storageAccounts/scpmapidevcloudshell,Blob Storage Account
+29710,LOGA-ETHAN-EWSPRD-AE,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-EWSPRD-AE/providers/Microsoft.OperationalInsights/workspaces/LOGA-ETHAN-EWSPRD-AE,Log Analytics Workspace
 48077,Mercury,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Qas/providers/Microsoft.Sql/servers/mercury-qas/databases/Mercury,SQL Database
-56618,stethstoreprodloglrsae1,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-PROD-AE-1/providers/Microsoft.Storage/storageAccounts/stethstoreprodloglrsae1,Blob Storage Account
-62530,FUNC-ETHAN-STORE-CARTREMINDER-PROD-AE-1,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-PROD-AE-1/providers/Microsoft.Web/sites/FUNC-ETHAN-STORE-CARTREMINDER-PROD-AE-1,Azure Function App
+30451,DB-ETHAN-ETHO-CustomerServicePortal-DEV-AE-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Sql/servers/sql-ethan-etho-dev-ae-1/databases/DB-ETHAN-ETHO-CustomerServicePortal-DEV-AE-1,SQL Database
 62531,stethstoreprodcartlrsae1,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-PROD-AE-1/providers/Microsoft.Storage/storageAccounts/stethstoreprodcartlrsae1,Blob Storage Account
-29703,LOGA-ETHAN-SOE-AAD-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourcegroups/rg-ethan-soe-ae/providers/microsoft.operationalinsights/workspaces/loga-ethan-soe-aad-1,Log Analytics Workspace
+56618,stethstoreprodloglrsae1,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-PROD-AE-1/providers/Microsoft.Storage/storageAccounts/stethstoreprodloglrsae1,Blob Storage Account
 29708,LA-ETHAN-PCMC-PROD-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-PROD-AE-1/providers/Microsoft.OperationalInsights/workspaces/LA-ETHAN-PCMC-PROD-AE-1,Log Analytics Workspace
-29724,stethanucfileslrs1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UCST-AE-1/providers/Microsoft.Storage/storageAccounts/stethanucfileslrs1,Blob Storage Account
+29703,LOGA-ETHAN-SOE-AAD-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourcegroups/rg-ethan-soe-ae/providers/microsoft.operationalinsights/workspaces/loga-ethan-soe-aad-1,Log Analytics Workspace
 29732,stethanecspprdaestdlrs1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Storage/storageAccounts/stethanecspprdaestdlrs1,Blob Storage Account
 29736,rgethanpmapiuatae94f8,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIUAT-AE/providers/Microsoft.Storage/storageAccounts/rgethanpmapiuatae94f8,Blob Storage Account
 84431,sthcaalzambaae1,/subscriptions/3e15d220-e3e3-4067-a980-7b2275d8ddc5/resourceGroups/RG-HCA-ALERTS-AE-1/providers/Microsoft.Storage/storageAccounts/sthcaalzambaae1,Blob Storage Account
 30450,DB-ETHAN-ETHO-CSPExtension-DEV-AE-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Sql/servers/sql-ethan-etho-dev-ae-1/databases/DB-ETHAN-ETHO-CSPExtension-DEV-AE-1,SQL Database
 27616,DB-ETHAN-PCMC-DEV-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-DEV-AE-1/providers/Microsoft.Sql/servers/sql-ethan-pcmc-dev-ae-1/databases/DB-ETHAN-PCMC-DEV-AE-1,SQL Database
-58804,martymarat31cb896905,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-INTRANET-1/providers/Microsoft.Storage/storageAccounts/martymarat31cb896905,Blob Storage Account
-58795,marathonhealth,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-WEBSITE-1/providers/Microsoft.Web/sites/marathonhealth,Azure Function App
-58799,stmaravdaelrs2,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Storage/storageAccounts/stmaravdaelrs2,Blob Storage Account
 56676,rgintranetstagingdiag,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Staging/providers/Microsoft.Storage/storageAccounts/rgintranetstagingdiag,Blob Storage Account
-27597,DB-D365-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Sql/servers/psql-ethan-d365-ae-1/databases/DB-D365-1,SQL Database
+58799,stmaravdaelrs2,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-AVD-1/providers/Microsoft.Storage/storageAccounts/stmaravdaelrs2,Blob Storage Account
+58804,martymarat31cb896905,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-INTRANET-1/providers/Microsoft.Storage/storageAccounts/martymarat31cb896905,Blob Storage Account
+30580,APP-ETHAN-ETHO-PORTALPAGE-DEV-AE-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Web/sites/APP-ETHAN-ETHO-PORTALPAGE-DEV-AE-1,Azure Function App
+30581,FUNC-ETHAN-ETHO-PORTALAPI-DEV-AE-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Web/sites/FUNC-ETHAN-ETHO-PORTALAPI-DEV-AE-1,Azure Function App
 27638,APP-ECRP-MAZUNames-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ECRP-MAZUNames-AE-1/providers/Microsoft.Web/sites/APP-ECRP-MAZUNames-AE-1,Azure Function App
-27639,WebApp-AXUAT-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-Ethan-UATAX-AE/providers/Microsoft.Web/sites/WebApp-AXUAT-AE-1,Azure Function App
 31323,preproduction.insurancehouseplus.com.au,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-plus-prd-aea/providers/Microsoft.Sql/servers/ihg-sql-plus-prd-aea/databases/preproduction.insurancehouseplus.com.au,SQL Database
 56645,DefaultWorkspace-95c87b36-ed69-4af9-bd09-2b55fbb8be7e-EAU,/subscriptions/95c87b36-ed69-4af9-bd09-2b55fbb8be7e/resourceGroups/DefaultResourceGroup-EAU/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-95c87b36-ed69-4af9-bd09-2b55fbb8be7e-EAU,Log Analytics Workspace
-31354,ihg-db-kenticoom-prod_suspect_standalone_azoutage_20230831_0935,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-ase/databases/ihg-db-kenticoom-prod_suspect_standalone_azoutage_20230831_0935,SQL Database
-31365,ihg-as-web-uat2-pami-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.Web/sites/ihg-as-web-uat2-pami-aea,Azure Function App
-31367,ihg-as-web-uat2-kentico-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.Web/sites/ihg-as-web-uat2-kentico-aea,Azure Function App
-31371,ihg-as-web-preprod-coredata-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Web/sites/ihg-as-web-preprod-coredata-aea,Azure Function App
-31374,ihg-as-web-prod-pami-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Web/sites/ihg-as-web-prod-pami-aea,Azure Function App
 31384,ihg-la-web-preprod-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.OperationalInsights/workspaces/ihg-la-web-preprod-aea,Log Analytics Workspace
 31444,ihgstwebprodlogsaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Storage/storageAccounts/ihgstwebprodlogsaea,Blob Storage Account
 31476,ihgsawebuataea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat-aea/providers/Microsoft.Storage/storageAccounts/ihgsawebuataea,Blob Storage Account
 31503,ihginfralogsallaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-infra-aea/providers/Microsoft.Storage/storageAccounts/ihginfralogsallaea,Blob Storage Account
-31472,solotelfiles,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/SolotelAzure/providers/Microsoft.Storage/storageAccounts/solotelfiles,Blob Storage Account
+31354,ihg-db-kenticoom-prod_suspect_standalone_azoutage_20230831_0935,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-ase/databases/ihg-db-kenticoom-prod_suspect_standalone_azoutage_20230831_0935,SQL Database
+31374,ihg-as-web-prod-pami-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Web/sites/ihg-as-web-prod-pami-aea,Azure Function App
 31418,FUNC-SOLOTEL-CTO365-SHAREPOINTAPI-PSC-AE,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/RG-SOLOTEL-CTO365-AE/providers/Microsoft.Web/sites/FUNC-SOLOTEL-CTO365-SHAREPOINTAPI-PSC-AE,Azure Function App
+31472,solotelfiles,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourceGroups/SolotelAzure/providers/Microsoft.Storage/storageAccounts/solotelfiles,Blob Storage Account
 93804,ihg-sqldb-web-uat2-pami-aea-OLD,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-uat2-pami-aea-OLD,SQL Database
 31349,ihg-db-pami-prod,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-prod-shared-aea/databases/ihg-db-pami-prod,SQL Database
-31161,EthanStoreCMS,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEMO-AE-1/providers/Microsoft.Web/sites/EthanStoreCMS,Azure Function App
-53743,CartReminder,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEMO-AE-1/providers/Microsoft.Web/sites/CartReminder,Azure Function App
 31162,EthanStoreDevAPI,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEV-AE-1/providers/Microsoft.Web/sites/EthanStoreDevAPI,Azure Function App
+31161,EthanStoreCMS,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEMO-AE-1/providers/Microsoft.Web/sites/EthanStoreCMS,Azure Function App
 30103,ASP-RGETHANPMAPIPRDAE-9d6c,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Web/serverfarms/ASP-RGETHANPMAPIPRDAE-9d6c,Server Farm
 30438,ASP-RGETHAND365AE-bc98,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Web/serverfarms/ASP-RGETHAND365AE-bc98,Server Farm
-77833,LOG-MAR-DIAG-AE-1,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-LOG-AE-1/providers/Microsoft.OperationalInsights/workspaces/LOG-MAR-DIAG-AE-1,Log Analytics Workspace
 31307,stwespublicaelrs1,/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-PUBLIC-AE-1/providers/Microsoft.Storage/storageAccounts/stwespublicaelrs1,Blob Storage Account
+77833,LOG-MAR-DIAG-AE-1,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-LOG-AE-1/providers/Microsoft.OperationalInsights/workspaces/LOG-MAR-DIAG-AE-1,Log Analytics Workspace
 48068,master,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Sql/servers/venus-qas/databases/master,SQL Database
 31333,ihg-sqldb-web-uat2-kenticoom-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-uat2-kenticoom-aea,SQL Database
-93803,ihg-sqldb-web-uat2-coredata-aea-OLD,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Sql/servers/ihg-sql-web-preprod-shared-aea/databases/ihg-sqldb-web-uat2-coredata-aea-OLD,SQL Database
-31099,stethanonsharedloglrsae2,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-SHARED-AE-1/providers/Microsoft.Storage/storageAccounts/stethanonsharedloglrsae2,Blob Storage Account
 48084,venus-qas-site,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Web/sites/venus-qas-site,Azure Function App
-48102,onetrackcdn2,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/OneTrackAFD/providers/Microsoft.Storage/storageAccounts/onetrackcdn2,Blob Storage Account
 48115,cs11003200041967701,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/cloud-shell-storage-southeastasia/providers/Microsoft.Storage/storageAccounts/cs11003200041967701,Blob Storage Account
-31373,ihg-as-web-prod-kentico-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Web/sites/ihg-as-web-prod-kentico-aea,Azure Function App
-31370,ihg-as-web-preprod-pami-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Web/sites/ihg-as-web-preprod-pami-aea,Azure Function App
+48102,onetrackcdn2,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/OneTrackAFD/providers/Microsoft.Storage/storageAccounts/onetrackcdn2,Blob Storage Account
 31464,ihgstwebprodbacksaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Storage/storageAccounts/ihgstwebprodbacksaea,Blob Storage Account
+31370,ihg-as-web-preprod-pami-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Web/sites/ihg-as-web-preprod-pami-aea,Azure Function App
 28481,FunApp-ECSPUAT-PortalAPI,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Web/sites/FunApp-ECSPUAT-PortalAPI,Azure Function App
 28997,WebApp-ECSPUAT-PortalPage,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Web/sites/WebApp-ECSPUAT-PortalPage,Azure Function App
-85283,FUNC-ETHAN-UC-CLBA-PRD-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UC-CLBA-AE/providers/Microsoft.Web/sites/FUNC-ETHAN-UC-CLBA-PRD-AE-1,Azure Function App
-28309,FunApp-UACRM-SQAPI,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Web/sites/FunApp-UACRM-SQAPI,Azure Function App
 70611,auintranetdev,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Development/providers/Microsoft.Web/sites/auintranetdev,Azure Function App
 64980,tcssqlbackuptest,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Storage/storageAccounts/tcssqlbackuptest,Blob Storage Account
 73961,tcsprodbackupstorage01,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Production/providers/Microsoft.Storage/storageAccounts/tcsprodbackupstorage01,Blob Storage Account
 62523,stginranetstorage,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Staging/providers/Microsoft.Storage/storageAccounts/stginranetstorage,Blob Storage Account
 73963,intranetstorage01,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Production/providers/Microsoft.Storage/storageAccounts/intranetstorage01,Blob Storage Account
-58796,DefaultWorkspace-7c4e1a31-1396-4af0-8fbf-66a34fee2262-EAU,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/DefaultResourceGroup-EAU/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-7c4e1a31-1396-4af0-8fbf-66a34fee2262-EAU,Log Analytics Workspace
 58805,marathonheda7495bcfe,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/RG-MAR-WEBSITE-1/providers/Microsoft.Storage/storageAccounts/marathonheda7495bcfe,Blob Storage Account
-31306,LOGA-WES-INFRA-AE-1,/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-INFRA-AE-1/providers/Microsoft.OperationalInsights/workspaces/LOGA-WES-INFRA-AE-1,Log Analytics Workspace
+58796,DefaultWorkspace-7c4e1a31-1396-4af0-8fbf-66a34fee2262-EAU,/subscriptions/7c4e1a31-1396-4af0-8fbf-66a34fee2262/resourceGroups/DefaultResourceGroup-EAU/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-7c4e1a31-1396-4af0-8fbf-66a34fee2262-EAU,Log Analytics Workspace
 31309,stwesinfraaelrs1,/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-INFRA-AE-1/providers/Microsoft.Storage/storageAccounts/stwesinfraaelrs1,Blob Storage Account
+31306,LOGA-WES-INFRA-AE-1,/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-INFRA-AE-1/providers/Microsoft.OperationalInsights/workspaces/LOGA-WES-INFRA-AE-1,Log Analytics Workspace
 27662,FunApp-ECSPPRD-InternalAPI,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Web/sites/FunApp-ECSPPRD-InternalAPI,Azure Function App
 27790,FunApp-ECSPPRD-PortalAPI,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPPRD-AE/providers/Microsoft.Web/sites/FunApp-ECSPPRD-PortalAPI,Azure Function App
-28333,PROD-NBNCallBackResgister,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Web/sites/PROD-NBNCallBackResgister,Azure Function App
 31451,ihgstwebprodcoreaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Storage/storageAccounts/ihgstwebprodcoreaea,Blob Storage Account
 31469,ihgstwebpreprodlogsaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Storage/storageAccounts/ihgstwebpreprodlogsaea,Blob Storage Account
-31481,ihgsabackupuataea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-common-uat-aea/providers/Microsoft.Storage/storageAccounts/ihgsabackupuataea,Blob Storage Account
 48114,cs11003200281cc6a9e,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/cloud-shell-storage-southeastasia/providers/Microsoft.Storage/storageAccounts/cs11003200281cc6a9e,Blob Storage Account
 29741,dbstorageqbp7kaxy45nxo,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-DAPI-POOL-AE-1/providers/Microsoft.Storage/storageAccounts/dbstorageqbp7kaxy45nxo,Blob Storage Account
-54740,DefaultWorkspace-dfc40a97-e5a3-48dc-bf0d-4b87e16a6583-EUS,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/DefaultResourceGroup-EUS/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-dfc40a97-e5a3-48dc-bf0d-4b87e16a6583-EUS,Log Analytics Workspace
-77482,stetsttfsateae1,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-IB-AE-1/providers/Microsoft.Storage/storageAccounts/stetsttfsateae1,Blob Storage Account
-27524,stcyriskckclshell,/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Storage/storageAccounts/stcyriskckclshell,Blob Storage Account
 73958,nzintranetprod,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Production/providers/Microsoft.Web/sites/nzintranetprod,Azure Function App
 64981,tcsazfiles,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG-TCS-INFRA-PRD-AE/providers/Microsoft.Storage/storageAccounts/tcsazfiles,Blob Storage Account
-73962,rgintranetproductiondiag,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Production/providers/Microsoft.Storage/storageAccounts/rgintranetproductiondiag,Blob Storage Account
-56677,iposfraudimages,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_iPOSApp/providers/Microsoft.Storage/storageAccounts/iposfraudimages,Blob Storage Account
-56678,devintranetstorage,/subscriptions/a1c690dc-131c-429b-aabe-8bec7912ca0b/resourceGroups/RG_Intranet_Development/providers/Microsoft.Storage/storageAccounts/devintranetstorage,Blob Storage Account
 27611,DB-MAZU-BillingManagement-Restored,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Sql/servers/sql-ethan-mazu-ae-1/databases/DB-MAZU-BillingManagement-Restored,SQL Database
 27612,DB-MAZU-BillingManagement-Dev,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-MAZU-AE/providers/Microsoft.Sql/servers/sql-ethan-mazu-ae-1/databases/DB-MAZU-BillingManagement-Dev,SQL Database
 30449,master,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Sql/servers/sql-ethan-etho-dev-ae-1/databases/master,SQL Database
 30452,FUNC-ETHAN-ETHO-INTERNALAPI-DEV-AE-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Web/sites/FUNC-ETHAN-ETHO-INTERNALAPI-DEV-AE-1,Azure Function App
-30581,FUNC-ETHAN-ETHO-PORTALAPI-DEV-AE-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.Web/sites/FUNC-ETHAN-ETHO-PORTALAPI-DEV-AE-1,Azure Function App
 31098,LA-ETHAN-ETHO-DEV-AE-1,/subscriptions/e8e73d3f-2ed5-4224-aa26-b22decb89667/resourceGroups/RG-ETHAN-ETHO-DEV-AE-1/providers/Microsoft.OperationalInsights/workspaces/LA-ETHAN-ETHO-DEV-AE-1,Log Analytics Workspace
 56611,sql-ethan-store-prod-ae-1,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-PROD-AE-1/providers/Microsoft.Sql/servers/sql-ethan-store-prod-ae-1,SQL Server
 56614,APP-ETHAN-STORE-WEB-PROD-AE-1,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-PROD-AE-1/providers/Microsoft.Web/sites/APP-ETHAN-STORE-WEB-PROD-AE-1,Azure Function App
 56615,APP-ETHAN-STORE-API-PROD-AE-1,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-PROD-AE-1/providers/Microsoft.Web/sites/APP-ETHAN-STORE-API-PROD-AE-1,Azure Function App
 56616,APP-ETHAN-STORE-CMS-PROD-AE-1,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-PROD-AE-1/providers/Microsoft.Web/sites/APP-ETHAN-STORE-CMS-PROD-AE-1,Azure Function App
 28317,FunApp-UACRMUAT-SQAPI,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIUAT-AE/providers/Microsoft.Web/sites/FunApp-UACRMUAT-SQAPI,Azure Function App
-27644,FunApp-TeamsSSP-PRD,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-TEAMSSSP-AE/providers/Microsoft.Web/sites/FunApp-TeamsSSP-PRD,Azure Function App
-28330,NBNCallBackResgister,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Web/sites/NBNCallBackResgister,Azure Function App
 28335,FunApp-TeamsSSP-UAT,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-TEAMSSSP-AE/providers/Microsoft.Web/sites/FunApp-TeamsSSP-UAT,Azure Function App
+28307,APP-ETHAN-PCMC-DEV-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-DEV-AE-1/providers/Microsoft.Web/sites/APP-ETHAN-PCMC-DEV-AE-1,Azure Function App
+28309,FunApp-UACRM-SQAPI,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Web/sites/FunApp-UACRM-SQAPI,Azure Function App
+85283,FUNC-ETHAN-UC-CLBA-PRD-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UC-CLBA-AE/providers/Microsoft.Web/sites/FUNC-ETHAN-UC-CLBA-PRD-AE-1,Azure Function App
+28330,NBNCallBackResgister,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Web/sites/NBNCallBackResgister,Azure Function App
+28333,PROD-NBNCallBackResgister,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Web/sites/PROD-NBNCallBackResgister,Azure Function App
+31308,stwesinfrashellaelrs1,/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-INFRA-AE-1/providers/Microsoft.Storage/storageAccounts/stwesinfrashellaelrs1,Blob Storage Account
+56612,DB-ETHAN-STORE-CSPExtension-PROD-AE-1,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-PROD-AE-1/providers/Microsoft.Sql/servers/sql-ethan-store-prod-ae-1/databases/DB-ETHAN-STORE-CSPExtension-PROD-AE-1,SQL Database
+62530,FUNC-ETHAN-STORE-CARTREMINDER-PROD-AE-1,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-PROD-AE-1/providers/Microsoft.Web/sites/FUNC-ETHAN-STORE-CARTREMINDER-PROD-AE-1,Azure Function App
+53743,CartReminder,/subscriptions/395fbcac-64d7-4b4f-be58-37cf864c1ae6/resourceGroups/RG-ETHAN-STORE-DEMO-AE-1/providers/Microsoft.Web/sites/CartReminder,Azure Function App
+31622,stkrdevase01,/subscriptions/b92797bd-7653-460b-a153-2432902dc35d/resourceGroups/rg-kr-appdev-ase-1/providers/Microsoft.Storage/storageAccounts/stkrdevase01,Blob Storage Account
+65343,LA-ECRP-INFRA-Common-AE-1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ECRP-INFRA-VDC-AE/providers/Microsoft.OperationalInsights/workspaces/LA-ECRP-INFRA-Common-AE-1,Log Analytics Workspace
+29713,LOGA-ETHAN-PMAPIPRD-AE,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.OperationalInsights/workspaces/LOGA-ETHAN-PMAPIPRD-AE,Log Analytics Workspace
+29719,storageaccountrgethbfdd,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Storage/storageAccounts/storageaccountrgethbfdd,Blob Storage Account
+29724,stethanucfileslrs1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-UCST-AE-1/providers/Microsoft.Storage/storageAccounts/stethanucfileslrs1,Blob Storage Account
+31463,DefaultWorkspace-8b170db7-832a-47fa-b80b-86b48c117b68-EAU,/subscriptions/8b170db7-832a-47fa-b80b-86b48c117b68/resourcegroups/defaultresourcegroup-eau/providers/microsoft.operationalinsights/workspaces/defaultworkspace-8b170db7-832a-47fa-b80b-86b48c117b68-eau,Log Analytics Workspace
+29728,stethanpcmcprodloglrsae2,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-PROD-AE-1/providers/Microsoft.Storage/storageAccounts/stethanpcmcprodloglrsae2,Blob Storage Account
+29729,stethanpcmcdevloglrsae2,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PCMC-DEV-AE-1/providers/Microsoft.Storage/storageAccounts/stethanpcmcdevloglrsae2,Blob Storage Account
+29731,stethanecspuataestdlrs1,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-ECSPUAT-AE/providers/Microsoft.Storage/storageAccounts/stethanecspuataestdlrs1,Blob Storage Account
+29734,sqlvacmeaewwc2pa5e,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-D365-AE/providers/Microsoft.Storage/storageAccounts/sqlvacmeaewwc2pa5e,Blob Storage Account
+29739,functionappsqapistorage,/subscriptions/d3579ae4-1dca-4e24-afe7-6863931f0b3e/resourceGroups/RG-ETHAN-PMAPIPRD-AE/providers/Microsoft.Storage/storageAccounts/functionappsqapistorage,Blob Storage Account
+31368,ihg-as-web-preprod-webpres-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Web/sites/ihg-as-web-preprod-webpres-aea,Azure Function App
+31371,ihg-as-web-preprod-coredata-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-preprod-aea/providers/Microsoft.Web/sites/ihg-as-web-preprod-coredata-aea,Azure Function App
+31373,ihg-as-web-prod-kentico-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Web/sites/ihg-as-web-prod-kentico-aea,Azure Function App
+31375,ihg-as-web-prod-webpres-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Web/sites/ihg-as-web-prod-webpres-aea,Azure Function App
+31364,ihg-as-web-uat2-coredata-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.Web/sites/ihg-as-web-uat2-coredata-aea,Azure Function App
+31365,ihg-as-web-uat2-pami-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.Web/sites/ihg-as-web-uat2-pami-aea,Azure Function App
+31366,ihg-as-web-uat2-webpres-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.Web/sites/ihg-as-web-uat2-webpres-aea,Azure Function App
+31367,ihg-as-web-uat2-kentico-aea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-uat2-aea/providers/Microsoft.Web/sites/ihg-as-web-uat2-kentico-aea,Azure Function App
+31376,ihg-as-web-prod-coredata-ase,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-ase/providers/Microsoft.Web/sites/ihg-as-web-prod-coredata-ase,Azure Function App
+31431,ihgstwebprodwebaea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-web-prod-aea/providers/Microsoft.Storage/storageAccounts/ihgstwebprodwebaea,Blob Storage Account
+31481,ihgsabackupuataea,/subscriptions/dcdebc0e-0928-4a62-b613-ce72b4c87230/resourceGroups/ihg-rg-common-uat-aea/providers/Microsoft.Storage/storageAccounts/ihgsabackupuataea,Blob Storage Account
+48067,venus-qas,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Sql/servers/venus-qas,SQL Server
+48071,qas_operations,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Sql/servers/venus-qas/databases/qas_operations,SQL Database
+48093,venusdriver-prd-api,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Prd/providers/Microsoft.Web/sites/venusdriver-prd-api,Azure Function App
+48087,venusdriver-qas-api,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Venus-Qas/providers/Microsoft.Web/sites/venusdriver-qas-api,Azure Function App
+48094,qasapimercury,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Mercury-Qas/providers/Microsoft.Web/sites/qasapimercury,Azure Function App
+48111,onetrackdocumentsml,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/Documents-ML/providers/Microsoft.Storage/storageAccounts/onetrackdocumentsml,Blob Storage Account
+70626,fnappwgvl5s5o7fo3o,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/RG-MVGL-MON-AE-1/providers/Microsoft.Storage/storageAccounts/fnappwgvl5s5o7fo3o,Blob Storage Account
+48113,dataplatformpbi,/subscriptions/7e8ed0a0-804a-4660-8acd-80f0c85b5a15/resourceGroups/DataPlatform/providers/Microsoft.Storage/storageAccounts/dataplatformpbi,Blob Storage Account

@@ -1,0 +1,24 @@
+---
+name: send_email_confirmation
+description: Sends an email confirmation for user account creation.
+enabled: true
+runner_type: python-script
+entry_point: send_passphrase_mail.py
+parameters:
+  to_email:
+    description: Email address of the recipient.
+    type: string
+    required: true
+  user_name:
+    description: Name of the user whose account is created.
+    type: string
+    required: true
+  user_email:
+    description: Email address of the user whose account is created.
+    type: string
+    required: true
+  requester_name:
+    description: Name of the person who requested the account creation.
+    type: string
+    required: true
+

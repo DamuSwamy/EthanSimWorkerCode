@@ -67,5 +67,5 @@ class MyCustomStackStormAction(Action):
                 print(f"No diagnosis found between {yesterday_9_30_am_ist} and {today_9_30_am_ist}")
 
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print("Unknown Error")
 
