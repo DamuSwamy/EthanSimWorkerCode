@@ -94,7 +94,7 @@ tasks:
         publish:
           - state: REMEDIATION
           - info: successfully onboarded
-  # [373, 5]
+  # [548, 29]
   start:
     action: core.echo
     input:
@@ -148,9 +148,9 @@ tasks:
       password: <% ctx().password[0] %>
     next:
       - do:
-          - sleep_180
+          - sleep_250
   # [959, 528]
-  sleep_180:
+  sleep_250:
     action: core.local
     input:
       cmd: sleep 250
@@ -174,7 +174,7 @@ tasks:
     next:
       - do:
           - sleep_20
-  # [705, 1023]
+  # [1222, 953]
   end:
     action: core.noop
   # [1263, 719]
@@ -184,7 +184,7 @@ tasks:
       message: "Automation update for user onboarding is as follows:\n\nUser Created: <% ctx().first_name %> <% ctx().last_name %>\nDescription added: User Onboarded as part of <% ctx().ticketNo %>\nMembership groups added from: <%ctx().model_user %>\nMembership groups copied: <% ctx().membership_copied %>\nAD sync: True\nLicense Added: <% ctx().license_added %>\nMailbox Created: <% ctx().mailbox_created %>"
     next:
       - do:
-          - end
+          - self_destruct_message
         publish:
           - state: REMEDIATION
           - info:
@@ -252,7 +252,7 @@ tasks:
         when: <% str(result().output.task_output.stdout) = "1"  or result().output.task_output.succeeded = false %>
         publish:
           - user_count: <% result().output.task_output.stdout %>
-  # [1, 237]
+  # [0, 324]
   ticket_update_escalate:
     action: core.echo
     input:
@@ -281,7 +281,7 @@ tasks:
                   status: In Progress
                   ticket_update: Sim Automation is escalating the service request after finding the user to be onboarded already exists
           - execution_log: "[{\"task_name\":\"check_ad_user\",\"expected_returncode\":\"1\", \"actual_returncode\":<% ctx().user_count  %>}]"
-  # [773, 332]
+  # [726, 337]
   end_1_user_exists:
     action: core.noop
   # [376, 843]
@@ -302,18 +302,18 @@ tasks:
   random:
     action: core.local
     input:
-      cmd: "cat /dev/urandom | tr -dc '~!@#$%^&*_A-Za-z0-9' | head -c${1:-35}"
+      cmd: "curl -x http://210.48.210.35:3128/ -X GET 'https://pwd.ecorp.systems/api/generatepassword/' -H 'APIKey: e75c3a324b869fd46d98ec23f75ba3c3' -v -L"
     next:
       - do:
           - check_ad_user
         publish:
-          - random_string: <% result().stdout %>
+          - random_string: <% result().stdout[0].Password %>
   # [966, 256]
   check:
     action: core.noop
     next:
       - do:
-          - sleep_180
+          - sleep_250
       - do:
           - start_delta_sync
         when: <% 1 = 2 %>
@@ -381,7 +381,7 @@ tasks:
       client_secret: <% ctx().client_secret[0] %>
       client_id: <%ctx().client_id[0]%>
       tenant_id: <% ctx().tenant_id[0] %>
-  # [1299, 956]
+  # [1496, 942]
   report_to_webex:
     action: cisco_webex.webex_post_message
     input:
@@ -397,6 +397,20 @@ tasks:
       text: Warrigal user onboarding requested
       room_id: Y2lzY29zcGFyazovL3VzL1JPT00vNTVkNmEzMTAtZTBlMC0xMWVlLWJjNDAtNDE5YjEyODQ2ZDk1
       bearer_token: N2U5NzA4NmYtYjM3OC00MGRjLWE2NDItYWQwMmRjMWUwNWY0N2IzMWIxM2YtNWMx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
+  # [1259, 850]
+  self_destruct_message:
+    action: sim_passwordstate.self_destruct_message
+    next:
+      - do:
+          - end
+    input:
+      log_level: DEBUG
+      api_key: e2cbfd8549a6337598bfc7a4e3362d4f
+      api_url: "https://pwd.ecorp.systems/api/selfdestruct"
+      expires_at: 3d
+      message: <%ctx().random_string%>
+      no_views: 2
+      passphrase: ethan2020
 input:
   - data
 output:

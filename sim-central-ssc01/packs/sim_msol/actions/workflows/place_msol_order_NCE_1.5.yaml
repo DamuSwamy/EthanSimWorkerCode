@@ -25,7 +25,7 @@ tasks:
         when: <% succeeded() %>
         publish:
           - auth_token: <% result().body. access_token %>
-  # [572, 858]
+  # [568, 1225]
   end_success:
     action: core.echo
     input:
@@ -73,7 +73,7 @@ tasks:
         publish:
           - order_error: <% result().body. orderErrors[0].description %>
           - order_details: <% result().body %>
-  # [841, 782]
+  # [830, 1130]
   end_error:
     action: core.noop
   # [118, 404]
@@ -159,7 +159,7 @@ tasks:
     next:
       # #629e47
       - do:
-          - end_success
+          - delete_from_MSOL_NCE_Subscribed_Pricing
         when: <% succeeded() %>
     input:
       log_level: DEBUG
@@ -188,7 +188,7 @@ tasks:
       table: sn_customerservice_general_case
     next:
       - do:
-          - end_error
+          - delete_from_MSOL_NCE_Subscribed_Pricing2
   # [119, 11]
   get_inputs:
     action: sim_itsm2.get
@@ -274,3 +274,68 @@ tasks:
           - process_line_items
         publish:
           - fetched_cat_id: <% result().body.items[0].catalogItemId %>
+  # [558, 1006]
+  format_product_list1:
+    action: sim_msol.FormatProductList2
+    next:
+      - do:
+          - task1
+        when: <% succeeded() %>
+        publish:
+          - data: <% result().result.data %>
+    input:
+      log_level: DEBUG
+      customerId: "{{ ctx().customer_tenant_id }}"
+      input_data: "{{ ctx().line_items_raw }}"
+  # [833, 884]
+  format_product_list2:
+    action: sim_msol.FormatProductList2
+    next:
+      - do:
+          - task2
+        when: <% succeeded() %>
+        publish:
+          - data2: <% result().result.data %>
+    input:
+      log_level: DEBUG
+      input_data: "{{ ctx().line_items_raw }}"
+      customerId: "{{ ctx().customer_tenant_id }}"
+  # [562, 1113]
+  task1:
+    action: sql.insert_bulk
+    next:
+      - do:
+          - end_success
+    input:
+      log_level: DEBUG
+      data: "{{ ctx().data }}"
+  # [824, 1001]
+  task2:
+    action: sql.insert_bulk
+    next:
+      - do:
+          - end_error
+        when: <% succeeded() %>
+    input:
+      log_level: DEBUG
+      data: "{{ ctx().data2 }}"
+  # [576, 884]
+  delete_from_MSOL_NCE_Subscribed_Pricing:
+    action: sql.query
+    next:
+      - do:
+          - format_product_list1
+    input:
+      log_level: DEBUG
+      query: DELETE FROM MSOL_NCE_Subscribed_Pricing WHERE CustomerID = '{{ ctx().customer_tenant_id }}'
+      connection: billing
+  # [828, 776]
+  delete_from_MSOL_NCE_Subscribed_Pricing2:
+    action: sql.query
+    next:
+      - do:
+          - format_product_list2
+    input:
+      log_level: DEBUG
+      query: DELETE FROM MSOL_NCE_Subscribed_Pricing WHERE CustomerID = '{{ ctx().customer_tenant_id }}'
+      connection: billing

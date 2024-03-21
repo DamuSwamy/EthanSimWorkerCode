@@ -8,7 +8,7 @@ class Msol(Action):
     def __init__(self, config=None, action_service=None):
         super(Msol, self).__init__(config, action_service)
 
-    def run(self,input_data):
+    def run(self,input_data,customerId):
         data = input_data
 
         data = data.replace('\n', '')
@@ -18,7 +18,7 @@ class Msol(Action):
 
         for record in data:
             product_list_json = {
-                "CustomerID":"",
+                "CustomerID":customerId,
                 "ProductID":"",
                 "SkuID":"",
                 "AutoRenewal":"",

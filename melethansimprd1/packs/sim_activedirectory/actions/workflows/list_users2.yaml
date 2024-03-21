@@ -5,7 +5,7 @@ tasks:
     action: core.winrm_ps_cmd
     input:
       transport: <% ctx().data.data.transport %>
-      cmd: Get-ADUser -Filter 'enabled -eq $true -and UserPrincipalName -ne "Navgagandeep.Singh1@melair.com.au" '  -Properties  DisplayName,UserPrincipalName,Title,Department,EmployeeID,EmployeeNumber,Manager, PhysicalDeliveryOfficeName,Company,AccountExpirationDate | Select-Object  DisplayName,UserPrincipalName,Title,Department,EmployeeID,EmployeeNumber,@{Name='Manager';Expression={if($null -eq $_.Manager){''}else{ (($_ |Get-ADUser -Properties manager).manager | Get-ADUser).Name}}}, PhysicalDeliveryOfficeName,Company,@{Name='AccountExpiration'; Expression={if($null -eq $_.AccountExpirationDate){'Never Expires'}else{$_.AccountExpirationDate.DateTime}}},@{n='OU';e={$_.DistinguishedName -replace '^.*?,(?=[A-Z]{2}=)'}} | ConvertTo-Json
+      cmd: "Get-ADUser -Filter 'enabled -eq $true -and UserPrincipalName -ne \"Navgagandeep.Singh1@melair.com.au\" '  -Properties  DisplayName,UserPrincipalName,Title,Department,EmployeeID,EmployeeNumber,Manager, PhysicalDeliveryOfficeName,Company,AccountExpirationDate | Select-Object  DisplayName,UserPrincipalName,Title,Department,EmployeeID,EmployeeNumber,@{Name='Manager';Expression={if($null -eq $_.Manager){''}else{ (($_ |Get-ADUser -Properties manager).manager | Get-ADUser).Name}}}, @{Name='Location'; Expression={$_.physicalDeliveryOfficeName}},Company,@{Name='AccountExpiryDate'; Expression={if($null -eq $_.AccountExpirationDate){'Never Expires'}else{$_.AccountExpirationDate.DateTime}}},@{n='OU';e={$_.DistinguishedName -replace '^.*?,(?=[A-Z]{2}=)'}} | ConvertTo-Json\n"
       host: <% ctx().data.data.ad_host %>
       username: <% ctx().data.data.username %>
       password: <% ctx().data.data.password %>

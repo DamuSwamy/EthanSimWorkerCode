@@ -1,6 +1,6 @@
 ---
-name: format_products2
-pack: sim_msoll
+name: FormatProductList2
+pack: sim_msol
 runner_type: "python-script"
 description: Generate Response
 enabled: true
@@ -10,4 +10,8 @@ parameters:
     type: string
     description: Items data
     required: true
-      
+  customerId:
+    type: string
+    description: Customer Id
+    required: true
+    

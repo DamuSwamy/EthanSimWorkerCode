@@ -100,6 +100,9 @@ tasks:
     action: core.echo
     input:
       message: <% ctx().notification %>
+    next:
+      - do:
+          - task1
 
   # [363, 496]
   prepare_data_for_insert:
@@ -146,6 +149,14 @@ tasks:
       table: <% ctx().details_table_name %>
       data: <% ctx().ComplianceDetails %>
       connection: productionCloudExtension
+  # [897, 444]
+  task1:
+    action: cisco_webex.webex_post_message
+    input:
+      log_level: DEBUG
+      bearer_token: N2U5NzA4NmYtYjM3OC00MGRjLWE2NDItYWQwMmRjMWUwNWY0N2IzMWIxM2YtNWMx_PF84_17d3c97c-98f4-4894-9db9-e446ba46550e
+      room_id: Y2lzY29zcGFyazovL3VzL1JPT00vYWQ3ZWE5MzAtNzZlZC0xMWVlLTlkMjQtY2JiOTMyNmY4MDJm
+      text: <% ctx().notification %>
 
 output:
   - notifications: <% ctx().notification %>
