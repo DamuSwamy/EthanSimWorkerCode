@@ -84,12 +84,16 @@ class ManagementGroupSensor(PollingSensor):
                           IaaS_ManagementGroupSchedule c,
                           IaaS_ManagementGroup d
                           where a.managedID=b.managedID
-                          and b.vmActive='1'
                           and d.GroupStatus = 'Enabled'
                           and a.ManagmentGroupSIName = c.ManagementGroupSIName
                           and a.ManagmentGroupSIName = d.Name
                           and c.Day='{self.current_day}'
                           and CONVERT(time, c.ActionTime) = CONVERT(time, '{self.current_time}')
+                          and (
+                            (b.managedBy = 'vcenter' AND b.vmActive = '1')
+                            OR
+                            (b.managedBy <> 'vcenter')
+                          )
                           """
             self._logger.debug(COUNT_QUERY)
             rows = conn.execute(COUNT_QUERY).fetchone()
@@ -114,12 +118,16 @@ class ManagementGroupSensor(PollingSensor):
                             IaaS_ManagementGroupSchedule c,
                             IaaS_ManagementGroup d
                             where a.managedID=b.managedID
-                            and b.vmActive='1'
                             and d.GroupStatus = 'Enabled'
                             and a.ManagmentGroupSIName = c.ManagementGroupSIName
                             and a.ManagmentGroupSIName = d.Name
                             and c.Day='{self.current_day}' 
-                            and CONVERT(time, c.ActionTime) = CONVERT(time, '{self.current_time}')) AS RowNumberedTable
+                            and CONVERT(time, c.ActionTime) = CONVERT(time, '{self.current_time}')
+                            and (
+                                (b.managedBy = 'vcenter' AND b.vmActive = '1')
+                                OR
+                                (b.managedBy <> 'vcenter')
+                            )) AS RowNumberedTable
                         WHERE RowNumber BETWEEN {start_row + 1} AND {start_row + batch_size}
                         """
                 self._logger.debug(QUERY)

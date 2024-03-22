@@ -81,9 +81,10 @@ tasks:
               state: <% ctx().output.get('state', "FINISHED") %>
               data: null
               info: <% ctx().output.get('info', result().output) %>
-          - firstname: <% ctx().robot_data.data.custom_attributes.FirstName %>
+          - first_name: <% ctx().robot_data.data.custom_attributes.FirstName %>
           - Email: <% ctx().robot_data.data.custom_attributes.Email %>
-          - requester_email: <% ctx().robot_data.data.custom_attributes.requesteremail %>
+          - requester_email: <% ctx().robot_data.data.custom_attributes.requesteremail%>
+          - requester_name: <% ctx().robot_data.data.custom_attributes.requestername %>
         # #629e47
         do:
           - send_mail
@@ -184,7 +185,7 @@ tasks:
     action: core.echo
     input:
       message: <% ctx().messages %>
-  # [402, 761]
+  # [406, 819]
   escalate_ticket:
     action: sim_itsm2.update
     input:
@@ -199,7 +200,7 @@ tasks:
       # #629e47
       - do:
           - done
-  # [39, 824]
+  # [44, 819]
   on_task_completion_itsm_ticket:
     action: sim_itsm2.update
     next:
@@ -210,9 +211,15 @@ tasks:
       log_level: DEBUG
       table: sn_customerservice_general_case
       payload:
-        comments: Sim Automation has completed onboarding of user. The manual step of sending the password to user will be done by our helpdesk team.
-        state: 10
-        assigned_to: <% ctx().itsm_tick_name %>
+        comments: Sim Automation is resolving the service request after completion of operation as per request and password will sent through secure method.
+        resolution_code: Completed
+        close_notes: Sim Automation is resolving the service request after completion of operation as per request and password will sent through secure method.
+        state: 3
+        cause: User onboarding request completed by SiM Automation
+        assigned_to: svc_sim_automation
+        closed_by: 84cf417087ff3410bd1d32e80cbb3502
+        closed_at: "2022-02-06 17:03:07"
+        notes_to_comments: true
       number: <% ctx().ticket_id %>
   # [237, 90]
   update_itsm:
@@ -318,7 +325,7 @@ tasks:
     next:
       - do:
           - decide_now_or_later
-  # [41, 716]
+  # [45, 714]
   send_mail:
     action: core.sendmail
     next:
@@ -327,5 +334,5 @@ tasks:
     input:
       from: SiM.Automation@ethan.com.au
       to: <%ctx().requester_email%>
-      subject: User Account Creation Confirmation for <%ctx().firstname%>
-      body: "        <html>\n          <body>\n            <p>Dear ,</p>\n            <p>We are writing to confirm the successful creation of the user account as per your request. Kindly find the user's login credentials provided through our secure Password State self-destruct message system.</p>\n            <p>Please take note of the following details:</p>\n            <ul>\n              <li>Username: <%ctx().firstname%></li>\n              <li>User Email: <%ctx().Email%></li>\n              <li>Email with Password has been sent separately via password state.</li>\n              <li>Passphrase for URL Access: ethan2020</li>\n            </ul>\n            <p>For security purposes, we would like to highlight the following points:</p>\n            <ul>\n              <li>The password message will self-destruct in 3 days if unopened.</li>\n              <li>You can access this message only twice.</li>\n            </ul>\n            <p>The user will be prompted to reset their password upon the first login.</p>\n            <p>They should also link a mobile number to their account by logging into the following URL: <a href=\"https://warrigal.onelogin.com\">https://warrigal.onelogin.com</a></p>\n            <p>Profile &gt; Add 2-Factor Authentication Method (SMS).</p>\n            <p>If they require any assistance with the above, please give service desk a call.</p>\n            <p>Kind regards,</p>\n            <p>SiM Automation<br>Ethan</p>\n          </body>\n        </html>\n        "
+      subject: User Account Creation Confirmation for <%ctx().first_name%>
+      body: "<html>\n          <body>\n            <p>Dear <%ctx().requester_name%>,</p>\n            <p>We are writing to confirm the successful creation of the user account as per your request. Kindly find the user's login credentials provided through our secure Password State self-destruct message system.</p>\n            <p>Please take note of the following details:</p>\n            <ul>\n              <li>Username: <%ctx().first_name%></li>\n              <li>User Email: <%ctx().Email%></li>\n              <li>Email with Password has been sent separately via password state.</li>\n              <li>Passphrase for URL Access: warrigal2024</li>\n            </ul>\n            <p>For security purposes, we would like to highlight the following points:</p>\n            <ul>\n              <li>The password message will self-destruct in 3 days if unopened.</li>\n              <li>You can access this message only twice.</li>\n            </ul>\n            <p>The user should follow the process below:</p>\n            <p>They should also link a mobile number to their account by logging into the following URL: <a href=\"https://warrigal.onelogin.com\">https://warrigal.onelogin.com</a></p>\n            <p>Profile &gt; Add 2-Factor Authentication Method (SMS).</p>\n            <p>If they require any assistance with the above, please give service desk a call.</p>\n            <p>Kind regards,</p>\n            <p>SiM Automation<br>Ethan</p>\n          </body>\n        </html>"

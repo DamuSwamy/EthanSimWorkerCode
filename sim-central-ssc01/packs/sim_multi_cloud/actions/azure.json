@@ -173,7 +173,7 @@
       },
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_D2s_v3"
+          "vmSize": "Standard_D4s_v3"
         },
         "provisioningState": "Succeeded",
         "vmId": "9cfa9e3d-dbd8-46f6-bd55-1f66cf9f8b5e",
@@ -2188,6 +2188,9 @@
       "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-IOT-DEV-AE/providers/Microsoft.Compute/virtualMachines/spa-vmiotedge-tst-ae-005",
       "type": "Microsoft.Compute/virtualMachines",
       "location": "australiaeast",
+      "tags": {
+        "VMAutoShutdown": "true"
+      },
       "identity": {
         "type": "SystemAssigned",
         "principalId": "c355486a-b406-4914-b672-2950068e9d9e",
@@ -2216,11 +2219,9 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
-              "storageAccountType": "StandardSSD_LRS",
               "id": "/subscriptions/f20434e1-5360-405d-84b6-b5dbecc2a5c7/resourceGroups/SPA-RG-IOT-DEV-AE/providers/Microsoft.Compute/disks/spa-vmiotedge-tst-ae-005_OsDisk_1_8d68accffbf243e7b7f3117f13de7e37"
             },
-            "deleteOption": "Delete",
-            "diskSizeGB": 30
+            "deleteOption": "Delete"
           },
           "dataDisks": []
         },
