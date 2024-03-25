@@ -236,13 +236,13 @@ tasks:
     next:
       - do:
           - user_to_default_groups
-  # [1007, 85]
+  # [1005, 84]
   connect_exchange_online:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
       cmd: hostname
-      host: <% ctx().ad_host[0] %>
+      host: 10.232.33.24
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>
       verify_ssl_cert: false
@@ -254,8 +254,8 @@ tasks:
     action: core.winrm_ps_cmd
     input:
       transport: ntlm
-      cmd: "$UPNToCheck = \"<% ctx().first_name%>.<%ctx().last_name %>@<% ctx().emaildomain %>\"\n\n# Check if the UPN exists in Exchange Online\n$User = Get-Mailbox -Identity $UPNToCheck -ErrorAction SilentlyContinue\nif ($User) {\n    Write-Host \"The UPN '$UPNToCheck' exists in Exchange Online.\"\n} else {\n    Write-Host \"The UPN '$UPNToCheck' does not exist in Exchange Online.\"\n}"
-      host: <% ctx().ad_host[0] %>
+      cmd: "Import-Module -Name ExchangeOnlineManagement -RequiredVersion 3.4.0\nConnect-ExchangeOnline -ShowBanner:$false -CertificateFilePath \"C:/Users/svc-simauto-1/Documents/EthanSimAuto.pfx\" -CertificatePassword (ConvertTo-SecureString -String ('u5xKrJoTUypS7A4aYdthWPFHMkD3Xb') -AsPlainText -Force) -AppID \"d783940b-f091-4a04-aeb9-60945b2e7d6c\" -Organization \"ecorpsystems.onmicrosoft.com\"\n\n$UPNToCheck = \"<% ctx().first_name %>.<% ctx().last_name %>@<% ctx().emaildomain %>\"\n\nGet-Mailbox -Filter \"UserPrincipalName -eq '$UPNToCheck'\""
+      host: 10.232.33.24
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>
       verify_ssl_cert: false
@@ -268,7 +268,7 @@ tasks:
     input:
       transport: ntlm
       cmd: New-Mailbox -Name "<% ctx().first_name %> <% ctx().last_name %>" -Password (ConvertTo-SecureString "<% ctx().random_string %>" -AsPlainText -Force) -UserPrincipalName ("$((<% ctx().first_name %>).replace(' ', ''))$((<% ctx().last_name %>).replace(' ', ''))@etest.systems") -Alias ("$((<% ctx().first_name %>).replace(' ', ''))$((<% ctx().last_name %>).replace(' ', ''))") -DisplayName "<% ctx().first_name %> <% ctx().last_name %>" -FirstName "<% ctx().first_name %>" -LastName "<% ctx().last_name %>" -OrganizationalUnit "OU=Users,OU=TestOU,OU=ETEST EUC,DC=etest,DC=systems" -PrimarySmtpAddress ("$((<% ctx().first_name %>).replace(' ', ''))$((<% ctx().last_name %>).replace(' ', ''))@etest.systems") -ResetPasswordOnNextLogon $false -SamAccountName ("$((<% ctx().first_name %>).replace(' ', ''))$((<% ctx().last_name %>).replace(' ', ''))")
-      host: <% ctx().ad_host[0] %>
+      host: 10.232.33.24
       username: <% ctx().username[0] %>
       password: <% ctx().password[0] %>
       port: 5985

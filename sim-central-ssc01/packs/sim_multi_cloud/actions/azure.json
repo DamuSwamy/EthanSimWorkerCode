@@ -963,342 +963,6 @@
       ]
     },
     {
-      "name": "VM-AVD-AE-2-0",
-      "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-0",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "tags": {
-        "cm-resource-parent": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.DesktopVirtualization/hostpools/AVDHP-WES-PRD-WIN11-2"
-      },
-      "identity": {
-        "type": "SystemAssigned",
-        "principalId": "d7ec1bbc-d2eb-4dc1-af53-ec6268d75ffd",
-        "tenantId": "b8e666a2-e9c3-428b-8227-b97e1c5823b4"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_E4as_v5"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "94f20827-d951-4300-ae22-9c2cb93487f1",
-        "additionalCapabilities": {
-          "hibernationEnabled": false
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "microsoftwindowsdesktop",
-            "offer": "office-365",
-            "sku": "win11-23h2-avd-m365",
-            "version": "latest",
-            "exactVersion": "22631.3007.240109"
-          },
-          "osDisk": {
-            "osType": "Windows",
-            "name": "VM-AVD-AE-2-0_OsDisk_1_200851a1342c41bcb62ba2fea96abfc7",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/disks/VM-AVD-AE-2-0_OsDisk_1_200851a1342c41bcb62ba2fea96abfc7"
-            },
-            "deleteOption": "Detach"
-          },
-          "dataDisks": []
-        },
-        "osProfile": {
-          "computerName": "VM-AVD-AE-2-0",
-          "adminUsername": "skipper",
-          "windowsConfiguration": {
-            "provisionVMAgent": true,
-            "enableAutomaticUpdates": true,
-            "patchSettings": {
-              "patchMode": "AutomaticByOS",
-              "assessmentMode": "ImageDefault"
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "securityProfile": {
-          "uefiSettings": {
-            "secureBootEnabled": true,
-            "vTpmEnabled": true
-          },
-          "securityType": "TrustedLaunch"
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Network/networkInterfaces/VM-AVD-AE-2-0-nic"}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "https://stwesinfraaelrs1.blob.core.windows.net/"
-          }
-        },
-        "licenseType": "Windows_Client"
-      },
-      "resources": [
-        {
-          "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-0/extensions/AADLoginForWindows"
-        },
-        {
-          "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-0/extensions/MDE.Windows"
-        },
-        {
-          "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-0/extensions/Microsoft.PowerShell.DSC"
-        }
-      ]
-    },
-    {
-      "name": "VM-AVD-AE-2-1",
-      "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-1",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "tags": {
-        "cm-resource-parent": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.DesktopVirtualization/hostpools/AVDHP-WES-PRD-WIN11-2"
-      },
-      "identity": {
-        "type": "SystemAssigned",
-        "principalId": "0a8e47d8-1926-4ce0-8ce7-052b6bf1d9ac",
-        "tenantId": "b8e666a2-e9c3-428b-8227-b97e1c5823b4"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_E4as_v5"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "b27df496-87f4-4107-8c7c-17aecca2721d",
-        "additionalCapabilities": {
-          "hibernationEnabled": false
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "microsoftwindowsdesktop",
-            "offer": "office-365",
-            "sku": "win11-23h2-avd-m365",
-            "version": "latest",
-            "exactVersion": "22631.3007.240109"
-          },
-          "osDisk": {
-            "osType": "Windows",
-            "name": "VM-AVD-AE-2-1_OsDisk_1_32e35b33266f4d9ca1ae7790d5793e0f",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/disks/VM-AVD-AE-2-1_OsDisk_1_32e35b33266f4d9ca1ae7790d5793e0f"
-            },
-            "deleteOption": "Detach"
-          },
-          "dataDisks": []
-        },
-        "osProfile": {
-          "computerName": "VM-AVD-AE-2-1",
-          "adminUsername": "captain",
-          "windowsConfiguration": {
-            "provisionVMAgent": true,
-            "enableAutomaticUpdates": true,
-            "patchSettings": {
-              "patchMode": "AutomaticByOS",
-              "assessmentMode": "ImageDefault"
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "securityProfile": {
-          "uefiSettings": {
-            "secureBootEnabled": true,
-            "vTpmEnabled": true
-          },
-          "securityType": "TrustedLaunch"
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Network/networkInterfaces/VM-AVD-AE-2-1-nic"}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true
-          }
-        },
-        "licenseType": "Windows_Client"
-      },
-      "resources": [
-        {
-          "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-1/extensions/AADLoginForWindows"
-        },
-        {
-          "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-1/extensions/Microsoft.PowerShell.DSC"
-        }
-      ]
-    },
-    {
-      "name": "VM-AVD-AE-2-2",
-      "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-2",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "tags": {
-        "cm-resource-parent": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.DesktopVirtualization/hostpools/AVDHP-WES-PRD-WIN11-2"
-      },
-      "identity": {
-        "type": "SystemAssigned",
-        "principalId": "7585cbcd-bc72-4d9d-b369-70a61033cc81",
-        "tenantId": "b8e666a2-e9c3-428b-8227-b97e1c5823b4"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_E4as_v5"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "9fbddc95-f36e-4b48-b4a1-7acc113bc1ea",
-        "additionalCapabilities": {
-          "hibernationEnabled": false
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "microsoftwindowsdesktop",
-            "offer": "office-365",
-            "sku": "win11-23h2-avd-m365",
-            "version": "latest",
-            "exactVersion": "22631.3007.240109"
-          },
-          "osDisk": {
-            "osType": "Windows",
-            "name": "VM-AVD-AE-2-2_disk1_57e91df16e264951bea70be56b3f75fd",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/disks/VM-AVD-AE-2-2_disk1_57e91df16e264951bea70be56b3f75fd"
-            },
-            "deleteOption": "Detach"
-          },
-          "dataDisks": []
-        },
-        "osProfile": {
-          "computerName": "VM-AVD-AE-2-2",
-          "adminUsername": "skipper",
-          "windowsConfiguration": {
-            "provisionVMAgent": true,
-            "enableAutomaticUpdates": true,
-            "patchSettings": {
-              "patchMode": "AutomaticByOS",
-              "assessmentMode": "ImageDefault"
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "securityProfile": {
-          "uefiSettings": {
-            "secureBootEnabled": true,
-            "vTpmEnabled": true
-          },
-          "securityType": "TrustedLaunch"
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Network/networkInterfaces/VM-AVD-AE-2-2-nic"}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "https://stwesinfraaelrs1.blob.core.windows.net/"
-          }
-        },
-        "licenseType": "Windows_Client"
-      },
-      "resources": [
-        {
-          "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-2/extensions/AADLoginForWindows"
-        },
-        {
-          "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-2/extensions/MDE.Windows"
-        },
-        {
-          "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-2/extensions/Microsoft.PowerShell.DSC"
-        }
-      ]
-    },
-    {
-      "name": "VM-AVD-AE-2-3",
-      "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-3",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "australiaeast",
-      "tags": {
-        "cm-resource-parent": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.DesktopVirtualization/hostpools/AVDHP-WES-PRD-WIN11-2"
-      },
-      "identity": {
-        "type": "SystemAssigned",
-        "principalId": "27b35ac3-e23a-4d3d-81e7-5fb24c13653f",
-        "tenantId": "b8e666a2-e9c3-428b-8227-b97e1c5823b4"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_E4as_v5"
-        },
-        "provisioningState": "Succeeded",
-        "vmId": "b87d0bbc-a7b5-4bf1-a9e4-790473e405f6",
-        "additionalCapabilities": {
-          "hibernationEnabled": false
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "microsoftwindowsdesktop",
-            "offer": "office-365",
-            "sku": "win11-23h2-avd-m365",
-            "version": "latest",
-            "exactVersion": "22631.3007.240109"
-          },
-          "osDisk": {
-            "osType": "Windows",
-            "name": "VM-AVD-AE-2-3_OsDisk_1_1f48860e423c4693a1a250cb7b22ae71",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/disks/VM-AVD-AE-2-3_OsDisk_1_1f48860e423c4693a1a250cb7b22ae71"
-            },
-            "deleteOption": "Detach"
-          },
-          "dataDisks": []
-        },
-        "osProfile": {
-          "computerName": "VM-AVD-AE-2-3",
-          "adminUsername": "skipper",
-          "windowsConfiguration": {
-            "provisionVMAgent": true,
-            "enableAutomaticUpdates": true,
-            "patchSettings": {
-              "patchMode": "AutomaticByOS",
-              "assessmentMode": "ImageDefault"
-            }
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
-        "securityProfile": {
-          "uefiSettings": {
-            "secureBootEnabled": true,
-            "vTpmEnabled": true
-          },
-          "securityType": "TrustedLaunch"
-        },
-        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Network/networkInterfaces/VM-AVD-AE-2-3-nic"}]},
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "https://stwesinfraaelrs1.blob.core.windows.net/"
-          }
-        },
-        "licenseType": "Windows_Client"
-      },
-      "resources": [
-        {
-          "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-3/extensions/AADLoginForWindows"
-        },
-        {
-          "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-3/extensions/MDE.Windows"
-        },
-        {
-          "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-AVD-AE-2-3/extensions/Microsoft.PowerShell.DSC"
-        }
-      ]
-    },
-    {
       "name": "VM-WES-AVD-UTIL-3",
       "id": "/subscriptions/48ecfcb1-e48f-4fea-aafb-d8bffaa21d25/resourceGroups/RG-WES-AVD-AE-1/providers/Microsoft.Compute/virtualMachines/VM-WES-AVD-UTIL-3",
       "type": "Microsoft.Compute/virtualMachines",
@@ -3498,7 +3162,92 @@
       ],
       "resources": [
         {
+          "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Compute/virtualMachines/vm-ELIODEF02/extensions/AADLogin"
+        },
+        {
           "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Compute/virtualMachines/vm-ELIODEF02/extensions/enablevmAccess"
+        }
+      ]
+    },
+    {
+      "name": "VM-ELIODEF03",
+      "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Compute/virtualMachines/VM-ELIODEF03",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "australiaeast",
+      "tags": {
+        "ethan.sn.id": "acb9ad8d87c7b810bd1d32e80cbb35ee"
+      },
+      "identity": {
+        "type": "SystemAssigned",
+        "principalId": "03ecade0-a734-4863-849f-173c20744c30",
+        "tenantId": "b02e50ac-20e5-4c60-bcd4-8454b3201fd1"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2s_v3"
+        },
+        "provisioningState": "Succeeded",
+        "vmId": "da1c2fa2-9392-4482-a520-252c965acd9b",
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "microsoftwindowsdesktop",
+            "offer": "windows-11",
+            "sku": "win11-22h2-pro",
+            "version": "latest",
+            "exactVersion": "22621.3296.240303"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "VM-ELIODEF03_OsDisk_1_d1e0bda15d45490eb18f89d402c4319f",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Compute/disks/VM-ELIODEF03_OsDisk_1_d1e0bda15d45490eb18f89d402c4319f"
+            },
+            "deleteOption": "Delete"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "VM-ELIODEF03",
+          "adminUsername": "elio",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": true,
+            "patchSettings": {
+              "patchMode": "AutomaticByOS",
+              "assessmentMode": "ImageDefault",
+              "enableHotpatching": false
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true,
+          "requireGuestProvisionSignal": true
+        },
+        "securityProfile": {
+          "uefiSettings": {
+            "secureBootEnabled": true,
+            "vTpmEnabled": true
+          },
+          "securityType": "TrustedLaunch"
+        },
+        "networkProfile": {"networkInterfaces":[{"id":"/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Network/networkInterfaces/vm-eliodef03640_z1","properties":{"deleteOption":"Detach"}}]},
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        },
+        "licenseType": "Windows_Client"
+      },
+      "zones": [
+        "1"
+      ],
+      "resources": [
+        {
+          "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETEST-ELIODEF-AE-1/providers/Microsoft.Compute/virtualMachines/VM-ELIODEF03/extensions/AADLoginForWindows"
         }
       ]
     },
@@ -3532,9 +3281,11 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "managedDisk": {
+              "storageAccountType": "Premium_LRS",
               "id": "/subscriptions/dfc40a97-e5a3-48dc-bf0d-4b87e16a6583/resourceGroups/RG-ETST-CYRISK-AE-1/providers/Microsoft.Compute/disks/vm-cyrisk-1_OsDisk_1_9090c6b7f5e64b4aaaa19749f0ad9909"
             },
-            "deleteOption": "Delete"
+            "deleteOption": "Delete",
+            "diskSizeGB": 127
           },
           "dataDisks": []
         },
