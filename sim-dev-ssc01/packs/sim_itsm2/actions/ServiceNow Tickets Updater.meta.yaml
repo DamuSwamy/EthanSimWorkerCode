@@ -6,9 +6,9 @@ entry_point: workflows/ServiceNow Tickets Updater.yaml
 parameters:
   Ticket_IDs:
     description: list of ticket IDs
-    type: string
+    type: array
     required: true
   Property:
-    type: string
+    type: object
     description: The properties to be allotted
     required: true

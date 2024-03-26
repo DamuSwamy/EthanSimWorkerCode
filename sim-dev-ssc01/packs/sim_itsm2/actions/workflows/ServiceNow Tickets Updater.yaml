@@ -1,6 +1,6 @@
 version: 1.0
 tasks:
-  # [199, 0]
+  # [191, 0]
   begin:
     action: core.noop
     next:
@@ -9,7 +9,6 @@ tasks:
         publish:
           - i: 0
           - x: " "
-          - array: <%ctx().Ticket_IDs.replace(' ','').split(',')%>
   # [191, 294]
   change_property:
     action: sim_itsm2.update
@@ -29,7 +28,7 @@ tasks:
     next:
       - do:
           - start
-        when: <% ctx().i < ctx().array.len() %>
+        when: <% ctx().i < ctx().Ticket_IDs.len() %>
   # [191, 97]
   start:
     action: core.noop
@@ -37,7 +36,7 @@ tasks:
       - do:
           - next_ID
         publish:
-          - msg: <% ctx().array[ctx().i] %>
+          - msg: <% ctx().Ticket_IDs[ctx().i] %>
         when: <
   # [191, 195]
   next_ID:
@@ -52,7 +51,7 @@ tasks:
       - do:
           - task1
         publish:
-          - x: <% concat(ctx().x,ctx().array[ctx().i]," is updated","\n") %>
+          - x: <% concat(ctx().x,ctx().Ticket_IDs[ctx().i]," is updated","\n") %>
   # [533, 440]
   task1:
     action: core.noop

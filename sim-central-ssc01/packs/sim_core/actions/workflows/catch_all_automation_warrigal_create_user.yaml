@@ -200,7 +200,7 @@ tasks:
       # #629e47
       - do:
           - done
-  # [44, 819]
+  # [42, 820]
   on_task_completion_itsm_ticket:
     action: sim_itsm2.update
     next:
@@ -218,7 +218,7 @@ tasks:
         cause: User onboarding request completed by SiM Automation
         assigned_to: svc_sim_automation
         closed_by: 84cf417087ff3410bd1d32e80cbb3502
-        closed_at: "2022-02-06 17:03:07"
+        closed_at: <%ctx().close_date%>
         notes_to_comments: true
       number: <% ctx().ticket_id %>
   # [237, 90]
