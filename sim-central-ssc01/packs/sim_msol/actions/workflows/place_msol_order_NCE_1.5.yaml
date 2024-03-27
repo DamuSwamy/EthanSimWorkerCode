@@ -279,7 +279,7 @@ tasks:
     action: sim_msol.FormatProductList2
     next:
       - do:
-          - task1
+          - insert_bulk_1
         when: <% succeeded() %>
         publish:
           - data: <% result().result.data %>
@@ -292,7 +292,7 @@ tasks:
     action: sim_msol.FormatProductList2
     next:
       - do:
-          - task2
+          - insert_bulk_2
         when: <% succeeded() %>
         publish:
           - data2: <% result().result.data %>
@@ -301,7 +301,7 @@ tasks:
       input_data: "{{ ctx().line_items_raw }}"
       customerId: "{{ ctx().customer_tenant_id }}"
   # [562, 1113]
-  task1:
+  insert_bulk_1:
     action: sql.insert_bulk
     next:
       - do:
@@ -309,8 +309,10 @@ tasks:
     input:
       log_level: DEBUG
       data: "{{ ctx().data }}"
+      table: MSOL_NCE_Subscribed_Pricing
+      connection: billing
   # [824, 1001]
-  task2:
+  insert_bulk_2:
     action: sql.insert_bulk
     next:
       - do:
@@ -319,6 +321,8 @@ tasks:
     input:
       log_level: DEBUG
       data: "{{ ctx().data2 }}"
+      table: MSOL_NCE_Subscribed_Pricing
+      connection: billing
   # [576, 884]
   delete_from_MSOL_NCE_Subscribed_Pricing:
     action: sql.query

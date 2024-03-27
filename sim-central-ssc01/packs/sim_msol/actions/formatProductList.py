@@ -21,7 +21,7 @@ class MSOL(Action):
         today = datetime.today()
 
         for obj in new_items_json:
-            if 'UnitCost' in obj and  float(obj['UnitCost'])<=0:
+            if 'MSUnitCost' in obj and  float(obj['MSUnitCost'])<=0:
                 continue
             product_list_json = {
                     "CustomerID":customer_id,
@@ -60,8 +60,8 @@ class MSOL(Action):
                     endDate = today + relativedelta(months=1) - timedelta(1)
                     formattedEndDate = endDate.strftime("%Y-%m-%d")
                     product_list_json['EffectiveEndDate'] = formattedEndDate
-            if 'UnitCost' in obj:
-                product_list_json['UnitPrice'] = obj['UnitCost']
+            if 'MSUnitCost' in obj:
+                product_list_json['UnitPrice'] = obj['MSUnitCost']
                         
             if 'BuyPrice' in obj:
                 product_list_json['Customer_BuyPrice'] = obj['BuyPrice']
@@ -72,7 +72,7 @@ class MSOL(Action):
 
 
         for obj in existing_items_json:
-            if 'UnitCost' in obj and  float(obj['UnitCost'])<=0:
+            if 'MSUnitCost' in obj and  float(obj['MSUnitCost'])<=0:
                 continue
             product_list_json = {
                     "_ProductID":"",
@@ -101,8 +101,8 @@ class MSOL(Action):
             if 'Term' in obj:
                 product_list_json['TermDuration'] = obj['Term']
 
-            if 'UnitCost' in obj:
-                product_list_json['UnitPrice'] = obj['UnitCost']
+            if 'MSUnitCost' in obj:
+                product_list_json['UnitPrice'] = obj['MSUnitCost']
             
             if 'YourBuy' in obj:
                 product_list_json['Customer_BuyPrice'] = obj['YourBuy']

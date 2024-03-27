@@ -1,0 +1,52 @@
+version: 1.0
+tasks:
+  # [509, 36]
+  start:
+    action: core.echo
+    input:
+      message: start
+    next:
+      - do:
+          - check_DL_exist
+  # [508, 153]
+  check_DL_exist:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: "Import-Module -Name ExchangeOnlineManagement -RequiredVersion 3.4.0\n\nConnect-ExchangeOnline -ShowBanner:$false -CertificateFilePath \"C:/Users/svc-simauto-1/Documents/EthanSimAuto.pfx\" -CertificatePassword (ConvertTo-SecureString -String ('u5xKrJoTUypS7A4aYdthWPFHMkD3Xb') -AsPlainText -Force) -AppID \"d783940b-f091-4a04-aeb9-60945b2e7d6c\" -Organization \"ecorpsystems.onmicrosoft.com\"\n\n# Check if the distribution list \"Other ServiceNow Notifications Test\" exists\n$dlExists = Get-DistributionGroup -Identity \"<%ctx().DL_name%>\" -ErrorAction SilentlyContinue\n\nif ($dlExists) {\n    Write-Host \"True\"\n} else {\n    Write-Host \"False\"\n}\n"
+      host: 10.232.33.24
+      password: 9HCyebdFegocotbideat
+      username: svc-simauto-1@ecorp.systems
+      port: 5985
+    next:
+      - do:
+          - task3
+        publish:
+          - DL_value: <% result().stdout %>
+  # [270, 361]
+  task1:
+    action: core.noop
+  # [710, 364]
+  task2:
+    action: core.winrm_ps_cmd
+    input:
+      transport: ntlm
+      cmd: hostname
+      host: 10.232.33.24
+      username: svc-simauto-1@ecorp.systems
+      password: 9HCyebdFegocotbideat
+      port: 5985
+  # [506, 262]
+  task3:
+    action: core.echo
+    next:
+      - do:
+          - task1
+        when: <% ctx().DL_value = "True" %>
+      - do:
+          - task2
+        when: <% ctx().DL_value != "True" %>
+    input:
+      message: <%ctx().DL_value%>
+input:
+  - DL_name
